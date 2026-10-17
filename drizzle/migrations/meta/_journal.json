@@ -29,6 +29,13 @@
       "when": 1792269077362,
       "tag": "0003_activity_start_window_and_live_state",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792269333563,
+      "tag": "0004_unambiguous_activity_identifier",
+      "breakpoints": true
     }
   ]
 }
