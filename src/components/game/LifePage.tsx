@@ -1,15 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Briefcase, GraduationCap, Home, CalendarDays, LoaderCircle, Check, Wallet } from "lucide-react";
+import { Briefcase, GraduationCap, Home, CalendarDays, LoaderCircle, Check, Wallet, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { lifeQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
+import { lifeQuery, citiesQuery, districtsQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
 import { academicLevel, gameHour } from "@/game/life";
 import { WorldClock } from "./WorldClock";
 import { DailyActions, LocationLink, useLifeMutation } from "./LifeControls";
 
 export function LifePage() {
   const { data: life } = useSuspenseQuery(lifeQuery);
+  const { data: cities } = useSuspenseQuery(citiesQuery);
+  const { data: districts } = useSuspenseQuery(districtsQuery(life.character.city_id));
   const enroll = useLifeMutation(enrollStudies, "Inscription enregistrée");
   const apply = useLifeMutation(applyJob, "Candidature envoyée");
   const rent = useLifeMutation(payHousing, "Dépense de logement enregistrée");
@@ -29,12 +31,14 @@ export function LifePage() {
     : life.employment ? <section className="space-y-4"><h2 className="flex items-center gap-2 text-xl font-semibold"><Briefcase className="text-primary" />{life.employment.job.title}</h2><p className="text-sm text-muted-foreground">{life.employment.location.name}</p>
       <dl className="grid gap-4 sm:grid-cols-3"><div><dt className="text-sm text-muted-foreground">Salaire de référence</dt><dd className="font-semibold">{formatMoney(life.employment.job.salary)} / mois</dd></div><div><dt className="text-sm text-muted-foreground">Vacation rémunérée</dt><dd className="font-semibold">{formatMoney(Math.floor(life.employment.job.salary/life.settings.paid_shifts_month))} / vacation</dd></div><div><dt className="text-sm text-muted-foreground">Progression professionnelle</dt><dd className="font-semibold">{life.employment.progress} points</dd></div></dl>
       <p className="text-sm text-muted-foreground">Lundi–vendredi · {life.settings.work_start}:00–{life.settings.work_end}:00 · Une vacation par jour.</p><LocationLink location={life.employment.location} label="Voir mon lieu de travail" />
+      <p className="text-sm text-muted-foreground">Le salaire est crédité après la fin de la vacation, à votre prochaine consultation, même après reconnexion. Chaque vacation est payée une seule fois ; le versement apparaît dans Banque.</p>
     </section> : <section className="space-y-4"><h2 className="text-xl font-semibold">Offres d’emploi</h2><p className="text-sm text-muted-foreground">Réponse après {life.settings.response_minutes} minute du monde. Les postes spécialisés tiennent compte de votre parcours.</p>
       <div className="grid gap-3 sm:grid-cols-2">{life.offers.map(o => { const application = life.applications.find(a => a.job_id===o.id); return <article key={o.id} className="space-y-3 rounded-lg border border-border bg-card p-4"><h3 className="font-semibold">{o.title}</h3><p className="text-sm text-muted-foreground">{o.employer} · {o.location.name}</p><p className="text-sm">{o.description}</p><p className="font-semibold text-primary">{formatMoney(o.salary)} / mois</p>{o.skill_min>0 && <p className="text-xs text-muted-foreground">{o.required_skill} : {o.skill_min} points ou parcours Début de carrière</p>}
-        <div className="flex flex-wrap gap-2"><LocationLink location={o.location} /><Button disabled={!!application || apply.isPending} onClick={() => apply.mutate(o.id)}>{application ? <Check /> : <Briefcase />}{application ? application.status==='pending' ? `Réponse à ${gameHour(application.response_at)}` : application.status==='accepted' ? "Acceptée" : "Refusée" : "Postuler"}</Button></div>
+        {application?.status === "rejected" && <p role="status" className="text-sm text-muted-foreground">Candidature refusée. Aucun emploi ni salaire attribué pour cette offre. Vous pouvez postuler à une autre offre.</p>}
+        <div className="flex flex-wrap gap-2"><LocationLink location={o.location} /><Button disabled={!!application || apply.isPending} onClick={() => apply.mutate(o.id)}>{application?.status === "rejected" ? <X /> : application ? <Check /> : <Briefcase />}{application ? application.status==='pending' ? `Réponse à ${gameHour(application.response_at)}` : application.status==='accepted' ? "Acceptée" : "Refusée" : "Postuler"}</Button></div>
       </article>; })}</div>
     </section>}
     <section className="space-y-4 border-t border-border pt-5"><h2 className="text-xl font-semibold">Actions quotidiennes</h2><DailyActions /></section>
-    {life.housing && <section className="space-y-4 border-t border-border pt-5"><h2 className="flex items-center gap-2 text-xl font-semibold"><Home className="text-primary" />Mon logement</h2><p>{life.housing.name} · {life.housing.location.name}</p><p className="text-sm text-muted-foreground">{formatMoney(life.housing.daily_cost)} / jour · Paiement manuel, sans dette automatique.</p><div className="flex flex-wrap gap-2"><LocationLink location={life.housing.location} label="Rentrer chez moi" /><Button variant="outline" disabled={rent.isPending || life.housing.last_paid_date === life.world_now.slice(0,10)} onClick={() => rent.mutate(undefined)}><Wallet />{life.housing.last_paid_date===life.world_now.slice(0,10) ? "Payé aujourd’hui" : "Payer le logement"}</Button></div></section>}
+    {life.housing && <section className="space-y-4 border-t border-border pt-5"><h2 className="flex items-center gap-2 text-xl font-semibold"><Home className="text-primary" />Mon logement</h2><dl className="grid gap-3 sm:grid-cols-3"><div><dt className="text-sm text-muted-foreground">Type</dt><dd className="font-semibold">{life.housing.name}</dd></div><div><dt className="text-sm text-muted-foreground">Logement actuel</dt><dd>{life.housing.location.name}</dd></div><div><dt className="text-sm text-muted-foreground">Localisation</dt><dd>{districts.find(d => d.id === life.housing?.location.district_id)?.name} · {cities.find(c => c.id === life.housing?.location.city_id)?.name}</dd></div></dl><p className="text-sm text-muted-foreground">{formatMoney(life.housing.daily_cost)} / jour · Paiement manuel, sans dette automatique.</p><div className="flex flex-wrap gap-2"><LocationLink location={life.housing.location} label="Rentrer chez moi" /><Button variant="outline" disabled={rent.isPending || life.housing.last_paid_date === life.world_now.slice(0,10)} onClick={() => rent.mutate(undefined)}><Wallet />{life.housing.last_paid_date===life.world_now.slice(0,10) ? "Payé aujourd’hui" : "Payer le logement"}</Button></div></section>}
   </div>;
 }
