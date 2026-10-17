@@ -1,0 +1,105 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ChevronLeft, Lock } from "lucide-react";
+import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
+import { CharacterAvatar } from "@/components/game/CharacterAvatar";
+import { normalizeAppearance } from "@/game/appearance";
+import { bankQuery, characterQuery, formatMoney } from "@/services/game";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/_authenticated/_game/telephone")({
+  validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
+  head: () => ({ meta: [{ title: "Téléphone — CIVITAS" }] }),
+  loader: ({ context: { queryClient: q } }) => Promise.all([q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery)]),
+  component: PhonePage,
+});
+
+function PhonePage() {
+  const { app } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const open = (id?: string) => navigate({ search: { app: id } });
+  const current = PHONE_APPS.find((a) => a.id === app);
+
+  return (
+    <div className="flex justify-center animate-rise">
+      <div className="relative w-full max-w-sm rounded-[2.75rem] border-8 border-secondary bg-surface p-3 shadow-card">
+        <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-background" />
+        <div className="min-h-[560px] rounded-[2rem] bg-background p-4">
+          {!current ? (
+            <>
+              <p className="mb-6 text-center font-display text-4xl font-semibold">
+                {new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+              </p>
+              <div className="grid grid-cols-3 gap-4">
+                {PHONE_APPS.map((a) => (
+                  <button key={a.id} onClick={() => open(a.id)} className="flex flex-col items-center gap-2">
+                    <span className={cn("relative flex h-16 w-16 items-center justify-center rounded-2xl",
+                      a.available ? "bg-gradient-primary text-primary-foreground shadow-elegant" : "bg-muted text-muted-foreground")}>
+                      <a.icon className="h-7 w-7" />
+                      {!a.available && <Lock className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-background p-1" />}
+                    </span>
+                    <span className="text-xs">{a.label}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div>
+              <button onClick={() => open(undefined)} className="mb-4 flex h-10 items-center gap-1 text-sm text-primary">
+                <ChevronLeft className="h-4 w-4" /> Accueil
+              </button>
+              <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
+              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : (
+                <div className="mt-10 flex flex-col items-center text-center">
+                  <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
+                  <p className="mt-6 font-semibold">{COMING_SOON}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Cette application sera débloquée prochainement.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProfileApp() {
+  const { data: c } = useSuspenseQuery(characterQuery);
+  if (!c) return null;
+  return (
+    <div className="text-center">
+      <div className="mx-auto h-32 w-28 overflow-hidden rounded-3xl border border-border"><CharacterAvatar appearance={normalizeAppearance(c.appearance)} /></div>
+      <p className="mt-3 text-xl font-bold">{c.first_name} {c.last_name}</p>
+      <p className="text-sm text-muted-foreground">{c.age} ans · {c.city?.name}</p>
+      <p className="mt-4 rounded-2xl bg-accent/60 p-3 text-sm">{c.path?.name} — {c.situation}</p>
+    </div>
+  );
+}
+
+function BankApp() {
+  const { data: bank } = useSuspenseQuery(bankQuery);
+  if (!bank) return <p className="text-sm text-muted-foreground">Aucun compte.</p>;
+  return (
+    <div>
+      <div className="rounded-3xl bg-gradient-primary p-5 text-primary-foreground shadow-elegant">
+        <p className="text-sm opacity-80">{bank.label}</p>
+        <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
+      </div>
+      <h2 className="mt-5 mb-2 text-sm font-semibold text-muted-foreground">Historique</h2>
+      <ul className="space-y-2">
+        {bank.transactions.map((t) => (
+          <li key={t.id} className="flex items-center justify-between rounded-2xl bg-accent/60 p-3">
+            <div>
+              <p className="text-sm font-semibold">{t.label}</p>
+              <p className="text-xs text-muted-foreground">{new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
+            </div>
+            <span className={cn("font-semibold", t.amount >= 0 ? "text-success" : "text-destructive")}>
+              {t.amount >= 0 ? "+" : ""}{formatMoney(t.amount)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
