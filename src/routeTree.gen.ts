@@ -18,6 +18,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
+import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
@@ -67,6 +68,11 @@ const AuthenticatedCreationRoute = AuthenticatedCreationRouteImport.update({
   path: '/creation',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
+  id: '/carte',
+  path: '/carte',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameParametresRoute =
   AuthenticatedGameParametresRouteImport.update({
     id: '/parametres',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/carte': typeof AuthenticatedGameCarteRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/carte': typeof AuthenticatedGameCarteRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
+  '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/carte'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/carte'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
+    | '/_authenticated/_game/carte'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/tableau-de-bord'
@@ -265,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCreationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_game/carte': {
+      id: '/_authenticated/_game/carte'
+      path: '/carte'
+      fullPath: '/carte'
+      preLoaderRoute: typeof AuthenticatedGameCarteRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/parametres': {
       id: '/_authenticated/_game/parametres'
       path: '/parametres'
@@ -304,6 +323,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedGameRouteRouteChildren {
+  AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
@@ -313,6 +333,7 @@ interface AuthenticatedGameRouteRouteChildren {
 
 const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
   {
+    AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
