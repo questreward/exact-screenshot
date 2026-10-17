@@ -68,10 +68,12 @@ function Creation() {
     setSaving(true);
     try {
       await createCharacter({ firstName, lastName, age, cityId, pathId, appearance });
-      qc.removeQueries();
-      await qc.fetchQuery(characterQuery);
+      // Refresh the cached character (it was cached as "none" before creation).
+      await qc.fetchQuery({ ...characterQuery, staleTime: 0 });
+      qc.removeQueries({ queryKey: ["bank"] });
+      qc.removeQueries({ queryKey: ["notifications"] });
       toast.success(`Bienvenue, ${firstName} !`);
-      navigate({ to: "/tableau-de-bord", replace: true });
+      await navigate({ to: "/tableau-de-bord", replace: true });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Impossible de créer le personnage");
     } finally {
