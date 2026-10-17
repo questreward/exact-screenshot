@@ -18,11 +18,13 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
+import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
+import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
 import { Route as AuthenticatedGameSectionIdRouteImport } from './routes/_authenticated/_game/section.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -68,6 +70,11 @@ const AuthenticatedCreationRoute = AuthenticatedCreationRouteImport.update({
   path: '/creation',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGameAgendaRoute = AuthenticatedGameAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
   id: '/carte',
   path: '/carte',
@@ -97,6 +104,11 @@ const AuthenticatedGameTelephoneRoute =
     path: '/telephone',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVieRoute = AuthenticatedGameVieRouteImport.update({
+  id: '/vie',
+  path: '/vie',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameSectionIdRoute =
   AuthenticatedGameSectionIdRouteImport.update({
     id: '/section/$id',
@@ -112,11 +124,13 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/vie': typeof AuthenticatedGameVieRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesByTo {
@@ -127,11 +141,13 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/vie': typeof AuthenticatedGameVieRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesById {
@@ -145,11 +161,13 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
+  '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
   '/_authenticated/_game/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRouteTypes {
@@ -162,11 +180,13 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/agenda'
     | '/carte'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
     | '/telephone'
+    | '/vie'
     | '/section/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -177,11 +197,13 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/agenda'
     | '/carte'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
     | '/telephone'
+    | '/vie'
     | '/section/$id'
   id:
     | '__root__'
@@ -194,11 +216,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
+    | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
+    | '/_authenticated/_game/vie'
     | '/_authenticated/_game/section/$id'
   fileRoutesById: FileRoutesById
 }
@@ -277,6 +301,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCreationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_game/agenda': {
+      id: '/_authenticated/_game/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AuthenticatedGameAgendaRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/carte': {
       id: '/_authenticated/_game/carte'
       path: '/carte'
@@ -312,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameTelephoneRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/vie': {
+      id: '/_authenticated/_game/vie'
+      path: '/vie'
+      fullPath: '/vie'
+      preLoaderRoute: typeof AuthenticatedGameVieRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/section/$id': {
       id: '/_authenticated/_game/section/$id'
       path: '/section/$id'
@@ -323,21 +361,25 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedGameRouteRouteChildren {
+  AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
+  AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
   AuthenticatedGameSectionIdRoute: typeof AuthenticatedGameSectionIdRoute
 }
 
 const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
   {
+    AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
+    AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,
     AuthenticatedGameSectionIdRoute: AuthenticatedGameSectionIdRoute,
   }
 

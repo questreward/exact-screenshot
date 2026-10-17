@@ -9,8 +9,10 @@ import { locationType, movementAllowed } from "@/game/world";
 import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
 import worldSquare from "@/assets/world-square.jpg";
+import { DailyActions } from "./LifeControls";
+import { TransportControl } from "./TransportControl";
 
-export function WorldMap({ initialCity, initialDistrict, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialFrance?: boolean }) {
+export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
   const { data: position } = useSuspenseQuery(positionQuery);
   const [cityId, setCityId] = useState(initialCity ?? position?.city_id ?? cities[0]?.id ?? "paris");
@@ -41,7 +43,7 @@ export function WorldMap({ initialCity, initialDistrict, initialFrance = false }
       <div><h2 className="mb-3 text-lg font-semibold">Les villes</h2><div className="divide-y divide-border">{cities.map(c => <Button key={c.id} variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal rounded-none px-2 py-3 text-left" onClick={() => selectCity(c.id)}>
         <MapPin className="shrink-0 text-primary" /><span><span className="block font-semibold">{c.name}</span><span className="block text-xs font-normal text-muted-foreground">{position?.city_id === c.id ? "Votre ville actuelle" : c.region}</span></span>
       </Button>)}</div></div>
-    </div> : <Suspense fallback={<MapLoading />}><CityMap key={city.id} city={city} selectedDistrict={districtId} onDistrict={setDistrictId} phase={phase} /></Suspense>}
+    </div> : <Suspense fallback={<MapLoading />}><CityMap key={city.id} city={city} selectedDistrict={districtId} initialLocation={initialLocation} onDistrict={setDistrictId} phase={phase} /></Suspense>}
   </div>;
 }
 
@@ -73,11 +75,11 @@ function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin }: { 
   </g>;
 }
 
-function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"cities">; selectedDistrict?: string | undefined; onDistrict: (id?: string) => void; phase: string }) {
+function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }: { city: Tables<"cities">; selectedDistrict?: string | undefined; initialLocation?: string | undefined; onDistrict: (id?: string) => void; phase: string }) {
   const { data: districts } = useSuspenseQuery(districtsQuery(city.id));
   const { data: position } = useSuspenseQuery(positionQuery);
   const selected = districts.find(d => d.id === selectedDistrict);
-  const [selectedLocation, setSelectedLocation] = useState<string>();
+  const [selectedLocation, setSelectedLocation] = useState<string | undefined>(initialLocation);
   const districtSelect = (id?: string) => { onDistrict(id); setSelectedLocation(undefined); };
   const playerHere = position?.city_id === city.id;
   return <div className="space-y-4">
@@ -145,7 +147,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { data: p } = useSuspenseQuery(positionQuery);
   const { data: spaces } = useSuspenseQuery(spacesQuery(l.id));
   const q = useQueryClient();
-  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await q.invalidateQueries({ queryKey: ["position"] }); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
+  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
   const here = p?.location_id === l.id;
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
@@ -158,7 +160,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Voyage disponible dans une prochaine étape</p>}
       {spaces.map(s => <div key={s.id} className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>)}
-      <p className="text-xs text-muted-foreground">Activités du lieu : Disponible dans une prochaine étape</p>
+      <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
     </div>
   </article>;
 }

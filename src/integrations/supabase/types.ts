@@ -46,6 +46,135 @@ export type Database = {
           },
         ]
       }
+      activities: {
+        Row: {
+          character_id: string
+          created_at: string
+          end_time: string
+          energy_cost: number
+          energy_gain: number
+          id: string
+          location_id: string
+          money_cost: number
+          progression_gain: number
+          reward: number
+          source_key: string | null
+          start_time: string
+          status: string
+          target_location_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          end_time: string
+          energy_cost?: number
+          energy_gain?: number
+          id?: string
+          location_id: string
+          money_cost?: number
+          progression_gain?: number
+          reward?: number
+          source_key?: string | null
+          start_time: string
+          status?: string
+          target_location_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          end_time?: string
+          energy_cost?: number
+          energy_gain?: number
+          id?: string
+          location_id?: string
+          money_cost?: number
+          progression_gain?: number
+          reward?: number
+          source_key?: string | null
+          start_time?: string
+          status?: string
+          target_location_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_target_location_id_fkey"
+            columns: ["target_location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_type_fkey"
+            columns: ["type"]
+            isOneToOne: false
+            referencedRelation: "life_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      character_housing: {
+        Row: {
+          character_id: string
+          last_paid_date: string | null
+          location_id: string
+          type_id: string
+        }
+        Insert: {
+          character_id: string
+          last_paid_date?: string | null
+          location_id: string
+          type_id: string
+        }
+        Update: {
+          character_id?: string
+          last_paid_date?: string | null
+          location_id?: string
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_housing_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_housing_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_housing_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "housing_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_positions: {
         Row: {
           character_id: string
@@ -277,6 +406,48 @@ export type Database = {
           },
         ]
       }
+      employments: {
+        Row: {
+          character_id: string
+          job_id: string
+          progress: number
+          skills: Json
+          started_at: string
+          status: string
+        }
+        Insert: {
+          character_id: string
+          job_id: string
+          progress?: number
+          skills?: Json
+          started_at: string
+          status?: string
+        }
+        Update: {
+          character_id?: string
+          job_id?: string
+          progress?: number
+          skills?: Json
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employments_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           city_id: string | null
@@ -312,32 +483,104 @@ export type Database = {
           },
         ]
       }
+      housing_types: {
+        Row: {
+          daily_cost: number
+          id: string
+          name: string
+        }
+        Insert: {
+          daily_cost: number
+          id: string
+          name: string
+        }
+        Update: {
+          daily_cost?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          applied_at: string
+          character_id: string
+          id: string
+          job_id: string
+          response_at: string
+          status: string
+        }
+        Insert: {
+          applied_at: string
+          character_id: string
+          id?: string
+          job_id: string
+          response_at: string
+          status?: string
+        }
+        Update: {
+          applied_at?: string
+          character_id?: string
+          id?: string
+          job_id?: string
+          response_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           city_id: string | null
           created_at: string
+          description: string
           id: string
+          location_id: string | null
           min_age: number
           organization_id: string | null
+          required_skill: string
           salary: number
+          skill_min: number
           title: string
         }
         Insert: {
           city_id?: string | null
           created_at?: string
+          description?: string
           id?: string
+          location_id?: string | null
           min_age?: number
           organization_id?: string | null
+          required_skill?: string
           salary?: number
+          skill_min?: number
           title: string
         }
         Update: {
           city_id?: string | null
           created_at?: string
+          description?: string
           id?: string
+          location_id?: string | null
           min_age?: number
           organization_id?: string | null
+          required_skill?: string
           salary?: number
+          skill_min?: number
           title?: string
         }
         Relationships: [
@@ -349,6 +592,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "jobs_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
@@ -356,6 +606,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      life_rules: {
+        Row: {
+          allowed_kinds: string[]
+          duration_minutes: number
+          energy_cost: number
+          energy_gain: number
+          id: string
+          money_cost: number
+          progression_gain: number
+          title: string
+        }
+        Insert: {
+          allowed_kinds?: string[]
+          duration_minutes?: number
+          energy_cost?: number
+          energy_gain?: number
+          id: string
+          money_cost?: number
+          progression_gain?: number
+          title: string
+        }
+        Update: {
+          allowed_kinds?: string[]
+          duration_minutes?: number
+          energy_cost?: number
+          energy_gain?: number
+          id?: string
+          money_cost?: number
+          progression_gain?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      life_settings: {
+        Row: {
+          course_end: number
+          course_start: number
+          id: number
+          max_energy: number
+          paid_shifts_month: number
+          response_minutes: number
+          work_end: number
+          work_start: number
+        }
+        Insert: {
+          course_end?: number
+          course_start?: number
+          id?: number
+          max_energy?: number
+          paid_shifts_month?: number
+          response_minutes?: number
+          work_end?: number
+          work_start?: number
+        }
+        Update: {
+          course_end?: number
+          course_start?: number
+          id?: number
+          max_energy?: number
+          paid_shifts_month?: number
+          response_minutes?: number
+          work_end?: number
+          work_start?: number
+        }
+        Relationships: []
       }
       location_spaces: {
         Row: {
@@ -635,6 +951,79 @@ export type Database = {
         }
         Relationships: []
       }
+      study_enrollments: {
+        Row: {
+          character_id: string
+          enrolled_at: string
+          field_id: string
+          location_id: string
+          progress: number
+          semester: number
+          skills: Json
+        }
+        Insert: {
+          character_id: string
+          enrolled_at?: string
+          field_id: string
+          location_id: string
+          progress?: number
+          semester?: number
+          skills?: Json
+        }
+        Update: {
+          character_id?: string
+          enrolled_at?: string
+          field_id?: string
+          location_id?: string
+          progress?: number
+          semester?: number
+          skills?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_enrollments_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_enrollments_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "study_fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_enrollments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_fields: {
+        Row: {
+          description: string
+          id: string
+          name: string
+          skill: string
+        }
+        Insert: {
+          description?: string
+          id: string
+          name: string
+          skill: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          name?: string
+          skill?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           account_id: string
@@ -729,6 +1118,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_job: { Args: { _job_id: string }; Returns: undefined }
+      cancel_life_activity: {
+        Args: { _activity_id: string }
+        Returns: undefined
+      }
       create_character: {
         Args: {
           _age: number
@@ -740,6 +1134,9 @@ export type Database = {
         }
         Returns: string
       }
+      daily_life_state: { Args: never; Returns: Json }
+      enroll_studies: { Args: { _field_id: string }; Returns: undefined }
+      game_now: { Args: never; Returns: string }
       move_character: {
         Args: { _location_id: string }
         Returns: {
@@ -755,6 +1152,17 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      pay_housing: { Args: never; Returns: undefined }
+      prepare_daily_life: { Args: never; Returns: string }
+      settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
+      start_life_activity: {
+        Args: {
+          _activity_id?: string
+          _target_location_id?: string
+          _type?: string
+        }
+        Returns: string
       }
       world_clock: { Args: never; Returns: Json }
     }

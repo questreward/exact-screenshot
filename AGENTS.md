@@ -19,3 +19,6 @@
 - Player position is stored separately with owner-only read RLS and mutated only through move_character; a character-insert trigger initializes position without rewriting character creation.
 - World clock derives elapsed time from a database anchor; client interpolation only animates its display and never authorizes gameplay.
 - Map zoom and touch gestures use react-zoom-pan-pinch; world rules stay in src/game/world.ts so presentation does not authorize movement.
+- Daily-life actions use authenticated database RPCs with locked character/account rows and idempotent settlement; clients send action identifiers, never energy, money, duration or rewards.
+- Activity deadlines use game_now derived from the existing world clock; daily_life_state settles elapsed activities and applications on reads, including after reconnect, without a second money or position system.
+- Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.

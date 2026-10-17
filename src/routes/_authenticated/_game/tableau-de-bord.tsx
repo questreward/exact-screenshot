@@ -9,13 +9,15 @@ import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
 import { WorldClock } from "@/components/game/WorldClock";
 import { gameMeta } from "@/game/metadata";
+import { lifeQuery } from "@/services/game";
+import { LifeSummary } from "@/components/game/LifeSummary";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
-  loader: ({ context: { queryClient: q } }) => Promise.all([
-    q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(clockQuery),
-  ]),
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
+    q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
+  ]); },
   component: Dashboard,
 });
 
@@ -34,6 +36,7 @@ function Dashboard() {
       </div>
 
       <PositionBlock />
+      <LifeSummary />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2"><CharacterCard character={character} /></div>
@@ -44,7 +47,7 @@ function Dashboard() {
           </Link>
           <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
             <p className="flex items-center gap-2 text-sm text-muted-foreground"><Zap className="h-4 w-4 text-primary" /> Énergie</p>
-            <p className="mt-2 font-display text-2xl font-bold">{character.energy}%</p>
+            <p className="mt-2 font-display text-2xl font-bold">{character.energy} / 100</p>
             <div className="mt-2 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${character.energy}%` }} /></div>
           </div>
         </div>
