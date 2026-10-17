@@ -22,6 +22,13 @@
       "when": 1792268882728,
       "tag": "0002_daily_life_activities_studies_work",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792269077362,
+      "tag": "0003_activity_start_window_and_live_state",
+      "breakpoints": true
     }
   ]
 }
