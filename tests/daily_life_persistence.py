@@ -34,7 +34,7 @@ async def main():
      start=datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(minutes=1)
      patch('activities','id=eq.'+activity['id'],{'start_time':start.isoformat(),'end_time':(start+timedelta(hours=2)).isoformat()})
      await page.goto('http://localhost:8080/agenda');await page.get_by_role('button',name='Cours — Droit',exact=False).first.click();await page.get_by_role('button',name='Commencer',exact=True).click()
-     await page.wait_for_timeout(1500);print('START RESULT:',await page.locator('[data-sonner-toast]').all_inner_texts());await page.screenshot(path=str(OUT/'start-debug.png'));await page.get_by_role('dialog').get_by_text('En cours',exact=True).wait_for()
+     await page.wait_for_timeout(1500);print('START RESULT:',await page.locator('[data-sonner-toast]').all_inner_texts());await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/'start-debug.png'));await page.get_by_role('dialog').get_by_text('En cours',exact=True).wait_for()
      assert rows('characters','id=eq.'+cid)[0]['energy']==80
      assert rows('study_enrollments','character_id=eq.'+cid)[0]['progress']==0
      patch('activities','id=eq.'+activity['id'],{'start_time':(start-timedelta(hours=2)).isoformat(),'end_time':start.isoformat()})
@@ -61,7 +61,7 @@ async def main():
      assert rows('accounts','character_id=eq.'+cid)[0]['balance']==1500
      acc=rows('accounts','character_id=eq.'+cid)[0]
      assert not any(t['label'].startswith('Salaire') for t in rows('transactions','account_id=eq.'+acc['id']))
-     await page.screenshot(path=str(OUT/'refus-mobile.png'))
+     await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/'refus-mobile.png'))
      print('REFUS: statut refusé, information visible, aucun emploi/activité/salaire, solde 1500; autre offre disponible OK')
      title='Assistant administratif' if path=='young_worker' else 'Développeur junior'
      await page.get_by_role('article').filter(has=page.get_by_role('heading',name=title,exact=True)).get_by_role('button',name='Postuler',exact=True).click();await page.wait_for_timeout(1000)
@@ -108,7 +108,7 @@ async def main():
     station=rows('locations','city_id=eq.lyon&kind=eq.gare&district_id=not.is.null&limit=1')[0]
     await page.goto('http://localhost:8080/carte?city=lyon&district='+station['district_id']+'&location='+station['id'])
     await page.get_by_role('button',name='Se déplacer ici').click();await page.get_by_role('button',name='Vous êtes ici').wait_for()
-    destination=state['housing']['location'];await page.screenshot(path=str(OUT/'transport-debug.png'));print('TRANSPORT UI:',await page.locator('select').count(),await page.get_by_role('heading').all_inner_texts());await page.locator('select').nth(0).select_option(destination['district_id'])
+    destination=state['housing']['location'];await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/'transport-debug.png'));print('TRANSPORT UI:',await page.locator('select').count(),await page.get_by_role('heading').all_inner_texts());await page.locator('select').nth(0).select_option(destination['district_id'])
     await page.locator('select').nth(1).select_option(destination['id'])
     transport_balance=rows('accounts','character_id=eq.'+cid)[0]['balance']
     await page.get_by_role('button',name='10 min · 2',exact=False).click();await page.wait_for_timeout(1000)
@@ -128,13 +128,13 @@ async def main():
     await page.get_by_text(district['name']+' · Lyon',exact=True).wait_for()
     await page.get_by_role('button',name='Payer le logement',exact=True).click()
     await page.get_by_role('button',name='Payé aujourd’hui',exact=True).wait_for()
-    await page.screenshot(path=str(OUT/(path+'-logement.png')))
+    await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-logement.png')))
     cost={'student':10,'young_worker':20,'early_career':30}[path]
     assert rows('accounts','character_id=eq.'+cid)[0]['balance']==b-cost
     duplicate=requests.post(BASE+'/rest/v1/rpc/pay_housing',headers=headers,json={});assert duplicate.status_code>=400
     api('/rest/v1/rpc/daily_life_state','POST',{},headers);assert rows('accounts','character_id=eq.'+cid)[0]['balance']==b-cost
     print(path,': logement débité, double paiement refusé, versement non doublé OK')
-    await page.goto('http://localhost:8080/agenda');await page.get_by_role('heading',name='Agenda',exact=True).wait_for();await page.wait_for_timeout(1200);await page.screenshot(path=str(OUT/(path+'-agenda.png')))
+    await page.goto('http://localhost:8080/agenda');await page.get_by_role('heading',name='Agenda',exact=True).wait_for();await page.wait_for_timeout(1200);await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-agenda.png')))
     assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth')
     before=rows('characters','id=eq.'+cid)[0]; bank=rows('accounts','character_id=eq.'+cid)[0]['balance']
     def snapshot():
@@ -142,6 +142,7 @@ async def main():
     saved=snapshot()
     acc=rows('accounts','character_id=eq.'+cid)[0];tx=rows('transactions','account_id=eq.'+acc['id']+'&order=id')
     assert bank==(480 if path=='student' else 1558)
+    if path=='student':assert not any(t['label'].startswith('Salaire') for t in tx)
     await page.goto('http://localhost:8080/parametres');await page.get_by_role('button',name='Se déconnecter').click();await page.wait_for_timeout(1200)
     session2=api('/auth/v1/token?grant_type=password','POST',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'})
     await page.evaluate("async s => { const {supabase} = await import('/src/integrations/supabase/client.ts'); const {error} = await supabase.auth.setSession(s); if(error) throw new Error(error.message); }",session2)
@@ -158,15 +159,15 @@ async def main():
      await page.get_by_text('10 points',exact=True).wait_for()
      assert saved['employments'][0]['progress']==10
     await page.get_by_role('button',name='Payé aujourd’hui',exact=True).wait_for()
-    await page.screenshot(path=str(OUT/(path+'-persist.png')))
+    await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-persist.png')))
     await page.goto('http://localhost:8080/agenda');await page.get_by_role('heading',name='Agenda',exact=True).wait_for()
-    await page.screenshot(path=str(OUT/(path+'-reconnect-agenda.png')))
+    await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-reconnect-agenda.png')))
     await page.goto('http://localhost:8080/telephone?app=banque');await page.get_by_text('Logement — ',exact=False).wait_for()
     if path=='young_worker':await page.get_by_text('Salaire — Assistant administratif',exact=True).wait_for()
-    await page.screenshot(path=str(OUT/(path+'-reconnect-banque.png')))
+    await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-reconnect-banque.png')))
     await page.set_viewport_size({'width':1280,'height':1800});await page.goto('http://localhost:8080/vie');await page.get_by_role('heading',name='Mon logement',exact=True).wait_for()
     assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth')
-    await page.screenshot(path=str(OUT/(path+'-desktop.png')))
+    await page.wait_for_timeout(500);await page.screenshot(path=str(OUT/(path+'-desktop.png')))
     assert errors==[]
     print(path,': déconnexion/reconnexion, sauvegarde et mise en page OK; erreurs',errors)
     await context.close()
