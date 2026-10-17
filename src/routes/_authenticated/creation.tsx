@@ -12,9 +12,10 @@ import { APPEARANCE_OPTIONS, DEFAULT_APPEARANCE, type Appearance, type Option } 
 import { isPathAllowedForAge, isValidAge, MAX_AGE, MIN_AGE, type PathId } from "@/game/rules";
 import { characterQuery, citiesQuery, createCharacter, formatMoney, pathsQuery } from "@/services/game";
 import { cn } from "@/lib/utils";
+import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/creation")({
-  head: () => ({ meta: [{ title: "Créer votre personnage — CIVITAS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: gameMeta("Créer votre personnage", "Choisissez votre identité, votre ville et votre parcours dans CIVITAS.") }),
   beforeLoad: async ({ context }) => {
     const c = await context.queryClient.ensureQueryData(characterQuery);
     if (c) throw redirect({ to: "/tableau-de-bord" });

@@ -8,9 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useSignOut } from "@/components/game/GameShell";
 import { saveSettings, settingsQuery } from "@/services/game";
+import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/parametres")({
-  head: () => ({ meta: [{ title: "Paramètres — CIVITAS" }] }),
+  head: () => ({ meta: gameMeta("Paramètres", "Les préférences de votre compte CIVITAS.") }),
   loader: ({ context }) => context.queryClient.ensureQueryData(settingsQuery),
   component: SettingsPage,
 });
