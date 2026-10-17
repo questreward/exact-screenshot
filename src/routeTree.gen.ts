@@ -10,13 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as DecouvrirRouteImport } from './routes/decouvrir'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
+import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
+import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
+import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
+import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
+import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
+import { Route as AuthenticatedGameSectionIdRouteImport } from './routes/_authenticated/_game/section.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
@@ -34,39 +53,151 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedGameRouteRoute = AuthenticatedGameRouteRouteImport.update({
+  id: '/_game',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCreationRoute = AuthenticatedCreationRouteImport.update({
+  id: '/creation',
+  path: '/creation',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGameParametresRoute =
+  AuthenticatedGameParametresRouteImport.update({
+    id: '/parametres',
+    path: '/parametres',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGamePersonnageRoute =
+  AuthenticatedGamePersonnageRouteImport.update({
+    id: '/personnage',
+    path: '/personnage',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameTableauDeBordRoute =
+  AuthenticatedGameTableauDeBordRouteImport.update({
+    id: '/tableau-de-bord',
+    path: '/tableau-de-bord',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameTelephoneRoute =
+  AuthenticatedGameTelephoneRouteImport.update({
+    id: '/telephone',
+    path: '/telephone',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameSectionIdRoute =
+  AuthenticatedGameSectionIdRouteImport.update({
+    id: '/section/$id',
+    path: '/section/$id',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/creation': typeof AuthenticatedCreationRoute
+  '/parametres': typeof AuthenticatedGameParametresRoute
+  '/personnage': typeof AuthenticatedGamePersonnageRoute
+  '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
+  '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/creation': typeof AuthenticatedCreationRoute
+  '/parametres': typeof AuthenticatedGameParametresRoute
+  '/personnage': typeof AuthenticatedGamePersonnageRoute
+  '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
+  '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
+  '/_authenticated/creation': typeof AuthenticatedCreationRoute
+  '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
+  '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
+  '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
+  '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/_authenticated/_game/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/confidentialite' | '/decouvrir' | '/mentions-legales'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/confidentialite'
+    | '/decouvrir'
+    | '/mentions-legales'
+    | '/reset-password'
+    | '/creation'
+    | '/parametres'
+    | '/personnage'
+    | '/tableau-de-bord'
+    | '/telephone'
+    | '/section/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/confidentialite' | '/decouvrir' | '/mentions-legales'
-  id: '__root__' | '/' | '/confidentialite' | '/decouvrir' | '/mentions-legales'
+  to:
+    | '/'
+    | '/auth'
+    | '/confidentialite'
+    | '/decouvrir'
+    | '/mentions-legales'
+    | '/reset-password'
+    | '/creation'
+    | '/parametres'
+    | '/personnage'
+    | '/tableau-de-bord'
+    | '/telephone'
+    | '/section/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/confidentialite'
+    | '/decouvrir'
+    | '/mentions-legales'
+    | '/reset-password'
+    | '/_authenticated/_game'
+    | '/_authenticated/creation'
+    | '/_authenticated/_game/parametres'
+    | '/_authenticated/_game/personnage'
+    | '/_authenticated/_game/tableau-de-bord'
+    | '/_authenticated/_game/telephone'
+    | '/_authenticated/_game/section/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   DecouvrirRoute: typeof DecouvrirRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +207,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/confidentialite': {
@@ -99,14 +244,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_game': {
+      id: '/_authenticated/_game'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedGameRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/creation': {
+      id: '/_authenticated/creation'
+      path: '/creation'
+      fullPath: '/creation'
+      preLoaderRoute: typeof AuthenticatedCreationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_game/parametres': {
+      id: '/_authenticated/_game/parametres'
+      path: '/parametres'
+      fullPath: '/parametres'
+      preLoaderRoute: typeof AuthenticatedGameParametresRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/personnage': {
+      id: '/_authenticated/_game/personnage'
+      path: '/personnage'
+      fullPath: '/personnage'
+      preLoaderRoute: typeof AuthenticatedGamePersonnageRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/tableau-de-bord': {
+      id: '/_authenticated/_game/tableau-de-bord'
+      path: '/tableau-de-bord'
+      fullPath: '/tableau-de-bord'
+      preLoaderRoute: typeof AuthenticatedGameTableauDeBordRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/telephone': {
+      id: '/_authenticated/_game/telephone'
+      path: '/telephone'
+      fullPath: '/telephone'
+      preLoaderRoute: typeof AuthenticatedGameTelephoneRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/section/$id': {
+      id: '/_authenticated/_game/section/$id'
+      path: '/section/$id'
+      fullPath: '/section/$id'
+      preLoaderRoute: typeof AuthenticatedGameSectionIdRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
   }
 }
 
+interface AuthenticatedGameRouteRouteChildren {
+  AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
+  AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
+  AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
+  AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
+  AuthenticatedGameSectionIdRoute: typeof AuthenticatedGameSectionIdRoute
+}
+
+const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
+  {
+    AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
+    AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
+    AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
+    AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
+    AuthenticatedGameSectionIdRoute: AuthenticatedGameSectionIdRoute,
+  }
+
+const AuthenticatedGameRouteRouteWithChildren =
+  AuthenticatedGameRouteRoute._addFileChildren(
+    AuthenticatedGameRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedGameRouteRoute: typeof AuthenticatedGameRouteRouteWithChildren
+  AuthenticatedCreationRoute: typeof AuthenticatedCreationRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedGameRouteRoute: AuthenticatedGameRouteRouteWithChildren,
+  AuthenticatedCreationRoute: AuthenticatedCreationRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   DecouvrirRoute: DecouvrirRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
