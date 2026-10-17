@@ -50,7 +50,7 @@ function AuthPage() {
         if (error) throw error;
         navigate({ to: "/tableau-de-bord", replace: true });
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/tableau-de-bord" } });
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/auth" } });
         if (error) throw error;
         if (data.session) navigate({ to: "/creation", replace: true });
         else setSent("Vérifiez vos e-mails : cliquez sur le lien de confirmation pour activer votre compte.");
