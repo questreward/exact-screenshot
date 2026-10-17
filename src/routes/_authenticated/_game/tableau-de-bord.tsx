@@ -8,9 +8,10 @@ import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
 import { WorldClock } from "@/components/game/WorldClock";
+import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
-  head: () => ({ meta: [{ title: "Tableau de bord — CIVITAS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
   loader: ({ context: { queryClient: q } }) => Promise.all([
     q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(notificationsQuery),
     q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(clockQuery),
@@ -23,10 +24,7 @@ function Dashboard() {
   const { data: bank } = useSuspenseQuery(bankQuery);
   const { data: notifs } = useSuspenseQuery(notificationsQuery);
   const { data: events } = useSuspenseQuery(eventsQuery);
-  const { data: world } = useSuspenseQuery(worldQuery);
   if (!character) return null;
-
-  const worldDate = world ? new Date(world.world_date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "";
 
   return (
     <div className="space-y-6 animate-rise">

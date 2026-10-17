@@ -3,9 +3,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { CharacterCard } from "@/components/game/CharacterCard";
 import { APPEARANCE_OPTIONS, normalizeAppearance, type Appearance, type Option } from "@/game/appearance";
 import { characterQuery } from "@/services/game";
+import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/personnage")({
-  head: () => ({ meta: [{ title: "Personnage — CIVITAS" }] }),
+  head: () => ({ meta: gameMeta("Personnage", "Votre identité et votre apparence dans CIVITAS.") }),
   loader: ({ context }) => context.queryClient.ensureQueryData(characterQuery),
   component: CharacterPage,
 });

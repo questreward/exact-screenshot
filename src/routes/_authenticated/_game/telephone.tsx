@@ -7,10 +7,11 @@ import { normalizeAppearance } from "@/game/appearance";
 import { bankQuery, characterQuery, formatMoney } from "@/services/game";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
-  head: () => ({ meta: [{ title: "Téléphone — CIVITAS" }] }),
+  head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
   loader: ({ context: { queryClient: q } }) => Promise.all([q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery)]),
   component: PhonePage,
 });

@@ -97,10 +97,10 @@ function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"
             <path className="world-river" d="M-20 150 C160 310 235 145 420 295 S640 400 925 595" />
             <path className="world-road" d="M40 510 L240 510 L435 300 L700 225 M240 510 L695 580 M435 300 L695 580" />
             <path className="world-park" d="M85 585 Q130 550 180 590 L175 690 L75 690 Z M700 65 L820 65 L820 135 L700 135 Z" />
-            {districts.map(d => <g key={d.id} transform={`translate(${Number(d.map_x)*8+40},${Number(d.map_y)*6.8+20})`}>
+            {districts.filter(d => !selected || d.id === selected.id).map(d => <g key={d.id} transform={`translate(${selected ? 450 : Number(d.map_x)*8+40},${selected ? 380 : Number(d.map_y)*6.8+20})`}>
               <rect x="-115" y="-80" width="230" height="160" rx="16" className={`world-district ${d.id === selected?.id ? "district-selected" : ""}`} />
               {!selected && <MapMarker label={d.name} active={playerHere && position?.district_id === d.id} onClick={() => districtSelect(d.id)} />}
-              {selected && <text y="-60" textAnchor="middle" className="district-label">{d.name}</text>}
+              {selected && <text y="-210" textAnchor="middle" className="district-label">{d.name}</text>}
             </g>)}
             {selected && <Suspense fallback={null}><LocationMarkers district={selected} positionId={playerHere ? position?.location_id : undefined} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense>}
             {playerHere && !selected && <text x="30" y="730" className="district-label">● {position?.district?.name} — {position?.location?.name}</text>}
@@ -122,11 +122,9 @@ function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"
 
 function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
-  // District detail has its own coordinate frame, leaving all place markers readable.
-  const offsets = [[-110,-70],[110,-70],[-110,90],[110,90]];
-  return <g transform={`translate(${Number(district.map_x)*8+40},${Number(district.map_y)*6.8+20})`}>{locations.map((l,i) => {
-    const offset = offsets[i%offsets.length];
-    return <g key={l.id} transform={`translate(${offset?.[0] ?? 0},${offset?.[1] ?? 0})`}><MapMarker label={l.name} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} /></g>;
+  // The district detail projects persisted location coordinates into a local frame.
+  return <g transform="translate(400,350)">{locations.map(l => {
+    return <g key={l.id} transform={`translate(${(Number(l.map_x)-Number(district.map_x))*22},${(Number(l.map_y)-Number(district.map_y))*22})`}><MapMarker label={l.name} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} /></g>;
   })}</g>;
 }
 
