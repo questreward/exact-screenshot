@@ -160,7 +160,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Voyage disponible dans une prochaine étape</p>}
       {spaces.map(s => <div key={s.id} className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>)}
-      <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
+      <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
     </div>
   </article>;
 }
