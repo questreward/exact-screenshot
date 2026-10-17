@@ -1,4 +1,4 @@
-"""Live isolated regression: requires server credentials, requests, Playwright and an existing auth storage key. Creates/deletes only temporary test users; never changes world clock. Long activity deadlines are accelerated only on test characters. Run: python3 tests/daily_life_persistence.py. Screenshots remain in /tmp/browser/finalisation."""
+"""Live isolated regression: requires server credentials, requests, Playwright . Creates/deletes only temporary test users; never changes world clock. Long activity deadlines are accelerated only on test characters. Run: python3 tests/daily_life_persistence.py. Screenshots remain in /tmp/browser/finalisation."""
 import asyncio,json,os,uuid,requests
 from pathlib import Path
 from playwright.async_api import async_playwright
@@ -22,8 +22,7 @@ async def main():
     forged=requests.post(BASE+'/rest/v1/activities',headers=headers,json={'character_id':cid,'type':'rest','title':'Faux','start_time':'2027-09-01T00:00Z','end_time':'2027-09-01T00:01Z'});assert forged.status_code>=400
     context=await browser.new_context(viewport={'width':444,'height':803});page=await context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     await page.goto('http://localhost:8080');
-    with open(os.path.expanduser('~/.cache/lovable-auth/session.json')) as f:storage=json.load(f)['storage_key']
-    await page.evaluate('([k,v])=>localStorage.setItem(k,v)',[storage,json.dumps(session)])
+    await page.evaluate("async s => { const {supabase} = await import('/src/integrations/supabase/client.ts'); const {error} = await supabase.auth.setSession(s); if(error) throw new Error(error.message); }",session)
     await page.goto('http://localhost:8080/vie');await page.get_by_role('heading',level=1).wait_for();await page.wait_for_timeout(1200)
     if path=='student':
      await page.get_by_role('article').filter(has=page.get_by_role('heading',name='Droit',exact=True)).get_by_role('button',name='S’inscrire').click()
@@ -86,7 +85,7 @@ async def main():
      assert rows('accounts','character_id=eq.'+cid)[0]['balance']==initial
      session=api('/auth/v1/token?grant_type=password','POST',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'})
      headers={'apikey':PUB,'Authorization':'Bearer '+session['access_token'],'Content-Type':'application/json'}
-     await page.evaluate('([k,v])=>localStorage.setItem(k,v)',[storage,json.dumps(session)])
+     await page.evaluate("async s => { const {supabase} = await import('/src/integrations/supabase/client.ts'); const {error} = await supabase.auth.setSession(s); if(error) throw new Error(error.message); }",session)
      await page.goto('http://localhost:8080/telephone?app=banque')
      await page.get_by_text('Salaire — '+title,exact=True).wait_for()
      assert rows('employments','character_id=eq.'+cid)[0]['progress']==10
@@ -145,7 +144,7 @@ async def main():
     assert bank==(480 if path=='student' else 1558)
     await page.goto('http://localhost:8080/parametres');await page.get_by_role('button',name='Se déconnecter').click();await page.wait_for_timeout(1200)
     session2=api('/auth/v1/token?grant_type=password','POST',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'})
-    await page.evaluate('([k,v])=>localStorage.setItem(k,v)',[storage,json.dumps(session2)])
+    await page.evaluate("async s => { const {supabase} = await import('/src/integrations/supabase/client.ts'); const {error} = await supabase.auth.setSession(s); if(error) throw new Error(error.message); }",session2)
     await page.goto('http://localhost:8080/vie');await page.get_by_role('heading',level=1).wait_for();await page.wait_for_timeout(1000)
     assert rows('characters','id=eq.'+cid)[0]['energy']==before['energy']
     assert rows('accounts','character_id=eq.'+cid)[0]['balance']==bank
