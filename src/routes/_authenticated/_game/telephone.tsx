@@ -8,7 +8,7 @@ import { bankQuery, characterQuery, formatMoney } from "@/services/game";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
-  validateSearch: (s: Record<string, unknown>): { app?: string } => ({ app: typeof s.app === "string" ? s.app : undefined }),
+  validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: [{ title: "Téléphone — CIVITAS" }] }),
   loader: ({ context: { queryClient: q } }) => Promise.all([q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery)]),
   component: PhonePage,

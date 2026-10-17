@@ -62,7 +62,7 @@ export const DEFAULT_APPEARANCE: Appearance = {
 
 export function optionValue(group: keyof Appearance, id: string): string {
   const list: Option[] = APPEARANCE_OPTIONS[group];
-  return (list.find((o) => o.id === id) ?? list[0]).value ?? "";
+  return (list.find((o) => o.id === id) ?? list[0])?.value ?? "";
 }
 
 export function normalizeAppearance(raw: unknown): Appearance {
