@@ -213,7 +213,7 @@ export async function applyJob(jobId: string) {
 }
 export async function startLifeActivity(input: { type?: string; activityId?: string; targetLocationId?: string }) {
   const { data, error } = await supabase.rpc("start_life_activity", {
-    _type: input.type ?? null, _activity_id: input.activityId ?? null, _target_location_id: input.targetLocationId ?? null,
+    ...(input.type ? { _type: input.type } : {}), ...(input.activityId ? { _activity_id: input.activityId } : {}), ...(input.targetLocationId ? { _target_location_id: input.targetLocationId } : {}),
   });
   if (error) throw new Error(error.message);
   return data;
