@@ -17,7 +17,7 @@ export const SECTIONS: Section[] = [
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
   { id: "telephone", label: "Téléphone", icon: Smartphone, description: "Votre outil principal au quotidien.", available: true },
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
-  { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail, entreprise.", available: false },
+  { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "politique", label: "Politique", icon: Landmark, description: "Partis, élections, institutions.", available: false },
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations, syndicats, entreprises.", available: false },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Ce qui se passe dans le pays.", available: false },
@@ -33,7 +33,8 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "contacts", label: "Contacts", icon: Contact, available: false },
   { id: "social", label: "Réseau social", icon: Share2, available: false },
   { id: "actualites", label: "Actualités", icon: Newspaper, available: false },
-  { id: "agenda", label: "Agenda", icon: CalendarDays, available: false },
+  { id: "agenda", label: "Agenda", icon: CalendarDays, available: true },
+  { id: "vie", label: "Vie", icon: Briefcase, available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
   { id: "politique", label: "Politique", icon: Landmark, available: false },
 ];

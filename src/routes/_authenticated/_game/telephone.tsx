@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/_game/telephone")({
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => id === "carte" ? navigate({ to: "/carte", search: {} }) : navigate({ search: { app: id } });
+  const open = (id?: string) => id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
   return (
