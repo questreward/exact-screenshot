@@ -8,9 +8,11 @@
 - [x] Bloc 2 validé par l’utilisateur
 
 # Bloc 3 — Vie quotidienne
-- [ ] Activités persistantes, temps serveur, énergie et résultats sécurisés
-- [ ] Études : filières, inscription, cours, progression et compétences
-- [ ] Travail : offres, candidatures différées, emploi, salaires et progression
-- [ ] Repos, alimentation, logement et transport public simples
-- [ ] Pages Vie et Agenda, téléphone, tableau de bord et liens vers les lieux
-- [ ] Tests des règles, protection des écritures, parcours et persistance
+- [x] Activités persistantes, temps serveur, énergie et résultats sécurisés
+- [x] Études : filières, inscription, cours, progression et compétences
+- [x] Travail : offres, candidatures différées, emploi, salaires et progression
+- [x] Repos, alimentation, logement et transport public simples
+- [x] Pages Vie et Agenda, téléphone, tableau de bord et liens vers les lieux
+- [x] 27 tests automatiques ; trois parcours réellement joués avec comptes temporaires, transport, logement et reconnexion
+- [x] Tentatives d’écriture directe sans effet ; activités forgées refusées ; aucun salaire/paiement doublé
+- [x] Limites consignées dans BLOC_3_VALIDATION.md ; Bloc 4 non commencé
