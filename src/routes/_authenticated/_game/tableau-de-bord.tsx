@@ -5,12 +5,15 @@ import { CharacterCard } from "@/components/game/CharacterCard";
 import { SectionLink } from "@/components/game/GameShell";
 import { SECTIONS, COMING_SOON } from "@/game/navigation";
 import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery, worldQuery } from "@/services/game";
+import { clockQuery, positionQuery } from "@/services/game";
+import { PositionBlock } from "@/components/game/PositionBlock";
+import { WorldClock } from "@/components/game/WorldClock";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: [{ title: "Tableau de bord — CIVITAS" }, { name: "robots", content: "noindex" }] }),
   loader: ({ context: { queryClient: q } }) => Promise.all([
     q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(clockQuery),
   ]),
   component: Dashboard,
 });
@@ -28,9 +31,11 @@ function Dashboard() {
   return (
     <div className="space-y-6 animate-rise">
       <div>
-        <p className="text-sm capitalize text-muted-foreground">{worldDate} · {world?.world_time?.slice(0, 5)}</p>
+        <WorldClock />
         <h1 className="text-3xl font-bold sm:text-4xl">Bonjour, {character.first_name}</h1>
       </div>
+
+      <PositionBlock />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2"><CharacterCard character={character} /></div>

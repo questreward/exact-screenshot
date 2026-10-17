@@ -6,6 +6,7 @@ import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
 import { bankQuery, characterQuery, formatMoney } from "@/services/game";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/_game/telephone")({
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => navigate({ search: { app: id } });
+  const open = (id?: string) => id === "carte" ? navigate({ to: "/carte", search: {} }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
   return (
@@ -32,14 +33,14 @@ function PhonePage() {
               </p>
               <div className="grid grid-cols-3 gap-4">
                 {PHONE_APPS.map((a) => (
-                  <button key={a.id} onClick={() => open(a.id)} className="flex flex-col items-center gap-2">
+                  <Button variant="ghost" key={a.id} onClick={() => open(a.id)} className="h-auto flex-col gap-2 px-0 py-1">
                     <span className={cn("relative flex h-16 w-16 items-center justify-center rounded-2xl",
                       a.available ? "bg-gradient-primary text-primary-foreground shadow-elegant" : "bg-muted text-muted-foreground")}>
                       <a.icon className="h-7 w-7" />
                       {!a.available && <Lock className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-background p-1" />}
                     </span>
                     <span className="text-xs">{a.label}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </>

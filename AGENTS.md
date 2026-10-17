@@ -15,3 +15,7 @@
 - Money tables (accounts, transactions) and characters have SELECT-only RLS for players; writes only via secured DB functions.
 - In-game pages live under `src/routes/_authenticated/_game/` whose layout redirects to `/creation` when no character exists.
 - Unavailable sections are declared in `src/game/navigation.ts` (available: false) and render via `/section/$id`.
+- World hierarchy is stored in cities, districts, locations and location_spaces; load districts per city and locations per district to keep the atlas extensible and progressive.
+- Player position is stored separately with owner-only read RLS and mutated only through move_character; a character-insert trigger initializes position without rewriting character creation.
+- World clock derives elapsed time from a database anchor; client interpolation only animates its display and never authorizes gameplay.
+- Map zoom and touch gestures use react-zoom-pan-pinch; world rules stay in src/game/world.ts so presentation does not authorize movement.
