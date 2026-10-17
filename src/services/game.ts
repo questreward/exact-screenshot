@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Appearance } from "@/game/appearance";
 import type { PathId } from "@/game/rules";
+import type { LifeState } from "@/game/life-state";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -191,4 +192,37 @@ export async function moveCharacter(locationId: string) {
   const { data, error } = await supabase.rpc("move_character", { _location_id: locationId });
   if (error) throw new Error(error.message);
   return data;
+}
+
+export const lifeQuery = queryOptions({
+  queryKey: ["daily-life"], staleTime: 0, refetchInterval: 10000,
+  queryFn: async (): Promise<LifeState> => {
+    const { data, error } = await supabase.rpc("daily_life_state");
+    if (error) throw new Error(error.message);
+    if (!data || typeof data !== "object" || Array.isArray(data) || !data["character"] || !Array.isArray(data["activities"])) throw new Error("Vie quotidienne indisponible");
+    return data as unknown as LifeState;
+  },
+});
+export async function enrollStudies(fieldId: string) {
+  const { error } = await supabase.rpc("enroll_studies", { _field_id: fieldId });
+  if (error) throw new Error(error.message);
+}
+export async function applyJob(jobId: string) {
+  const { error } = await supabase.rpc("apply_job", { _job_id: jobId });
+  if (error) throw new Error(error.message);
+}
+export async function startLifeActivity(input: { type?: string; activityId?: string; targetLocationId?: string }) {
+  const { data, error } = await supabase.rpc("start_life_activity", {
+    _type: input.type ?? null, _activity_id: input.activityId ?? null, _target_location_id: input.targetLocationId ?? null,
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+export async function cancelLifeActivity(activityId: string) {
+  const { error } = await supabase.rpc("cancel_life_activity", { _activity_id: activityId });
+  if (error) throw new Error(error.message);
+}
+export async function payHousing() {
+  const { error } = await supabase.rpc("pay_housing");
+  if (error) throw new Error(error.message);
 }
