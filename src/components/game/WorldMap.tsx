@@ -52,7 +52,7 @@ function MapSurface({ children, phase, resetKey }: { children: React.ReactNode; 
     <TransformWrapper key={resetKey} minScale={0.7} maxScale={3} initialScale={1} centerOnInit wheel={{ step: 0.08 }} doubleClick={{ disabled: true }}>
       {({ zoomIn, zoomOut, resetTransform }) => <>
         <TransformComponent wrapperClass="world-map-viewport" contentClass="world-map-content">{children}</TransformComponent>
-        <div className="absolute right-3 bottom-3 flex flex-col gap-2">
+        <div className="absolute right-3 top-3 flex flex-col gap-2">
           <Button size="icon" variant="secondary" onClick={() => zoomIn()} aria-label="Agrandir la carte" title="Agrandir la carte"><Plus /></Button>
           <Button size="icon" variant="secondary" onClick={() => zoomOut()} aria-label="Réduire la carte" title="Réduire la carte"><Minus /></Button>
           <Button size="icon" variant="secondary" onClick={() => resetTransform()} aria-label="Recentrer la carte" title="Recentrer la carte"><LocateFixed /></Button>
