@@ -22,3 +22,4 @@
 - Daily-life actions use authenticated database RPCs with locked character/account rows and idempotent settlement; clients send action identifiers, never energy, money, duration or rewards.
 - Activity deadlines use game_now derived from the existing world clock; daily_life_state settles elapsed activities and applications on reads, including after reconnect, without a second money or position system.
 - Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.
+- Live daily-life regressions create and clean up isolated temporary accounts; accelerate only their activity deadlines, never the shared world clock, so verification cannot alter existing player saves.

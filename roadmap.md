@@ -16,3 +16,10 @@
 - [x] 27 tests automatiques ; trois parcours réellement joués avec comptes temporaires, transport, logement et reconnexion
 - [x] Tentatives d’écriture directe sans effet ; activités forgées refusées ; aucun salaire/paiement doublé
 - [x] Limites consignées dans BLOC_3_VALIDATION.md ; Bloc 4 non commencé
+
+# Finalisation du Bloc 3
+- [x] Tester explicitement un refus d’emploi puis une nouvelle candidature
+- [x] Vérifier logement : type, coût, localisation et paiement manuel
+- [x] Vérifier salaire à la consultation/reconnexion sans doublon
+- [x] Rejouer persistance étudiant et actif ; rapport et prêt pour validation
+- Bloc 3 prêt pour validation par l’utilisateur ; Bloc 4 non commencé.
