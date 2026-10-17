@@ -46,6 +46,59 @@ export type Database = {
           },
         ]
       }
+      character_positions: {
+        Row: {
+          character_id: string
+          city_id: string
+          district_id: string
+          location_id: string
+          updated_at: string
+        }
+        Insert: {
+          character_id: string
+          city_id: string
+          district_id: string
+          location_id: string
+          updated_at?: string
+        }
+        Update: {
+          character_id?: string
+          city_id?: string
+          district_id?: string
+          location_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_positions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_positions_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_positions_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_positions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           age: number
@@ -111,30 +164,118 @@ export type Database = {
       }
       cities: {
         Row: {
+          available: boolean
           description: string
           id: string
+          illustration: string | null
+          map_x: number
+          map_y: number
           name: string
           population: number
           region: string
           sort_order: number
         }
         Insert: {
+          available?: boolean
           description?: string
           id: string
+          illustration?: string | null
+          map_x?: number
+          map_y?: number
           name: string
           population?: number
           region: string
           sort_order?: number
         }
         Update: {
+          available?: boolean
           description?: string
           id?: string
+          illustration?: string | null
+          map_x?: number
+          map_y?: number
           name?: string
           population?: number
           region?: string
           sort_order?: number
         }
         Relationships: []
+      }
+      city_weather: {
+        Row: {
+          city_id: string
+          condition: string
+          simulated: boolean
+          temperature: number
+          updated_at: string
+          wind_speed: number
+        }
+        Insert: {
+          city_id: string
+          condition?: string
+          simulated?: boolean
+          temperature?: number
+          updated_at?: string
+          wind_speed?: number
+        }
+        Update: {
+          city_id?: string
+          condition?: string
+          simulated?: boolean
+          temperature?: number
+          updated_at?: string
+          wind_speed?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "city_weather_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: true
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      districts: {
+        Row: {
+          available: boolean
+          city_id: string
+          description: string
+          id: string
+          map_x: number
+          map_y: number
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          available?: boolean
+          city_id: string
+          description?: string
+          id: string
+          map_x?: number
+          map_y?: number
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          available?: boolean
+          city_id?: string
+          description?: string
+          id?: string
+          map_x?: number
+          map_y?: number
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "districts_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
@@ -216,27 +357,90 @@ export type Database = {
           },
         ]
       }
-      locations: {
+      location_spaces: {
         Row: {
-          city_id: string
-          created_at: string
+          accessible: boolean
           id: string
           kind: string
+          location_id: string
           name: string
+          parent_id: string | null
         }
         Insert: {
-          city_id: string
-          created_at?: string
-          id?: string
-          kind: string
-          name: string
-        }
-        Update: {
-          city_id?: string
-          created_at?: string
+          accessible?: boolean
           id?: string
           kind?: string
+          location_id: string
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          accessible?: boolean
+          id?: string
+          kind?: string
+          location_id?: string
           name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_spaces_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "location_spaces_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "location_spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          accessible: boolean
+          city_id: string
+          created_at: string
+          description: string
+          district_id: string | null
+          id: string
+          illustration: string | null
+          kind: string
+          map_x: number
+          map_y: number
+          name: string
+          opening_hours: string | null
+        }
+        Insert: {
+          accessible?: boolean
+          city_id: string
+          created_at?: string
+          description?: string
+          district_id?: string | null
+          id?: string
+          illustration?: string | null
+          kind: string
+          map_x?: number
+          map_y?: number
+          name: string
+          opening_hours?: string | null
+        }
+        Update: {
+          accessible?: boolean
+          city_id?: string
+          created_at?: string
+          description?: string
+          district_id?: string | null
+          id?: string
+          illustration?: string | null
+          kind?: string
+          map_x?: number
+          map_y?: number
+          name?: string
+          opening_hours?: string | null
         }
         Relationships: [
           {
@@ -244,6 +448,13 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "locations_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
             referencedColumns: ["id"]
           },
         ]
@@ -485,22 +696,28 @@ export type Database = {
       }
       world_state: {
         Row: {
+          clock_started_at: string
           id: number
           season: string
+          time_speed: number
           updated_at: string
           world_date: string
           world_time: string
         }
         Insert: {
+          clock_started_at?: string
           id?: number
           season?: string
+          time_speed?: number
           updated_at?: string
           world_date?: string
           world_time?: string
         }
         Update: {
+          clock_started_at?: string
           id?: number
           season?: string
+          time_speed?: number
           updated_at?: string
           world_date?: string
           world_time?: string
@@ -523,6 +740,23 @@ export type Database = {
         }
         Returns: string
       }
+      move_character: {
+        Args: { _location_id: string }
+        Returns: {
+          character_id: string
+          city_id: string
+          district_id: string
+          location_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "character_positions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      world_clock: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
