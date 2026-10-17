@@ -65,7 +65,7 @@ async def main():
      print('REFUS: statut refusé, information visible, aucun emploi/activité/salaire, solde 1500; autre offre disponible OK')
      title='Assistant administratif' if path=='young_worker' else 'Développeur junior'
      await page.get_by_role('article').filter(has=page.get_by_role('heading',name=title,exact=True)).get_by_role('button',name='Postuler',exact=True).click();await page.wait_for_timeout(1000)
-     app=rows('job_applications','character_id=eq.'+cid)[0]
+     app=rows('job_applications','character_id=eq.'+cid+'&status=eq.pending')[0]
      from datetime import datetime,timedelta,timezone
      past='2027-09-01T00:00:00Z';patch('job_applications','id=eq.'+app['id'],{'response_at':past})
      await page.goto('http://localhost:8080/vie');await page.get_by_role('link',name='Voir mon lieu de travail').wait_for()
