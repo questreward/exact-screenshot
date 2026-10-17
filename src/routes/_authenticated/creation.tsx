@@ -68,7 +68,8 @@ function Creation() {
     setSaving(true);
     try {
       await createCharacter({ firstName, lastName, age, cityId, pathId, appearance });
-      await qc.invalidateQueries();
+      qc.removeQueries();
+      await qc.fetchQuery(characterQuery);
       toast.success(`Bienvenue, ${firstName} !`);
       navigate({ to: "/tableau-de-bord", replace: true });
     } catch (e) {
