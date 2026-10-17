@@ -10,7 +10,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
 import worldSquare from "@/assets/world-square.jpg";
 
-export function WorldMap({ initialCity, initialDistrict, initialFrance = false }: { initialCity?: string; initialDistrict?: string; initialFrance?: boolean }) {
+export function WorldMap({ initialCity, initialDistrict, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
   const { data: position } = useSuspenseQuery(positionQuery);
   const [cityId, setCityId] = useState(initialCity ?? position?.city_id ?? cities[0]?.id ?? "paris");
@@ -73,7 +73,7 @@ function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin }: { 
   </g>;
 }
 
-function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"cities">; selectedDistrict?: string; onDistrict: (id?: string) => void; phase: string }) {
+function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"cities">; selectedDistrict?: string | undefined; onDistrict: (id?: string) => void; phase: string }) {
   const { data: districts } = useSuspenseQuery(districtsQuery(city.id));
   const { data: position } = useSuspenseQuery(positionQuery);
   const selected = districts.find(d => d.id === selectedDistrict);
@@ -120,7 +120,7 @@ function CityMap({ city, selectedDistrict, onDistrict, phase }: { city: Tables<"
   </div>;
 }
 
-function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string; selectedId?: string; onSelect: (id: string) => void }) {
+function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
   // District detail has its own coordinate frame, leaving all place markers readable.
   const offsets = [[-110,-70],[110,-70],[-110,90],[110,90]];
@@ -130,7 +130,7 @@ function LocationMarkers({ district, positionId, selectedId, onSelect }: { distr
   })}</g>;
 }
 
-function LocationList({ district, city, selectedId, onSelect }: { district: Tables<"districts">; city: Tables<"cities">; selectedId?: string; onSelect: (id: string) => void }) {
+function LocationList({ district, city, selectedId, onSelect }: { district: Tables<"districts">; city: Tables<"cities">; selectedId?: string | undefined; onSelect: (id: string) => void }) {
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
   const selected = locations.find(l => l.id === selectedId);
   return <div>
