@@ -26,7 +26,7 @@ export function DailyActions({ locationId, selectedLocation }: { locationId?: st
   const currentLocation = locationId ?? life.position.location_id;
   const location = selectedLocation ?? (life.housing?.location.id === currentLocation ? life.housing.location : life.enrollment?.location.id === currentLocation ? life.enrollment.location : life.offers.find(o => o.location.id === currentLocation)?.location);
   const kinds = location?.kind ?? "";
-  const options = life.rules.filter(r => r.id in ICONS && r.allowed_kinds.includes(kinds) && (r.id !== "study" || life.enrollment) && (r.id !== "work" || life.employment?.location.id === currentLocation));
+  const options = life.rules.filter(r => r.id in ICONS && r.allowed_kinds.includes(kinds) && (r.id !== "rest" || life.housing?.location.id === currentLocation) && (r.id !== "study" || life.enrollment) && (r.id !== "work" || life.employment?.location.id === currentLocation));
   return <div className="space-y-3">
     <div className="grid gap-3 sm:grid-cols-2">{options.map(r => {
       const Icon = ICONS[r.id as keyof typeof ICONS];

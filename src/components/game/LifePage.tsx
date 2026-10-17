@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Briefcase, GraduationCap, Home, CalendarDays, LoaderCircle, Check, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { lifeQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
 import { academicLevel, gameHour } from "@/game/life";
 import { WorldClock } from "./WorldClock";
@@ -20,7 +21,7 @@ export function LifePage() {
     {student ? life.enrollment ? <section className="space-y-4">
       <h2 className="flex items-center gap-2 text-xl font-semibold"><GraduationCap className="text-primary" />{life.enrollment.field_name} — Niveau {academicLevel(life.enrollment.progress)}</h2>
       <p className="text-sm text-muted-foreground">{life.enrollment.location.name} · Semestre {life.enrollment.semester}</p>
-      <div className="flex items-center gap-4"><progress className="h-3 flex-1 accent-primary" max={100} value={life.enrollment.progress % 100} /><span className="text-sm">{life.enrollment.progress % 100} %</span></div>
+      <div className="flex items-center gap-4"><Progress className="h-3 flex-1" value={life.enrollment.progress % 100} aria-label="Progression académique" /><span className="text-sm">{life.enrollment.progress % 100} %</span></div>
       <dl className="grid grid-cols-2 gap-3">{Object.entries(life.enrollment.skills ?? {}).map(([key,value]) => <div key={key} className="border-l-2 border-primary pl-3"><dt className="text-sm text-muted-foreground">{key}</dt><dd className="font-semibold">{String(value)} points</dd></div>)}</dl>
       <p className="text-sm text-muted-foreground">Programme : cours du lundi au vendredi, à {String(life.settings.course_start).padStart(2,"0")}:00.</p>
       <LocationLink location={life.enrollment.location} label="Voir l’université" />

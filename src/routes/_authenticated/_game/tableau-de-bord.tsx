@@ -14,10 +14,10 @@ import { LifeSummary } from "@/components/game/LifeSummary";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
-  loader: ({ context: { queryClient: q } }) => Promise.all([
-    q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(lifeQuery),
-  ]),
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
+    q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
+  ]); },
   component: Dashboard,
 });
 
