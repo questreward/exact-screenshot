@@ -130,3 +130,65 @@ export async function markNotificationRead(id: string) {
 
 export const formatMoney = (n: number) =>
   new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+
+export const positionQuery = queryOptions({
+  queryKey: ["position"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("character_positions")
+      .select("*, city:cities(name), district:districts(name), location:locations(name, kind, map_x, map_y)").maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const districtsQuery = (cityId: string) => queryOptions({
+  queryKey: ["districts", cityId], staleTime: 60000,
+  queryFn: async () => {
+    const { data, error } = await supabase.from("districts").select("*").eq("city_id", cityId).order("sort_order");
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const locationsQuery = (districtId: string) => queryOptions({
+  queryKey: ["locations", districtId], staleTime: 60000,
+  queryFn: async () => {
+    const { data, error } = await supabase.from("locations").select("*").eq("district_id", districtId).order("name");
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const spacesQuery = (locationId: string) => queryOptions({
+  queryKey: ["spaces", locationId], staleTime: 60000,
+  queryFn: async () => {
+    const { data, error } = await supabase.from("location_spaces").select("*").eq("location_id", locationId);
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const weatherQuery = (cityId: string) => queryOptions({
+  queryKey: ["weather", cityId], staleTime: 60000,
+  queryFn: async () => {
+    const { data, error } = await supabase.from("city_weather").select("*").eq("city_id", cityId).maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const clockQuery = queryOptions({
+  queryKey: ["world-clock"], refetchInterval: 60000,
+  queryFn: async () => {
+    const { data, error } = await supabase.rpc("world_clock");
+    if (error) throw error;
+    if (!data || typeof data !== "object" || Array.isArray(data) || typeof data["world_now"] !== "string") throw new Error("Horloge indisponible");
+    return { anchor: data["world_now"], speed: Number(data["time_speed"] ?? 1), season: String(data["season"] ?? ""), receivedAt: Date.now() };
+  },
+});
+
+export async function moveCharacter(locationId: string) {
+  const { data, error } = await supabase.rpc("move_character", { _location_id: locationId });
+  if (error) throw new Error(error.message);
+  return data;
+}
