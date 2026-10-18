@@ -368,3 +368,14 @@ export async function economyAction(input: { command: string; requestId: string;
   const { error } = await supabase.rpc('personal_economy_action', { _command: input.command, _request_id: input.requestId, _input: (input.input ?? {}) as import('@/integrations/supabase/types').Json });
   if (error) throw new Error(error.message);
 }
+
+export const adminQuery = queryOptions({ queryKey: ['admin'], staleTime: 0, refetchInterval: 15000, queryFn: async (): Promise<import('@/game/admin').AdminState> => {
+  const { data, error } = await supabase.rpc('admin_state');
+  if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data['procedures'])) throw new Error('Démarches indisponibles');
+  return data as unknown as import('@/game/admin').AdminState;
+} });
+export async function adminAction(input: { command: string; requestId: string; input?: Record<string, unknown> }) {
+  const { error } = await supabase.rpc('admin_action', { _command: input.command, _request_id: input.requestId, _input: (input.input ?? {}) as import('@/integrations/supabase/types').Json });
+  if (error) throw new Error(error.message);
+}

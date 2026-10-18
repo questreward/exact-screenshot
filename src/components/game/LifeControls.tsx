@@ -10,7 +10,7 @@ import type { LifeLocation } from "@/game/life-state";
 export function useLifeMutation<T>(action: (input: T) => Promise<unknown>, message: string) {
   const q = useQueryClient();
   return useMutation({ mutationFn: action, onSuccess: async () => {
-    await Promise.all(["economy", "daily-life", "character", "bank", "position", "notifications", "social", "organizations", "civic", "politics", "elections", "news", "governance", "municipal-projects"].map(key => q.invalidateQueries({ queryKey: [key] })));
+    await Promise.all(["economy", "daily-life", "character", "bank", "position", "notifications", "social", "organizations", "civic", "politics", "elections", "news", "governance", "municipal-projects", "admin"].map(key => q.invalidateQueries({ queryKey: [key] })));
     toast.success(message);
   }, onError: (error: Error) => toast.error(error.message) });
 }
