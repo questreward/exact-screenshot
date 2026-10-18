@@ -109,3 +109,5 @@
 - [x] Correctif période (0037) + tests même seconde ; Bloc 11 en attente de validation client
 - [x] Correctif 0038 (changements par type) appliqué et testé ; Bloc 11 prêt techniquement, validation client en attente
 - [ ] Bloc 12 : SQL étape 2 présenté pour accord (aucune application avant validation)
+- [x] Bloc 12 : migration 0039 appliquée
+- [ ] Bloc 12 : écran Événements, Carte, Agenda, tests 33–44, régressions, rapport
