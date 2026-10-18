@@ -299,6 +299,7 @@ export const civicLocationsQuery=(cityId:string)=>queryOptions({queryKey:['civic
   if(error) throw new Error(error.message); return data;
 }});
 
+// Bloc 7 — political state and secured political actions.
 export const politicsQuery = queryOptions({
   queryKey: ['politics'], staleTime: 0, refetchInterval: 30000,
   queryFn: async (): Promise<PoliticalState> => {
