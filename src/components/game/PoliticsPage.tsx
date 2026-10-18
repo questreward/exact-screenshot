@@ -7,6 +7,7 @@ import { POLITICAL_KINDS, POLITICAL_ROLE_LABELS, POLITICAL_SCOPES, compareAxes, 
 import { gameDate } from "@/game/life";
 import { LocationLink, useLifeMutation } from "./LifeControls";
 import { cn } from "@/lib/utils";
+import { GovernanceLink } from './GovernancePage';
 
 export const POLITICS_TABS = [
   { id: "decouvrir", label: "Découvrir", icon: Vote },
@@ -35,6 +36,7 @@ export function PoliticsPage({ search }: { search: PoliticsSearch }) {
   return <div className="space-y-6 animate-rise">
     <header className="space-y-2"><p className="text-sm text-primary">Vie politique fictive</p><h1 className="text-3xl font-bold">Politique</h1><p className="text-muted-foreground">Découvrez les idées, comparez, et engagez-vous seulement si vous le souhaitez.</p></header>
     <Button asChild variant="outline" className="min-h-12"><Link to="/elections"><Vote/>Élections municipales<ArrowRight/></Link></Button>
+    <GovernanceLink/>
     <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" aria-label="Rubriques politiques">{POLITICS_TABS.map(t => <Button key={t.id} asChild variant={tab === t.id ? "default" : "outline"} className="h-11 shrink-0"><Link to="/politique" search={{ tab: t.id }}><t.icon />{t.label}</Link></Button>)}</nav>
     {tab === "decouvrir" && <Discover s={s} />}
     {tab === "opinions" && <Opinions s={s} />}

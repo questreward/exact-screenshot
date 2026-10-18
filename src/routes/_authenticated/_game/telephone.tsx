@@ -10,11 +10,13 @@ import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { gameMeta } from "@/game/metadata";
+import { GovernanceLink } from '@/components/game/GovernancePage';
+import { governanceQuery } from '@/services/game';
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery)]); },
   component: PhonePage,
 });
 
@@ -48,6 +50,7 @@ function PhonePage() {
                   </Button>
                 ))}
               </div>
+              <div className="mt-5 border-t border-border pt-4"><GovernanceLink/></div>
             </>
           ) : (
             <div>

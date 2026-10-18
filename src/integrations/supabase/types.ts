@@ -55,6 +55,7 @@ export type Database = {
           end_time: string
           energy_cost: number
           energy_gain: number
+          governance_action_id: string | null
           id: string
           location_id: string
           money_cost: number
@@ -83,6 +84,7 @@ export type Database = {
           end_time: string
           energy_cost?: number
           energy_gain?: number
+          governance_action_id?: string | null
           id?: string
           location_id: string
           money_cost?: number
@@ -111,6 +113,7 @@ export type Database = {
           end_time?: string
           energy_cost?: number
           energy_gain?: number
+          governance_action_id?: string | null
           id?: string
           location_id?: string
           money_cost?: number
@@ -144,6 +147,13 @@ export type Database = {
             columns: ["character_id"]
             isOneToOne: false
             referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_governance_action_id_fkey"
+            columns: ["governance_action_id"]
+            isOneToOne: false
+            referencedRelation: "governance_actions"
             referencedColumns: ["id"]
           },
           {
@@ -673,6 +683,35 @@ export type Database = {
           },
         ]
       }
+      city_indicators: {
+        Row: {
+          baseline: number
+          city_id: string
+          indicator: string
+          value: number
+        }
+        Insert: {
+          baseline: number
+          city_id: string
+          indicator: string
+          value: number
+        }
+        Update: {
+          baseline?: number
+          city_id?: string
+          indicator?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "city_indicators_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       city_weather: {
         Row: {
           city_id: string
@@ -894,12 +933,14 @@ export type Database = {
       }
       consultations: {
         Row: {
+          advisory: boolean
           city_id: string
           closed_at: string | null
           consultation_key: string | null
           description: string
           district_id: string | null
           ends_at: string
+          governance_decision_id: string | null
           id: string
           institution_id: string
           issue_id: string | null
@@ -910,12 +951,14 @@ export type Database = {
           title: string
         }
         Insert: {
+          advisory?: boolean
           city_id: string
           closed_at?: string | null
           consultation_key?: string | null
           description: string
           district_id?: string | null
           ends_at: string
+          governance_decision_id?: string | null
           id?: string
           institution_id: string
           issue_id?: string | null
@@ -926,12 +969,14 @@ export type Database = {
           title: string
         }
         Update: {
+          advisory?: boolean
           city_id?: string
           closed_at?: string | null
           consultation_key?: string | null
           description?: string
           district_id?: string | null
           ends_at?: string
+          governance_decision_id?: string | null
           id?: string
           institution_id?: string
           issue_id?: string | null
@@ -954,6 +999,13 @@ export type Database = {
             columns: ["district_id"]
             isOneToOne: false
             referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_governance_decision_id_fkey"
+            columns: ["governance_decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
             referencedColumns: ["id"]
           },
           {
@@ -1162,6 +1214,7 @@ export type Database = {
           location_id: string
           name: string
           participation: number | null
+          predecessor_election_id: string | null
           round: number
           rules: Json
           starts_at: string
@@ -1188,6 +1241,7 @@ export type Database = {
           location_id: string
           name: string
           participation?: number | null
+          predecessor_election_id?: string | null
           round?: number
           rules?: Json
           starts_at: string
@@ -1214,6 +1268,7 @@ export type Database = {
           location_id?: string
           name?: string
           participation?: number | null
+          predecessor_election_id?: string | null
           round?: number
           rules?: Json
           starts_at?: string
@@ -1243,6 +1298,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elections_predecessor_election_id_fkey"
+            columns: ["predecessor_election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
             referencedColumns: ["id"]
           },
         ]
@@ -1397,6 +1459,340 @@ export type Database = {
           },
         ]
       }
+      governance_actions: {
+        Row: {
+          activity_id: string | null
+          character_id: string
+          command: string
+          compromise: boolean
+          decision_id: string
+          group_id: string | null
+          id: string
+          settled_at: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          character_id: string
+          command: string
+          compromise?: boolean
+          decision_id: string
+          group_id?: string | null
+          id?: string
+          settled_at?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          character_id?: string
+          command?: string
+          compromise?: boolean
+          decision_id?: string
+          group_id?: string | null
+          id?: string
+          settled_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_actions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_actions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_actions_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_actions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "municipal_council_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_effects: {
+        Row: {
+          applied_at: string | null
+          decision_id: string
+          deltas: Json
+          due_at: string
+          effect_key: string
+          id: string
+          kind: string
+        }
+        Insert: {
+          applied_at?: string | null
+          decision_id: string
+          deltas: Json
+          due_at: string
+          effect_key: string
+          id?: string
+          kind: string
+        }
+        Update: {
+          applied_at?: string | null
+          decision_id?: string
+          deltas?: Json
+          due_at?: string
+          effect_key?: string
+          id?: string
+          kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_effects_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_periods: {
+        Row: {
+          city_id: string
+          occurred_at: string
+          period: number
+        }
+        Insert: {
+          city_id: string
+          occurred_at: string
+          period: number
+        }
+        Update: {
+          city_id?: string
+          occurred_at?: string
+          period?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_periods_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_positions: {
+        Row: {
+          decision_id: string
+          group_id: string
+          negotiated: boolean
+          reaction: string
+          support: number
+        }
+        Insert: {
+          decision_id: string
+          group_id: string
+          negotiated?: boolean
+          reaction: string
+          support: number
+        }
+        Update: {
+          decision_id?: string
+          group_id?: string
+          negotiated?: boolean
+          reaction?: string
+          support?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_positions_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_positions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "municipal_council_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_reactions: {
+        Row: {
+          city_id: string
+          decision_id: string | null
+          description: string
+          id: string
+          kind: string
+          news_id: string | null
+          occurred_at: string
+          reaction_key: string
+          title: string
+        }
+        Insert: {
+          city_id: string
+          decision_id?: string | null
+          description: string
+          id?: string
+          kind: string
+          news_id?: string | null
+          occurred_at: string
+          reaction_key: string
+          title: string
+        }
+        Update: {
+          city_id?: string
+          decision_id?: string | null
+          description?: string
+          id?: string
+          kind?: string
+          news_id?: string | null
+          occurred_at?: string
+          reaction_key?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_reactions_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_reactions_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "governance_reactions_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      governance_rules: {
+        Row: {
+          axis: string
+          category: string
+          completion: Json
+          cost: number
+          delayed: Json
+          delayed_days: number
+          duration_days: number
+          failure_delta: Json
+          id: string
+          immediate: Json
+          indicator: string
+          influence_gain: number
+          location_kind: string
+          objective: string
+          reputation_gain: number
+          risk: number
+          target: number
+          title: string
+        }
+        Insert: {
+          axis: string
+          category: string
+          completion?: Json
+          cost: number
+          delayed?: Json
+          delayed_days?: number
+          duration_days: number
+          failure_delta?: Json
+          id: string
+          immediate?: Json
+          indicator: string
+          influence_gain?: number
+          location_kind: string
+          objective: string
+          reputation_gain?: number
+          risk?: number
+          target: number
+          title: string
+        }
+        Update: {
+          axis?: string
+          category?: string
+          completion?: Json
+          cost?: number
+          delayed?: Json
+          delayed_days?: number
+          duration_days?: number
+          failure_delta?: Json
+          id?: string
+          immediate?: Json
+          indicator?: string
+          influence_gain?: number
+          location_kind?: string
+          objective?: string
+          reputation_gain?: number
+          risk?: number
+          target?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      governance_settings: {
+        Row: {
+          consultation_hours: number
+          council_seats: number
+          energy_cost: number
+          event_hour: number
+          id: number
+          initial_budget: number
+          max_priorities: number
+          monthly_expense: number
+          monthly_income: number
+          negotiation_minutes: number
+          reserve: number
+          study_minutes: number
+          vote_minutes: number
+        }
+        Insert: {
+          consultation_hours?: number
+          council_seats?: number
+          energy_cost?: number
+          event_hour?: number
+          id: number
+          initial_budget?: number
+          max_priorities?: number
+          monthly_expense?: number
+          monthly_income?: number
+          negotiation_minutes?: number
+          reserve?: number
+          study_minutes?: number
+          vote_minutes?: number
+        }
+        Update: {
+          consultation_hours?: number
+          council_seats?: number
+          energy_cost?: number
+          event_hour?: number
+          id?: number
+          initial_budget?: number
+          max_priorities?: number
+          monthly_expense?: number
+          monthly_income?: number
+          negotiation_minutes?: number
+          reserve?: number
+          study_minutes?: number
+          vote_minutes?: number
+        }
+        Relationships: []
+      }
       housing_types: {
         Row: {
           daily_cost: number
@@ -1414,6 +1810,44 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      indicator_history: {
+        Row: {
+          after_value: number
+          before_value: number
+          city_id: string | null
+          effect_key: string
+          id: string
+          indicator: string
+          occurred_at: string
+        }
+        Insert: {
+          after_value: number
+          before_value: number
+          city_id?: string | null
+          effect_key: string
+          id?: string
+          indicator: string
+          occurred_at: string
+        }
+        Update: {
+          after_value?: number
+          before_value?: number
+          city_id?: string | null
+          effect_key?: string
+          id?: string
+          indicator?: string
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "indicator_history_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       institutions: {
         Row: {
@@ -1893,37 +2327,177 @@ export type Database = {
           },
         ]
       }
+      municipal_council_groups: {
+        Row: {
+          base_support: number
+          candidate_id: string | null
+          id: string
+          ideology: Json
+          leader_id: string | null
+          majority: boolean
+          mandate_id: string
+          name: string
+          organization_id: string | null
+          seats: number
+        }
+        Insert: {
+          base_support?: number
+          candidate_id?: string | null
+          id?: string
+          ideology?: Json
+          leader_id?: string | null
+          majority?: boolean
+          mandate_id: string
+          name: string
+          organization_id?: string | null
+          seats: number
+        }
+        Update: {
+          base_support?: number
+          candidate_id?: string | null
+          id?: string
+          ideology?: Json
+          leader_id?: string | null
+          majority?: boolean
+          mandate_id?: string
+          name?: string
+          organization_id?: string | null
+          seats?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipal_council_groups_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_council_groups_leader_id_fkey"
+            columns: ["leader_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_council_groups_mandate_id_fkey"
+            columns: ["mandate_id"]
+            isOneToOne: false
+            referencedRelation: "municipal_mandates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_council_groups_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      municipal_ledger: {
+        Row: {
+          amount: number
+          category: string
+          city_id: string
+          decision_id: string | null
+          entry_key: string
+          id: string
+          label: string
+          occurred_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          city_id: string
+          decision_id?: string | null
+          entry_key: string
+          id?: string
+          label: string
+          occurred_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          city_id?: string
+          decision_id?: string | null
+          entry_key?: string
+          id?: string
+          label?: string
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipal_ledger_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_ledger_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       municipal_mandates: {
         Row: {
           candidacy_id: string
           city_id: string
+          closed_at: string | null
+          closing_indicators: Json | null
+          closing_politics: Json | null
           decision_id: string | null
           election_id: string
           ends_at: string
+          final_report: Json | null
           function: string
+          governance_initialized_at: string | null
           id: string
+          opening_indicators: Json
+          opening_politics: Json
+          priorities: string[]
           starts_at: string
           status: string
         }
         Insert: {
           candidacy_id: string
           city_id: string
+          closed_at?: string | null
+          closing_indicators?: Json | null
+          closing_politics?: Json | null
           decision_id?: string | null
           election_id: string
           ends_at: string
+          final_report?: Json | null
           function?: string
+          governance_initialized_at?: string | null
           id?: string
+          opening_indicators?: Json
+          opening_politics?: Json
+          priorities?: string[]
           starts_at: string
           status?: string
         }
         Update: {
           candidacy_id?: string
           city_id?: string
+          closed_at?: string | null
+          closing_indicators?: Json | null
+          closing_politics?: Json | null
           decision_id?: string | null
           election_id?: string
           ends_at?: string
+          final_report?: Json | null
           function?: string
+          governance_initialized_at?: string | null
           id?: string
+          opening_indicators?: Json
+          opening_politics?: Json
+          priorities?: string[]
           starts_at?: string
           status?: string
         }
@@ -1954,6 +2528,44 @@ export type Database = {
             columns: ["election_id"]
             isOneToOne: true
             referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      municipal_treasuries: {
+        Row: {
+          anchor: string
+          balance: number
+          city_id: string
+          expenses: number
+          income: number
+          last_period: number
+          reserve: number
+        }
+        Insert: {
+          anchor?: string
+          balance: number
+          city_id: string
+          expenses?: number
+          income?: number
+          last_period?: number
+          reserve: number
+        }
+        Update: {
+          anchor?: string
+          balance?: number
+          city_id?: string
+          expenses?: number
+          income?: number
+          last_period?: number
+          reserve?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipal_treasuries_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: true
+            referencedRelation: "cities"
             referencedColumns: ["id"]
           },
         ]
@@ -2748,55 +3360,115 @@ export type Database = {
           applied_at: string | null
           category: string
           city_id: string
+          completed_at: string | null
+          compromise: boolean
           consequences: Json
           consultation_id: string | null
+          cost: number | null
+          council_result: Json | null
           decided_at: string
           decision_key: string
+          delay_days: number
           description: string
           district_id: string | null
+          duration_days: number | null
+          ends_at: string | null
+          failure: boolean
+          funded_at: string | null
+          governance_rule_id: string | null
           id: string
+          impact_expected: Json | null
+          impact_real: Json
           institution_id: string
           issue_id: string | null
           location_id: string
+          mandate_id: string | null
           news_id: string | null
+          objective: string | null
+          political_settled_at: string | null
+          proposed_at: string | null
+          rule_snapshot: Json | null
           status: string
+          studied_at: string | null
           title: string
+          voted_at: string | null
+          workflow: string | null
         }
         Insert: {
           applied_at?: string | null
           category?: string
           city_id: string
+          completed_at?: string | null
+          compromise?: boolean
           consequences?: Json
           consultation_id?: string | null
+          cost?: number | null
+          council_result?: Json | null
           decided_at?: string
           decision_key: string
+          delay_days?: number
           description: string
           district_id?: string | null
+          duration_days?: number | null
+          ends_at?: string | null
+          failure?: boolean
+          funded_at?: string | null
+          governance_rule_id?: string | null
           id?: string
+          impact_expected?: Json | null
+          impact_real?: Json
           institution_id: string
           issue_id?: string | null
           location_id: string
+          mandate_id?: string | null
           news_id?: string | null
+          objective?: string | null
+          political_settled_at?: string | null
+          proposed_at?: string | null
+          rule_snapshot?: Json | null
           status?: string
+          studied_at?: string | null
           title: string
+          voted_at?: string | null
+          workflow?: string | null
         }
         Update: {
           applied_at?: string | null
           category?: string
           city_id?: string
+          completed_at?: string | null
+          compromise?: boolean
           consequences?: Json
           consultation_id?: string | null
+          cost?: number | null
+          council_result?: Json | null
           decided_at?: string
           decision_key?: string
+          delay_days?: number
           description?: string
           district_id?: string | null
+          duration_days?: number | null
+          ends_at?: string | null
+          failure?: boolean
+          funded_at?: string | null
+          governance_rule_id?: string | null
           id?: string
+          impact_expected?: Json | null
+          impact_real?: Json
           institution_id?: string
           issue_id?: string | null
           location_id?: string
+          mandate_id?: string | null
           news_id?: string | null
+          objective?: string | null
+          political_settled_at?: string | null
+          proposed_at?: string | null
+          rule_snapshot?: Json | null
           status?: string
+          studied_at?: string | null
           title?: string
+          voted_at?: string | null
+          workflow?: string | null
         }
         Relationships: [
           {
@@ -2821,6 +3493,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "public_decisions_governance_rule_id_fkey"
+            columns: ["governance_rule_id"]
+            isOneToOne: false
+            referencedRelation: "governance_rules"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "public_decisions_institution_id_fkey"
             columns: ["institution_id"]
             isOneToOne: false
@@ -2842,6 +3521,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "public_decisions_mandate_id_fkey"
+            columns: ["mandate_id"]
+            isOneToOne: false
+            referencedRelation: "municipal_mandates"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "public_decisions_news_id_fkey"
             columns: ["news_id"]
             isOneToOne: false
@@ -2857,7 +3543,10 @@ export type Database = {
           city_id: string
           description: string
           district_id: string
+          governance_delta: number
+          governance_managed: boolean
           id: string
+          indicator: string | null
           institution_id: string
           issue_key: string | null
           location_id: string
@@ -2874,7 +3563,10 @@ export type Database = {
           city_id: string
           description: string
           district_id: string
+          governance_delta?: number
+          governance_managed?: boolean
           id?: string
+          indicator?: string | null
           institution_id: string
           issue_key?: string | null
           location_id: string
@@ -2891,7 +3583,10 @@ export type Database = {
           city_id?: string
           description?: string
           district_id?: string
+          governance_delta?: number
+          governance_managed?: boolean
           id?: string
+          indicator?: string | null
           institution_id?: string
           issue_key?: string | null
           location_id?: string
@@ -3453,6 +4148,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      abandon_municipal_dossier: {
+        Args: { _decision_id: string }
+        Returns: undefined
+      }
       apply_job: { Args: { _job_id: string }; Returns: undefined }
       award_civic: {
         Args: { _amount: number; _cid: string; _key: string; _kind: string }
@@ -3538,6 +4237,10 @@ export type Database = {
         }
         Returns: string
       }
+      create_municipal_dossier: {
+        Args: { _issue_id?: string; _mandate_id: string; _rule_id: string }
+        Returns: string
+      }
       daily_life_state: { Args: never; Returns: Json }
       election_news: {
         Args: {
@@ -3551,7 +4254,29 @@ export type Database = {
       }
       election_state: { Args: never; Returns: Json }
       enroll_studies: { Args: { _field_id: string }; Returns: undefined }
+      finish_municipal_mandates: { Args: { _city: string }; Returns: undefined }
+      fund_municipal_project: {
+        Args: { _decision_id: string }
+        Returns: undefined
+      }
       game_now: { Args: never; Returns: string }
+      governance_news: {
+        Args: {
+          _at: string
+          _body: string
+          _decision: string
+          _key: string
+          _kind?: string
+          _title: string
+        }
+        Returns: string
+      }
+      governance_owner: { Args: { _mandate: string }; Returns: string }
+      governance_state: { Args: never; Returns: Json }
+      initialize_governance_city: {
+        Args: { _city: string }
+        Returns: undefined
+      }
       manage_campaign: {
         Args: {
           _candidacy_id: string
@@ -3561,6 +4286,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      mandate_politics_at_end: { Args: { _mandate: string }; Returns: Json }
       mark_news_read: { Args: { _news_id: string }; Returns: undefined }
       move_character: {
         Args: { _location_id: string }
@@ -3580,6 +4306,10 @@ export type Database = {
       }
       news_state: { Args: never; Returns: Json }
       notify_news: { Args: { _news_id: string }; Returns: undefined }
+      open_governance_consultation: {
+        Args: { _decision_id: string }
+        Returns: string
+      }
       organization_directory: { Args: { _city_id: string }; Returns: Json }
       participate_consultation: {
         Args: { _consultation_id: string; _option_id: string }
@@ -3588,12 +4318,31 @@ export type Database = {
       pay_housing: { Args: never; Returns: undefined }
       political_state: { Args: never; Returns: Json }
       prepare_daily_life: { Args: never; Returns: string }
+      prepare_municipal_reelection: {
+        Args: { _mandate: string }
+        Returns: string
+      }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
       refresh_civic_city: { Args: { _city: string }; Returns: undefined }
       refresh_election: { Args: { _election: string }; Returns: undefined }
+      refresh_governance_city: { Args: { _city: string }; Returns: undefined }
+      refresh_governance_world: { Args: never; Returns: number }
       refresh_world_news: { Args: never; Returns: number }
       report_civic_issue: {
         Args: { _category: string; _description: string; _location_id: string }
+        Returns: string
+      }
+      reserve_governance_action: {
+        Args: {
+          _command: string
+          _compromise?: boolean
+          _decision_id: string
+          _group_id?: string
+        }
+        Returns: string
+      }
+      reserve_municipal_event: {
+        Args: { _decision_id: string }
         Returns: string
       }
       reserve_political_event: { Args: { _event_id: string }; Returns: string }
@@ -3602,11 +4351,16 @@ export type Database = {
         Args: { _candidacy_id: string; _program: Json; _slogan: string }
         Returns: undefined
       }
+      set_mandate_priorities: {
+        Args: { _mandate_id: string; _priorities: string[] }
+        Returns: undefined
+      }
       set_political_opinion: {
         Args: { _stance: string; _topic_id: string }
         Returns: undefined
       }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
+      settle_governance_politics: { Args: { _cid: string }; Returns: undefined }
       social_actor: { Args: never; Returns: string }
       social_interact: {
         Args: { _action_id: string; _npc_id: string }

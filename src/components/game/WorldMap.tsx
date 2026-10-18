@@ -13,6 +13,7 @@ import { DailyActions } from "./LifeControls";
 import { TransportControl } from "./TransportControl";
 import { SocialContacts } from "./SocialContacts";
 import { CIVIC_LOCATION_STATE } from "@/game/civic";
+import { MunicipalLocationProjects } from './MunicipalLocationProjects';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -158,6 +159,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
     <div className="space-y-4 p-4">
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
       <p className="text-sm text-muted-foreground">{l.description}</p>
+      <Suspense fallback={<p className="text-xs text-muted-foreground">Projets municipaux…</p>}><MunicipalLocationProjects locationId={l.id}/></Suspense>
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
