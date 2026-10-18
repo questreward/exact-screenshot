@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -19,7 +19,7 @@ export const SECTIONS: Section[] = [
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, description: "Institutions et participation citoyenne.", available: true },
-  { id: "politique", label: "Politique", icon: Landmark, description: "Partis, élections, institutions.", available: false },
+  { id: "politique", label: "Politique", icon: Vote, description: "Mouvements, partis et engagement politique.", available: true },
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Le journal du monde et de votre ville.", available: true },
   { id: "parametres", label: "Paramètres", icon: Settings, description: "Langue, notifications, confidentialité.", available: true },
@@ -39,7 +39,7 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, available: true },
   { id: "vie", label: "Vie", icon: Briefcase, available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
-  { id: "politique", label: "Politique", icon: Landmark, available: false },
+  { id: "politique", label: "Politique", icon: Vote, available: true },
 ];
 
 export const COMING_SOON = "Disponible dans une prochaine étape";

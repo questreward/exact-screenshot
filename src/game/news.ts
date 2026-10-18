@@ -1,4 +1,4 @@
-export const NEWS_CATEGORIES = ["Société", "Éducation", "Emploi", "Économie", "Vie locale", "Culture", "Sport", "Transport", "Technologie", "Environnement"] as const;
+export const NEWS_CATEGORIES = ["Société", "Éducation", "Emploi", "Économie", "Vie locale", "Culture", "Sport", "Transport", "Technologie", "Environnement", "Politique"] as const;
 export const NEWS_SCOPES = { local: "Local", regional: "Régional", national: "National" } as const;
 export type NewsScope = keyof typeof NEWS_SCOPES;
 export type NewsArticle = {
@@ -11,6 +11,7 @@ export type NewsArticle = {
   organization: { id: string; name: string; city_id: string } | null;
   event: { id: string; title: string; description: string; starts_at: string; status: string } | null;
   agenda_activity_id: string | null;
+  related_entities?: { political?: boolean; personalities?: { id: string; name: string; role: string }[] } | null;
 };
 export type NewsState = {
   world_now: string; city_id: string; region: string; unread_count: number;

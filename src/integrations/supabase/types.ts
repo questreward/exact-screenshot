@@ -58,6 +58,9 @@ export type Database = {
           location_id: string
           money_cost: number
           organization_event_id: string | null
+          political_engagement_gain: number
+          political_influence_gain: number
+          political_reputation_gain: number
           progression_gain: number
           reward: number
           social_influence_gain: number
@@ -82,6 +85,9 @@ export type Database = {
           location_id: string
           money_cost?: number
           organization_event_id?: string | null
+          political_engagement_gain?: number
+          political_influence_gain?: number
+          political_reputation_gain?: number
           progression_gain?: number
           reward?: number
           social_influence_gain?: number
@@ -106,6 +112,9 @@ export type Database = {
           location_id?: string
           money_cost?: number
           organization_event_id?: string | null
+          political_engagement_gain?: number
+          political_influence_gain?: number
+          political_reputation_gain?: number
           progression_gain?: number
           reward?: number
           social_influence_gain?: number
@@ -1681,6 +1690,10 @@ export type Database = {
           institution_id: string | null
           location_id: string
           organization_id: string
+          political_engagement_gain: number
+          political_influence_gain: number
+          political_kind: string | null
+          political_reputation_gain: number
           relation_gain: number
           reputation_gain: number
           start_hour: number
@@ -1697,6 +1710,10 @@ export type Database = {
           institution_id?: string | null
           location_id: string
           organization_id: string
+          political_engagement_gain?: number
+          political_influence_gain?: number
+          political_kind?: string | null
+          political_reputation_gain?: number
           relation_gain?: number
           reputation_gain?: number
           start_hour?: number
@@ -1713,6 +1730,10 @@ export type Database = {
           institution_id?: string | null
           location_id?: string
           organization_id?: string
+          political_engagement_gain?: number
+          political_influence_gain?: number
+          political_kind?: string | null
+          political_reputation_gain?: number
           relation_gain?: number
           reputation_gain?: number
           start_hour?: number
@@ -1754,7 +1775,9 @@ export type Database = {
           location_id: string | null
           name: string
           reputation: number
+          scope: string | null
           status: string
+          symbol: string | null
           visibility: string
         }
         Insert: {
@@ -1767,7 +1790,9 @@ export type Database = {
           location_id?: string | null
           name: string
           reputation?: number
+          scope?: string | null
           status?: string
+          symbol?: string | null
           visibility?: string
         }
         Update: {
@@ -1780,7 +1805,9 @@ export type Database = {
           location_id?: string | null
           name?: string
           reputation?: number
+          scope?: string | null
           status?: string
+          symbol?: string | null
           visibility?: string
         }
         Relationships: [
@@ -1796,6 +1823,343 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_axes: {
+        Row: {
+          high_label: string
+          id: string
+          label: string
+          low_label: string
+          sort_order: number
+        }
+        Insert: {
+          high_label: string
+          id: string
+          label: string
+          low_label: string
+          sort_order?: number
+        }
+        Update: {
+          high_label?: string
+          id?: string
+          label?: string
+          low_label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      political_branches: {
+        Row: {
+          city_id: string
+          id: string
+          kind: string
+          location_id: string
+          organization_id: string
+        }
+        Insert: {
+          city_id: string
+          id?: string
+          kind: string
+          location_id: string
+          organization_id: string
+        }
+        Update: {
+          city_id?: string
+          id?: string
+          kind?: string
+          location_id?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_branches_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "political_branches_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "political_branches_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_opinions: {
+        Row: {
+          character_id: string
+          stance: string
+          topic_id: string
+          updated_at: string
+        }
+        Insert: {
+          character_id: string
+          stance: string
+          topic_id: string
+          updated_at?: string
+        }
+        Update: {
+          character_id?: string
+          stance?: string
+          topic_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_opinions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "political_opinions_stance_fkey"
+            columns: ["stance"]
+            isOneToOne: false
+            referencedRelation: "political_stances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "political_opinions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "political_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_profiles: {
+        Row: {
+          core_values: string[]
+          ideology: Json
+          organization_id: string
+          priorities: string[]
+          slogan: string
+        }
+        Insert: {
+          core_values?: string[]
+          ideology: Json
+          organization_id: string
+          priorities?: string[]
+          slogan?: string
+        }
+        Update: {
+          core_values?: string[]
+          ideology?: Json
+          organization_id?: string
+          priorities?: string[]
+          slogan?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_rewards: {
+        Row: {
+          character_id: string
+          engagement: number
+          influence: number
+          interest: number
+          kind: string
+          label: string
+          occurred_at: string
+          reputation: number
+          reward_key: string
+        }
+        Insert: {
+          character_id: string
+          engagement?: number
+          influence?: number
+          interest?: number
+          kind: string
+          label?: string
+          occurred_at?: string
+          reputation?: number
+          reward_key: string
+        }
+        Update: {
+          character_id?: string
+          engagement?: number
+          influence?: number
+          interest?: number
+          kind?: string
+          label?: string
+          occurred_at?: string
+          reputation?: number
+          reward_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_rewards_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_roles: {
+        Row: {
+          id: string
+          label: string
+          min_progress: number
+          min_reputation: number
+          player_start: boolean
+          rank: number
+        }
+        Insert: {
+          id: string
+          label: string
+          min_progress?: number
+          min_reputation?: number
+          player_start?: boolean
+          rank: number
+        }
+        Update: {
+          id?: string
+          label?: string
+          min_progress?: number
+          min_reputation?: number
+          player_start?: boolean
+          rank?: number
+        }
+        Relationships: []
+      }
+      political_settings: {
+        Row: {
+          activity_interest_gain: number
+          id: number
+          influence_reputation_bonus: number
+          influence_reputation_threshold: number
+          join_engagement_gain: number
+          join_interest_gain: number
+          opinion_interest_gain: number
+          single_party: boolean
+          stat_cap: number
+        }
+        Insert: {
+          activity_interest_gain?: number
+          id?: number
+          influence_reputation_bonus?: number
+          influence_reputation_threshold?: number
+          join_engagement_gain?: number
+          join_interest_gain?: number
+          opinion_interest_gain?: number
+          single_party?: boolean
+          stat_cap?: number
+        }
+        Update: {
+          activity_interest_gain?: number
+          id?: number
+          influence_reputation_bonus?: number
+          influence_reputation_threshold?: number
+          join_engagement_gain?: number
+          join_interest_gain?: number
+          opinion_interest_gain?: number
+          single_party?: boolean
+          stat_cap?: number
+        }
+        Relationships: []
+      }
+      political_stances: {
+        Row: {
+          id: string
+          label: string
+          sort_order: number
+          target: number | null
+        }
+        Insert: {
+          id: string
+          label: string
+          sort_order?: number
+          target?: number | null
+        }
+        Update: {
+          id?: string
+          label?: string
+          sort_order?: number
+          target?: number | null
+        }
+        Relationships: []
+      }
+      political_stats: {
+        Row: {
+          character_id: string
+          engagement: number
+          influence: number
+          interest: number
+          reputation: number
+        }
+        Insert: {
+          character_id: string
+          engagement?: number
+          influence?: number
+          interest?: number
+          reputation?: number
+        }
+        Update: {
+          character_id?: string
+          engagement?: number
+          influence?: number
+          interest?: number
+          reputation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_stats_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      political_topics: {
+        Row: {
+          axis_id: string
+          description: string
+          id: string
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          axis_id: string
+          description: string
+          id: string
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          axis_id?: string
+          description?: string
+          id?: string
+          label?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "political_topics_axis_id_fkey"
+            columns: ["axis_id"]
+            isOneToOne: false
+            referencedRelation: "political_axes"
             referencedColumns: ["id"]
           },
         ]
@@ -2076,10 +2440,13 @@ export type Database = {
           district_id: string
           first_name: string
           id: string
+          influence: number
           last_name: string
           location_id: string
           organization_id: string | null
+          political_role: string | null
           profession: string
+          reputation: number
           traits: string[]
         }
         Insert: {
@@ -2090,10 +2457,13 @@ export type Database = {
           district_id: string
           first_name: string
           id?: string
+          influence?: number
           last_name: string
           location_id: string
           organization_id?: string | null
+          political_role?: string | null
           profession: string
+          reputation?: number
           traits?: string[]
         }
         Update: {
@@ -2104,10 +2474,13 @@ export type Database = {
           district_id?: string
           first_name?: string
           id?: string
+          influence?: number
           last_name?: string
           location_id?: string
           organization_id?: string | null
+          political_role?: string | null
           profession?: string
+          reputation?: number
           traits?: string[]
         }
         Relationships: [
@@ -2527,6 +2900,19 @@ export type Database = {
         Args: { _amount: number; _cid: string; _key: string; _kind: string }
         Returns: undefined
       }
+      award_political: {
+        Args: {
+          _cid: string
+          _eng: number
+          _inf: number
+          _interest: number
+          _key: string
+          _kind: string
+          _label: string
+          _rep: number
+        }
+        Returns: boolean
+      }
       bookmark_news: {
         Args: { _news_id: string; _saved: boolean }
         Returns: undefined
@@ -2536,6 +2922,10 @@ export type Database = {
         Returns: undefined
       }
       change_membership: {
+        Args: { _join: boolean; _organization_id: string }
+        Returns: undefined
+      }
+      change_political_membership: {
         Args: { _join: boolean; _organization_id: string }
         Returns: undefined
       }
@@ -2614,6 +3004,7 @@ export type Database = {
         Returns: undefined
       }
       pay_housing: { Args: never; Returns: undefined }
+      political_state: { Args: never; Returns: Json }
       prepare_daily_life: { Args: never; Returns: string }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
       refresh_civic_city: { Args: { _city: string }; Returns: undefined }
@@ -2622,7 +3013,12 @@ export type Database = {
         Args: { _category: string; _description: string; _location_id: string }
         Returns: string
       }
+      reserve_political_event: { Args: { _event_id: string }; Returns: string }
       reserve_social_event: { Args: { _event_id: string }; Returns: string }
+      set_political_opinion: {
+        Args: { _stance: string; _topic_id: string }
+        Returns: undefined
+      }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
       social_actor: { Args: never; Returns: string }
       social_interact: {
