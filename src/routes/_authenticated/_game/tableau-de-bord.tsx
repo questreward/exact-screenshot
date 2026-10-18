@@ -11,12 +11,14 @@ import { WorldClock } from "@/components/game/WorldClock";
 import { gameMeta } from "@/game/metadata";
 import { lifeQuery } from "@/services/game";
 import { LifeSummary } from "@/components/game/LifeSummary";
+import { SocialSummary } from "@/components/game/SocialSummary";
+import { socialQuery } from "@/services/game";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
   loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
     q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(socialQuery),
   ]); },
   component: Dashboard,
 });
@@ -37,6 +39,7 @@ function Dashboard() {
 
       <PositionBlock />
       <LifeSummary />
+      <SocialSummary />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2"><CharacterCard character={character} /></div>

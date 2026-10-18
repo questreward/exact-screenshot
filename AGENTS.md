@@ -23,3 +23,6 @@
 - Activity deadlines use game_now derived from the existing world clock; daily_life_state settles elapsed activities and applications on reads, including after reconnect, without a second money or position system.
 - Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.
 - Live daily-life regressions create and clean up isolated temporary accounts; accelerate only their activity deadlines, never the shared world clock, so verification cannot alter existing player saves.
+- Social actions serialize on the caller character; social participation uses the existing activities clock and settlement trigger with an exactly-once reward marker, preventing a second agenda or reward engine.
+- Fictional NPCs are separate from real characters; organization directories expose NPCs and the caller only, never other players' private character records.
+- Membership reactivation preserves its identity and records each entry/departure in a separate immutable history, keeping existing membership references stable.

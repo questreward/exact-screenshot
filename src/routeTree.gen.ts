@@ -20,11 +20,13 @@ import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
+import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
+import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
 import { Route as AuthenticatedGameSectionIdRouteImport } from './routes/_authenticated/_game/section.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -80,6 +82,12 @@ const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
   path: '/carte',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameOrganisationsRoute =
+  AuthenticatedGameOrganisationsRouteImport.update({
+    id: '/organisations',
+    path: '/organisations',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameParametresRoute =
   AuthenticatedGameParametresRouteImport.update({
     id: '/parametres',
@@ -109,6 +117,12 @@ const AuthenticatedGameVieRoute = AuthenticatedGameVieRouteImport.update({
   path: '/vie',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameOrganisationsIdRoute =
+  AuthenticatedGameOrganisationsIdRouteImport.update({
+    id: '/organisations_/$id',
+    path: '/organisations/$id',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameSectionIdRoute =
   AuthenticatedGameSectionIdRouteImport.update({
     id: '/section/$id',
@@ -126,11 +140,13 @@ export interface FileRoutesByFullPath {
   '/creation': typeof AuthenticatedCreationRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesByTo {
@@ -143,11 +159,13 @@ export interface FileRoutesByTo {
   '/creation': typeof AuthenticatedCreationRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRoutesById {
@@ -163,11 +181,13 @@ export interface FileRoutesById {
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
+  '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
+  '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/_authenticated/_game/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
 export interface FileRouteTypes {
@@ -182,11 +202,13 @@ export interface FileRouteTypes {
     | '/creation'
     | '/agenda'
     | '/carte'
+    | '/organisations'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/organisations/$id'
     | '/section/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -199,11 +221,13 @@ export interface FileRouteTypes {
     | '/creation'
     | '/agenda'
     | '/carte'
+    | '/organisations'
     | '/parametres'
     | '/personnage'
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/organisations/$id'
     | '/section/$id'
   id:
     | '__root__'
@@ -218,11 +242,13 @@ export interface FileRouteTypes {
     | '/_authenticated/creation'
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
+    | '/_authenticated/_game/organisations'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
     | '/_authenticated/_game/vie'
+    | '/_authenticated/_game/organisations_/$id'
     | '/_authenticated/_game/section/$id'
   fileRoutesById: FileRoutesById
 }
@@ -315,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameCarteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/organisations': {
+      id: '/_authenticated/_game/organisations'
+      path: '/organisations'
+      fullPath: '/organisations'
+      preLoaderRoute: typeof AuthenticatedGameOrganisationsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/parametres': {
       id: '/_authenticated/_game/parametres'
       path: '/parametres'
@@ -350,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/organisations_/$id': {
+      id: '/_authenticated/_game/organisations_/$id'
+      path: '/organisations/$id'
+      fullPath: '/organisations/$id'
+      preLoaderRoute: typeof AuthenticatedGameOrganisationsIdRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/section/$id': {
       id: '/_authenticated/_game/section/$id'
       path: '/section/$id'
@@ -363,11 +403,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
+  AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
+  AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
   AuthenticatedGameSectionIdRoute: typeof AuthenticatedGameSectionIdRoute
 }
 
@@ -375,11 +417,14 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
   {
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
+    AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
     AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,
+    AuthenticatedGameOrganisationsIdRoute:
+      AuthenticatedGameOrganisationsIdRoute,
     AuthenticatedGameSectionIdRoute: AuthenticatedGameSectionIdRoute,
   }
 

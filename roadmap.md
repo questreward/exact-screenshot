@@ -25,9 +25,9 @@
 - Bloc 3 officiellement validé par l’utilisateur.
 
 # Bloc 4 — Vie sociale et organisations
-- [ ] Population fictive, rencontres contextualisées et relations persistantes
-- [ ] Organisations locales, adhésions et départ sécurisé
-- [ ] Activités sociales intégrées à l’agenda existant, réputation et influence
-- [ ] Contacts, organisations, profil, accueil, notifications et carte
-- [ ] Dix tests obligatoires, régressions des blocs validés et rapport final
-- [ ] Validation utilisateur ; ne pas commencer le Bloc 5 automatiquement
+- [x] Population fictive, rencontres contextualisées et relations persistantes
+- [x] Organisations locales, adhésions et départ sécurisé
+- [x] Activités sociales intégrées à l’agenda existant, réputation et influence
+- [x] Contacts, organisations, profil, accueil, notifications et carte
+- [x] Dix tests obligatoires, régressions des blocs validés et rapport final
+- [ ] Validation du Bloc 4 par l’utilisateur — en attente de son accord ; Bloc 5 non commencé

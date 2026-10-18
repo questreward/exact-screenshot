@@ -19,7 +19,7 @@ export const SECTIONS: Section[] = [
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "politique", label: "Politique", icon: Landmark, description: "Partis, élections, institutions.", available: false },
-  { id: "organisations", label: "Organisations", icon: Users, description: "Associations, syndicats, entreprises.", available: false },
+  { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Ce qui se passe dans le pays.", available: false },
   { id: "parametres", label: "Paramètres", icon: Settings, description: "Langue, notifications, confidentialité.", available: true },
 ];
@@ -30,7 +30,8 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "profil", label: "Profil", icon: UserCircle, available: true },
   { id: "banque", label: "Banque", icon: Wallet, available: true },
   { id: "messages", label: "Messages", icon: MessageCircle, available: false },
-  { id: "contacts", label: "Contacts", icon: Contact, available: false },
+  { id: "contacts", label: "Contacts", icon: Contact, available: true },
+  { id: "organisations", label: "Organisations", icon: Users, available: true },
   { id: "social", label: "Réseau social", icon: Share2, available: false },
   { id: "actualites", label: "Actualités", icon: Newspaper, available: false },
   { id: "agenda", label: "Agenda", icon: CalendarDays, available: true },
