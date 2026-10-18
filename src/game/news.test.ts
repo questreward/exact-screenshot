@@ -4,7 +4,7 @@ const article = (patch: Partial<NewsArticle> = {}): NewsArticle => ({ id: "1", t
 const state = (articles: NewsArticle[]): NewsState => ({ world_now: "2026-10-18T12:00:00Z", city_id: "lyon", region: "Auvergne-Rhône-Alpes", unread_count: 1, articles, preferences: { news_personalized: true, news_notifications: true }, settings: { new_hours: 24, recent_hours: 72, archive_days: 7, important_threshold: 80, page_size: 20 } });
 const filters = { query: "", scope: "", category: "", mode: "all", archived: false };
 describe("Actualités du monde", () => {
-  it("propose les dix catégories demandées", () => { expect(NEWS_CATEGORIES).toEqual(["Société", "Éducation", "Emploi", "Économie", "Vie locale", "Culture", "Sport", "Transport", "Technologie", "Environnement"]); });
+  it("propose les dix catégories du Bloc 5 et la catégorie Politique du Bloc 7", () => { expect(NEWS_CATEGORIES).toEqual(["Société", "Éducation", "Emploi", "Économie", "Vie locale", "Culture", "Sport", "Transport", "Technologie", "Environnement", "Politique"]); });
   it("limite Locales à la ville du personnage", () => { expect(filterNews(state([article(), article({ id: "2", city_id: "lille" })]), { ...filters, scope: "local" }).map(a => a.id)).toEqual(["1"]); });
   it("conserve l’accès aux nationales malgré la personnalisation", () => { expect(filterNews(state([article(), article({ id: "2", scope: "national" })]), { ...filters, scope: "national" }).map(a => a.id)).toEqual(["2"]); });
   it("exclut les lectures du filtre non-lus", () => { expect(filterNews(state([article({ read_at: "2026-10-18T11:00:00Z" })]), { ...filters, mode: "unread" })).toHaveLength(0); });
