@@ -64,6 +64,13 @@
       "when": 1792317879328,
       "tag": "0008_social_reservation_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792318885733,
+      "tag": "0009_world_news_sources_reading_and_publication",
+      "breakpoints": true
     }
   ]
 }

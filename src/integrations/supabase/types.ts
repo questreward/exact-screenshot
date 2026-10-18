@@ -479,27 +479,72 @@ export type Database = {
       }
       events: {
         Row: {
+          category: string
           city_id: string | null
           created_at: string
           description: string
+          event_key: string | null
           id: string
+          image: string | null
+          importance: number
+          location_id: string | null
+          news_body: string | null
+          news_summary: string | null
+          news_title: string | null
+          organization_event_id: string | null
+          organization_id: string | null
+          region: string | null
+          scope: string
+          source_id: string | null
           starts_at: string | null
+          status: string
+          target_kind: string
           title: string
         }
         Insert: {
+          category?: string
           city_id?: string | null
           created_at?: string
           description?: string
+          event_key?: string | null
           id?: string
+          image?: string | null
+          importance?: number
+          location_id?: string | null
+          news_body?: string | null
+          news_summary?: string | null
+          news_title?: string | null
+          organization_event_id?: string | null
+          organization_id?: string | null
+          region?: string | null
+          scope?: string
+          source_id?: string | null
           starts_at?: string | null
+          status?: string
+          target_kind?: string
           title: string
         }
         Update: {
+          category?: string
           city_id?: string | null
           created_at?: string
           description?: string
+          event_key?: string | null
           id?: string
+          image?: string | null
+          importance?: number
+          location_id?: string | null
+          news_body?: string | null
+          news_summary?: string | null
+          news_title?: string | null
+          organization_event_id?: string | null
+          organization_id?: string | null
+          region?: string | null
+          scope?: string
+          source_id?: string | null
           starts_at?: string | null
+          status?: string
+          target_kind?: string
           title?: string
         }
         Relationships: [
@@ -508,6 +553,34 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_organization_event_id_fkey"
+            columns: ["organization_event_id"]
+            isOneToOne: false
+            referencedRelation: "organization_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "news_sources"
             referencedColumns: ["id"]
           },
         ]
@@ -893,51 +966,272 @@ export type Database = {
       }
       news: {
         Row: {
+          author: string
           body: string
+          category: string
+          city_id: string | null
+          event_id: string | null
           id: string
+          image: string | null
+          importance: number
+          location_id: string | null
+          organization_id: string | null
           published_at: string
+          region: string | null
+          related_entities: Json
+          scope: string
+          source_id: string | null
+          status: string
+          summary: string
           title: string
         }
         Insert: {
+          author?: string
           body?: string
+          category?: string
+          city_id?: string | null
+          event_id?: string | null
           id?: string
+          image?: string | null
+          importance?: number
+          location_id?: string | null
+          organization_id?: string | null
           published_at?: string
+          region?: string | null
+          related_entities?: Json
+          scope?: string
+          source_id?: string | null
+          status?: string
+          summary?: string
           title: string
         }
         Update: {
+          author?: string
           body?: string
+          category?: string
+          city_id?: string | null
+          event_id?: string | null
           id?: string
+          image?: string | null
+          importance?: number
+          location_id?: string | null
+          organization_id?: string | null
           published_at?: string
+          region?: string | null
+          related_entities?: Json
+          scope?: string
+          source_id?: string | null
+          status?: string
+          summary?: string
           title?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "news_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "news_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_bookmarks: {
+        Row: {
+          news_id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          news_id: string
+          saved_at?: string
+          user_id?: string
+        }
+        Update: {
+          news_id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_bookmarks_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_reads: {
+        Row: {
+          news_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          news_id: string
+          read_at?: string
+          user_id?: string
+        }
+        Update: {
+          news_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_reads_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_settings: {
+        Row: {
+          archive_days: number
+          generation_days: number
+          id: number
+          important_threshold: number
+          new_hours: number
+          notification_cooldown_hours: number
+          page_size: number
+          recent_hours: number
+        }
+        Insert: {
+          archive_days?: number
+          generation_days?: number
+          id?: number
+          important_threshold?: number
+          new_hours?: number
+          notification_cooldown_hours?: number
+          page_size?: number
+          recent_hours?: number
+        }
+        Update: {
+          archive_days?: number
+          generation_days?: number
+          id?: number
+          important_threshold?: number
+          new_hours?: number
+          notification_cooldown_hours?: number
+          page_size?: number
+          recent_hours?: number
+        }
         Relationships: []
+      }
+      news_sources: {
+        Row: {
+          city_id: string | null
+          description: string
+          id: string
+          kind: string
+          logo: string | null
+          name: string
+          reputation: number
+          scope: string
+          status: string
+        }
+        Insert: {
+          city_id?: string | null
+          description?: string
+          id: string
+          kind?: string
+          logo?: string | null
+          name: string
+          reputation?: number
+          scope?: string
+          status?: string
+        }
+        Update: {
+          city_id?: string | null
+          description?: string
+          id?: string
+          kind?: string
+          logo?: string | null
+          name?: string
+          reputation?: number
+          scope?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_sources_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
           body: string
           created_at: string
           id: string
+          news_id: string | null
           read: boolean
           title: string
           user_id: string
+          world_at: string | null
         }
         Insert: {
           body?: string
           created_at?: string
           id?: string
+          news_id?: string | null
           read?: boolean
           title: string
           user_id: string
+          world_at?: string | null
         }
         Update: {
           body?: string
           created_at?: string
           id?: string
+          news_id?: string | null
           read?: boolean
           title?: string
           user_id?: string
+          world_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       organization_events: {
         Row: {
@@ -1516,6 +1810,8 @@ export type Database = {
       user_settings: {
         Row: {
           language: string
+          news_notifications: boolean
+          news_personalized: boolean
           notifications_enabled: boolean
           profile_public: boolean
           reduced_motion: boolean
@@ -1524,6 +1820,8 @@ export type Database = {
         }
         Insert: {
           language?: string
+          news_notifications?: boolean
+          news_personalized?: boolean
           notifications_enabled?: boolean
           profile_public?: boolean
           reduced_motion?: boolean
@@ -1532,6 +1830,8 @@ export type Database = {
         }
         Update: {
           language?: string
+          news_notifications?: boolean
+          news_personalized?: boolean
           notifications_enabled?: boolean
           profile_public?: boolean
           reduced_motion?: boolean
@@ -1576,6 +1876,10 @@ export type Database = {
     }
     Functions: {
       apply_job: { Args: { _job_id: string }; Returns: undefined }
+      bookmark_news: {
+        Args: { _news_id: string; _saved: boolean }
+        Returns: undefined
+      }
       cancel_life_activity: {
         Args: { _activity_id: string }
         Returns: undefined
@@ -1598,6 +1902,7 @@ export type Database = {
       daily_life_state: { Args: never; Returns: Json }
       enroll_studies: { Args: { _field_id: string }; Returns: undefined }
       game_now: { Args: never; Returns: string }
+      mark_news_read: { Args: { _news_id: string }; Returns: undefined }
       move_character: {
         Args: { _location_id: string }
         Returns: {
@@ -1614,9 +1919,13 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      news_state: { Args: never; Returns: Json }
+      notify_news: { Args: { _news_id: string }; Returns: undefined }
       organization_directory: { Args: { _city_id: string }; Returns: Json }
       pay_housing: { Args: never; Returns: undefined }
       prepare_daily_life: { Args: never; Returns: string }
+      publish_world_event: { Args: { _event_id: string }; Returns: string }
+      refresh_world_news: { Args: never; Returns: number }
       reserve_social_event: { Args: { _event_id: string }; Returns: string }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
       social_actor: { Args: never; Returns: string }
