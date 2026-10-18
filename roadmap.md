@@ -59,10 +59,14 @@
 - [x] Bloc 7 validé par le cahier des charges du Bloc 8
 
 # Bloc 8 — Candidatures, campagnes et élections
-- [ ] Élections municipales locales, calendrier serveur, PNJ candidats actifs
-- [ ] Candidature contrôlée, programme, équipe et budget distinct
-- [ ] Actions et débats dans l’agenda existant, sondages évolutifs
-- [ ] Vote privé unique, dépouillement, mandat et conséquences locales
-- [ ] Pages Élections, campagne et liens Politique/téléphone/Ma Ville/carte/actualités
-- [ ] Treize scénarios réels, régressions, vérification téléphone et rapport
+- [x] Élections municipales locales, calendrier serveur, PNJ candidats actifs
+- [x] Candidature contrôlée, programme, équipe et budget distinct
+- [x] Actions et débats dans l’agenda existant, sondages évolutifs
+- [x] Vote privé unique, dépouillement, mandat et conséquences locales
+- [x] Pages Élections, campagne et liens Politique/téléphone/Ma Ville/carte/actualités
+- [x] Treize scénarios réels et victoire du joueur ; 61 tests automatiques ; téléphone et rapport BLOC_8_VALIDATION.md
+- [x] Régressions politique et citoyenneté réussies
+- [ ] Régression professionnelle complète : essai arrêté à l’horaire réel de travail ; ne pas modifier l’horloge commune
+- [ ] Régression sociale complète : essai arrêté sur une activité déplacée hors de la journée affichée
+- [ ] Validation du Bloc 8 par l’utilisateur
 - Ne pas commencer le Bloc 9 ; attendre la validation de l’utilisateur.
