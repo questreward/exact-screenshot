@@ -90,8 +90,9 @@
 - [ ] Rapport final, nettoyage des essais et attente des instructions ; aucun Bloc 10
 
 # Bloc 10 — Économie, patrimoine et projets de vie
-- [ ] Correction ciblée des loyers : présenter le SQL exact conservant les échecs, puis attendre l’accord explicite avant application
-- [ ] Après accord : tests échec, nouvelle tentative le même jour, double clic, recharge, reconnexion, paiement déjà effectué et conservation de l’historique
+- [x] Correction ciblée des loyers : SQL exact préparé ; autorisation explicite reçue
+- [ ] Appliquer le SQL autorisé et exécuter exactement les huit tests décrits sur un compte temporaire isolé
+- [ ] Comparer les données existantes avant/après, nettoyer le compte temporaire et rendre les résultats sans valider le Bloc 10
 - [x] Autorisation officielle reçue ; préserver les Blocs 1 à 9, ne pas commencer le Bloc 11
 - [x] Cahier des charges complet (50 sections, 16 tests obligatoires) reçu
 - [ ] Étendre les systèmes personnels existants sans doublons, avec opérations financières sécurisées et échéances persistantes
