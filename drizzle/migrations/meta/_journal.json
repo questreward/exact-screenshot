@@ -43,6 +43,13 @@
       "when": 1792317319268,
       "tag": "0005_social_relations_and_organizations",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792317448458,
+      "tag": "0006_social_activity_boundaries",
+      "breakpoints": true
     }
   ]
 }
