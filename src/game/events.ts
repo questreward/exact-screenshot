@@ -26,13 +26,19 @@ export function canAct(e: WorldEvent, now: string) {
 export type EventTab = 'aujourdhui' | 'a_venir' | 'pour_vous' | 'ma_ville' | 'recents';
 const day = (iso: string) => iso.slice(0, 10);
 
+/** Les annonces sans date de fin (Actualités) sont du jour même ; ensuite elles passent dans Récents. */
+export function displayPhase(e: WorldEvent, now: string): EventPhase {
+  if (e.ends_at || e.phase === 'a_venir') return e.phase;
+  return day(e.starts_at) < day(now) ? 'termine' : 'en_cours';
+}
+
 export function filterEvents(events: WorldEvent[], tab: EventTab, now: string, cityId: string) {
   switch (tab) {
-    case 'aujourdhui': return events.filter(e => e.phase !== 'termine' && day(e.starts_at) <= day(now));
+    case 'aujourdhui': return events.filter(e => displayPhase(e, now) !== 'termine' && day(e.starts_at) <= day(now));
     case 'a_venir': return events.filter(e => e.phase === 'a_venir' && day(e.starts_at) > day(now));
     case 'pour_vous': return events.filter(e => e.personal || (e.participation && e.participation.choice === 'participer') || (e.interactive && e.eligible && e.phase !== 'termine'));
     case 'ma_ville': return events.filter(e => e.city_id === cityId && !e.personal);
-    case 'recents': return events.filter(e => e.phase === 'termine').reverse();
+    case 'recents': return events.filter(e => displayPhase(e, now) === 'termine').reverse();
   }
 }
 

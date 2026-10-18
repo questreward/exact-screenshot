@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { worldEventsQuery, eventAction } from '@/services/game';
-import { canAct, filterEvents, rewardSummary, PARTICIPATION_LABEL, type EventTab, type WorldEvent } from '@/game/events';
+import { canAct, displayPhase, filterEvents, rewardSummary, PARTICIPATION_LABEL, type EventTab, type WorldEvent } from '@/game/events';
 import { gameHour } from '@/game/life';
 import { useLifeMutation } from './LifeControls';
 import { WorldClock } from './WorldClock';
@@ -25,7 +25,7 @@ export function EventCard({ e, now }: { e: WorldEvent; now: string }) {
   return <article className="space-y-3 rounded-lg border border-border bg-card p-4">
     <div className="flex flex-wrap items-center gap-2">
       <Badge variant="outline">{e.category}</Badge>
-      <Badge variant={e.phase === 'en_cours' ? 'default' : 'secondary'}>{PHASE[e.phase]}</Badge>
+      <Badge variant={displayPhase(e, now) === 'en_cours' ? 'default' : 'secondary'}>{e.ends_at || e.phase === 'a_venir' ? PHASE[displayPhase(e, now)] : displayPhase(e, now) === 'termine' ? 'Archive' : 'Aujourd’hui'}</Badge>
       {e.personal && <Badge><User className="h-3 w-3" />Pour vous</Badge>}
       {e.scope === 'national' && <Badge variant="secondary">National</Badge>}
       {e.importance >= 65 && <Badge variant="destructive">Important</Badge>}

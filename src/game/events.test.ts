@@ -22,6 +22,11 @@ describe('événements (présentation)', () => {
     expect(filterEvents([mine], 'pour_vous', base.starts_at, 'lyon')).toHaveLength(1);
     expect(filterEvents([mine], 'ma_ville', base.starts_at, 'lyon')).toHaveLength(0);
   });
+  it('une annonce sans date de fin d’un jour passé va dans Récents', () => {
+    const old = { ...base, id: '4', ends_at: null, phase: 'en_cours' as const, starts_at: '2026-10-15T06:00:00Z' };
+    expect(filterEvents([old], 'aujourdhui', '2026-10-18T10:00:00Z', 'lyon')).toHaveLength(0);
+    expect(filterEvents([old], 'recents', '2026-10-18T10:00:00Z', 'lyon')).toHaveLength(1);
+  });
   it('résumé des gains affiché', () => {
     expect(rewardSummary({ money: 40, skill: null, skill_amount: 0, relation: 0, reputation: 2, civic: 0, political: 0, energy: 10, success_rate: 100 })).toEqual(['+40 €', '+2 réputation']);
   });
