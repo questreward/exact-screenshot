@@ -8,6 +8,7 @@ import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
 function sectionLink(s: Section) {
+  if (s.id === 'patrimoine') return { to: '/patrimoine' as const };
   if (s.id === "mandat") return { to: "/mandat" as const };
   if (s.id === "ma-ville") return { to: "/ma-ville" as const };
   if (s.id === "politique") return { to: "/politique" as const };

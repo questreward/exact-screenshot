@@ -12,11 +12,13 @@ import { Button } from "@/components/ui/button";
 import { gameMeta } from "@/game/metadata";
 import { GovernanceLink } from '@/components/game/GovernancePage';
 import { governanceQuery } from '@/services/game';
+import { economyQuery } from '@/services/game';
+import { EconomyBankLinks } from '@/components/game/EconomyPage';
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery)]); },
   component: PhonePage,
 });
 
@@ -96,6 +98,7 @@ function BankApp() {
         <p className="text-sm opacity-80">{bank.label}</p>
         <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
       </div>
+      <div className="mt-4"><EconomyBankLinks/></div>
       <h2 className="mt-5 mb-2 text-sm font-semibold text-muted-foreground">Historique</h2>
       <ul className="space-y-2">
         {bank.transactions.map((t) => (

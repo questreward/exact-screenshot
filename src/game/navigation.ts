@@ -18,6 +18,7 @@ export const SECTIONS: Section[] = [
   { id: "telephone", label: "Téléphone", icon: Smartphone, description: "Votre outil principal au quotidien.", available: true },
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
+  { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, description: "Institutions et participation citoyenne.", available: true },
   { id: "politique", label: "Politique", icon: Vote, description: "Mouvements, partis et engagement politique.", available: true },
   { id: "mandat", label: "Mandat", icon: Landmark, description: "Conseil et projets municipaux.", available: true },

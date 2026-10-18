@@ -26,6 +26,7 @@ import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenti
 import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authenticated/_game/mandat'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
+import { Route as AuthenticatedGamePatrimoineRouteImport } from './routes/_authenticated/_game/patrimoine'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGamePolitiqueRouteImport } from './routes/_authenticated/_game/politique'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
@@ -125,6 +126,12 @@ const AuthenticatedGameParametresRoute =
     path: '/parametres',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGamePatrimoineRoute =
+  AuthenticatedGamePatrimoineRouteImport.update({
+    id: '/patrimoine',
+    path: '/patrimoine',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGamePersonnageRoute =
   AuthenticatedGamePersonnageRouteImport.update({
     id: '/personnage',
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/mandat': typeof AuthenticatedGameMandatRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
+  '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -228,6 +236,7 @@ export interface FileRoutesByTo {
   '/mandat': typeof AuthenticatedGameMandatRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
+  '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -258,6 +267,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/mandat': typeof AuthenticatedGameMandatRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
+  '/_authenticated/_game/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/politique': typeof AuthenticatedGamePolitiqueRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/mandat'
     | '/organisations'
     | '/parametres'
+    | '/patrimoine'
     | '/personnage'
     | '/politique'
     | '/tableau-de-bord'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/mandat'
     | '/organisations'
     | '/parametres'
+    | '/patrimoine'
     | '/personnage'
     | '/politique'
     | '/tableau-de-bord'
@@ -343,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/mandat'
     | '/_authenticated/_game/organisations'
     | '/_authenticated/_game/parametres'
+    | '/_authenticated/_game/patrimoine'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/politique'
     | '/_authenticated/_game/tableau-de-bord'
@@ -486,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameParametresRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/patrimoine': {
+      id: '/_authenticated/_game/patrimoine'
+      path: '/patrimoine'
+      fullPath: '/patrimoine'
+      preLoaderRoute: typeof AuthenticatedGamePatrimoineRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/personnage': {
       id: '/_authenticated/_game/personnage'
       path: '/personnage'
@@ -568,6 +588,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameMandatRoute: typeof AuthenticatedGameMandatRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
+  AuthenticatedGamePatrimoineRoute: typeof AuthenticatedGamePatrimoineRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGamePolitiqueRoute: typeof AuthenticatedGamePolitiqueRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
@@ -590,6 +611,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameMandatRoute: AuthenticatedGameMandatRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
+    AuthenticatedGamePatrimoineRoute: AuthenticatedGamePatrimoineRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGamePolitiqueRoute: AuthenticatedGamePolitiqueRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,

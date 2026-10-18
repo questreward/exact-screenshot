@@ -1,0 +1,1 @@
+DO $$ DECLARE def text; BEGIN SELECT pg_get_functiondef('public.personal_economy_action(text,uuid,jsonb)'::regprocedure) INTO def; def:=replace(def,'END>=target THEN','END>=goal.target THEN'); EXECUTE def; END $$;
