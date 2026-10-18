@@ -1921,6 +1921,7 @@ export type Database = {
           institution_id: string
           issue_key: string | null
           location_id: string
+          news_id: string | null
           severity: number
           stage: number
           stage_hours: number
@@ -1937,6 +1938,7 @@ export type Database = {
           institution_id: string
           issue_key?: string | null
           location_id: string
+          news_id?: string | null
           severity?: number
           stage?: number
           stage_hours?: number
@@ -1953,6 +1955,7 @@ export type Database = {
           institution_id?: string
           issue_key?: string | null
           location_id?: string
+          news_id?: string | null
           severity?: number
           stage?: number
           stage_hours?: number
@@ -1986,6 +1989,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_issues_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
             referencedColumns: ["id"]
           },
         ]
@@ -2535,6 +2545,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      civic_news: {
+        Args: {
+          _body: string
+          _city: string
+          _key: string
+          _location: string
+          _organization?: string
+          _title: string
+        }
+        Returns: string
+      }
+      civic_state: { Args: never; Returns: Json }
       create_character: {
         Args: {
           _age: number
@@ -2576,6 +2598,7 @@ export type Database = {
       pay_housing: { Args: never; Returns: undefined }
       prepare_daily_life: { Args: never; Returns: string }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
+      refresh_civic_city: { Args: { _city: string }; Returns: undefined }
       refresh_world_news: { Args: never; Returns: number }
       report_civic_issue: {
         Args: { _category: string; _description: string; _location_id: string }
