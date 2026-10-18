@@ -22,4 +22,12 @@
 - [x] Vérifier logement : type, coût, localisation et paiement manuel
 - [x] Vérifier salaire à la consultation/reconnexion sans doublon
 - [x] Rejouer persistance étudiant et actif ; rapport et prêt pour validation
-- Bloc 3 prêt pour validation par l’utilisateur ; Bloc 4 non commencé.
+- Bloc 3 officiellement validé par l’utilisateur.
+
+# Bloc 4 — Vie sociale et organisations
+- [ ] Population fictive, rencontres contextualisées et relations persistantes
+- [ ] Organisations locales, adhésions et départ sécurisé
+- [ ] Activités sociales intégrées à l’agenda existant, réputation et influence
+- [ ] Contacts, organisations, profil, accueil, notifications et carte
+- [ ] Dix tests obligatoires, régressions des blocs validés et rapport final
+- [ ] Validation utilisateur ; ne pas commencer le Bloc 5 automatiquement
