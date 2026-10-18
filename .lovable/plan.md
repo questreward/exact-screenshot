@@ -38,6 +38,8 @@ Les Blocs 1 à 8 restent préservés. Le Bloc 10, les réélections et les insti
 - Évolution déterministe via une tâche planifiée SQL indépendante des visites, complétée par un rattrapage à la lecture. Échéances enregistrées pour appliquer les effets dans l’ordre même après une longue absence.
 - Les consultations créées pour un dossier du mandat restent consultatives : leur clôture ne finance ni n’adopte automatiquement ce dossier. Les consultations déjà validées gardent leur fonctionnement actuel.
 - Préserver les effets locaux et les décisions des anciens blocs ; rattacher chaque nouvelle conséquence à son dossier pour éviter les traitements concurrents contradictoires.
+- Conserver les statuts historiques des décisions (`planned`/`applied`) et porter la discussion, l’adoption ou le rejet dans un état de procédure distinct ; aucune application automatique avant autorisation. Les problèmes pilotés par un projet ne seront pas résolus par le simple vieillissement de l’ancien système.
+- Répartition des sièges déterministe à partir des résultats enregistrés, sans modifier les bulletins ni les résultats électoraux. Ordre de verrouillage cohérent ; traitement automatique de la ville sans verrouiller les personnages, puis règlement politique personnel sécurisé à la prochaine visite.
 
 ## Validation avant conclusion
 1. Les **16 scénarios obligatoires** : mandat, conseil, problème, dossier, décision, budget unique, progression, temps du monde, conséquences, opposition, consultation, carte, agenda, réputation, reconnexion et sécurité.
