@@ -1479,6 +1479,8 @@ export type Database = {
           character_id: string
           job_id: string
           progress: number
+          promotion_level: number
+          salary_bonus: number
           skills: Json
           started_at: string
           status: string
@@ -1487,6 +1489,8 @@ export type Database = {
           character_id: string
           job_id: string
           progress?: number
+          promotion_level?: number
+          salary_bonus?: number
           skills?: Json
           started_at: string
           status?: string
@@ -1495,6 +1499,8 @@ export type Database = {
           character_id?: string
           job_id?: string
           progress?: number
+          promotion_level?: number
+          salary_bonus?: number
           skills?: Json
           started_at?: string
           status?: string
@@ -4499,6 +4505,25 @@ export type Database = {
         Returns: string
       }
       daily_life_state: { Args: never; Returns: Json }
+      economy_cash: {
+        Args: {
+          _amount: number
+          _category: string
+          _cid: string
+          _key: string
+          _label: string
+          _payload?: Json
+        }
+        Returns: boolean
+      }
+      economy_notify: {
+        Args: { _body: string; _cid: string; _key: string; _title: string }
+        Returns: undefined
+      }
+      economy_progress: {
+        Args: { _cid: string; _metric: string }
+        Returns: number
+      }
       election_news: {
         Args: {
           _body: string
@@ -4573,6 +4598,10 @@ export type Database = {
         Returns: undefined
       }
       pay_housing: { Args: never; Returns: undefined }
+      personal_economy_action: {
+        Args: { _command: string; _input?: Json; _request_id: string }
+        Returns: undefined
+      }
       political_state: { Args: never; Returns: Json }
       prepare_daily_life: { Args: never; Returns: string }
       prepare_municipal_reelection: {
@@ -4618,6 +4647,7 @@ export type Database = {
       }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
       settle_governance_politics: { Args: { _cid: string }; Returns: undefined }
+      settle_personal_economy: { Args: { _cid: string }; Returns: undefined }
       social_actor: { Args: never; Returns: string }
       social_interact: {
         Args: { _action_id: string; _npc_id: string }
