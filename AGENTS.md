@@ -28,3 +28,6 @@
 - Membership reactivation preserves its identity and records each entry/departure in a separate immutable history, keeping existing membership references stable.
 - News reuses events/news/notifications; service-only deterministic publication follows game_now with unique event keys, while reading and bookmark RPCs derive the caller and keep personal state private.
 - News generation runs as one hourly SQL-only job, never from a page read; aging is derived from world timestamps and media reputation stays distinct from social statistics.
+- Civic actions use character-locked RPCs and a unique reward ledger; engagement never bypasses the existing social, bank or activity systems.
+- Civic evolution settles elapsed city deadlines under an advisory lock on reads; decisions apply idempotent location metadata and publish through the existing event/news pipeline.
+- Civic events reuse citizen organizations and social agenda reservations; engagement is snapshotted on activity insertion and awarded once on completion.

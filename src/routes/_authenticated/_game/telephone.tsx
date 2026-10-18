@@ -4,7 +4,8 @@ import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
-import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery } from "@/services/game";
+import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
+import { CivicSummary } from '@/components/game/CivicSummary';
 import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { gameMeta } from "@/game/metadata";
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery)]); },
   component: PhonePage,
 });
 
@@ -21,7 +22,7 @@ function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const { data: news } = useSuspenseQuery(newsQuery);
-  const open = (id?: string) => id === "actualites" ? navigate({ to: "/actualites" }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
+  const open = (id?: string) => id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
   return (
@@ -78,6 +79,7 @@ function ProfileApp() {
       <p className="mt-3 text-xl font-bold">{c.first_name} {c.last_name}</p>
       <p className="text-sm text-muted-foreground">{c.age} ans · {c.city?.name}</p>
       <p className="mt-4 rounded-2xl bg-accent/60 p-3 text-sm">{c.path?.name} — {c.situation}</p>
+      <div className="mt-4 text-left"><CivicSummary profile/></div>
     </div>
   );
 }

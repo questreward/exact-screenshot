@@ -5,6 +5,7 @@ import type { PathId } from "@/game/rules";
 import type { LifeState } from "@/game/life-state";
 import type { SocialState, Organization } from "@/game/social";
 import type { NewsState } from "@/game/news";
+import type { CivicState } from "@/game/civic";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -274,3 +275,25 @@ export async function bookmarkNews(input: { newsId: string; saved: boolean }) {
   const { error } = await supabase.rpc("bookmark_news", { _news_id: input.newsId, _saved: input.saved });
   if (error) throw new Error(error.message);
 }
+
+export const civicQuery = queryOptions({
+  queryKey: ['civic'], staleTime: 0, refetchInterval: 30000,
+  queryFn: async ():Promise<CivicState> => {
+    const {data,error}=await supabase.rpc('civic_state');
+    if(error) throw new Error(error.message);
+    if(!data || typeof data!=='object' || Array.isArray(data) || !Array.isArray(data['institutions'])) throw new Error('Ma Ville indisponible');
+    return data as unknown as CivicState;
+  },
+});
+export async function reportCivicIssue(input:{category:string;locationId:string;description:string}) {
+  const {data,error}=await supabase.rpc('report_civic_issue',{_category:input.category,_location_id:input.locationId,_description:input.description});
+  if(error) throw new Error(error.message); return data;
+}
+export async function participateConsultation(input:{consultationId:string;optionId:string}) {
+  const {error}=await supabase.rpc('participate_consultation',{_consultation_id:input.consultationId,_option_id:input.optionId});
+  if(error) throw new Error(error.message);
+}
+export const civicLocationsQuery=(cityId:string)=>queryOptions({queryKey:['civic-locations',cityId],queryFn:async()=>{
+  const {data,error}=await supabase.from('locations').select('*').eq('city_id',cityId).eq('accessible',true).not('district_id','is',null).order('name');
+  if(error) throw new Error(error.message); return data;
+}});

@@ -21,6 +21,7 @@ import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authenticated/_game/actualites'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
+import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
@@ -90,6 +91,12 @@ const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
   path: '/carte',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameMaVilleRoute =
+  AuthenticatedGameMaVilleRouteImport.update({
+    id: '/ma-ville',
+    path: '/ma-ville',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameOrganisationsRoute =
   AuthenticatedGameOrganisationsRouteImport.update({
     id: '/organisations',
@@ -155,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -200,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/actualites': typeof AuthenticatedGameActualitesRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
+  '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/agenda'
     | '/carte'
+    | '/ma-ville'
     | '/organisations'
     | '/parametres'
     | '/personnage'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/agenda'
     | '/carte'
+    | '/ma-ville'
     | '/organisations'
     | '/parametres'
     | '/personnage'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/actualites'
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
+    | '/_authenticated/_game/ma-ville'
     | '/_authenticated/_game/organisations'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/personnage'
@@ -374,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameCarteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/ma-ville': {
+      id: '/_authenticated/_game/ma-ville'
+      path: '/ma-ville'
+      fullPath: '/ma-ville'
+      preLoaderRoute: typeof AuthenticatedGameMaVilleRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/organisations': {
       id: '/_authenticated/_game/organisations'
       path: '/organisations'
@@ -444,6 +464,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameActualitesRoute: typeof AuthenticatedGameActualitesRoute
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
+  AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
@@ -460,6 +481,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameActualitesRoute: AuthenticatedGameActualitesRoute,
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
+    AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,

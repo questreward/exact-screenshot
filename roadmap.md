@@ -38,5 +38,14 @@
 - [x] Lectures, favoris, préférences et notifications pertinentes privés et persistants
 - [x] Téléphone déverrouillé et aperçu compact sur l’accueil
 - [x] Onze tests obligatoires, 43 tests automatiques, régressions des Blocs 1 à 4 et rapport de validation
-- [ ] Validation du Bloc 5 par l’utilisateur — en attente de son accord
-- Ne pas commencer le Bloc 6 ; attendre les instructions après présentation des résultats.
+- [x] Bloc 5 validé par le cahier des charges du Bloc 6
+
+# Bloc 6 — Citoyenneté et institutions
+- [x] Institutions, services et contenus fictifs distincts pour les cinq villes
+- [x] Problèmes publics, signalements privés, évolution selon l’horloge du monde
+- [x] Consultations uniques, résultats, décisions et conséquences sécurisées
+- [x] Événements citoyens dans l’agenda existant, engagement plafonné à 100
+- [x] Ma Ville, profil, accueil, téléphone et liens carte/actualités/organisations
+- [x] Douze tests obligatoires, scénario Lyon, reconnexion et régressions ; 50 tests automatiques réussis
+- [ ] Validation du Bloc 6 par l’utilisateur — en attente de son avis
+- Ne pas commencer le Bloc 7 ; présenter le rapport puis attendre les instructions.
