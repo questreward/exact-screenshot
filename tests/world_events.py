@@ -108,7 +108,7 @@ try:
   el0 = len(rows('elections', 'select=id'))
   mairie = place('lyon', 'mairie'); e7 = make(cid, 'political-debate', mairie['id'], 40, personal=False)
   refused = act(h2, e7['id']).status_code >= 400
-  party = rows('organizations', 'city_id=eq.lyon&kind=eq.party&status=eq.active&order=name&limit=1')[0]
+  party = rows('organizations', 'city_id=eq.lyon&kind=in.(party,movement)&status=eq.active&order=name&limit=1')[0]
   rpc('change_political_membership', {'_organization_id': party['id'], '_join': True}, h2)
   e8 = make(cid, 'political-debate', mairie['id'], -1, org=party['id'], personal=False)
   rpc('move_character', {'_location_id': mairie['id']}, h2)
