@@ -33,9 +33,10 @@
 - [x] Bloc 4 officiellement validé par l’utilisateur
 
 # Bloc 5 — Information et actualités
-- [ ] Sources fictives et articles liés aux événements existants, publication contrôlée selon l’horloge du monde
-- [ ] Fil personnalisé ouvert, recherche, filtres et détail avec liens carte/organisation/agenda
-- [ ] Lectures, favoris, préférences et notifications pertinentes privés et persistants
-- [ ] Téléphone déverrouillé et aperçu compact sur l’accueil
-- [ ] Onze tests obligatoires, régressions des Blocs 1 à 4 et rapport de validation
+- [x] Sources fictives et articles liés aux événements existants, publication contrôlée selon l’horloge du monde
+- [x] Fil personnalisé ouvert, recherche, filtres et détail avec liens carte/organisation/agenda
+- [x] Lectures, favoris, préférences et notifications pertinentes privés et persistants
+- [x] Téléphone déverrouillé et aperçu compact sur l’accueil
+- [x] Onze tests obligatoires, 43 tests automatiques, régressions des Blocs 1 à 4 et rapport de validation
+- [ ] Validation du Bloc 5 par l’utilisateur — en attente de son accord
 - Ne pas commencer le Bloc 6 ; attendre les instructions après présentation des résultats.
