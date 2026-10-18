@@ -52,6 +52,7 @@ export type Database = {
           character_id: string
           civic_engagement_gain: number
           created_at: string
+          economy_payload: Json
           end_time: string
           energy_cost: number
           energy_gain: number
@@ -81,6 +82,7 @@ export type Database = {
           character_id: string
           civic_engagement_gain?: number
           created_at?: string
+          economy_payload?: Json
           end_time: string
           energy_cost?: number
           energy_gain?: number
@@ -110,6 +112,7 @@ export type Database = {
           character_id?: string
           civic_engagement_gain?: number
           created_at?: string
+          economy_payload?: Json
           end_time?: string
           energy_cost?: number
           energy_gain?: number
@@ -442,6 +445,38 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_history: {
+        Row: {
+          character_id: string
+          id: string
+          kind: string
+          label: string
+          occurred_at: string
+        }
+        Insert: {
+          character_id: string
+          id?: string
+          kind: string
+          label: string
+          occurred_at?: string
+        }
+        Update: {
+          character_id?: string
+          id?: string
+          kind?: string
+          label?: string
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_history_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
             referencedColumns: ["id"]
           },
         ]
@@ -1075,6 +1110,136 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      economy_catalog: {
+        Row: {
+          category: string
+          config: Json
+          duration_minutes: number
+          energy_cost: number
+          id: string
+          kind: string
+          location_kind: string
+          name: string
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          category: string
+          config?: Json
+          duration_minutes?: number
+          energy_cost?: number
+          id: string
+          kind: string
+          location_kind?: string
+          name: string
+          price: number
+          sort_order?: number
+        }
+        Update: {
+          category?: string
+          config?: Json
+          duration_minutes?: number
+          energy_cost?: number
+          id?: string
+          kind?: string
+          location_kind?: string
+          name?: string
+          price?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      economy_goals: {
+        Row: {
+          character_id: string
+          created_at: string
+          id: string
+          kind: string
+          metric: string
+          name: string
+          notified: boolean
+          request_id: string
+          saved: number
+          status: string
+          target: number
+          target_date: string | null
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          id?: string
+          kind: string
+          metric?: string
+          name: string
+          notified?: boolean
+          request_id: string
+          saved?: number
+          status?: string
+          target: number
+          target_date?: string | null
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          metric?: string
+          name?: string
+          notified?: boolean
+          request_id?: string
+          saved?: number
+          status?: string
+          target?: number
+          target_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "economy_goals_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      economy_operations: {
+        Row: {
+          amount: number
+          character_id: string
+          kind: string
+          occurred_at: string
+          operation_key: string
+          payload: Json
+          status: string
+        }
+        Insert: {
+          amount?: number
+          character_id: string
+          kind: string
+          occurred_at?: string
+          operation_key: string
+          payload?: Json
+          status?: string
+        }
+        Update: {
+          amount?: number
+          character_id?: string
+          kind?: string
+          occurred_at?: string
+          operation_key?: string
+          payload?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "economy_operations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
             referencedColumns: ["id"]
           },
         ]
@@ -2007,6 +2172,8 @@ export type Database = {
           city_id: string | null
           created_at: string
           description: string
+          economy_level: number
+          economy_skill: string | null
           id: string
           location_id: string | null
           min_age: number
@@ -2020,6 +2187,8 @@ export type Database = {
           city_id?: string | null
           created_at?: string
           description?: string
+          economy_level?: number
+          economy_skill?: string | null
           id?: string
           location_id?: string | null
           min_age?: number
@@ -2033,6 +2202,8 @@ export type Database = {
           city_id?: string | null
           created_at?: string
           description?: string
+          economy_level?: number
+          economy_skill?: string | null
           id?: string
           location_id?: string | null
           min_age?: number
@@ -2993,6 +3164,83 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      personal_assets: {
+        Row: {
+          acquired_at: string
+          catalog_id: string
+          character_id: string
+          condition: string
+          id: string
+          next_maintenance: string | null
+          purchase_price: number
+        }
+        Insert: {
+          acquired_at?: string
+          catalog_id: string
+          character_id: string
+          condition?: string
+          id?: string
+          next_maintenance?: string | null
+          purchase_price: number
+        }
+        Update: {
+          acquired_at?: string
+          catalog_id?: string
+          character_id?: string
+          condition?: string
+          id?: string
+          next_maintenance?: string | null
+          purchase_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_assets_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "economy_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "personal_assets_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      personal_budgets: {
+        Row: {
+          auto_rent: boolean
+          character_id: string
+          low_balance_notified: boolean
+          next_rent: string | null
+          planned: Json
+        }
+        Insert: {
+          auto_rent?: boolean
+          character_id: string
+          low_balance_notified?: boolean
+          next_rent?: string | null
+          planned?: Json
+        }
+        Update: {
+          auto_rent?: boolean
+          character_id?: string
+          low_balance_notified?: boolean
+          next_rent?: string | null
+          planned?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_budgets_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
             referencedColumns: ["id"]
           },
         ]
@@ -4052,23 +4300,32 @@ export type Database = {
         Row: {
           account_id: string
           amount: number
+          category: string
           created_at: string
           id: string
           label: string
+          operation_key: string | null
+          world_at: string | null
         }
         Insert: {
           account_id: string
           amount: number
+          category?: string
           created_at?: string
           id?: string
           label: string
+          operation_key?: string | null
+          world_at?: string | null
         }
         Update: {
           account_id?: string
           amount?: number
+          category?: string
           created_at?: string
           id?: string
           label?: string
+          operation_key?: string | null
+          world_at?: string | null
         }
         Relationships: [
           {
