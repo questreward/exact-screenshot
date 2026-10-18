@@ -1,5 +1,5 @@
 """Bloc 10 isolated live checks. Shared clock restored before commit; temporary users cleaned."""
-import asyncio, os, uuid, json, subprocess
+import asyncio, os, uuid, json, subprocess, time
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import requests
@@ -122,8 +122,12 @@ async def verify(f):
   UPDATE public.world_state SET world_date=original.world_date,world_time=original.world_time,clock_started_at=original.clock_started_at,time_speed=original.time_speed WHERE id=1;
   SELECT * INTO restored FROM public.world_state WHERE id=1; IF to_jsonb(restored)<>to_jsonb(original) THEN RAISE EXCEPTION 'Clock not restored'; END IF;
   END $$;"""
-  result=subprocess.run(['psql','-X','-v','ON_ERROR_STOP=1','-q'],input=sql,text=True,capture_output=True)
-  if result.returncode: raise RuntimeError(result.stderr)
+  (out/'clock-test.sql').write_text(sql)
+  print('TRANSACTION READY',cid,uid,flush=True)
+  for _ in range(240):
+   if (out/'transaction-result').exists(): break
+   await asyncio.sleep(1)
+  if not (out/'transaction-result').exists() or (out/'transaction-result').read_text()!='OK': raise RuntimeError('Isolated transaction not completed')
   for label in ['TEST 4 Déménagement différé : un logement, coût et carte','TEST 7 Formation : débit, agenda, durée complète','TEST 8 Compétence : progression et récompense uniques','TEST 10 Promotion conditionnelle : +200 € et futures vacations','TEST 11 Vacation complète : 80 € une seule fois','TEST 13 Hors connexion : trois loyers uniques, formations et salaire','Horloge commune restaurée avant commit','Mobilité vélo : trajet de 8 minutes, position persistante']:
    check(True,label)
   s=state();check(s['available']+s['saved']+s['asset_value']==3000+80-120-240-100-200-60,'TEST 14 Patrimoine : liquidités + épargne + achats sans plus-value')
@@ -155,6 +159,8 @@ async def verify(f):
   await browser.close()
 
 if __name__=='__main__':
- try:asyncio.run(verify(prepare()))
+ try:
+  Path('/tmp/browser/economy/transaction-result').unlink(missing_ok=True)
+  asyncio.run(verify(prepare()))
  finally:cleanup()
  print(str(len(checks))+' vérifications réussies ; aucun compte de test conservé.')
