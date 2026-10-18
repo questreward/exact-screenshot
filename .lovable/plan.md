@@ -1,92 +1,71 @@
-# Bloc 12 — Monde vivant et événements : structure proposée (étape 1)
+# Bloc 12 — Étape 2 : SQL exact proposé (NON APPLIQUÉ)
 
-Cette étape ne fait que proposer la structure, comme le demande le cahier des charges (section 27). Rien n'est appliqué. Une fois la structure approuvée, le SQL exact complet sera présenté pour une seconde approbation.
+Le SQL complet, prêt à être appliqué tel quel après votre accord, se trouve dans le fichier du projet `.lovable/proposed_0039_bloc12_world_events.sql`. Il ne contient ni suppression, ni remplacement de données, ni modification de fonction existante.
 
-## Constat sur l'existant
-- Le jeu possède déjà **un** système d'événements : la table `events` (39 lignes), qui alimente les Actualités (`news`) et les Notifications. Elle porte déjà titre, description, catégorie, ville, lieu, organisation, importance, statut, portée (locale, régionale, nationale) et une clé unique `event_key`.
-- L'Agenda repose sur `activities`, avec une clé unique `(character_id, source_key)` qui empêche les doublons, et un règlement à l'heure du monde (`settle_daily_life`). Une activité prévue et non commencée passe en « annulée » à sa fin.
-- La Banque passe par `economy_cash`, protégée par une clé d'opération unique. Elle n'est pas exécutable par les joueurs.
-- Le cahier propose `world_events`, mais une telle table **doublerait** `events`. Proposition : étendre `events` et ajouter seulement ce qui manque.
+## Ce qui change
 
-## 1. Extension de `events` (ajouts uniquement)
-Nouvelles colonnes, toutes facultatives. Les 39 événements existants restent identiques et continuent d'alimenter les Actualités comme avant.
-- `ends_at` : date de fin. Si elle est vide, l'événement est instantané ou permanent.
-- `duration_kind` : instantané, temporaire, récurrent ou permanent.
-- `template_id` : modèle d'origine (voir 2).
-- `character_id` : rempli uniquement pour un événement personnel, visible du seul joueur concerné.
-- `game_category` : les 11 catégories du cahier, à côté de la catégorie de presse existante.
-- `interactive` : indique si l'événement propose « Participer / Ignorer ».
-- `reason` : texte « pourquoi cela vous concerne ».
+### Table existante `events` (ajouts uniquement)
+- **Sept colonnes facultatives :**
+  - `ends_at` : date de fin ;
+  - `duration_kind` : instantané, temporaire, récurrent ou permanent ;
+  - `template_id` : modèle d'origine ;
+  - `character_id` : rempli uniquement pour un événement personnel ;
+  - `game_category` : les 11 catégories du cahier ;
+  - `interactive` : `false` par défaut ;
+  - `reason` : « pourquoi cela vous concerne ».
+- **Deux index de lecture**, l'un pour les événements personnels, l'autre par ville et date.
+- **Les 39 événements existants :** leurs valeurs ne changent pas, les nouvelles colonnes restent vides et `interactive` vaut `false`. La règle de lecture, la publication en Actualités et les Notifications restent intactes.
+- **Simplification par rapport à l'étape 1 :** aucune contrainte existante n'est élargie. Les statuts « en cours » et « terminé » sont calculés à l'affichage à partir des dates.
 
-Deux contraintes s'élargissent sans rien retirer :
-- statut : ajout de « en cours » et « terminé » aux valeurs actuelles (prévu, publié, annulé) ;
-- type de cible : ajout de « personnel ».
+### Table existante `life_rules`
+Ajout d'une ligne `world_event` (« Événement », 60 min, utilisable dans tous les lieux existants), exigée par l'Agenda. Si elle existe déjà, rien ne se passe. Aucune règle existante n'est modifiée.
 
-**Lecture côté joueur :** les événements généraux restent lisibles comme aujourd'hui. Un événement personnel n'est lisible que par son joueur ; c'est une règle de lecture en plus, sans perte pour l'existant.
+### Nouvelles tables (avec RLS et droits)
+- **`world_event_templates`** : catalogue configurable de 13 modèles (8 locaux ou nationaux, 5 personnels). On y règle :
+  - probabilité, récurrence, heure et durée ;
+  - conditions : âge, parcours, emploi exigé ou interdit, études, adhésion politique, compétence ;
+  - énergie et taux de réussite ;
+  - gains, avec une **règle qui interdit plus de 50 €**.
 
-## 2. Nouvelle table `world_event_templates` (réglages du jeu)
-Elle sert de catalogue configurable : identifiant, catégorie, portée, titre et description, sorte de lieu visé sur la carte existante, probabilité par jour et par ville (0 à 100), durée, récurrence (aucune, hebdomadaire ou mensuelle, avec jour et heure), conditions (âge minimum et maximum, parcours admis, emploi exigé, études exigées, compétence minimale, ville), participation possible ou non, énergie, gains (argent fixé par le jeu, compétence, relation, réputation, engagement civique, influence politique), règle de réussite, diffusion en actualité, notification.
+  Lecture seule pour les joueurs.
+- **`world_event_settings`** : une ligne avec vos réglages : interrupteur activé, 1 événement personnel par jour, 3 notifications par jour, 2 événements par ville et par jour, horizon de 7 jours, 50 € maximum. Lecture seule.
+- **`world_event_generation`** : repère « ville + jour déjà générés ». Il borne le nombre d'enregistrements. Aucun accès pour les joueurs.
+- **`world_event_participations`** : participations, avec unicité **(événement, personnage)**. Le joueur voit les siennes uniquement et ne peut rien écrire.
+- **`world_event_effects`** : registre des conséquences, avec unicité **(personnage, clé d'effet)**. Lecture par le propriétaire uniquement.
 
-Lecture seule pour les joueurs ; aucune écriture possible.
+### Nouvelles fonctions
+- **Fonctions internes**, non exécutables par les joueurs :
+  - `world_event_roll` : tirage déterministe, toujours identique ;
+  - `world_event_eligible` : compatibilité avec le profil réel ;
+  - `world_event_notify` : plafond de 3 notifications par jour ;
+  - `world_event_effect` : application unique d'un effet ;
+  - `world_events_generate` : génération sous verrou, sur l'horizon de 7 jours, au plus 2 événements par ville et par jour, avec clé unique ;
+  - `world_events_personal` : au plus 1 événement personnel par jour, avec la clé unique `wevp:personnage:jour` ;
+  - `world_events_settle` : règlement présence ou absence, résultat figé, récompenses.
+- **Fonctions joueur :**
+  - `world_events_state()` : écran Événements. Elle rattrape le temps écoulé (génération, événement personnel, règlement) et ne renvoie que les événements de sa ville, les événements nationaux et **ses propres** événements personnels.
+  - `world_event_action(événement, choix)` : « participer » ou « ignorer ».
 
-## 3. Nouvelle table `world_event_settings` (une seule ligne)
-- Événements personnels au maximum par joueur et par jour (proposé : 1).
-- Notifications d'événements au maximum par jour (proposé : 3).
-- Horizon de planification (proposé : 7 jours).
-- Événements générés au maximum par ville et par jour (proposé : 2).
-- Interrupteur général.
+## Garanties
+- **Banque :** l'argent passe uniquement par `economy_cash`, avec la clé unique `wevent:<événement>`, plafonnée à 50 €. Le montant vient du modèle, jamais du joueur.
+- **Idempotence :**
+  - une participation unique en base, et le personnage est verrouillé pendant l'action ;
+  - l'activité d'Agenda est unique grâce à `wevent:<événement>` ;
+  - chaque effet est unique par clé ;
+  - le tirage est enregistré une fois, au moment de l'inscription ;
+  - les notifications sont uniques par clé.
 
-Lecture seule pour les joueurs.
+  Une recharge, une reconnexion, des clics multiples ou un rattrapage hors connexion ne créent donc rien de plus.
+- **Vie privée :** un événement personnel reste toujours au statut « prévu » et sans journal source. Il n'est donc jamais lisible par d'autres joueurs, ni publié en Actualités.
+- **Actualités :** seuls les événements généraux marqués « diffusés » reçoivent un journal source. Le traitement horaire existant les publie à leur date, comme aujourd'hui.
+- **Agenda :** en cas de conflit, la participation est refusée avec le message « Conflit avec votre agenda : … ». Rien n'est ajouté sans prévenir. Le joueur est « présent » s'il commence l'activité depuis l'Agenda, et « absent » sinon.
+- **Résultat :** réussite si le tirage enregistré est inférieur au taux de réussite, augmenté de la compétence. Le résultat est figé dès le règlement.
+- **Sécurité :** un joueur ne peut ni créer ni modifier un événement, une récompense, un résultat ou une date. Il ne peut pas participer à un événement expiré, à l'événement personnel d'un autre joueur, ni deux fois.
 
-## 4. Nouvelle table `world_event_participations`
-Champs : événement, personnage, choix (participer ou ignorer), statut (inscrit, réussi, échoué, absent, ignoré), activité d'Agenda liée, résultat enregistré, tirage enregistré, date de récompense.
+## Données touchées à l'application
+- **Ajouts :** 1 ligne dans `life_rules`, 13 modèles et 1 ligne de réglages dans les nouvelles tables.
+- **Événements existants :** aucune valeur modifiée.
+- **Aucune suppression.**
 
-- **Unicité (événement, personnage)** : une seule participation, même avec quatre clics simultanés.
-- Lecture par le seul propriétaire ; aucune écriture directe. Le joueur ne peut donc modifier ni son résultat ni ses gains.
-
-## 5. Nouvelle table `world_event_effects` (registre des conséquences)
-Champs : personnage, événement, **clé d'effet unique**, nature (argent, énergie, compétence, relation, réputation, civique, politique, notification), montant, date.
-
-Chaque conséquence est inscrite une seule fois. Une recharge, une reconnexion ou un rattrapage hors connexion ne peut pas la rejouer. L'argent passe toujours par la Banque, avec la même clé.
-
-Lecture par le seul propriétaire ; aucune écriture directe.
-
-## 6. Réglage de l'Agenda
-Ajout d'une ligne de règle `world_event` dans les règles de vie existantes. Ce type d'activité est exigé par l'Agenda. Ajout seulement : aucune règle existante n'est modifiée.
-
-## 7. Fonctions serveur prévues
-- `refresh_world_events()` : génération contrôlée, sous verrou, sur l'horizon de planification uniquement, donc sans infinité d'enregistrements.
-  - Le tirage est déterministe : il dépend du modèle, de la ville et de la date, et donne toujours le même résultat.
-  - Clé unique par événement, donc aucun doublon.
-  - Les événements importants passent par le circuit existant de publication des actualités.
-  - Le lancement suit le traitement horaire des actualités, jamais l'ouverture d'une page.
-- `world_events_state()` : écran Événements du joueur, avec les onglets Aujourd'hui, À venir, Pour vous, Ma ville et Récents.
-  - Elle rattrape le temps écoulé : fin des événements, résultats et récompenses dus, une seule fois chacun.
-  - Elle crée au plus un événement personnel par jour, compatible avec l'âge, le parcours, la ville, l'emploi et le niveau.
-  - Elle signale les conflits d'Agenda.
-- `world_event_action(événement, choix)` : verrou sur le personnage, puis vérification de la ville, de l'âge, du parcours, des conditions, de la date et de l'absence de participation antérieure.
-  - « Participer » ajoute l'activité à l'Agenda, après signalement d'un éventuel conflit et sans rien ajouter à l'insu du joueur.
-  - « Ignorer » est enregistré.
-- Règlement : à la fin de l'activité, le joueur est « présent » s'il l'a commencée depuis l'Agenda, et « absent » sinon.
-  - Le résultat est calculé à partir de la compétence et de l'énergie, puis enregistré. Il ne change jamais.
-  - Les gains passent par le registre des effets et la Banque.
-
-## 8. Interface
-- Nouvelle section **Événements** (menu et téléphone), avec des cartes indiquant quoi, où, quand, pourquoi vous êtes concerné et ce que vous pouvez faire.
-- Repères sur la Carte, avec ouverture du lieu existant.
-- Événements visibles dans l'Agenda.
-- Les fonctionnalités non prévues afficheront « Disponible dans une prochaine étape ».
-
-## Données touchées
-- **Aucune suppression ni réécriture de données existantes.**
-- `events` reçoit des colonnes facultatives vides pour les 39 lignes actuelles.
-- `life_rules` reçoit une ligne.
-- Les nouvelles tables reçoivent des modèles et des réglages par défaut.
-- Aucune modification des Blocs 1 à 11 en dehors de ces ajouts.
-
-## Décisions à prendre
-1. Approuvez-vous l'extension de `events` plutôt qu'une table `world_events` séparée ?
-2. Approuvez-vous les fréquences proposées (1 événement personnel par jour, 3 notifications par jour, 2 événements par ville et par jour, horizon de 7 jours) ?
-3. Montant maximal d'une récompense en argent : je propose 50 € par événement.
-
-Après accord : présentation du SQL exact complet (étape 2), puis développement, tests des sections 33 à 44 sur comptes temporaires et rapport final. Le Bloc 13 ne sera pas commencé.
+## Après votre accord
+Application à l'identique, puis développement de l'écran Événements, des repères sur la Carte et de l'Agenda. Ensuite, tests des sections 33 à 44 sur comptes temporaires, régression des Blocs 1 à 11 et rapport final. Le Bloc 13 ne sera pas commencé.
