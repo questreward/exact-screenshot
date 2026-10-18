@@ -1,9 +1,13 @@
 -- CIVITAS — Bloc 15 — Politique nationale et institutions
 -- PROPOSITION NON APPLIQUÉE. Aucun appel de migration n'est autorisé à cette étape.
 -- 50 sièges Assemblée / 25 Sénat ; 5 circonscriptions / 45 sièges simulés.
--- Paramètres non validés laissés vides, activation FALSE ; aucun changement aux Blocs 1–14.
--- Les algorithmes ci-dessous (scrutin à un tour, plus forts restes, majorité absolue,
--- absence = abstention, séances depuis lieu administratif existant) sont PROPOSÉS,
+-- Paramètres non validés laissés vides, activation FALSE.
+-- LIEN INDIRECT EXPLICITE : nouveau trigger sur activities, inerte pour les autres types.
+-- Aucun INSERT/UPDATE/DELETE sur les données existantes à l’installation.
+-- Futur fonctionnement après accord : life_rules/activities, énergie characters pour
+-- séances uniquement, events/news via publication existante, city_indicators/indicator_history.
+-- Majorités VERROUILLÉES : 26/50 et 13/25. Les algorithmes (scrutin à un tour,
+-- plus forts restes, absence = abstention, séances depuis lieu administratif) sont PROPOSÉS,
 -- pas des décisions utilisateur déjà acquises. Valider avant toute application.
 -- Ce SQL est une proposition de socle et opérations. Campagnes/débats nationaux
 -- et notifications nationales générales non définis : non ajoutés, non inventés.
@@ -11,7 +15,7 @@ BEGIN;
 
 -- national_settings
 CREATE TABLE public.national_settings (
-  id integer PRIMARY KEY CHECK(id=1), enabled boolean NOT NULL DEFAULT false, assembly_seats integer NOT NULL DEFAULT 50 CHECK(assembly_seats=50), senate_seats integer NOT NULL DEFAULT 25 CHECK(senate_seats=25), rules jsonb NOT NULL DEFAULT '{}'::jsonb CHECK(jsonb_typeof(rules)='object')
+  id integer PRIMARY KEY CHECK(id=1), enabled boolean NOT NULL DEFAULT false, assembly_seats integer NOT NULL DEFAULT 50 CHECK(assembly_seats=50), senate_seats integer NOT NULL DEFAULT 25 CHECK(senate_seats=25), assembly_majority integer NOT NULL DEFAULT 26 CHECK(assembly_majority=26), senate_majority integer NOT NULL DEFAULT 13 CHECK(senate_majority=13), rules jsonb NOT NULL DEFAULT '{}'::jsonb CHECK(jsonb_typeof(rules)='object')
 );
 GRANT SELECT ON public.national_settings TO authenticated;
 GRANT ALL ON public.national_settings TO service_role;
@@ -144,7 +148,7 @@ CREATE POLICY national_law_versions_read ON public.national_law_versions FOR SEL
 
 -- national_sessions
 CREATE TABLE public.national_sessions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), law_id uuid NOT NULL, version integer NOT NULL, chamber text NOT NULL CHECK(chamber IN('assembly','senate')), starts_at timestamptz NOT NULL, ends_at timestamptz NOT NULL, status text NOT NULL DEFAULT 'open' CHECK(status IN('open','approved','rejected')), eligible_seats integer NOT NULL CHECK(eligible_seats IN(50,25)), majority_required integer NOT NULL CHECK(majority_required>0), electorate jsonb NOT NULL CHECK(jsonb_typeof(electorate)='array'), yes_votes integer, no_votes integer, abstentions integer, CHECK(starts_at<ends_at), UNIQUE(law_id,version,chamber), FOREIGN KEY(law_id,version) REFERENCES public.national_law_versions(law_id,version)
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), law_id uuid NOT NULL, version integer NOT NULL, chamber text NOT NULL CHECK(chamber IN('assembly','senate')), starts_at timestamptz NOT NULL, ends_at timestamptz NOT NULL, status text NOT NULL DEFAULT 'open' CHECK(status IN('open','approved','rejected')), eligible_seats integer NOT NULL CHECK(eligible_seats IN(50,25)), majority_required integer NOT NULL, CHECK((chamber='assembly' AND eligible_seats=50 AND majority_required=26) OR (chamber='senate' AND eligible_seats=25 AND majority_required=13)), electorate jsonb NOT NULL CHECK(jsonb_typeof(electorate)='array'), yes_votes integer, no_votes integer, abstentions integer, CHECK(starts_at<ends_at), UNIQUE(law_id,version,chamber), FOREIGN KEY(law_id,version) REFERENCES public.national_law_versions(law_id,version)
 );
 GRANT SELECT ON public.national_sessions TO authenticated;
 GRANT ALL ON public.national_sessions TO service_role;
@@ -222,7 +226,8 @@ INSERT INTO public.national_constituencies(city_id,name) VALUES
 ('bordeaux','Circonscription de Bordeaux');
 CREATE UNIQUE INDEX national_group_party_once ON public.national_groups(legislature_id,chamber,organization_id) WHERE organization_id IS NOT NULL;
 CREATE UNIQUE INDEX national_group_independent_once ON public.national_groups(legislature_id,chamber) WHERE organization_id IS NULL;
-CREATE UNIQUE INDEX national_one_player_seat ON public.national_seats(legislature_id,character_id) WHERE character_id IS NOT NULL;
+-- Le Sénat reste entièrement simulé : aucune attribution de siège joueur.
+ALTER TABLE public.national_seats ADD CONSTRAINT national_senate_simulated_only CHECK(chamber<>'senate' OR (simulated AND character_id IS NULL));
 
 -- Authentification sans civic_actor/prepare_daily_life : pas de règlement de salaire/loyer.
 CREATE FUNCTION public.national_actor() RETURNS public.characters
@@ -249,7 +254,7 @@ BEGIN
  PERFORM pg_advisory_xact_lock(151515);
  IF jsonb_typeof(_rules) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'Réglages invalides'; END IF;
  FOREACH k IN ARRAY ARRAY['voting_age','candidate_age','civic_min','reputation_min','influence_min','session_minutes','session_energy','office_civic_min','office_reputation_min','office_influence_min','fictional_vote_unit','initial_budget'] LOOP
-  IF NOT (_rules ? k) OR (_rules->>k) !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Paramètre manquant ou invalide : %',k; END IF;
+  IF NOT (_rules ? k) OR COALESCE(_rules->>k,'') !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Paramètre manquant ou invalide : %',k; END IF;
   n:=(_rules->>k)::numeric;
   IF n>CASE WHEN k='initial_budget' THEN 1000000000000 ELSE 2147483647 END THEN RAISE EXCEPTION 'Paramètre hors limite : %',k; END IF;
  END LOOP;
@@ -259,6 +264,10 @@ BEGIN
  FOREACH k IN ARRAY ARRAY['civic_min','reputation_min','influence_min','office_civic_min','office_reputation_min','office_influence_min'] LOOP
   IF (_rules->>k)::int>100 THEN RAISE EXCEPTION 'Seuil hors 0–100'; END IF;
  END LOOP;
+ IF _enabled IS NULL THEN RAISE EXCEPTION 'Activation explicite requise'; END IF;
+ -- Ces algorithmes ne sont pas validés par l’accord sur le seul socle.
+ IF _enabled AND (COALESCE(_rules->>'territorial_method','')<>'one_round' OR COALESCE(_rules->>'simulated_allocation','')<>'largest_remainders' OR COALESCE(_rules->>'senate_method','')<>'active_local_councils' OR COALESCE(_rules->>'absence_vote','')<>'abstain' OR COALESCE(_rules->>'simulated_law_vote','')<>'group_support_50' OR COALESCE(_rules->>'session_location_method','')<>'existing_administration' OR COALESCE(_rules->>'algorithms_approved','')<>'true') THEN RAISE EXCEPTION 'Choix de simulation/séances à approuver avant activation'; END IF;
+ IF (_rules->>'fictional_vote_unit')::int<1 THEN RAISE EXCEPTION 'Poids fictif positif requis'; END IF;
  IF EXISTS(SELECT 1 FROM public.national_elections WHERE status<>'cancelled') THEN RAISE EXCEPTION 'Configuration figée après création du premier scrutin'; END IF;
  UPDATE public.national_settings SET rules=_rules,enabled=_enabled WHERE id=1;
  IF EXISTS(SELECT 1 FROM public.national_treasury WHERE id=1 AND balance<>(_rules->>'initial_budget')::bigint) THEN RAISE EXCEPTION 'Fonds nationaux déjà initialisés : pas de réinitialisation'; END IF;
@@ -285,15 +294,16 @@ DECLARE eid uuid; r jsonb; ci record; p record; np public.social_npcs;
 BEGIN
  PERFORM pg_advisory_xact_lock(151515);
  SELECT rules INTO r FROM public.national_settings WHERE id=1 AND enabled;
- IF r IS NULL OR _candidacies_at<=public.game_now() THEN RAISE EXCEPTION 'Configuration ou date invalide'; END IF;
+ IF r IS NULL OR _name IS NULL OR length(_name) NOT BETWEEN 3 AND 120 OR num_nonnulls(_candidacies_at,_candidacies_end,_vote_at,_vote_end,_term_end)<>5 OR NOT (_candidacies_at<_candidacies_end AND _candidacies_end<=_vote_at AND _vote_at<_vote_end AND _vote_end<_term_end) OR _candidacies_at<=public.game_now() THEN RAISE EXCEPTION 'Configuration ou date invalide'; END IF;
  IF EXISTS(SELECT 1 FROM public.national_elections WHERE status<>'cancelled' AND candidacies_at<_term_end AND term_end_at>_candidacies_at) THEN RAISE EXCEPTION 'Calendrier national concurrent'; END IF;
- IF NOT EXISTS(SELECT 1 FROM public.national_party_profiles WHERE simulation_weight>0) THEN RAISE EXCEPTION 'Poids de simulation à définir'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.national_party_profiles WHERE simulation_weight>0 AND (simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint)<=2147483647) THEN RAISE EXCEPTION 'Poids de simulation à définir'; END IF;
  INSERT INTO public.national_elections(name,candidacies_at,candidacies_end_at,vote_at,vote_end_at,term_end_at,rules)
  VALUES(_name,_candidacies_at,_candidacies_end,_vote_at,_vote_end,_term_end,r) RETURNING id INTO eid;
  FOR ci IN SELECT city_id FROM public.national_constituencies ORDER BY city_id LOOP
   FOR p IN SELECT npf.*,o.name FROM public.national_party_profiles npf JOIN public.organizations o ON o.id=npf.organization_id WHERE o.kind='party' AND o.status='active' AND npf.simulation_weight>0 ORDER BY o.id LOOP
    SELECT * INTO np FROM public.social_npcs WHERE organization_id=p.organization_id AND city_id=ci.city_id ORDER BY id LIMIT 1;
    IF NOT FOUND THEN RAISE EXCEPTION 'Aucun candidat fictif existant pour % dans %',p.name,ci.city_id; END IF;
+   IF p.simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint>2147483647 THEN RAISE EXCEPTION 'Poids fictif hors capacité entière'; END IF;
    INSERT INTO public.national_candidacies(election_id,city_id,npc_id,organization_id,display_name,program,fictional_votes)
    VALUES(eid,ci.city_id,np.id,p.organization_id,np.first_name||' '||np.last_name,p.program,(p.simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint)::integer);
   END LOOP;
@@ -306,6 +316,7 @@ CREATE FUNCTION public.national_allocate_simulated(_lid uuid,_chamber text,_weig
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE a record; i integer; gid uuid; total numeric; last_no integer:=_offset;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  SELECT sum(value::numeric) INTO total FROM jsonb_each_text(_weights);
  IF total IS NULL OR total<=0 THEN RAISE EXCEPTION 'Collège de simulation indisponible'; END IF;
  FOR a IN
@@ -331,28 +342,29 @@ END $$;
 
 CREATE FUNCTION public.national_compose_senate(_lid uuid) RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE l public.national_legislatures; source jsonb; weights jsonb;
+DECLARE l public.national_legislatures; source jsonb; weights jsonb; at_time timestamptz:=public.game_now();
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO l FROM public.national_legislatures WHERE id=_lid FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'Législature introuvable'; END IF;
  IF l.senate_composed_at IS NOT NULL THEN RETURN true; END IF;
- IF public.game_now()>=l.ends_at THEN RETURN false; END IF;
+ IF at_time<l.starts_at OR at_time>=l.ends_at THEN RETURN false; END IF;
  -- Source en lecture seule, aucun rafraîchissement/modification des mandats municipaux.
  SELECT jsonb_agg(jsonb_build_object('mandate_id',m.id,'group_id',g.id,'organization_id',g.organization_id,'seats',g.seats) ORDER BY m.id,g.id)
  INTO source FROM public.municipal_mandates m JOIN public.municipal_council_groups g ON g.mandate_id=m.id
- WHERE m.status='active' AND m.starts_at<=l.starts_at AND m.ends_at>l.starts_at;
+ WHERE m.status='active' AND m.starts_at<=at_time AND m.ends_at>at_time;
  IF source IS NULL THEN RETURN false; END IF;
  SELECT jsonb_object_agg(organization_id::text,n) INTO weights FROM (
  SELECT g.organization_id,sum(g.seats) n FROM public.municipal_mandates m JOIN public.municipal_council_groups g ON g.mandate_id=m.id
  JOIN public.national_party_profiles p ON p.organization_id=g.organization_id
- WHERE m.status='active' AND m.starts_at<=l.starts_at AND m.ends_at>l.starts_at GROUP BY g.organization_id HAVING sum(g.seats)>0) q;
+ WHERE m.status='active' AND m.starts_at<=at_time AND m.ends_at>at_time GROUP BY g.organization_id HAVING sum(g.seats)>0) q;
  -- Proposition : pas de collège représentatif si indépendants/partis non configurés.
  -- On refuse la composition plutôt que d'effacer une composante locale.
  IF EXISTS(SELECT 1 FROM jsonb_array_elements(source) x WHERE x->>'organization_id' IS NULL OR NOT EXISTS(SELECT 1 FROM public.national_party_profiles p WHERE p.organization_id=(x->>'organization_id')::uuid)) THEN RETURN false; END IF;
  IF weights IS NULL THEN RETURN false; END IF;
  PERFORM public.national_allocate_simulated(l.id,'senate',weights,25,0);
- UPDATE public.national_legislatures SET senate_source=source,senate_composed_at=public.game_now() WHERE id=l.id;
+ UPDATE public.national_legislatures SET senate_source=source,senate_composed_at=at_time WHERE id=l.id;
  RETURN true;
 END $$;
 
@@ -360,6 +372,7 @@ CREATE FUNCTION public.national_count_election(_eid uuid) RETURNS uuid
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE e public.national_elections; lid uuid; ci record; winner public.national_candidacies; gid uuid; sn integer:=0; weights jsonb;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO e FROM public.national_elections WHERE id=_eid FOR UPDATE;
  IF NOT FOUND OR e.status='cancelled' THEN RAISE EXCEPTION 'Scrutin indisponible'; END IF;
@@ -399,10 +412,11 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE d record; a record; total numeric:=0;
 BEGIN
  FOR d IN SELECT * FROM jsonb_each_text(NEW.effects) LOOP
-  IF d.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR d.value !~ '^-?[0-9]+$' OR d.value::numeric NOT BETWEEN -100 AND 100 THEN RAISE EXCEPTION 'Effet de ville invalide'; END IF;
+  IF d.value IS NULL OR d.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR d.value !~ '^-?[0-9]+$' OR d.value::numeric NOT BETWEEN -100 AND 100 THEN RAISE EXCEPTION 'Effet de ville invalide'; END IF;
  END LOOP;
  FOR a IN SELECT * FROM jsonb_each_text(NEW.budget_allocations) LOOP
-  IF a.key NOT IN('sante','education','transports','logement','securite','environnement','services_publics') OR a.value !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Poste budgétaire invalide'; END IF;
+  -- Les postes sont les 9 indicateurs existants seulement ; pas de Santé/Éducation.
+  IF a.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR a.value IS NULL OR a.value !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Poste budgétaire invalide'; END IF;
   total:=total+a.value::numeric;
  END LOOP;
  IF NEW.budget_allocations<>'{}'::jsonb AND total<>NEW.cost THEN RAISE EXCEPTION 'Budget non équilibré'; END IF;
@@ -414,6 +428,7 @@ CREATE FUNCTION public.national_publish(_key text,_title text,_body text) RETURN
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE eid uuid;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT event_id INTO eid FROM public.national_publications WHERE publication_key=_key;
  IF eid IS NOT NULL THEN RETURN eid; END IF;
@@ -432,6 +447,7 @@ CREATE FUNCTION public.national_close_session(_sid uuid) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE s public.national_sessions; l public.national_laws; y integer:=0; n integer:=0; a integer:=0; entry jsonb; v text;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO s FROM public.national_sessions WHERE id=_sid FOR UPDATE;
  IF NOT FOUND OR s.status<>'open' THEN RETURN; END IF;
@@ -450,7 +466,7 @@ BEGIN
  UPDATE public.national_sessions SET status=CASE WHEN y>=majority_required THEN 'approved' ELSE 'rejected' END,yes_votes=y,no_votes=n,abstentions=a WHERE id=s.id;
  IF l.current_version=s.version AND l.status IN('proposed','examining') THEN
   IF y<s.majority_required THEN UPDATE public.national_laws SET status='refused' WHERE id=l.id;
-  ELSIF (SELECT count(*) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved')=2 THEN
+  ELSIF (SELECT count(DISTINCT chamber) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved')=2 THEN
    UPDATE public.national_laws SET status='adopted',adopted_at=s.ends_at WHERE id=l.id;
    PERFORM public.national_publish('law-adopted:'||l.id||':'||l.current_version,'Une loi nationale est adoptée', (SELECT title FROM public.national_law_versions WHERE law_id=l.id AND version=l.current_version));
   END IF;
@@ -461,18 +477,20 @@ CREATE FUNCTION public.national_apply_law(_law uuid) RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE l public.national_laws; v public.national_law_versions; ci record; d record; cur integer; nxt integer; funds bigint; k text;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO l FROM public.national_laws WHERE id=_law FOR UPDATE;
  IF NOT FOUND OR l.status NOT IN('adopted','applied') THEN RETURN false; END IF;
  IF l.status='applied' THEN RETURN true; END IF;
  SELECT * INTO v FROM public.national_law_versions WHERE law_id=l.id AND version=l.current_version;
  IF public.game_now()<l.adopted_at+v.delay_minutes*interval '1 minute' THEN RETURN false; END IF;
- IF (SELECT count(*) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved')<>2 THEN RAISE EXCEPTION 'Deux chambres sur la même version requises'; END IF;
+ IF (SELECT count(DISTINCT chamber) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved')<>2 THEN RAISE EXCEPTION 'Deux chambres sur la même version requises'; END IF;
  SELECT balance INTO funds FROM public.national_treasury WHERE id=1 FOR UPDATE;
  IF funds IS NULL OR funds<v.cost THEN RETURN false; END IF;
+ IF EXISTS(SELECT 1 FROM public.national_budgets WHERE law_id=l.id AND version=v.version) OR EXISTS(SELECT 1 FROM public.national_ledger WHERE law_id=l.id AND version=v.version) OR EXISTS(SELECT 1 FROM public.national_city_effects WHERE law_id=l.id AND version=v.version) THEN RAISE EXCEPTION 'Registre partiel incohérent : application refusée'; END IF;
  -- Tout ou rien : prévalidation de la présence de tous les indicateurs, ordre stable.
  IF EXISTS(SELECT 1 FROM public.national_constituencies c CROSS JOIN jsonb_each_text(v.effects) d WHERE NOT EXISTS(SELECT 1 FROM public.city_indicators i WHERE i.city_id=c.city_id AND i.indicator=d.key)) THEN RAISE EXCEPTION 'Indicateur de ville manquant'; END IF;
- INSERT INTO public.national_budgets(law_id,version,allocations,total,funded_at) VALUES(l.id,v.version,v.budget_allocations,v.cost,public.game_now()) ON CONFLICT DO NOTHING;
+ INSERT INTO public.national_budgets(law_id,version,allocations,total,funded_at) VALUES(l.id,v.version,v.budget_allocations,v.cost,public.game_now());
  IF FOUND THEN
   UPDATE public.national_treasury SET balance=balance-v.cost WHERE id=1;
   INSERT INTO public.national_ledger(entry_key,law_id,version,amount,occurred_at) VALUES('law:'||l.id||':'||v.version,l.id,v.version,-v.cost,public.game_now());
@@ -482,7 +500,7 @@ BEGIN
    SELECT value INTO cur FROM public.city_indicators WHERE city_id=ci.city_id AND indicator=d.key FOR UPDATE;
    nxt:=LEAST(100,GREATEST(0,cur+d.value::int));
    INSERT INTO public.national_city_effects(law_id,version,city_id,indicator,requested_delta,before_value,after_value,applied_at)
-   VALUES(l.id,v.version,ci.city_id,d.key,d.value::int,cur,nxt,public.game_now()) ON CONFLICT DO NOTHING;
+   VALUES(l.id,v.version,ci.city_id,d.key,d.value::int,cur,nxt,public.game_now());
    IF FOUND THEN
     UPDATE public.city_indicators SET value=nxt WHERE city_id=ci.city_id AND indicator=d.key;
     k:='national:'||l.id||':'||v.version||':'||ci.city_id;
@@ -500,6 +518,7 @@ CREATE FUNCTION public.national_form_government(_lid uuid,_president uuid,_pm uu
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE l public.national_legislatures; gid uuid; gov uuid; num integer; np public.social_npcs;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO l FROM public.national_legislatures WHERE id=_lid FOR UPDATE;
  IF NOT FOUND OR public.game_now() NOT BETWEEN l.starts_at AND l.ends_at OR public.game_now()=l.ends_at THEN RAISE EXCEPTION 'Législature inactive'; END IF;
@@ -526,8 +545,9 @@ BEGIN
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO g FROM public.national_governments WHERE id=_gov FOR UPDATE;
  IF NOT FOUND OR public.game_now()<g.starts_at OR public.game_now()>=g.ends_at OR num_nonnulls(_cid,_npc)<>1 THEN RAISE EXCEPTION 'Nomination invalide'; END IF;
- IF _role NOT IN('president','prime_minister','minister') OR (_role='minister' AND COALESCE(_ministry,'')='') OR (_role<>'minister' AND COALESCE(_ministry,'')<>'') THEN RAISE EXCEPTION 'Fonction invalide'; END IF;
+ IF _role IS NULL OR _role NOT IN('president','prime_minister','minister') OR (_role='minister' AND COALESCE(_ministry,'')='') OR (_role<>'minister' AND COALESCE(_ministry,'')<>'') THEN RAISE EXCEPTION 'Fonction invalide'; END IF;
  SELECT rules INTO r FROM public.national_settings WHERE id=1 AND enabled;
+ IF r IS NULL THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  IF _cid IS NOT NULL THEN
   IF NOT public.national_eligible(_cid,r,true) OR NOT EXISTS(SELECT 1 FROM public.national_seats WHERE legislature_id=g.legislature_id AND character_id=_cid) THEN RAISE EXCEPTION 'Conditions nationales non remplies'; END IF;
   SELECT first_name||' '||last_name INTO label FROM public.characters WHERE id=_cid;
@@ -544,6 +564,7 @@ CREATE FUNCTION public.national_group_proposal(_group uuid,_template text,_title
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE g public.national_groups; t public.national_law_templates; lid uuid;
 BEGIN
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO g FROM public.national_groups WHERE id=_group;
  IF NOT FOUND OR NOT EXISTS(SELECT 1 FROM public.national_legislatures WHERE id=g.legislature_id AND starts_at<=public.game_now() AND ends_at>public.game_now()) THEN RAISE EXCEPTION 'Groupe inactif'; END IF;
@@ -562,14 +583,19 @@ BEGIN
  PERFORM pg_advisory_xact_lock(151515);
  SELECT * INTO l FROM public.national_laws WHERE id=_law FOR UPDATE;
  SELECT rules INTO r FROM public.national_settings WHERE id=1 AND enabled;
- IF l.id IS NULL OR l.status NOT IN('proposed','examining') OR r IS NULL OR _at<public.game_now() OR _chamber NOT IN('assembly','senate') THEN RAISE EXCEPTION 'Séance invalide'; END IF;
+ IF l.id IS NULL OR l.status NOT IN('proposed','examining') OR r IS NULL OR _at IS NULL OR _at<public.game_now() OR _chamber IS NULL OR _chamber NOT IN('assembly','senate') THEN RAISE EXCEPTION 'Séance invalide'; END IF;
  finish:=_at+(r->>'session_minutes')::int*interval '1 minute';
  IF NOT EXISTS(SELECT 1 FROM public.national_legislatures WHERE id=l.legislature_id AND starts_at<=_at AND ends_at>=finish) THEN RAISE EXCEPTION 'Séance hors mandat'; END IF;
  count_seats:=CASE WHEN _chamber='assembly' THEN 50 ELSE 25 END;
  SELECT jsonb_agg(jsonb_build_object('seat_id',s.id,'simulated',s.simulated,'support',g.support) ORDER BY s.seat_no) INTO electorate FROM public.national_seats s JOIN public.national_groups g ON g.id=s.group_id WHERE s.legislature_id=l.legislature_id AND s.chamber=_chamber;
+ -- Une seule séance par version/chambre : réouverture identique idempotente,
+ -- nouvel examen après refus uniquement par une NOUVELLE version.
+ SELECT id INTO sid FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND chamber=_chamber AND starts_at=_at;
+ IF sid IS NOT NULL THEN RETURN sid; END IF;
+ IF EXISTS(SELECT 1 FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND chamber=_chamber) THEN RAISE EXCEPTION 'Cette chambre a déjà une séance pour cette version'; END IF;
  IF jsonb_array_length(COALESCE(electorate,'[]'::jsonb))<>count_seats THEN RAISE EXCEPTION 'Chambre non constituée'; END IF;
  INSERT INTO public.national_sessions(law_id,version,chamber,starts_at,ends_at,eligible_seats,majority_required,electorate)
- VALUES(l.id,l.current_version,_chamber,_at,finish,count_seats,count_seats/2+1,electorate) RETURNING id INTO sid;
+ VALUES(l.id,l.current_version,_chamber,_at,finish,count_seats,CASE WHEN _chamber='assembly' THEN 26 ELSE 13 END,electorate) RETURNING id INTO sid;
  UPDATE public.national_laws SET status='examining' WHERE id=l.id;
  RETURN sid;
 END $$;
@@ -577,7 +603,7 @@ END $$;
 -- Entrée unique joueur : aucune cible personnage ni montant/effet fourni par le client.
 CREATE FUNCTION public.national_action(_command text,_request_id uuid,_input jsonb DEFAULT '{}'::jsonb) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE c public.characters; old public.national_requests; e public.national_elections; k public.national_candidacies; l public.national_laws; t public.national_law_templates; s public.national_sessions; seat public.national_seats; r jsonb; aid uuid; oid uuid; lid uuid; result jsonb; pp public.character_positions; loc public.locations;
+DECLARE c public.characters; old public.national_requests; e public.national_elections; k public.national_candidacies; l public.national_laws; t public.national_law_templates; s public.national_sessions; seat public.national_seats; r jsonb; aid uuid; oid uuid; lid uuid; result jsonb; pp public.character_positions; loc public.locations; activity public.activities;
 BEGIN
  c:=public.national_actor();
  IF _request_id IS NULL OR _command IS NULL OR _input IS NULL OR jsonb_typeof(_input)<>'object' THEN RAISE EXCEPTION 'Demande invalide'; END IF;
@@ -600,7 +626,7 @@ BEGIN
  WHEN 'program' THEN
   SELECT * INTO k FROM public.national_candidacies WHERE id=(_input->>'candidacy_id')::uuid AND character_id=c.id FOR UPDATE;
   SELECT * INTO e FROM public.national_elections WHERE id=k.election_id;
-  IF k.id IS NULL OR public.game_now()>=e.candidacies_end_at OR _input->'program' IS NULL OR jsonb_typeof(_input->'program')<>'object' OR octet_length((_input->'program')::text)>12000 THEN RAISE EXCEPTION 'Programme invalide ou période fermée'; END IF;
+  IF k.id IS NULL OR e.status IN('completed','cancelled') OR k.status<>'accepted' OR public.game_now()<e.candidacies_at OR public.game_now()>=e.candidacies_end_at OR _input->'program' IS NULL OR jsonb_typeof(_input->'program')<>'object' OR octet_length((_input->'program')::text)>12000 THEN RAISE EXCEPTION 'Programme invalide ou période fermée'; END IF;
   UPDATE public.national_candidacies SET program=_input->'program' WHERE id=k.id;
   result:=jsonb_build_object('id',k.id);
  WHEN 'vote' THEN
@@ -611,7 +637,7 @@ BEGIN
   INSERT INTO public.national_ballots(election_id,character_id,city_id,candidacy_id) VALUES(e.id,c.id,c.city_id,k.id);
   result:=jsonb_build_object('voted',true);
  WHEN 'law' THEN
-  SELECT ns.* INTO seat FROM public.national_seats ns JOIN public.national_legislatures nl ON nl.id=ns.legislature_id WHERE ns.character_id=c.id AND nl.starts_at<=public.game_now() AND nl.ends_at>public.game_now();
+  SELECT ns.* INTO seat FROM public.national_seats ns JOIN public.national_legislatures nl ON nl.id=ns.legislature_id WHERE ns.character_id=c.id AND nl.starts_at<=public.game_now() AND nl.ends_at>public.game_now() ORDER BY ns.chamber LIMIT 1;
   IF seat.id IS NULL OR NOT public.national_eligible(c.id,r) THEN RAISE EXCEPTION 'Réservé à un parlementaire éligible'; END IF;
   SELECT * INTO t FROM public.national_law_templates WHERE id=_input->>'template_id' AND active;
   IF NOT FOUND THEN RAISE EXCEPTION 'Modèle non validé'; END IF;
@@ -633,19 +659,38 @@ BEGIN
   SELECT * INTO s FROM public.national_sessions WHERE id=(_input->>'session_id')::uuid FOR UPDATE;
   SELECT * INTO l FROM public.national_laws WHERE id=s.law_id;
   SELECT * INTO seat FROM public.national_seats WHERE legislature_id=l.legislature_id AND chamber=s.chamber AND character_id=c.id;
-  IF seat.id IS NULL OR s.status<>'open' OR l.current_version<>s.version OR public.game_now()>=s.starts_at THEN RAISE EXCEPTION 'Séance inaccessible'; END IF;
+  IF seat.id IS NULL OR s.id IS NULL OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version OR public.game_now()>=s.starts_at THEN RAISE EXCEPTION 'Séance inaccessible'; END IF;
   IF EXISTS(SELECT 1 FROM public.activities WHERE character_id=c.id AND status IN('planned','running') AND start_time<s.ends_at AND end_time>s.starts_at) THEN RAISE EXCEPTION 'Chevauchement avec votre agenda'; END IF;
   -- Lieu administratif existant ; aucune téléportation ou modification des positions.
-  SELECT * INTO loc FROM public.locations WHERE city_id=c.city_id AND kind IN('administration','mairie') AND accessible ORDER BY id LIMIT 1;
+  SELECT ll.* INTO loc FROM public.locations ll JOIN public.districts dd ON dd.id=ll.district_id WHERE ll.city_id=c.city_id AND ll.kind IN('administration','mairie') AND ll.accessible AND dd.available ORDER BY ll.id LIMIT 1;
   IF NOT FOUND THEN RAISE EXCEPTION 'Lieu de séance indisponible'; END IF;
   INSERT INTO public.activities(character_id,type,title,start_time,end_time,location_id,energy_cost,source_key)
   VALUES(c.id,'national','Séance nationale',s.starts_at,s.ends_at,loc.id,(r->>'session_energy')::int,'national-session:'||s.id) RETURNING id INTO aid;
   result:=jsonb_build_object('activity_id',aid);
+ WHEN 'start_session' THEN
+  -- Départ explicite ; aucune auto-présence et aucun règlement salaire/loyer.
+  SELECT * INTO s FROM public.national_sessions WHERE id=(_input->>'session_id')::uuid FOR UPDATE;
+  SELECT * INTO l FROM public.national_laws WHERE id=s.law_id;
+  IF s.id IS NULL OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version OR public.game_now()<s.starts_at OR public.game_now()>=s.ends_at THEN RAISE EXCEPTION 'Séance inaccessible'; END IF;
+  SELECT * INTO activity FROM public.activities WHERE character_id=c.id AND type='national' AND source_key='national-session:'||s.id AND status IN('planned','running') FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Réservation requise'; END IF;
+  IF activity.status='running' THEN
+   result:=jsonb_build_object('activity_id',activity.id);
+  ELSE
+   IF EXISTS(SELECT 1 FROM public.activities WHERE character_id=c.id AND status='running') OR EXISTS(SELECT 1 FROM public.activities WHERE character_id=c.id AND id<>activity.id AND status='planned' AND start_time<activity.end_time AND end_time>public.game_now()) THEN RAISE EXCEPTION 'Votre agenda est occupé'; END IF;
+   SELECT * INTO pp FROM public.character_positions WHERE character_id=c.id;
+   IF pp.location_id IS DISTINCT FROM activity.location_id OR NOT EXISTS(SELECT 1 FROM public.locations ll JOIN public.districts dd ON dd.id=ll.district_id WHERE ll.id=activity.location_id AND ll.city_id=c.city_id AND ll.accessible AND dd.available AND ll.kind IN('administration','mairie')) THEN RAISE EXCEPTION 'Rejoignez le lieu administratif prévu'; END IF;
+   IF c.energy<activity.energy_cost THEN RAISE EXCEPTION 'Énergie insuffisante'; END IF;
+   -- Seule écriture sur personnage : coût d’énergie de LA séance autorisée.
+   UPDATE public.characters SET energy=energy-activity.energy_cost WHERE id=c.id;
+   UPDATE public.activities SET status='running' WHERE id=activity.id;
+   result:=jsonb_build_object('activity_id',activity.id);
+  END IF;
  WHEN 'parliament_vote' THEN
   SELECT * INTO s FROM public.national_sessions WHERE id=(_input->>'session_id')::uuid FOR UPDATE;
   SELECT * INTO l FROM public.national_laws WHERE id=s.law_id;
   SELECT * INTO seat FROM public.national_seats WHERE legislature_id=l.legislature_id AND chamber=s.chamber AND character_id=c.id;
-  IF seat.id IS NULL OR s.status<>'open' OR l.current_version<>s.version OR public.game_now()<s.starts_at OR public.game_now()>=s.ends_at OR _input->>'vote' IS NULL OR _input->>'vote' NOT IN('yes','no','abstain') THEN RAISE EXCEPTION 'Vote parlementaire inaccessible'; END IF;
+  IF seat.id IS NULL OR s.id IS NULL OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version OR public.game_now()<s.starts_at OR public.game_now()>=s.ends_at OR _input->>'vote' IS NULL OR _input->>'vote' NOT IN('yes','no','abstain') THEN RAISE EXCEPTION 'Vote parlementaire inaccessible'; END IF;
   SELECT a.id INTO aid FROM public.activities a WHERE a.character_id=c.id AND a.source_key='national-session:'||s.id AND a.status='running' AND a.start_time<=public.game_now() AND a.end_time>public.game_now();
   IF aid IS NULL THEN RAISE EXCEPTION 'Présence à la séance requise'; END IF;
   INSERT INTO public.national_parliamentary_votes(session_id,seat_id,character_id,activity_id,vote) VALUES(s.id,seat.id,c.id,aid,_input->>'vote');
@@ -683,8 +728,8 @@ BEGIN
  IF cid IS NULL THEN RAISE EXCEPTION 'Personnage introuvable'; END IF;
  SELECT jsonb_build_object(
  'world_now',public.game_now(),
- 'settings',(SELECT jsonb_build_object('enabled',enabled,'assembly_seats',assembly_seats,'senate_seats',senate_seats,'rules',rules) FROM public.national_settings WHERE id=1),
- 'elections',COALESCE((SELECT jsonb_agg(to_jsonb(e)||jsonb_build_object('voted',EXISTS(SELECT 1 FROM public.national_ballots b WHERE b.election_id=e.id AND b.character_id=cid))) FROM public.national_elections e),'[]'::jsonb),
+ 'settings',(SELECT jsonb_build_object('enabled',enabled,'assembly_seats',assembly_seats,'senate_seats',senate_seats,'assembly_majority',assembly_majority,'senate_majority',senate_majority,'rules',rules) FROM public.national_settings WHERE id=1),
+ 'elections',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',e.id,'name',e.name,'status',e.status,'candidacies_at',e.candidacies_at,'candidacies_end_at',e.candidacies_end_at,'vote_at',e.vote_at,'vote_end_at',e.vote_end_at,'term_end_at',e.term_end_at)||jsonb_build_object('voted',EXISTS(SELECT 1 FROM public.national_ballots b WHERE b.election_id=e.id AND b.character_id=cid))) FROM public.national_elections e),'[]'::jsonb),
  'candidates',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',k.id,'election_id',k.election_id,'city_id',k.city_id,'organization_id',k.organization_id,'display_name',k.display_name,'program',k.program,'mine',k.character_id=cid)) FROM public.national_candidacies k WHERE k.status='accepted'),'[]'::jsonb),
  'legislatures',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'election_id',election_id,'starts_at',starts_at,'ends_at',ends_at,'senate_composed',senate_composed_at IS NOT NULL)) FROM public.national_legislatures),'[]'::jsonb),
  'groups',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',g.id,'legislature_id',g.legislature_id,'chamber',g.chamber,'organization_id',g.organization_id,'name',g.name,'seats',(SELECT count(*) FROM public.national_seats s WHERE s.group_id=g.id))) FROM public.national_groups g),'[]'::jsonb),
@@ -716,18 +761,39 @@ CREATE FUNCTION public.national_activity_guard() RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE s public.national_sessions; l public.national_laws;
 BEGIN
+ IF TG_OP='DELETE' THEN
+  IF OLD.type='national' THEN RAISE EXCEPTION 'Historique de séance immuable'; END IF;
+  RETURN OLD;
+ END IF;
+ IF TG_OP='UPDATE' AND OLD.type='national' AND NEW.type IS DISTINCT FROM OLD.type THEN RAISE EXCEPTION 'Type national immuable'; END IF;
  IF NEW.type<>'national' THEN RETURN NEW; END IF;
  IF TG_OP='UPDATE' THEN
-  IF OLD.character_id<>NEW.character_id OR OLD.type<>NEW.type OR OLD.energy_cost<>NEW.energy_cost OR OLD.source_key IS DISTINCT FROM NEW.source_key OR OLD.start_time<>NEW.start_time OR OLD.end_time<>NEW.end_time OR OLD.location_id<>NEW.location_id OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.progression_gain<>0 THEN RAISE EXCEPTION 'Activité nationale immuable'; END IF;
+  IF (to_jsonb(NEW)-'status') IS DISTINCT FROM (to_jsonb(OLD)-'status') THEN RAISE EXCEPTION 'Séance nationale immuable'; END IF;
+  IF NOT (NEW.status=OLD.status OR (OLD.status='planned' AND NEW.status IN('running','cancelled')) OR (OLD.status='running' AND NEW.status='completed')) THEN RAISE EXCEPTION 'Transition de séance interdite'; END IF;
  END IF;
- IF NEW.source_key IS NULL OR NEW.source_key NOT LIKE 'national-session:%' OR NEW.target_location_id IS NOT NULL OR NEW.organization_event_id IS NOT NULL OR NEW.social_npc_id IS NOT NULL OR NEW.campaign_action_id IS NOT NULL OR NEW.governance_action_id IS NOT NULL OR NEW.travel_delay_minutes<>0 OR cardinality(NEW.travel_event_ids)<>0 OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.energy_gain<>0 OR NEW.progression_gain<>0 OR NEW.political_reputation_gain<>0 OR NEW.political_influence_gain<>0 OR NEW.political_engagement_gain<>0 OR NEW.social_reputation_gain<>0 OR NEW.social_influence_gain<>0 OR NEW.social_relation_gain<>0 OR NEW.civic_engagement_gain<>0 THEN RAISE EXCEPTION 'Activité nationale invalide'; END IF;
+ IF NEW.source_key IS NULL OR NEW.source_key NOT LIKE 'national-session:%' OR NEW.target_location_id IS NOT NULL OR NEW.organization_event_id IS NOT NULL OR NEW.social_npc_id IS NOT NULL OR NEW.campaign_action_id IS NOT NULL OR NEW.governance_action_id IS NOT NULL OR NEW.travel_delay_minutes IS DISTINCT FROM 0 OR cardinality(NEW.travel_event_ids) IS DISTINCT FROM 0 OR NEW.reward IS DISTINCT FROM 0 OR NEW.money_cost IS DISTINCT FROM 0 OR NEW.energy_gain IS DISTINCT FROM 0 OR NEW.progression_gain IS DISTINCT FROM 0 OR NEW.political_reputation_gain IS DISTINCT FROM 0 OR NEW.political_influence_gain IS DISTINCT FROM 0 OR NEW.political_engagement_gain IS DISTINCT FROM 0 OR NEW.social_reputation_gain IS DISTINCT FROM 0 OR NEW.social_influence_gain IS DISTINCT FROM 0 OR NEW.social_relation_gain IS DISTINCT FROM 0 OR NEW.civic_engagement_gain IS DISTINCT FROM 0 THEN RAISE EXCEPTION 'Activité nationale invalide'; END IF;
  SELECT * INTO s FROM public.national_sessions WHERE id=substring(NEW.source_key from 18)::uuid;
  SELECT * INTO l FROM public.national_laws WHERE id=s.law_id;
- IF s.id IS NULL OR NEW.start_time<>s.starts_at OR NEW.end_time<>s.ends_at OR NOT EXISTS(SELECT 1 FROM public.national_seats WHERE legislature_id=l.legislature_id AND chamber=s.chamber AND character_id=NEW.character_id) THEN RAISE EXCEPTION 'Séance ou mandat invalide'; END IF;
- IF (TG_OP='INSERT' OR (TG_OP='UPDATE' AND NEW.status='running' AND OLD.status<>'running')) AND (s.status<>'open' OR l.current_version<>s.version) THEN RAISE EXCEPTION 'Séance fermée ou ancienne version'; END IF;
+ IF s.id IS NULL OR NEW.start_time<>s.starts_at OR NEW.end_time<>s.ends_at OR NEW.energy_cost IS DISTINCT FROM (SELECT (rules->>'session_energy')::int FROM public.national_settings WHERE id=1) OR NOT EXISTS(SELECT 1 FROM public.national_seats WHERE legislature_id=l.legislature_id AND chamber=s.chamber AND character_id=NEW.character_id) THEN RAISE EXCEPTION 'Séance ou mandat invalide'; END IF;
+ IF TG_OP='INSERT' THEN
+  IF NEW.status<>'planned' OR NOT (SELECT enabled FROM public.national_settings WHERE id=1) OR public.game_now()>=s.starts_at OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version THEN RAISE EXCEPTION 'Réservation nationale invalide'; END IF;
+ ELSIF NEW.status IS DISTINCT FROM OLD.status THEN
+  IF NEW.status='running' AND (public.game_now()<s.starts_at OR public.game_now()>=s.ends_at OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version) THEN RAISE EXCEPTION 'Séance fermée ou ancienne version'; END IF;
+  IF NEW.status='completed' AND public.game_now()<s.ends_at THEN RAISE EXCEPTION 'Séance non terminée'; END IF;
+ END IF;
  RETURN NEW;
 END $$;
-CREATE TRIGGER national_activity_protection BEFORE INSERT OR UPDATE ON public.activities FOR EACH ROW EXECUTE FUNCTION public.national_activity_guard();
+-- Installé mais sans nouvelle règle/activité : aucune ancienne ligne touchée.
+CREATE TRIGGER national_activity_protection BEFORE INSERT OR UPDATE OR DELETE ON public.activities FOR EACH ROW EXECUTE FUNCTION public.national_activity_guard();
+
+-- Versions figées : un amendement INSERT une version, jamais UPDATE/DELETE.
+CREATE FUNCTION public.national_version_immutable() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+BEGIN RAISE EXCEPTION 'Version de loi immuable : créer une nouvelle version'; END $$;
+CREATE TRIGGER national_version_freeze BEFORE UPDATE OR DELETE ON public.national_law_versions FOR EACH ROW EXECUTE FUNCTION public.national_version_immutable();
+
+REVOKE ALL ON FUNCTION public.national_version_immutable() FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.national_version_immutable() TO service_role;
 
 -- Permissions des fonctions : chaque création retire le défaut PUBLIC.
 REVOKE ALL ON FUNCTION public.national_actor() FROM PUBLIC,anon,authenticated;
