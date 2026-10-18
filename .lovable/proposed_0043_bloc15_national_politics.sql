@@ -585,6 +585,7 @@ BEGIN
  SELECT rules INTO r FROM public.national_settings WHERE id=1 AND enabled;
  IF l.id IS NULL OR l.status NOT IN('proposed','examining') OR r IS NULL OR _at IS NULL OR _at<public.game_now() OR _chamber IS NULL OR _chamber NOT IN('assembly','senate') THEN RAISE EXCEPTION 'Séance invalide'; END IF;
  finish:=_at+(r->>'session_minutes')::int*interval '1 minute';
+ IF EXISTS(SELECT 1 FROM public.national_constituencies c WHERE NOT EXISTS(SELECT 1 FROM public.locations ll JOIN public.districts dd ON dd.id=ll.district_id WHERE ll.city_id=c.city_id AND ll.kind IN('administration','mairie') AND ll.accessible AND dd.available)) THEN RAISE EXCEPTION 'Lieu administratif manquant : séances en attente, aucun lieu inventé'; END IF;
  IF NOT EXISTS(SELECT 1 FROM public.national_legislatures WHERE id=l.legislature_id AND starts_at<=_at AND ends_at>=finish) THEN RAISE EXCEPTION 'Séance hors mandat'; END IF;
  count_seats:=CASE WHEN _chamber='assembly' THEN 50 ELSE 25 END;
  SELECT jsonb_agg(jsonb_build_object('seat_id',s.id,'simulated',s.simulated,'support',g.support) ORDER BY s.seat_no) INTO electorate FROM public.national_seats s JOIN public.national_groups g ON g.id=s.group_id WHERE s.legislature_id=l.legislature_id AND s.chamber=_chamber;

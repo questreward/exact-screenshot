@@ -68,4 +68,4 @@ En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indica
 - Échéances figées ; rattrapage chronologique, aucun vote tardif. Majorité insuffisante = refus ; fonds insuffisants = attente, pas d’effets partiels.
 - Les lois ne bloquent pas les lieux, ne modifient pas les transports, salaires, loyers, élections municipales ou argent personnel. Multijoueur complet, diplomatie, deuxième pays, finance avancée et Bloc 16 exclus.
 
-**Suite :** relire le SQL proposé et décider des paramètres encore ouverts. Aucun appel de migration ni activation avant votre accord explicite sur le fichier exact et ses limites.
+**Relecture statique terminée, sans validation par exécution.** Corrections : majorités fixes, valeurs nulles rejetées, versions figées, application atomique, démarrage national explicite, garde complet des activités, lieux contrôlés dès ouverture. Installation future ajouterait le déclencheur sur `activities` mais aucune règle ni activité nationale. Sénat agrégé depuis les conseils réels : modèle de répartition encore à valider. Aucun appel de migration ni activation avant accord sur le fichier exact et ses limites.
