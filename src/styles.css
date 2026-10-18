@@ -209,6 +209,11 @@
 .marker-caption { fill: var(--surface); opacity: 0.95; }
 .world-marker:hover .marker-body, .world-marker:focus-visible .marker-body, .is-selected .marker-body { stroke: var(--primary); stroke-width: 4; }
 .is-player .marker-body { fill: var(--primary); stroke: var(--primary); }
+.event-badge { cursor: pointer; outline: none; }
+.event-badge-hit { fill: transparent; }
+.event-badge-body { fill: var(--destructive); stroke: var(--background); stroke-width: 3; }
+.event-badge:focus-visible .event-badge-body { stroke: var(--foreground); }
+.event-badge-label { fill: var(--destructive-foreground); font-size: 14px; font-weight: 700; pointer-events: none; }
 .is-player .marker-icon { color: var(--primary-foreground); }
 .marker-pulse { fill: none; stroke: var(--primary); stroke-width: 2; opacity: 0.5; animation: twinkle 3s infinite; }
 @media (max-width: 640px) {

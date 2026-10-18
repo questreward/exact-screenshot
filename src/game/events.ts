@@ -7,8 +7,11 @@ export type WorldEvent = {
   starts_at: string; ends_at: string | null; importance: number; interactive: boolean; personal: boolean; reason: string | null;
   duration_kind: string | null; news_id: string | null; phase: EventPhase; eligible: boolean; conflict: string | null;
   participation: { choice: 'participer' | 'ignorer'; status: ParticipationStatus; outcome: { result?: string } | null; activity_id: string | null } | null;
+  travel_delay_minutes?: number; marker?: boolean;
+  city_effect?: { level: CityEffectLevel; amount: number; indicator: string } | null;
   reward: { money: number; skill: string | null; skill_amount: number; relation: number; reputation: number; civic: number; political: number; energy: number; success_rate: number } | null;
 };
+export type CityEffectLevel = 'none' | 'low' | 'medium' | 'strong';
 export type EventsState = { now: string; enabled: boolean; city_id: string; events: WorldEvent[] };
 
 export const EVENT_CATEGORIES = ['Vie quotidienne', 'Travail', 'Études', 'Logement', 'Social', 'Économie', 'Citoyenneté', 'Politique', 'Ville', 'Transport', 'Actualités'] as const;
@@ -52,4 +55,27 @@ export function rewardSummary(r: WorldEvent['reward']) {
   if (r.civic > 0) out.push(`+${r.civic} engagement`);
   if (r.political > 0) out.push(`+${r.political} politique`);
   return out;
+}
+
+// ---------- Bloc 14 (présentation ; le serveur calcule tout) ----------
+export const CITY_EFFECT_LABEL: Record<CityEffectLevel, string> = { none: 'Aucun effet', low: 'Effet faible', medium: 'Effet moyen', strong: 'Effet fort' };
+export const INDICATOR_LABEL: Record<string, string> = { satisfaction: 'satisfaction' };
+/** Indication du retard (identique au calcul serveur : somme plafonnée). */
+export function travelDelay(delays: number[], cap = 40) { return Math.min(delays.reduce((a, b) => a + Math.max(0, b), 0), cap); }
+/** Niveau d'effet national selon la satisfaction (indication : seuils 70 / 50 / 30). */
+export function cityEffectLevel(satisfaction: number | null): CityEffectLevel {
+  if (satisfaction === null || satisfaction >= 70) return 'none';
+  if (satisfaction >= 50) return 'low';
+  return satisfaction >= 30 ? 'medium' : 'strong';
+}
+/** Un seul marqueur par lieu : événements publics actifs regroupés. */
+export function markersByLocation(events: WorldEvent[]) {
+  const m = new Map<string, WorldEvent[]>();
+  for (const e of events) {
+    if (!e.marker || e.personal || !e.location_id) continue;
+    const list = m.get(e.location_id) ?? [];
+    if (!list.some(x => x.id === e.id)) list.push(e);
+    m.set(e.location_id, list);
+  }
+  return m;
 }

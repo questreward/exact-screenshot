@@ -75,6 +75,8 @@ export type Database = {
           status: string
           target_location_id: string | null
           title: string
+          travel_delay_minutes: number
+          travel_event_ids: string[]
           type: string
         }
         Insert: {
@@ -105,6 +107,8 @@ export type Database = {
           status?: string
           target_location_id?: string | null
           title: string
+          travel_delay_minutes?: number
+          travel_event_ids?: string[]
           type: string
         }
         Update: {
@@ -135,6 +139,8 @@ export type Database = {
           status?: string
           target_location_id?: string | null
           title?: string
+          travel_delay_minutes?: number
+          travel_event_ids?: string[]
           type?: string
         }
         Relationships: [
@@ -1965,6 +1971,7 @@ export type Database = {
           target_kind: string
           template_id: string | null
           title: string
+          travel_delay_minutes: number
         }
         Insert: {
           category?: string
@@ -1995,6 +2002,7 @@ export type Database = {
           target_kind?: string
           template_id?: string | null
           title: string
+          travel_delay_minutes?: number
         }
         Update: {
           category?: string
@@ -2025,6 +2033,7 @@ export type Database = {
           target_kind?: string
           template_id?: string | null
           title?: string
+          travel_delay_minutes?: number
         }
         Relationships: [
           {
@@ -5163,6 +5172,51 @@ export type Database = {
         }
         Relationships: []
       }
+      world_event_city_effects: {
+        Row: {
+          amount: number
+          applied_at: string
+          city_id: string
+          event_id: string
+          id: string
+          indicator: string
+          level: string
+        }
+        Insert: {
+          amount?: number
+          applied_at: string
+          city_id: string
+          event_id: string
+          id?: string
+          indicator: string
+          level: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string
+          city_id?: string
+          event_id?: string
+          id?: string
+          indicator?: string
+          level?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "world_event_city_effects_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "world_event_city_effects_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       world_event_effects: {
         Row: {
           amount: number | null
@@ -5299,6 +5353,7 @@ export type Database = {
           max_notifications_per_day: number
           max_personal_per_day: number
           max_reward_money: number
+          travel_delay_cap_minutes: number
         }
         Insert: {
           enabled?: boolean
@@ -5308,6 +5363,7 @@ export type Database = {
           max_notifications_per_day?: number
           max_personal_per_day?: number
           max_reward_money?: number
+          travel_delay_cap_minutes?: number
         }
         Update: {
           enabled?: boolean
@@ -5317,6 +5373,7 @@ export type Database = {
           max_notifications_per_day?: number
           max_personal_per_day?: number
           max_reward_money?: number
+          travel_delay_cap_minutes?: number
         }
         Relationships: []
       }
@@ -5325,6 +5382,8 @@ export type Database = {
           active: boolean
           category: string
           cities: string[] | null
+          city_effect_indicator: string | null
+          city_effect_values: Json
           description: string
           duration_kind: string
           duration_minutes: number
@@ -5362,11 +5421,14 @@ export type Database = {
           success_rate: number
           success_skill_bonus: number
           title: string
+          travel_delay_minutes: number
         }
         Insert: {
           active?: boolean
           category: string
           cities?: string[] | null
+          city_effect_indicator?: string | null
+          city_effect_values?: Json
           description: string
           duration_kind?: string
           duration_minutes?: number
@@ -5404,11 +5466,14 @@ export type Database = {
           success_rate?: number
           success_skill_bonus?: number
           title: string
+          travel_delay_minutes?: number
         }
         Update: {
           active?: boolean
           category?: string
           cities?: string[] | null
+          city_effect_indicator?: string | null
+          city_effect_values?: Json
           description?: string
           duration_kind?: string
           duration_minutes?: number
@@ -5446,6 +5511,7 @@ export type Database = {
           success_rate?: number
           success_skill_bonus?: number
           title?: string
+          travel_delay_minutes?: number
         }
         Relationships: []
       }
@@ -5799,10 +5865,25 @@ export type Database = {
         Args: { _election_id: string; _organization_id?: string }
         Returns: string
       }
+      transport_delay: {
+        Args: { _at: string; _city: string; _from: string; _to: string }
+        Returns: {
+          event_ids: string[]
+          minutes: number
+        }[]
+      }
+      transport_delay_preview: {
+        Args: { _target_location_id: string }
+        Returns: Json
+      }
       world_clock: { Args: never; Returns: Json }
       world_event_action: {
         Args: { _choice: string; _event_id: string }
         Returns: Json
+      }
+      world_event_city_effects_apply: {
+        Args: { _event_id: string }
+        Returns: number
       }
       world_event_effect: {
         Args: { _amount: number; _cid: string; _event: string; _kind: string }
