@@ -9,6 +9,7 @@ import type { CivicState } from "@/game/civic";
 import type { PoliticalState } from "@/game/politics";
 import type { ElectionState, Program } from "@/game/elections";
 import type { GovernanceState } from "@/game/governance";
+import type { EconomyState } from '@/game/economy';
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -48,6 +49,8 @@ export const characterQuery = queryOptions({
 export const bankQuery = queryOptions({
   queryKey: ["bank"],
   queryFn: async () => {
+    const { error: settlementError } = await supabase.rpc('personal_economy_state');
+    if (settlementError) throw new Error(settlementError.message);
     const { data, error } = await supabase
       .from("accounts")
       .select("id, label, balance, transactions(id, amount, label, created_at)")
@@ -350,3 +353,14 @@ export async function fundMunicipalProject(decisionId:string){const {error}=awai
 export async function abandonMunicipalDossier(decisionId:string){const {error}=await supabase.rpc('abandon_municipal_dossier',{_decision_id:decisionId});if(error)throw new Error(error.message);}
 export async function reserveMunicipalEvent(decisionId:string){const {data,error}=await supabase.rpc('reserve_municipal_event',{_decision_id:decisionId});if(error)throw new Error(error.message);return data;}
 export const locationProjectsQuery=(locationId:string)=>queryOptions({queryKey:['municipal-projects',locationId],queryFn:async()=>{const {data,error}=await supabase.from('public_decisions').select('id,title,workflow,cost,duration_days,ends_at,impact_expected,impact_real').eq('location_id',locationId).not('mandate_id','is',null).order('decided_at',{ascending:false});if(error)throw new Error(error.message);return data;}});
+
+export const economyQuery = queryOptions({ queryKey: ['economy'], staleTime: 0, refetchInterval: 10000, queryFn: async (): Promise<EconomyState> => {
+  const { data, error } = await supabase.rpc('personal_economy_state');
+  if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data['goals'])) throw new Error('Économie personnelle indisponible');
+  return data as unknown as EconomyState;
+} });
+export async function economyAction(input: { command: string; requestId: string; input?: Record<string, unknown> }) {
+  const { error } = await supabase.rpc('personal_economy_action', { _command: input.command, _request_id: input.requestId, _input: (input.input ?? {}) as import('@/integrations/supabase/types').Json });
+  if (error) throw new Error(error.message);
+}
