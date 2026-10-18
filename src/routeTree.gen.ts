@@ -26,6 +26,7 @@ import { Route as AuthenticatedGameElectionsRouteImport } from './routes/_authen
 import { Route as AuthenticatedGameEvenementsRouteImport } from './routes/_authenticated/_game/evenements'
 import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
 import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authenticated/_game/mandat'
+import { Route as AuthenticatedGameMondeRouteImport } from './routes/_authenticated/_game/monde'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePatrimoineRouteImport } from './routes/_authenticated/_game/patrimoine'
@@ -128,6 +129,11 @@ const AuthenticatedGameMandatRoute = AuthenticatedGameMandatRouteImport.update({
   path: '/mandat',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameMondeRoute = AuthenticatedGameMondeRouteImport.update({
+  id: '/monde',
+  path: '/monde',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameOrganisationsRoute =
   AuthenticatedGameOrganisationsRouteImport.update({
     id: '/organisations',
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/evenements': typeof AuthenticatedGameEvenementsRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
+  '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/evenements': typeof AuthenticatedGameEvenementsRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
+  '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/evenements': typeof AuthenticatedGameEvenementsRoute
   '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/_authenticated/_game/mandat': typeof AuthenticatedGameMandatRoute
+  '/_authenticated/_game/monde': typeof AuthenticatedGameMondeRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/patrimoine': typeof AuthenticatedGamePatrimoineRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/evenements'
     | '/ma-ville'
     | '/mandat'
+    | '/monde'
     | '/organisations'
     | '/parametres'
     | '/patrimoine'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/evenements'
     | '/ma-ville'
     | '/mandat'
+    | '/monde'
     | '/organisations'
     | '/parametres'
     | '/patrimoine'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/evenements'
     | '/_authenticated/_game/ma-ville'
     | '/_authenticated/_game/mandat'
+    | '/_authenticated/_game/monde'
     | '/_authenticated/_game/organisations'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/patrimoine'
@@ -525,6 +537,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameMandatRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/monde': {
+      id: '/_authenticated/_game/monde'
+      path: '/monde'
+      fullPath: '/monde'
+      preLoaderRoute: typeof AuthenticatedGameMondeRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/organisations': {
       id: '/_authenticated/_game/organisations'
       path: '/organisations'
@@ -628,6 +647,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameEvenementsRoute: typeof AuthenticatedGameEvenementsRoute
   AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
   AuthenticatedGameMandatRoute: typeof AuthenticatedGameMandatRoute
+  AuthenticatedGameMondeRoute: typeof AuthenticatedGameMondeRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePatrimoineRoute: typeof AuthenticatedGamePatrimoineRoute
@@ -653,6 +673,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameEvenementsRoute: AuthenticatedGameEvenementsRoute,
     AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,
     AuthenticatedGameMandatRoute: AuthenticatedGameMandatRoute,
+    AuthenticatedGameMondeRoute: AuthenticatedGameMondeRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePatrimoineRoute: AuthenticatedGamePatrimoineRoute,
