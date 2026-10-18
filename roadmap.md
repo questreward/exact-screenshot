@@ -77,3 +77,12 @@
 - [x] Reprendre Atelier social, agenda, récompenses, relations et reconnexion
 - [x] Parcours transversal partiel, comptes nettoyés et rapport BLOC_8_REGRESSION_CIBLEE.md
 - [x] Rapport final du Bloc 8 conclu ; compte temporaire nettoyé et absence vérifiée ; aucun Bloc 9
+
+# Bloc 9 — Mandat, gouvernance et monde réactif
+- [ ] Mandat réel, conseil cohérent avec les élections, trois priorités et bilan factuel
+- [ ] Indicateurs 0–100, problèmes, dossiers et extension des décisions/consultations existantes
+- [ ] Budget municipal distinct, négociation et votes sécurisés, financement unique
+- [ ] Projets, progression, effets différés et réactions déterministes hors connexion
+- [ ] Page Mandat, Ma Ville, téléphone, carte, agenda, actualités et notifications
+- [ ] Seize scénarios obligatoires, parcours complet, sécurité et régression transversale
+- [ ] Rapport final, nettoyage des essais et attente des instructions ; aucun Bloc 10
