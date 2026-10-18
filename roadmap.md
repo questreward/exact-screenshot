@@ -99,3 +99,9 @@
 - [ ] Tester les parcours réels, les doubles paiements et la reconnexion ; fournir le rapport sans validation prématurée
 
 - [x] Bloc 10 : repostuler au même poste après départ (migrations 0034–0035), 10 tests réussis ; Bloc 10 en attente de validation par le client, Bloc 11 interdit.
+
+## Bloc 11 — Démarches & fiscalité
+- [ ] SQL proposé (attente accord)
+- [ ] Migration + fermeture faille paiement direct
+- [ ] Écran Mes démarches, documents, Agenda
+- [ ] Tests déclaration / aide / retard / changement / sécurité / reconnexion / hors connexion / transversal / régression
