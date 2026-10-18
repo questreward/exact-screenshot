@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from 'sonner';
 import { Briefcase, GraduationCap, Home, CalendarDays, LoaderCircle, Check, Wallet, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { lifeQuery, citiesQuery, districtsQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
+import { lifeQuery, economyQuery, citiesQuery, districtsQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
+import { isRentPaid } from '@/game/rent';
 import { academicLevel, gameHour } from "@/game/life";
 import { WorldClock } from "./WorldClock";
 import { DailyActions, LocationLink, useLifeMutation } from "./LifeControls";
@@ -14,7 +16,14 @@ export function LifePage() {
   const { data: districts } = useSuspenseQuery(districtsQuery(life.character.city_id));
   const enroll = useLifeMutation(enrollStudies, "Inscription enregistrée");
   const apply = useLifeMutation(applyJob, "Candidature envoyée");
-  const rent = useLifeMutation(payHousing, "Dépense de logement enregistrée");
+  const { data: economy } = useSuspenseQuery(economyQuery);
+  const q = useQueryClient();
+  const rent = useMutation({ mutationFn: payHousing,
+    onSuccess: () => toast.success('Dépense de logement enregistrée'),
+    onError: (error: Error) => toast.error(error.message),
+    onSettled: async () => { await Promise.all(['economy', 'daily-life', 'bank'].map(key => q.invalidateQueries({ queryKey: [key] }))); },
+  });
+  const paidToday = isRentPaid(life.world_now.slice(0,10), life.housing?.last_paid_date ?? null, economy.operations);
   const student = life.character.path_id === "student" && !(typeof life.character.progression === 'object' && life.character.progression !== null && !Array.isArray(life.character.progression) && life.character.progression['career_active'] === true);
   return <div className="space-y-6 animate-rise">
     <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="mb-1 text-xs uppercase tracking-wider text-primary">CIVITAS · Vie quotidienne</p><h1 className="text-3xl font-bold">{student ? "Mes études" : "Ma vie professionnelle"}</h1></div><Button asChild variant="outline"><Link to="/agenda"><CalendarDays /> Agenda</Link></Button></div>
