@@ -23,12 +23,12 @@ def denied_table(t,method,data,h,q=''):
  return r.status_code>=400 or r.text in ('','[]')
 def denied_action(h,cmd,inp):
  r=requests.post(BASE+'/rest/v1/rpc/personal_economy_action',json={'_command':cmd,'_request_id':str(uuid.uuid4()),'_input':inp},headers=h,timeout=30);return r.status_code>=400
-def prepare():
+def prepare(path='early_career',age=22):
  email='economy-'+uuid.uuid4().hex+'@example.com'; password=uuid.uuid4().hex+'Aa7!'
  u=req('/auth/v1/admin/users',{'email':email,'password':password,'email_confirm':True});created.append(u['id'])
  ss=req('/auth/v1/token?grant_type=password',{'email':email,'password':password},{'apikey':PUB})
  h={'apikey':PUB,'Authorization':'Bearer '+ss['access_token'],'Content-Type':'application/json'}
- cid=rpc('create_character',{'_first_name':'Essai','_last_name':'Economie','_age':22,'_city_id':'lyon','_path_id':'early_career','_appearance':{}},h)
+ cid=rpc('create_character',{'_first_name':'Essai','_last_name':'Economie','_age':age,'_city_id':'lyon','_path_id':path,'_appearance':{}},h)
  rpc('personal_economy_state',h=h)
  return locals()
 def cleanup():
@@ -54,7 +54,7 @@ async def verify(f):
   await page.get_by_role('button',name='Mettre de côté',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('200');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();
   try: await page.get_by_role('dialog').wait_for(state='hidden',timeout=5000)
   except Exception:
-   await page.screenshot(path=str(out/'failure.png'));print(await page.locator('[data-sonner-toast]').all_text_contents());print('INPUT',await page.get_by_role('dialog').locator('input').evaluate('(e)=>({valid:e.checkValidity(),msg:e.validationMessage,form:!!e.form})'));print('DIRECT',action(h,'save',{'goal_id':goal['id'],'amount':200}));raise
+   await page.screenshot(path=str(out/'failure.png'));print(await page.locator('[data-sonner-toast]').all_text_contents());print('INPUT',await page.get_by_role('dialog').locator('input').evaluate('(e)=>({valid:e.checkValidity(),msg:e.validationMessage,form:!!e.form})'));raise
   s=state();check(s['available']==2800 and s['saved']==200,'TEST 1 Épargne : 200 € transférés, total conservé, transaction')
   await page.get_by_role('button',name='Récupérer',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('100');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();await page.get_by_role('dialog').wait_for(state='hidden')
   s=state();check(s['available']==2900 and s['saved']==100,'TEST 2 Retrait : 100 € rendus, épargne réduite')
@@ -117,7 +117,7 @@ async def verify(f):
   SELECT balance INTO start_balance FROM public.accounts WHERE character_id=cid;
   UPDATE public.world_state SET world_date=world_date+3 WHERE id=1; PERFORM public.personal_economy_state(); PERFORM public.personal_economy_state();
   IF (SELECT balance FROM public.accounts WHERE character_id=cid)<>start_balance-60 THEN RAISE EXCEPTION 'Offline rent'; END IF;
-  IF (SELECT count(*) FROM public.economy_operations WHERE character_id=cid AND kind='logement')<>3 THEN RAISE EXCEPTION 'Rent duplicate'; END IF;
+  IF (SELECT count(*) FROM public.economy_operations WHERE character_id=cid AND operation_key LIKE 'rent:%')<>3 THEN RAISE EXCEPTION 'Rent duplicate'; END IF;
   PERFORM public.personal_economy_action('budget',gen_random_uuid(),'{{"auto_rent":false}}');
   UPDATE public.world_state SET world_date=original.world_date,world_time=original.world_time,clock_started_at=original.clock_started_at,time_speed=original.time_speed WHERE id=1;
   SELECT * INTO restored FROM public.world_state WHERE id=1; IF to_jsonb(restored)<>to_jsonb(original) THEN RAISE EXCEPTION 'Clock not restored'; END IF;
@@ -145,7 +145,7 @@ async def verify(f):
   for _ in range(3):await page.reload();await page.get_by_text('Salaire — Assistant administratif',exact=True).wait_for()
   await page.goto('http://localhost:8080/patrimoine');await page.get_by_role('tab',name='Biens',exact=True).click();await page.get_by_role('heading',name='Mes biens',exact=True).wait_for();await page.screenshot(path=str(out/'4-biens.png'))
   await page.get_by_role('tab',name='Formation',exact=True).click();await page.get_by_role('heading',name='Mes compétences',exact=True).wait_for();await page.screenshot(path=str(out/'5-formation.png'))
-  snapshot={k:s[k] for k in ['available','saved','assets','goals','skills','history']}
+  snapshot={k:s[k] for k in ['available','saved','assets','goals','skills','history','budget']}
   for path in ['/vie','/personnage','/organisations','/politique','/carte']:
    await page.goto('http://localhost:8080'+path);await page.get_by_role('main').get_by_role('heading').first.wait_for()
   check(not errors,'Régression : personnage, travail, organisations, politique et carte sans erreur')
