@@ -1911,74 +1911,102 @@ export type Database = {
       events: {
         Row: {
           category: string
+          character_id: string | null
           city_id: string | null
           created_at: string
           description: string
+          duration_kind: string | null
+          ends_at: string | null
           event_key: string | null
+          game_category: string | null
           id: string
           image: string | null
           importance: number
+          interactive: boolean
           location_id: string | null
           news_body: string | null
           news_summary: string | null
           news_title: string | null
           organization_event_id: string | null
           organization_id: string | null
+          reason: string | null
           region: string | null
           scope: string
           source_id: string | null
           starts_at: string | null
           status: string
           target_kind: string
+          template_id: string | null
           title: string
         }
         Insert: {
           category?: string
+          character_id?: string | null
           city_id?: string | null
           created_at?: string
           description?: string
+          duration_kind?: string | null
+          ends_at?: string | null
           event_key?: string | null
+          game_category?: string | null
           id?: string
           image?: string | null
           importance?: number
+          interactive?: boolean
           location_id?: string | null
           news_body?: string | null
           news_summary?: string | null
           news_title?: string | null
           organization_event_id?: string | null
           organization_id?: string | null
+          reason?: string | null
           region?: string | null
           scope?: string
           source_id?: string | null
           starts_at?: string | null
           status?: string
           target_kind?: string
+          template_id?: string | null
           title: string
         }
         Update: {
           category?: string
+          character_id?: string | null
           city_id?: string | null
           created_at?: string
           description?: string
+          duration_kind?: string | null
+          ends_at?: string | null
           event_key?: string | null
+          game_category?: string | null
           id?: string
           image?: string | null
           importance?: number
+          interactive?: boolean
           location_id?: string | null
           news_body?: string | null
           news_summary?: string | null
           news_title?: string | null
           organization_event_id?: string | null
           organization_id?: string | null
+          reason?: string | null
           region?: string | null
           scope?: string
           source_id?: string | null
           starts_at?: string | null
           status?: string
           target_kind?: string
+          template_id?: string | null
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_city_id_fkey"
             columns: ["city_id"]
@@ -4822,6 +4850,292 @@ export type Database = {
         }
         Relationships: []
       }
+      world_event_effects: {
+        Row: {
+          amount: number | null
+          applied_at: string
+          character_id: string
+          effect_key: string
+          event_id: string | null
+          game_day: string
+          id: string
+          kind: string
+        }
+        Insert: {
+          amount?: number | null
+          applied_at: string
+          character_id: string
+          effect_key: string
+          event_id?: string | null
+          game_day: string
+          id?: string
+          kind: string
+        }
+        Update: {
+          amount?: number | null
+          applied_at?: string
+          character_id?: string
+          effect_key?: string
+          event_id?: string | null
+          game_day?: string
+          id?: string
+          kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "world_event_effects_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "world_event_effects_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      world_event_generation: {
+        Row: {
+          city_key: string
+          day: string
+          generated_at: string
+        }
+        Insert: {
+          city_key: string
+          day: string
+          generated_at?: string
+        }
+        Update: {
+          city_key?: string
+          day?: string
+          generated_at?: string
+        }
+        Relationships: []
+      }
+      world_event_participations: {
+        Row: {
+          activity_id: string | null
+          character_id: string
+          choice: string
+          created_at: string
+          event_id: string
+          id: string
+          outcome: Json | null
+          roll: number | null
+          settled_at: string | null
+          status: string
+        }
+        Insert: {
+          activity_id?: string | null
+          character_id: string
+          choice: string
+          created_at: string
+          event_id: string
+          id?: string
+          outcome?: Json | null
+          roll?: number | null
+          settled_at?: string | null
+          status: string
+        }
+        Update: {
+          activity_id?: string | null
+          character_id?: string
+          choice?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          outcome?: Json | null
+          roll?: number | null
+          settled_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "world_event_participations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "world_event_participations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "world_event_participations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      world_event_settings: {
+        Row: {
+          enabled: boolean
+          horizon_days: number
+          id: number
+          max_events_per_city_day: number
+          max_notifications_per_day: number
+          max_personal_per_day: number
+          max_reward_money: number
+        }
+        Insert: {
+          enabled?: boolean
+          horizon_days?: number
+          id: number
+          max_events_per_city_day?: number
+          max_notifications_per_day?: number
+          max_personal_per_day?: number
+          max_reward_money?: number
+        }
+        Update: {
+          enabled?: boolean
+          horizon_days?: number
+          id?: number
+          max_events_per_city_day?: number
+          max_notifications_per_day?: number
+          max_personal_per_day?: number
+          max_reward_money?: number
+        }
+        Relationships: []
+      }
+      world_event_templates: {
+        Row: {
+          active: boolean
+          category: string
+          cities: string[] | null
+          description: string
+          duration_kind: string
+          duration_minutes: number
+          energy_cost: number
+          forbids_job: boolean
+          id: string
+          importance: number
+          interactive: boolean
+          location_kind: string | null
+          max_age: number
+          min_age: number
+          news_category: string | null
+          organization_kinds: string[] | null
+          paths: string[] | null
+          probability: number
+          publish_news: boolean
+          reason: string | null
+          recurrence: string
+          recurrence_day: number | null
+          requires_job: boolean
+          requires_membership_kinds: string[] | null
+          requires_student: boolean
+          reward_civic: number
+          reward_money: number
+          reward_political_influence: number
+          reward_political_reputation: number
+          reward_relation: number
+          reward_reputation: number
+          reward_skill: string | null
+          reward_skill_amount: number
+          scope: string
+          skill_min: number
+          skill_name: string | null
+          start_hour: number
+          success_rate: number
+          success_skill_bonus: number
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          cities?: string[] | null
+          description: string
+          duration_kind?: string
+          duration_minutes?: number
+          energy_cost?: number
+          forbids_job?: boolean
+          id: string
+          importance?: number
+          interactive?: boolean
+          location_kind?: string | null
+          max_age?: number
+          min_age?: number
+          news_category?: string | null
+          organization_kinds?: string[] | null
+          paths?: string[] | null
+          probability?: number
+          publish_news?: boolean
+          reason?: string | null
+          recurrence?: string
+          recurrence_day?: number | null
+          requires_job?: boolean
+          requires_membership_kinds?: string[] | null
+          requires_student?: boolean
+          reward_civic?: number
+          reward_money?: number
+          reward_political_influence?: number
+          reward_political_reputation?: number
+          reward_relation?: number
+          reward_reputation?: number
+          reward_skill?: string | null
+          reward_skill_amount?: number
+          scope: string
+          skill_min?: number
+          skill_name?: string | null
+          start_hour?: number
+          success_rate?: number
+          success_skill_bonus?: number
+          title: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          cities?: string[] | null
+          description?: string
+          duration_kind?: string
+          duration_minutes?: number
+          energy_cost?: number
+          forbids_job?: boolean
+          id?: string
+          importance?: number
+          interactive?: boolean
+          location_kind?: string | null
+          max_age?: number
+          min_age?: number
+          news_category?: string | null
+          organization_kinds?: string[] | null
+          paths?: string[] | null
+          probability?: number
+          publish_news?: boolean
+          reason?: string | null
+          recurrence?: string
+          recurrence_day?: number | null
+          requires_job?: boolean
+          requires_membership_kinds?: string[] | null
+          requires_student?: boolean
+          reward_civic?: number
+          reward_money?: number
+          reward_political_influence?: number
+          reward_political_reputation?: number
+          reward_relation?: number
+          reward_reputation?: number
+          reward_skill?: string | null
+          reward_skill_amount?: number
+          scope?: string
+          skill_min?: number
+          skill_name?: string | null
+          start_hour?: number
+          success_rate?: number
+          success_skill_bonus?: number
+          title?: string
+        }
+        Relationships: []
+      }
       world_state: {
         Row: {
           clock_started_at: string
@@ -5146,6 +5460,36 @@ export type Database = {
         Returns: string
       }
       world_clock: { Args: never; Returns: Json }
+      world_event_action: {
+        Args: { _choice: string; _event_id: string }
+        Returns: Json
+      }
+      world_event_effect: {
+        Args: { _amount: number; _cid: string; _event: string; _kind: string }
+        Returns: boolean
+      }
+      world_event_eligible: {
+        Args: {
+          _c: Database["public"]["Tables"]["characters"]["Row"]
+          _t: Database["public"]["Tables"]["world_event_templates"]["Row"]
+        }
+        Returns: boolean
+      }
+      world_event_notify: {
+        Args: {
+          _body: string
+          _cid: string
+          _event: string
+          _key: string
+          _title: string
+        }
+        Returns: undefined
+      }
+      world_event_roll: { Args: { _seed: string }; Returns: number }
+      world_events_generate: { Args: { _city: string }; Returns: number }
+      world_events_personal: { Args: { _cid: string }; Returns: undefined }
+      world_events_settle: { Args: { _cid: string }; Returns: undefined }
+      world_events_state: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
