@@ -36,6 +36,13 @@
       "when": 1792269333563,
       "tag": "0004_unambiguous_activity_identifier",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792317319268,
+      "tag": "0005_social_relations_and_organizations",
+      "breakpoints": true
     }
   ]
 }

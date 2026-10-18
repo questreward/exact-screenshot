@@ -56,8 +56,13 @@ export type Database = {
           id: string
           location_id: string
           money_cost: number
+          organization_event_id: string | null
           progression_gain: number
           reward: number
+          social_influence_gain: number
+          social_npc_id: string | null
+          social_relation_gain: number
+          social_reputation_gain: number
           source_key: string | null
           start_time: string
           status: string
@@ -74,8 +79,13 @@ export type Database = {
           id?: string
           location_id: string
           money_cost?: number
+          organization_event_id?: string | null
           progression_gain?: number
           reward?: number
+          social_influence_gain?: number
+          social_npc_id?: string | null
+          social_relation_gain?: number
+          social_reputation_gain?: number
           source_key?: string | null
           start_time: string
           status?: string
@@ -92,8 +102,13 @@ export type Database = {
           id?: string
           location_id?: string
           money_cost?: number
+          organization_event_id?: string | null
           progression_gain?: number
           reward?: number
+          social_influence_gain?: number
+          social_npc_id?: string | null
+          social_relation_gain?: number
+          social_reputation_gain?: number
           source_key?: string | null
           start_time?: string
           status?: string
@@ -114,6 +129,20 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_organization_event_id_fkey"
+            columns: ["organization_event_id"]
+            isOneToOne: false
+            referencedRelation: "organization_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_social_npc_id_fkey"
+            columns: ["social_npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
             referencedColumns: ["id"]
           },
           {
@@ -775,27 +804,75 @@ export type Database = {
           },
         ]
       }
+      membership_history: {
+        Row: {
+          action: string
+          character_id: string
+          id: string
+          occurred_at: string
+          organization_id: string
+        }
+        Insert: {
+          action: string
+          character_id: string
+          id?: string
+          occurred_at: string
+          organization_id: string
+        }
+        Update: {
+          action?: string
+          character_id?: string
+          id?: string
+          occurred_at?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_history_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "membership_history_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       memberships: {
         Row: {
           character_id: string
           id: string
           joined_at: string
+          left_at: string | null
           organization_id: string
+          progress: number
           role: string
+          status: string
         }
         Insert: {
           character_id: string
           id?: string
           joined_at?: string
+          left_at?: string | null
           organization_id: string
+          progress?: number
           role?: string
+          status?: string
         }
         Update: {
           character_id?: string
           id?: string
           joined_at?: string
+          left_at?: string | null
           organization_id?: string
+          progress?: number
           role?: string
+          status?: string
         }
         Relationships: [
           {
@@ -862,30 +939,105 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_events: {
+        Row: {
+          description: string
+          duration_minutes: number
+          energy_cost: number
+          id: string
+          influence_gain: number
+          location_id: string
+          organization_id: string
+          relation_gain: number
+          reputation_gain: number
+          start_hour: number
+          status: string
+          title: string
+        }
+        Insert: {
+          description: string
+          duration_minutes?: number
+          energy_cost?: number
+          id?: string
+          influence_gain?: number
+          location_id: string
+          organization_id: string
+          relation_gain?: number
+          reputation_gain?: number
+          start_hour?: number
+          status?: string
+          title: string
+        }
+        Update: {
+          description?: string
+          duration_minutes?: number
+          energy_cost?: number
+          id?: string
+          influence_gain?: number
+          location_id?: string
+          organization_id?: string
+          relation_gain?: number
+          reputation_gain?: number
+          start_hour?: number
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           city_id: string | null
           created_at: string
           description: string
           id: string
+          influence: number
           kind: string
+          location_id: string | null
           name: string
+          reputation: number
+          status: string
+          visibility: string
         }
         Insert: {
           city_id?: string | null
           created_at?: string
           description?: string
           id?: string
+          influence?: number
           kind: string
+          location_id?: string | null
           name: string
+          reputation?: number
+          status?: string
+          visibility?: string
         }
         Update: {
           city_id?: string | null
           created_at?: string
           description?: string
           id?: string
+          influence?: number
           kind?: string
+          location_id?: string | null
           name?: string
+          reputation?: number
+          status?: string
+          visibility?: string
         }
         Relationships: [
           {
@@ -893,6 +1045,13 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organizations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
             referencedColumns: ["id"]
           },
         ]
@@ -917,6 +1076,289 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      social_interactions: {
+        Row: {
+          action_id: string
+          character_id: string
+          id: string
+          npc_id: string
+          occurred_at: string
+          relation_gain: number
+        }
+        Insert: {
+          action_id: string
+          character_id: string
+          id?: string
+          npc_id: string
+          occurred_at: string
+          relation_gain: number
+        }
+        Update: {
+          action_id?: string
+          character_id?: string
+          id?: string
+          npc_id?: string
+          occurred_at?: string
+          relation_gain?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_interactions_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "social_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_interactions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_interactions_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_npcs: {
+        Row: {
+          age: number
+          appearance: Json
+          city_id: string
+          description: string
+          district_id: string
+          first_name: string
+          id: string
+          last_name: string
+          location_id: string
+          organization_id: string | null
+          profession: string
+          traits: string[]
+        }
+        Insert: {
+          age: number
+          appearance?: Json
+          city_id: string
+          description: string
+          district_id: string
+          first_name: string
+          id?: string
+          last_name: string
+          location_id: string
+          organization_id?: string | null
+          profession: string
+          traits?: string[]
+        }
+        Update: {
+          age?: number
+          appearance?: Json
+          city_id?: string
+          description?: string
+          district_id?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          location_id?: string
+          organization_id?: string | null
+          profession?: string
+          traits?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_npcs_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_npcs_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_npcs_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_npcs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_participations: {
+        Row: {
+          activity_id: string
+          character_id: string
+          event_id: string | null
+          npc_id: string | null
+          rewarded_at: string | null
+          status: string
+        }
+        Insert: {
+          activity_id: string
+          character_id: string
+          event_id?: string | null
+          npc_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Update: {
+          activity_id?: string
+          character_id?: string
+          event_id?: string | null
+          npc_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_participations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_participations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_participations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "organization_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_participations_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_relations: {
+        Row: {
+          character_id: string
+          id: string
+          last_interaction: string | null
+          met_at: string
+          npc_id: string
+          score: number
+          status: string
+        }
+        Insert: {
+          character_id: string
+          id?: string
+          last_interaction?: string | null
+          met_at: string
+          npc_id: string
+          score?: number
+          status?: string
+        }
+        Update: {
+          character_id?: string
+          id?: string
+          last_interaction?: string | null
+          met_at?: string
+          npc_id?: string
+          score?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_relations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_relations_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_rules: {
+        Row: {
+          cooldown_minutes: number
+          energy_cost: number
+          id: string
+          influence_gain: number
+          min_score: number
+          relation_gain: number
+          reputation_gain: number
+          title: string
+        }
+        Insert: {
+          cooldown_minutes?: number
+          energy_cost?: number
+          id: string
+          influence_gain?: number
+          min_score?: number
+          relation_gain?: number
+          reputation_gain?: number
+          title: string
+        }
+        Update: {
+          cooldown_minutes?: number
+          energy_cost?: number
+          id?: string
+          influence_gain?: number
+          min_score?: number
+          relation_gain?: number
+          reputation_gain?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      social_stats: {
+        Row: {
+          character_id: string
+          influence: number
+          reputation: number
+        }
+        Insert: {
+          character_id: string
+          influence?: number
+          reputation?: number
+        }
+        Update: {
+          character_id?: string
+          influence?: number
+          reputation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_stats_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       starting_paths: {
         Row: {
@@ -1123,6 +1565,10 @@ export type Database = {
         Args: { _activity_id: string }
         Returns: undefined
       }
+      change_membership: {
+        Args: { _join: boolean; _organization_id: string }
+        Returns: undefined
+      }
       create_character: {
         Args: {
           _age: number
@@ -1153,9 +1599,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      organization_directory: { Args: { _city_id: string }; Returns: Json }
       pay_housing: { Args: never; Returns: undefined }
       prepare_daily_life: { Args: never; Returns: string }
+      reserve_social_event: { Args: { _event_id: string }; Returns: string }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
+      social_actor: { Args: never; Returns: string }
+      social_interact: {
+        Args: { _action_id: string; _npc_id: string }
+        Returns: undefined
+      }
+      social_level: { Args: { _score: number }; Returns: string }
+      social_state: { Args: never; Returns: Json }
       start_life_activity: {
         Args: {
           _activity_id?: string
