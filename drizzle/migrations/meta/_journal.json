@@ -246,6 +246,13 @@
       "when": 1792334225712,
       "tag": "0034_allow_reapply_same_job",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792334370922,
+      "tag": "0035_release_former_job_shifts",
+      "breakpoints": true
     }
   ]
 }

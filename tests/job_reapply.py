@@ -43,6 +43,7 @@ try:
   # 6 new hire
   respond(); emp2 = rows('employments', 'character_id=eq.' + cid)
   check(len(emp2) == 1 and emp2[0]['started_at'] != emp1[0]['started_at'], 'TEST 6 Nouvelle embauche : nouvelle relation d’emploi')
+  check(len([a for a in rows('activities','character_id=eq.'+cid+'&type=eq.work&status=eq.cancelled') if ':ancien-emploi:' in a['source_key']])>0 and len(rows('activities','character_id=eq.'+cid+'&type=eq.work&status=eq.planned'))>0,'Vacations annulées archivées et nouvelles vacations créées')
   # 7 new salary, old never recredited
   b1 = bal(); a2 = work_once(cid, h)
   check(a2['id'] != a1['id'] and bal() == b1 + a2['reward'] and len(rows('transactions', 'operation_key=eq.salary:' + a1['id'])) == 1 and len(rows('transactions', 'operation_key=eq.salary:' + a2['id'])) == 1, 'TEST 7 Nouveau salaire uniquement pour le nouvel emploi, ancienne paie non recréditée')
