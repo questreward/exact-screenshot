@@ -54,7 +54,6 @@ try:
   res = next(p for p in st(h)['procedures'] if p['id'] == aid)['result']
   patch('administrative_procedures', 'id=eq.' + aid, {'result': {**res, 'starts_at': (now - timedelta(days=85)).isoformat(), 'ends_at': (now + timedelta(days=5)).isoformat()}})
   st(h); paid = len(tx(cid, 'Aide au logement*'))
-  action(h, 'quit')
   r = together(lambda: post(h, 'renew', {'procedure_id': aid}), lambda: post(h, 'renew', {'procedure_id': aid}), lambda: post(h, 'report_change', {'change': 'job'}))
   P = st(h)['procedures']
   check(len([p for p in P if p['renewed_from'] == aid]) == 1 and len([p for p in P if p['type_id'] == 'situation_change']) == len(ch) + 1, '4 Renouvellement + changement simultanés : un seul renouvellement, changement enregistré')
