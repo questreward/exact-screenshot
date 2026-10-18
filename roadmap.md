@@ -126,6 +126,7 @@
 - Bloc 14 interdit
 
 ## Vérifications ciblées demandées — 18 octobre
+- [ ] Dernière vérification autorisée : nouveau compte actif, plage de travail réelle, refus/embauche/vacation/salaire/Banque/Agenda/reconnexion/persistance, suppression intégrale vérifiée ; sans horloge, fonction, migration ou élection modifiée
 - [x] Identifier, supprimer et vérifier uniquement le compte temporaire restant autorisé
 - [x] Nouveau compte isolé : 8/8 loyers + deuxième demande immédiate et cinq demandes après paiement, tous réussis
 - [x] Actualités 8/8 ; Vie quotidienne étudiant réussie, loyer unique confirmé ; limites actif/Élections ci-dessus
