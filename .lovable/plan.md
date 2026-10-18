@@ -1,85 +1,71 @@
-# Bloc 14 — Étape 2 : plan détaillé (aucune application)
+# Bloc 15 — Politique nationale et institutions
 
-Périmètre strict : 1) travaux qui rallongent réellement le transport public, 2) effets nationaux différents selon la ville, 3) marqueurs d'événements sur la Carte. Parlement, Sénat, véhicules personnels, multijoueur et Bloc 15 sont exclus.
+## Statut et décisions
+**Proposition non appliquée, aucun développement ni test.** Bloc 14 validé, Bloc 16 exclu. Décisions : Assemblée 50/Sénat 25, cinq circonscriptions, lois dédiées, deux chambres approuvant la même version. SQL : `.lovable/proposed_0043_bloc15_national_politics.sql`, hors migrations.
 
-## 1. Ce qui existe déjà (réutilisé, non remplacé)
-- Événements : table `events` (ville, lieu, début, fin, portée, propriétaire pour le personnel), modèles `world_event_templates`, génération et état du Bloc 12.
-- Travaux : modèle « Travaux de voirie » (gares, 10 h), aujourd'hui sans effet réel.
-- National : modèle « Grande campagne nationale de solidarité », sans effet.
-- Trajets : `start_life_activity('transport', lieu cible)` crée une activité avec heure de fin ; l'Agenda lit cette heure de fin.
-- Indicateurs de ville : `city_indicators` et `indicator_history` (Ma Ville).
-- Carte : marqueurs de lieux dans le quartier ; fiche lieu avec la section Événements du Bloc 12.
-- Protections : écritures uniquement côté serveur, événements personnels privés, registres anti-doublon.
+Système désactivé, paramètres indéfinis laissés vides. Ce SQL est un socle proposé, non un lancement complet : campagnes/débats et notifications nationales générales restent à définir.
 
-## 2. Écrans et interface (à ajouter)
-- **Bouton Transport public** (fiche gare/station) : quand une perturbation concerne le trajet, le bouton affiche « 30 min + 20 min de travaux = 50 min » et le nom des travaux, avant confirmation. Sans perturbation : affichage inchangé.
-- **Agenda / Vie quotidienne** : le trajet en cours affiche sa durée réelle et la mention « Rallongé par : Travaux de voirie ».
-- **Fiche événement national** (page Événements et Monde) : nouvelle ligne « Effet dans votre ville : aucun / faible / moyen / fort » avec l'explication.
-- **Carte du quartier** : un petit badge « événement » sur le marqueur d'un lieu qui a au moins un événement actif public. Un seul badge par lieu, avec le nombre si plusieurs.
-- **Clic sur le badge** : 1 événement → ouvre sa fiche existante (boutons du Bloc 12 conservés) ; plusieurs → ouvre la liste des événements du lieu, puis la fiche choisie.
-- Aucune autre page modifiée. Grands boutons tactiles, textes en français.
+## 1. Tables nouvelles — existant / ajout
+- Réglages/partis : `national_settings` (50/25, désactivé), `national_constituencies` (cinq villes), `national_party_profiles` (extension 1:1 des organisations : programme et poids fictif). Membres, opinions, relations et statistiques réutilisés sans progression parallèle.
+- Scrutins : `national_elections`, `national_candidacies`, `national_ballots`, `national_results` ; calendrier propre, bulletins privés uniques, voix réelles/fictives distinguées. Tables municipales intactes : les étendre mélangerait leurs droits/calendriers.
+- Parlement : `national_legislatures`, `national_groups`, `national_seats`. Cinq gagnants territoriaux +45 sièges fictifs ; Sénat simulé depuis un instantané des conseils locaux. Aucun mandat municipal transformé en mandat national.
+- Exécutif : `national_governments`, `national_offices`. PNJ au départ, joueurs nommables sous conditions ; aucune autopromotion ni privilège d’administration conféré par un rôle du jeu.
+- Lois : `national_law_templates`, `national_laws`, `national_law_versions`, `national_sessions`, `national_parliamentary_votes`. Versions dédiées, coûts/effets issus de modèles serveur, votes non réécrits ; `public_decisions` isolée.
+- Budget/effets : `national_treasury`, `national_budgets`, `national_ledger`, `national_city_effects` ; aucun compte personnel, unicité (version, ville, indicateur), historique préfixé `national:`.
+- Traçabilité : `national_requests` (demande/réponse répétable), `national_publications` (fait unique → événement existant). Pas de fil ou moteur d’événements parallèle.
 
-## 3. Tables et colonnes (à ajouter, aucune suppression)
-- `world_event_templates` : + `travel_delay_minutes` (entier, défaut 0). Valeur proposée : 20 pour « Travaux de voirie », 0 pour tous les autres.
-- `events` : + `travel_delay_minutes` (entier, défaut 0), recopié du modèle à la publication ; les 65 événements existants gardent 0, donc aucun effet rétroactif.
-- `world_settings` (réglages existants des événements, `world_event_settings`) : + `travel_delay_cap_minutes` (défaut 40).
-- `activities` : + `travel_delay_minutes` (entier, défaut 0) et + `travel_event_ids` (liste d'identifiants, vide par défaut) — trace des travaux appliqués, figée au départ.
-- **Nouvelle table** `world_event_city_effects` : événement, ville, niveau (`none`, `low`, `medium`, `strong`), valeur appliquée, date. **Unique (événement, ville).**
-- `world_event_templates` : + `city_effect_indicator` (texte, facultatif) et + `city_effect_values` (niveau → points). Pour la campagne nationale : indicateur `satisfaction`, valeurs aucun 0 / faible 1 / moyen 2 / fort 3.
+## 2. Tables existantes éventuellement étendues
+**Aucune colonne, contrainte, politique ou fonction existante modifiée.** Lectures : `cities`, `organizations`, `political_profiles`, `social_npcs`, `characters`, `memberships`, `political_stats`, `civic_stats`, `municipal_mandates`, `municipal_council_groups`, `locations`, `character_positions`, `news_sources`.
+Exception additive proposée : nouveau déclencheur sur `activities`, uniquement pour le type `national` (séances forgées/gains interdits). Il retourne immédiatement pour les types existants ; ajout à approuver.
+Écritures futures prévues : nouvelle règle `life_rules`, lignes `activities/events/news/indicator_history` et deltas `city_indicators` après application d’une loi. Aucune maintenant, aucune modification des lignes anciennes.
 
-## 4. Fonctions serveur
-- **Modifiée** `start_life_activity` (branche transport public uniquement) : calcule le retard une seule fois au départ, l'ajoute à l'heure de fin, enregistre retard et travaux appliqués. Les autres activités restent identiques.
-- **Nouvelle** `transport_delay_preview(lieu cible)` (lecture seule) : renvoie la durée de base, le retard et les travaux concernés, pour l'affichage avant confirmation.
-- **Modifiée** `publish_world_event` : recopie `travel_delay_minutes` ; pour un événement national, crée ses effets par ville.
-- **Nouvelle** `world_event_city_effects_apply(événement)` (interne) : une ligne par ville, puis ajout des points à l'indicateur de la ville avec trace dans `indicator_history`.
-- **Modifiée** `world_events_state` : ajoute l'effet de la ville du joueur et la liste des lieux ayant un événement public actif (pour les badges).
-- Non modifiées : trajets en véhicule personnel (fonction du patrimoine), génération aléatoire, participations et récompenses du Bloc 12, `game_now`, `move_character`.
+## 3. Fonctions serveur nouvelles / modifiées
+20 fonctions nouvelles `national_` : authentification sans règlement de vie quotidienne, configuration/éligibilité, scrutin/dépouillement/sièges, Sénat, exécutif, lois/versions/séances/votes, budget/effets, publication, état et rattrapage. Le SQL donne chaque signature et contrôle.
+Internes/configuration réservées à l’opérateur ; joueurs : `national_action` et `national_state`. Horaires via `game_now()` en lecture. Rattrapage séparé, aucune tâche horaire actuelle modifiée.
 
-## 5. Règles de calcul
-- **Travaux concernés** : événement actif (début ≤ heure du monde < fin), statut non annulé, retard > 0, même ville que le trajet, lieu = lieu de départ ou lieu d'arrivée (ou sans lieu précis = toute la ville).
-- **Retard** = somme des retards des travaux concernés, plafonnée à 40 min (réglage). Exemple : deux travaux de 20 min → 40 min ; trois → 40 min.
-- **Durée finale** = durée de base du transport (réglage existant) + retard, figée au départ. Des travaux qui commencent ou se terminent pendant le trajet ne changent rien.
-- **Effet national par ville** : niveau calculé à partir de l'indicateur `satisfaction` existant de la ville au moment de la publication : ≥ 70 → aucun ; 50–69 → faible ; 30–49 → moyen ; < 30 → fort (les villes en difficulté profitent davantage de la solidarité). Même entrée → même résultat.
-- Les événements nationaux sans réglage d'effet affichent « aucun effet » et n'écrivent rien. Événements personnels : jamais d'effet de ville.
+## 4. Écrans à ajouter — développement ultérieur
+- Politique nationale : situation, exécutif, chambres, lois et prochain scrutin.
+- Élections nationales : calendrier indépendant, ma circonscription, candidature/programme, confirmation du vote, résultats.
+- Assemblée / Sénat : 50/25 sièges, groupes et représentation ; aucun vote direct pour le Sénat.
+- Loi : version, auteur politique public, texte, deux votes distincts, résultat, entrée en vigueur, effets et historique.
+- Gouvernement / Budget : composition, postes, allocations fictives, disponible/engagé et registre public.
+- Parti existant : volet national, sans afficher les membres privés ni leurs statistiques.
+- Agenda : séances ajoutées à `activities`, même départ/fin que la Vie. Pas de séance virtuelle ou bâtiment national inventé : proposition de participation depuis un lieu administratif existant de la ville, à valider.
+- Monde / Ma Ville : origine des effets nationaux. Actualités / Civi : réutilisation des événements publics. Carte : lieux existants seulement, aucun nouveau pays ni déplacement national.
+Accès téléphone/menu, pages distinctes, français et grands boutons ; aucun écran ajouté maintenant.
 
-## 6. Permissions
-- Nouvelles colonnes et table en lecture seule pour les joueurs ; écriture uniquement par les fonctions sécurisées du serveur.
-- `world_event_city_effects` : lecture pour les joueurs connectés (donnée publique, sans aucune information personnelle) ; aucune insertion, modification ni suppression par les joueurs.
-- `transport_delay_preview` : appel réservé aux joueurs connectés, ne renvoie que des événements publics de leur ville.
-- Badges de Carte : uniquement les événements locaux, régionaux et nationaux ; les événements personnels sont exclus côté serveur.
+## 5. Permissions et confidentialité
+GRANT/RLS sur chaque nouvelle table ; joueurs SELECT seulement, aucun INSERT/UPDATE/DELETE. SECURITY DEFINER, schéma fixe, rôle/mandat/date/ville vérifiés serveur ; internes révoquées aux joueurs.
+Bulletins/demandes/votes individuels privés ; totaux, programmes acceptés et propositions publiées publics. Projections excluant identités de compte et statistiques privées ; brouillons visibles à l’auteur seul. Autorisation par personnage authentifié, jamais par nom.
+Événements nationaux créés avec `character_id` et `template_id` nuls : ni fuite d’événement personnel ni seconde application via le registre du Bloc 14. Civi n’accorde aucune récompense.
 
-## 7. Anti-doublon
-- Trajet : verrou existant sur le personnage et refus d'une seconde activité en cours → double clic et clics simultanés ne créent qu'un trajet et n'appliquent le retard qu'une fois. Le retard est enregistré dans le trajet ; rechargement et reconnexion relisent la valeur sans recalcul.
-- Effet national : unicité (événement, ville) ; l'indicateur n'est modifié que si la ligne vient d'être créée.
-- Carte : un badge par lieu (regroupement côté serveur et à l'affichage) ; consultations répétées en lecture seule.
-- Même événement sur plusieurs écrans : affichage seulement, aucune écriture.
+## 6. Anti-doublon et concurrence
+Verrou personnage puis national. Unicités : bulletin/candidature (scrutin,personnage), résultat (scrutin,ville,candidat), siège (législature,chambre,numéro). Dépouillement unique, source du Sénat figée.
+Vote unique (séance,siège), séance unique (version,chambre), réservation par `activities.source_key`. Deux chambres approuvent la version courante identique ; demande répétée au contenu différent refusée.
+Financement unique par version ; effet unique (version, ville, indicateur), ligne d’indicateur verrouillée avant addition bornée ; publication unique par fait. Un échec annule toute l’opération, pas seulement une partie.
 
-## 8. Cas limites
-- Travaux expirés ou annulés → aucun retard, badge absent.
-- Travaux dans une autre ville ou sur des lieux non concernés → trajet inchangé.
-- Trajet annulé → aucun effet supplémentaire ; un nouveau départ recalcule selon les travaux du moment.
-- Ville sans indicateur `satisfaction` → niveau « aucun ».
-- Ville ajoutée après l'événement → pas d'effet rétroactif.
-- Indicateur borné à 0–100 comme aujourd'hui.
-- Plusieurs événements au même lieu, dont un personnel → le badge ne compte que les publics.
+## 7. Effets sur les villes
+Neuf indicateurs existants : `housing/employment/transport/environment/safety/services/commerce/culture/satisfaction`. Santé/éducation absents : aucun indicateur inventé ; éventuel lien avec services à décider.
+Deltas de modèles serveur figés par version ; valeur = min(100,max(0,actuelle+delta)), avant/après conservés. Effet ponctuel proposé, aucun modèle actif prérempli ; points/coûts/délais à décider.
 
-## 9. Tests prévus
-Comptes temporaires isolés, créés seulement après validation du SQL, puis supprimés et vérifiés. État initial relevé avant (tables, événements, indicateurs, fonctions, permissions) et comparé après.
+## 8. Données existantes modifiées / comparaison avant-après
+À cette étape : **aucune donnée modifiée**. Le SQL de préparation crée uniquement des objets nationaux et ajoute leurs cinq circonscriptions ; il n’active rien et n’insère aucun événement/activité/effet.
+Avant/après application future : empreintes/comptages des tables, fonctions, politiques, droits, horloge et chaque scrutin/mandat municipal. Seul ajout attendu : objets nationaux et déclencheur déclaré ; 65 anciens événements à retard 0.
+Lecture seule : 65 événements/retards nuls, cinq élections, aucun mandat/table nationale ; empreintes horloge/élections/mandats identiques avant/après. Aucun test lancé.
+En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indicateurs, `baseline` inchangée, aucune suppression/cascade vers l’existant. Ces effets attendus seront distingués des régressions.
 
-**Transport** : trajet normal = durée de base ; trajet concerné = +20 min ; retard appliqué une seule fois ; rechargement pendant le trajet ; reconnexion ; travaux expirés = aucun retard ; trajet non concerné ; deux travaux = 40 min, trois = 40 min (plafond) ; deux clics simultanés = un trajet ; Agenda affiche la bonne heure de fin ; véhicule personnel inchangé ; aperçu avant confirmation = durée réelle.
+## 9. Tests à préparer seulement
+- Blocs 1–14 : personnage/identité privés, Banque/salaire/loyer uniques, études, Agenda, relations, citoyenneté, politique, patrimoine/démarches, événements, Messages/Civi sans gains, Monde/Carte, confidentialité, transports +20 min/plafond 40, véhicules inchangés.
+- Municipal : comparer intégralement calendriers, résultats, mandats, fonctions et permissions avant/après.
+- National : 5 circonscriptions, 50/25 sièges, Sénat sans vote direct et absence de collège ; candidature/vote/concurrence ; rôles et écritures interdites ; mêmes/différentes versions des chambres ; refus/amendement ; budget insuffisant ; bornes 0/100 ; effet/article unique ; Agenda/présence ; recharge/reconnexion/rattrapage.
+- Comptes temporaires isolés seulement après accord ; aucun changement d’horloge. Calendrier incompatible avec l’isolation = limite signalée, pas de contournement.
 
-**National** : même événement, deux villes, niveaux différents ; aucun doublon après deux publications ; une seule trace par ville dans l'historique ; rechargement et reconnexion ; événement expiré = aucun nouvel effet ; événement personnel = aucun effet ni visibilité ; joueur incapable d'écrire dans le registre.
+## 10. Risques et paramètres à valider
+- **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; aucune fausse élection municipale ni faux mandat pour contourner.
+- Propositions à décider : scrutin territorial à un tour ; 45 sièges fictifs proportionnels à des poids de partis configurés (plus forts restes, égalité par identifiant stable) ; Sénat proportionnel aux sièges des conseils actifs (même méthode) ; votes fictionnels paramétrés distincts des bulletins réels ; majorité absolue proposée 26/50 et 13/25, absence = abstention ; réexamen par nouvelle version.
+- À décider : dates/mandats, âges/seuils, poids fictifs, durée/énergie/lieu des séances, ministères/nominations, unité/plafond/budget, textes/effets et campagnes/débats. Aucune campagne financée inventée.
+- Gouvernement proposé depuis le groupe le plus représenté, sans coalition/confiance inventée ; PNJ choisis par l’opérateur, pas de promotion automatique.
+- Échéances figées ; rattrapage chronologique, aucun vote tardif. Majorité insuffisante = refus ; fonds insuffisants = attente, pas d’effets partiels.
+- Les lois ne bloquent pas les lieux, ne modifient pas les transports, salaires, loyers, élections municipales ou argent personnel. Multijoueur complet, diplomatie, deuxième pays, finance avancée et Bloc 16 exclus.
 
-**Carte** : événement actif → badge ; expiré → absent ; clic → bonne fiche avec boutons du Bloc 12 ; trois événements au même lieu → un badge, liste de trois ; événement personnel absent ; rechargement ; reconnexion ; second compte ne voit pas l'événement privé du premier.
-
-**Automatiques** : nouveaux tests pour le calcul du retard et du plafond, le niveau selon l'indicateur et le regroupement des badges ; relance de toute la suite existante.
-
-## 10. Régressions concernées (Blocs 1–13)
-Relancées sans modifier les anciens tests : Carte et déplacements (Bloc 2), vie quotidienne et Agenda (Bloc 3), Ma Ville et indicateurs (Blocs 6 et 9), événements du monde (Bloc 12), Monde (Bloc 13), parcours économique (déplacement en véhicule, Bloc 10). Empreinte de l'horloge commune et 39 événements d'origine vérifiés inchangés.
-
-## 11. Valeurs à approuver
-- Retard des Travaux de voirie : **20 min**.
-- Plafond cumulé : **40 min**.
-- Effet national : indicateur `satisfaction`, seuils 70 / 50 / 30, points 0 / 1 / 2 / 3.
-
-Après votre accord sur ce plan, le SQL exact sera présenté séparément, sans application.
+**Suite :** relire le SQL proposé et décider des paramètres encore ouverts. Aucun appel de migration ni activation avant votre accord explicite sur le fichier exact et ses limites.

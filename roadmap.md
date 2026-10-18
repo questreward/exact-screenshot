@@ -138,3 +138,10 @@
 - [x] Plan étape 2 approuvé
 - [x] SQL 0042 appliqué après accord
 - [x] Interface et tests Bloc 14 (35/35) ; validation finale par l’utilisateur en attente
+- [x] Bloc 14 officiellement validé par l’utilisateur ; ne pas reprendre les anciennes réserves comme tâches ouvertes.
+
+## Bloc 15 — Politique nationale et institutions
+- [x] Accord lu : 50 sièges Assemblée, 25 Sénat simulé, 5 circonscriptions ; systèmes municipaux et horloge protégés.
+- [x] Analyse en lecture seule et plan technique ; SQL proposé 0043 écrit sans application, aucun test lancé.
+- [ ] Accord explicite sur le SQL exact et les paramètres encore ouverts (calendrier, seuils, simulations, séances, budget, effets) avant toute application ou développement.
+- Bloc 16 interdit.
