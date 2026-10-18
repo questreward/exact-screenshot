@@ -73,7 +73,7 @@
 
 # Validation ciblée du Bloc 8
 - [x] Revérifier dépouillement, conséquences et protection votes/résultats/gagnant/mandat
-- [ ] Reprendre Travail et versement unique après recharge/reconnexion sans modifier les horaires
+- [ ] Test final immédiat : compte isolé, avance d’horloge non visible aux autres parties, vacation complète, salaire et transaction uniques dans Banque après recharges et reconnexion
 - [x] Reprendre Atelier social, agenda, récompenses, relations et reconnexion
 - [x] Parcours transversal partiel, comptes nettoyés et rapport BLOC_8_REGRESSION_CIBLEE.md
-- [ ] Vacation/salaire et transversal complet : bloqués par la nuit du monde à vitesse réelle ; prochaine fenêtre à 08:00 du monde
+- [ ] Conclure le rapport final du Bloc 8 après l’essai salarial ; nettoyer le compte temporaire ; aucun Bloc 9
