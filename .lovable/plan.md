@@ -1,7 +1,7 @@
 # Bloc 15 — Politique nationale et institutions
 
 ## Statut et décisions
-Proposition uniquement : **aucune application, aucun développement du jeu, aucun test**. Bloc 14 validé. Bloc 16 exclu. Votre accord fixe 50 sièges à l’Assemblée, 25 au Sénat, cinq circonscriptions, des lois dédiées et l’accord des deux chambres sur une même version. Le SQL proposé est `.lovable/proposed_0043_bloc15_national_politics.sql` ; il n’est ni une migration enregistrée ni un fichier appliqué.
+**Proposition non appliquée, aucun développement ni test.** Bloc 14 validé, Bloc 16 exclu. Décisions : Assemblée 50/Sénat 25, cinq circonscriptions, lois dédiées, deux chambres approuvant la même version. SQL : `.lovable/proposed_0043_bloc15_national_politics.sql`, hors migrations.
 
 Système désactivé, paramètres indéfinis laissés vides. Ce SQL est un socle proposé, non un lancement complet : campagnes/débats et notifications nationales générales restent à définir.
 
@@ -40,8 +40,8 @@ Bulletins/demandes/votes individuels privés ; totaux, programmes acceptés et p
 Événements nationaux créés avec `character_id` et `template_id` nuls : ni fuite d’événement personnel ni seconde application via le registre du Bloc 14. Civi n’accorde aucune récompense.
 
 ## 6. Anti-doublon et concurrence
-Verrou personnage puis verrou national ; dates/requêtes vérifiées après verrou. Bulletins uniques (scrutin, personnage), candidature unique (scrutin, personnage), résultat unique (scrutin, circonscription, candidat), siège unique (législature, chambre, numéro). Dépouillement unique, délégués du Sénat figés lors de sa composition.
-Vote parlementaire unique (séance, siège), une séance par version/chambre ; édition interdite après ouverture. Réservation unique (séance, personnage) via la clé `activities.source_key`. Deux chambres doivent approuver **la version courante identique**. Demande répétée avec contenu différent refusée.
+Verrou personnage puis national. Unicités : bulletin/candidature (scrutin,personnage), résultat (scrutin,ville,candidat), siège (législature,chambre,numéro). Dépouillement unique, source du Sénat figée.
+Vote unique (séance,siège), séance unique (version,chambre), réservation par `activities.source_key`. Deux chambres approuvent la version courante identique ; demande répétée au contenu différent refusée.
 Financement unique par version ; effet unique (version, ville, indicateur), ligne d’indicateur verrouillée avant addition bornée ; publication unique par fait. Un échec annule toute l’opération, pas seulement une partie.
 
 ## 7. Effets sur les villes
@@ -51,7 +51,7 @@ Deltas de modèles serveur figés par version ; valeur = min(100,max(0,actuelle+
 ## 8. Données existantes modifiées / comparaison avant-après
 À cette étape : **aucune donnée modifiée**. Le SQL de préparation crée uniquement des objets nationaux et ajoute leurs cinq circonscriptions ; il n’active rien et n’insère aucun événement/activité/effet.
 Avant/après application future : empreintes/comptages des tables, fonctions, politiques, droits, horloge et chaque scrutin/mandat municipal. Seul ajout attendu : objets nationaux et déclencheur déclaré ; 65 anciens événements à retard 0.
-Contrôle effectué en lecture seule durant cette préparation : 65 événements et 65 retards nuls avant/après, cinq élections municipales, zéro mandat municipal, zéro table nationale. Empreintes de l’horloge, des élections et des mandats identiques avant/après. Aucun test ni appel à une fonction qui règle le jeu.
+Lecture seule : 65 événements/retards nuls, cinq élections, aucun mandat/table nationale ; empreintes horloge/élections/mandats identiques avant/après. Aucun test lancé.
 En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indicateurs, `baseline` inchangée, aucune suppression/cascade vers l’existant. Ces effets attendus seront distingués des régressions.
 
 ## 9. Tests à préparer seulement
@@ -63,7 +63,7 @@ En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indica
 ## 10. Risques et paramètres à valider
 - **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; aucune fausse élection municipale ni faux mandat pour contourner.
 - Propositions à décider : scrutin territorial à un tour ; 45 sièges fictifs proportionnels à des poids de partis configurés (plus forts restes, égalité par identifiant stable) ; Sénat proportionnel aux sièges des conseils actifs (même méthode) ; votes fictionnels paramétrés distincts des bulletins réels ; majorité absolue proposée 26/50 et 13/25, absence = abstention ; réexamen par nouvelle version.
-- À décider avant activation : dates/durée du premier scrutin et mandats ; âge et seuils civiques/politiques ; poids d’électorat fictif et de simulation des partis/votes ; fenêtre/durée/énergie des séances ; lieu de participation ; ministères/conditions de nomination ; unité, plafond et modèles budgétaires ; textes et effets autorisés ; règles de campagne/débats. Pas de campagne nationale financée inventée dans ce SQL : les programmes existent, mais les actions de campagne nouvelles restent à définir.
+- À décider : dates/mandats, âges/seuils, poids fictifs, durée/énergie/lieu des séances, ministères/nominations, unité/plafond/budget, textes/effets et campagnes/débats. Aucune campagne financée inventée.
 - Gouvernement proposé depuis le groupe le plus représenté, sans coalition/confiance inventée ; PNJ choisis par l’opérateur, pas de promotion automatique.
 - Échéances figées ; rattrapage chronologique, aucun vote tardif. Majorité insuffisante = refus ; fonds insuffisants = attente, pas d’effets partiels.
 - Les lois ne bloquent pas les lieux, ne modifient pas les transports, salaires, loyers, élections municipales ou argent personnel. Multijoueur complet, diplomatie, deuxième pays, finance avancée et Bloc 16 exclus.
