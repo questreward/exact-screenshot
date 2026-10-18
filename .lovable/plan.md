@@ -1,149 +1,85 @@
-# Bloc 13 — Proposition d’un environnement d’essai séparé
+# Bloc 14 — Étape 2 : plan détaillé (aucune application)
 
-**Proposition uniquement : rien appliqué, aucun compte créé, aucun test lancé. Bloc 14 interdit.**
+Périmètre strict : 1) travaux qui rallongent réellement le transport public, 2) effets nationaux différents selon la ville, 3) marqueurs d'événements sur la Carte. Parlement, Sénat, véhicules personnels, multijoueur et Bloc 15 sont exclus.
 
-## Mécanisme retenu
+## 1. Ce qui existe déjà (réutilisé, non remplacé)
+- Événements : table `events` (ville, lieu, début, fin, portée, propriétaire pour le personnel), modèles `world_event_templates`, génération et état du Bloc 12.
+- Travaux : modèle « Travaux de voirie » (gares, 10 h), aujourd'hui sans effet réel.
+- National : modèle « Grande campagne nationale de solidarité », sans effet.
+- Trajets : `start_life_activity('transport', lieu cible)` crée une activité avec heure de fin ; l'Agenda lit cette heure de fin.
+- Indicateurs de ville : `city_indicators` et `indicator_history` (Ma Ville).
+- Carte : marqueurs de lieux dans le quartier ; fiche lieu avec la section Événements du Bloc 12.
+- Protections : écritures uniquement côté serveur, événements personnels privés, registres anti-doublon.
 
-Pour vérifier réellement tout le parcours, utiliser une **copie jetable du projet avec son propre Lovable Cloud**, sans aucun compte ni donnée de joueur réel. Le jeu original, sa base et son horloge ne sont jamais ciblés.
+## 2. Écrans et interface (à ajouter)
+- **Bouton Transport public** (fiche gare/station) : quand une perturbation concerne le trajet, le bouton affiche « 30 min + 20 min de travaux = 50 min » et le nom des travaux, avant confirmation. Sans perturbation : affichage inchangé.
+- **Agenda / Vie quotidienne** : le trajet en cours affiche sa durée réelle et la mention « Rallongé par : Travaux de voirie ».
+- **Fiche événement national** (page Événements et Monde) : nouvelle ligne « Effet dans votre ville : aucun / faible / moyen / fort » avec l'explication.
+- **Carte du quartier** : un petit badge « événement » sur le marqueur d'un lieu qui a au moins un événement actif public. Un seul badge par lieu, avec le nombre si plusieurs.
+- **Clic sur le badge** : 1 événement → ouvre sa fiche existante (boutons du Bloc 12 conservés) ; plusieurs → ouvre la liste des événements du lieu, puis la fiche choisie.
+- Aucune autre page modifiée. Grands boutons tactiles, textes en français.
 
-Les fonctions du jeu restent identiques, y compris `game_now()`, `start_life_activity()`, `prepare_daily_life()` et `settle_daily_life()`. Seule l’ancre d’horloge de la copie d’essai est déplacée par un outil réservé à l’opérateur, pour le seul compte temporaire enregistré dans cette copie. Ce n’est pas une seconde horloge ajoutée au jeu réel.
+## 3. Tables et colonnes (à ajouter, aucune suppression)
+- `world_event_templates` : + `travel_delay_minutes` (entier, défaut 0). Valeur proposée : 20 pour « Travaux de voirie », 0 pour tous les autres.
+- `events` : + `travel_delay_minutes` (entier, défaut 0), recopié du modèle à la publication ; les 65 événements existants gardent 0, donc aucun effet rétroactif.
+- `world_settings` (réglages existants des événements, `world_event_settings`) : + `travel_delay_cap_minutes` (défaut 40).
+- `activities` : + `travel_delay_minutes` (entier, défaut 0) et + `travel_event_ids` (liste d'identifiants, vide par défaut) — trace des travaux appliqués, figée au départ.
+- **Nouvelle table** `world_event_city_effects` : événement, ville, niveau (`none`, `low`, `medium`, `strong`), valeur appliquée, date. **Unique (événement, ville).**
+- `world_event_templates` : + `city_effect_indicator` (texte, facultatif) et + `city_effect_values` (niveau → points). Pour la campagne nationale : indicateur `satisfaction`, valeurs aucun 0 / faible 1 / moyen 2 / fort 3.
 
-**Pourquoi ne pas retenir une copie de `start_life_activity()` dans la base actuelle ?** Son appel à `prepare_daily_life()`, le règlement des salaires et les consultations automatiques de Banque/Vie utilisent aussi `game_now()`. Une seule fonction copiée ne suffit pas. Copier toute cette chaîne créerait une version différente du jeu : un succès ne prouverait pas le fonctionnement des fonctions réelles. Aucune de ces copies n’est proposée.
+## 4. Fonctions serveur
+- **Modifiée** `start_life_activity` (branche transport public uniquement) : calcule le retard une seule fois au départ, l'ajoute à l'heure de fin, enregistre retard et travaux appliqués. Les autres activités restent identiques.
+- **Nouvelle** `transport_delay_preview(lieu cible)` (lecture seule) : renvoie la durée de base, le retard et les travaux concernés, pour l'affichage avant confirmation.
+- **Modifiée** `publish_world_event` : recopie `travel_delay_minutes` ; pour un événement national, crée ses effets par ville.
+- **Nouvelle** `world_event_city_effects_apply(événement)` (interne) : une ligne par ville, puis ajout des points à l'indicateur de la ville avec trace dans `indicator_history`.
+- **Modifiée** `world_events_state` : ajoute l'effet de la ville du joueur et la liste des lieux ayant un événement public actif (pour les badges).
+- Non modifiées : trajets en véhicule personnel (fonction du patrimoine), génération aléatoire, participations et récompenses du Bloc 12, `game_now`, `move_character`.
 
-Cette solution est une alternative à votre préférence « heure propre au compte dans la base actuelle ». Elle nécessite votre accord explicite pour un environnement séparé. Elle ne sera pas présentée comme une simulation propre au compte dans la base de production.
+## 5. Règles de calcul
+- **Travaux concernés** : événement actif (début ≤ heure du monde < fin), statut non annulé, retard > 0, même ville que le trajet, lieu = lieu de départ ou lieu d'arrivée (ou sans lieu précis = toute la ville).
+- **Retard** = somme des retards des travaux concernés, plafonnée à 40 min (réglage). Exemple : deux travaux de 20 min → 40 min ; trois → 40 min.
+- **Durée finale** = durée de base du transport (réglage existant) + retard, figée au départ. Des travaux qui commencent ou se terminent pendant le trajet ne changent rien.
+- **Effet national par ville** : niveau calculé à partir de l'indicateur `satisfaction` existant de la ville au moment de la publication : ≥ 70 → aucun ; 50–69 → faible ; 30–49 → moyen ; < 30 → fort (les villes en difficulté profitent davantage de la solidarité). Même entrée → même résultat.
+- Les événements nationaux sans réglage d'effet affichent « aucun effet » et n'écrivent rien. Événements personnels : jamais d'effet de ville.
 
-## Prérequis et blocage actuel
+## 6. Permissions
+- Nouvelles colonnes et table en lecture seule pour les joueurs ; écriture uniquement par les fonctions sécurisées du serveur.
+- `world_event_city_effects` : lecture pour les joueurs connectés (donnée publique, sans aucune information personnelle) ; aucune insertion, modification ni suppression par les joueurs.
+- `transport_delay_preview` : appel réservé aux joueurs connectés, ne renvoie que des événements publics de leur ville.
+- Badges de Carte : uniquement les événements locaux, régionaux et nationaux ; les événements personnels sont exclus côté serveur.
 
-La plateforme documente qu’un Remix copie la structure, sans les données. **Aucune copie n’a été créée et aucun environnement séparé n’a été vérifié.** L’opérateur doit disposer d’un projet distinct et vérifier son Cloud indépendant avant tout SQL ci-dessous. Une simple copie de code branchée sur la base actuelle est interdite.
+## 7. Anti-doublon
+- Trajet : verrou existant sur le personnage et refus d'une seconde activité en cours → double clic et clics simultanés ne créent qu'un trajet et n'appliquent le retard qu'une fois. Le retard est enregistré dans le trajet ; rechargement et reconnexion relisent la valeur sans recalcul.
+- Effet national : unicité (événement, ville) ; l'indicateur n'est modifié que si la ligne vient d'être créée.
+- Carte : un badge par lieu (regroupement côté serveur et à l'affichage) ; consultations répétées en lecture seule.
+- Même événement sur plusieurs écrans : affichage seulement, aucune écriture.
 
-Les réglages et lieux fictifs nécessaires doivent être présents dans cette copie : préparation à partir des données initiales du projet, sans export des comptes ni de leurs données. Si le Remix ne fournit pas les fonctions, les réglages ou les lieux nécessaires, arrêter et soumettre séparément leur préparation exacte. Aucun chargement supplémentaire n’est approuvé par ce plan.
+## 8. Cas limites
+- Travaux expirés ou annulés → aucun retard, badge absent.
+- Travaux dans une autre ville ou sur des lieux non concernés → trajet inchangé.
+- Trajet annulé → aucun effet supplémentaire ; un nouveau départ recalcule selon les travaux du moment.
+- Ville sans indicateur `satisfaction` → niveau « aucun ».
+- Ville ajoutée après l'événement → pas d'effet rétroactif.
+- Indicateur borné à 0–100 comme aujourd'hui.
+- Plusieurs événements au même lieu, dont un personnel → le badge ne compte que les publics.
 
-## Éléments concernés
+## 9. Tests prévus
+Comptes temporaires isolés, créés seulement après validation du SQL, puis supprimés et vérifiés. État initial relevé avant (tables, événements, indicateurs, fonctions, permissions) et comparé après.
 
-**Projet réel : aucun changement de code, table, fonction, permission, règle, donnée ou horloge.** Aucun appel aux élections.
+**Transport** : trajet normal = durée de base ; trajet concerné = +20 min ; retard appliqué une seule fois ; rechargement pendant le trajet ; reconnexion ; travaux expirés = aucun retard ; trajet non concerné ; deux travaux = 40 min, trois = 40 min (plafond) ; deux clics simultanés = un trajet ; Agenda affiche la bonne heure de fin ; véhicule personnel inchangé ; aperçu avant confirmation = durée réelle.
 
-**Copie jetable uniquement :**
-- Fonctions de production utilisées sans remplacement : création de personnage, candidature, déplacement, démarrage, consultation et règlement de la vie quotidienne, Banque et Agenda.
-- Données du seul compte temporaire : profil, personnage, candidatures, emploi, position, activités, progression, compte, opérations et transactions ; autres dépendances personnelles générées par ses lectures.
-- `world_state` : ancre de la copie uniquement, jamais celle du projet réel.
-- Une nouvelle table `public.bloc13_test_context` et deux nouvelles fonctions d’opérateur ci-dessous. Aucun accès pour les joueurs ; aucun écran ou bouton ajouté au jeu.
+**National** : même événement, deux villes, niveaux différents ; aucun doublon après deux publications ; une seule trace par ville dans l'historique ; rechargement et reconnexion ; événement expiré = aucun nouvel effet ; événement personnel = aucun effet ni visibilité ; joueur incapable d'écrire dans le registre.
 
-## SQL exact proposé — uniquement dans la copie jetable
+**Carte** : événement actif → badge ; expiré → absent ; clic → bonne fiche avec boutons du Bloc 12 ; trois événements au même lieu → un badge, liste de trois ; événement personnel absent ; rechargement ; reconnexion ; second compte ne voit pas l'événement privé du premier.
 
-**Ce SQL ne doit jamais être appliqué au projet actuel.** Le commentaire et les contrôles ne peuvent pas deviner la destination : l’indépendance du Cloud est un prérequis vérifié par l’opérateur, pas une garantie produite par ce SQL.
+**Automatiques** : nouveaux tests pour le calcul du retard et du plafond, le niveau selon l'indicateur et le regroupement des badges ; relance de toute la suite existante.
 
-```sql
-CREATE TABLE public.bloc13_test_context (
-  id integer PRIMARY KEY CHECK (id = 1),
-  user_id uuid NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
-  character_id uuid NOT NULL UNIQUE REFERENCES public.characters(id) ON DELETE CASCADE,
-  original_clock jsonb NOT NULL,
-  expires_at timestamptz NOT NULL
-);
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.bloc13_test_context TO service_role;
-REVOKE ALL ON public.bloc13_test_context FROM PUBLIC, anon, authenticated;
-ALTER TABLE public.bloc13_test_context ENABLE ROW LEVEL SECURITY;
--- Pas de politique joueur : la table est inaccessible aux joueurs.
+## 10. Régressions concernées (Blocs 1–13)
+Relancées sans modifier les anciens tests : Carte et déplacements (Bloc 2), vie quotidienne et Agenda (Bloc 3), Ma Ville et indicateurs (Blocs 6 et 9), événements du monde (Bloc 12), Monde (Bloc 13), parcours économique (déplacement en véhicule, Bloc 10). Empreinte de l'horloge commune et 39 événements d'origine vérifiés inchangés.
 
-CREATE FUNCTION public.bloc13_register_test(_user_id uuid, _character_id uuid)
-RETURNS void LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE original jsonb;
-BEGIN
-  -- Cette fonction est exécutable uniquement par l’opérateur.
-  LOCK TABLE public.bloc13_test_context IN EXCLUSIVE MODE;
-  IF EXISTS (SELECT 1 FROM public.bloc13_test_context) THEN
-    RAISE EXCEPTION 'Un essai est déjà enregistré';
-  END IF;
-  IF (SELECT count(*) FROM public.profiles) <> 1
-     OR (SELECT count(*) FROM public.characters) <> 1
-     OR NOT EXISTS (
-       SELECT 1 FROM public.characters c JOIN public.profiles p ON p.id=c.user_id
-       WHERE c.id=_character_id AND c.user_id=_user_id
-     ) THEN
-    RAISE EXCEPTION 'Copie dédiée au seul compte temporaire requise';
-  END IF;
-  SELECT to_jsonb(w) INTO original FROM public.world_state w WHERE id=1 FOR UPDATE;
-  IF original IS NULL THEN RAISE EXCEPTION 'Horloge absente'; END IF;
-  INSERT INTO public.bloc13_test_context
-    (id,user_id,character_id,original_clock,expires_at)
-  VALUES (1,_user_id,_character_id,original,clock_timestamp()+interval '2 hours');
-END;
-$$;
-REVOKE ALL ON FUNCTION public.bloc13_register_test(uuid,uuid) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.bloc13_register_test(uuid,uuid) TO service_role;
+## 11. Valeurs à approuver
+- Retard des Travaux de voirie : **20 min**.
+- Plafond cumulé : **40 min**.
+- Effet national : indicateur `satisfaction`, seuils 70 / 50 / 30, points 0 / 1 / 2 / 3.
 
-CREATE FUNCTION public.bloc13_test_clock(
-  _user_id uuid, _character_id uuid, _at timestamptz,
-  _restore boolean DEFAULT false
-)
-RETURNS void LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE ctx public.bloc13_test_context; original public.world_state;
-BEGIN
-  SELECT * INTO ctx FROM public.bloc13_test_context
-    WHERE id=1 AND user_id=_user_id AND character_id=_character_id FOR UPDATE;
-  IF NOT FOUND THEN RAISE EXCEPTION 'Compte temporaire non enregistré'; END IF;
-  IF (SELECT count(*) FROM public.profiles) <> 1
-     OR (SELECT count(*) FROM public.characters) <> 1
-     OR NOT EXISTS (SELECT 1 FROM public.characters
-                    WHERE id=_character_id AND user_id=_user_id) THEN
-    RAISE EXCEPTION 'Environnement non isolé';
-  END IF;
-  PERFORM 1 FROM public.world_state WHERE id=1 FOR UPDATE;
-  IF _restore THEN
-    SELECT * INTO original FROM jsonb_populate_record(NULL::public.world_state,ctx.original_clock);
-    UPDATE public.world_state SET
-      world_date=original.world_date, world_time=original.world_time,
-      clock_started_at=original.clock_started_at, time_speed=original.time_speed,
-      season=original.season, updated_at=original.updated_at
-    WHERE id=1;
-    DELETE FROM public.bloc13_test_context WHERE id=1;
-    RETURN;
-  END IF;
-  IF clock_timestamp() >= ctx.expires_at THEN RAISE EXCEPTION 'Essai expiré'; END IF;
-  IF _at IS NULL THEN RAISE EXCEPTION 'Heure d’essai obligatoire'; END IF;
-  UPDATE public.world_state SET
-    world_date=(_at AT TIME ZONE 'UTC')::date,
-    world_time=(_at AT TIME ZONE 'UTC')::time,
-    clock_started_at=now(), time_speed=0
-  WHERE id=1;
-END;
-$$;
-REVOKE ALL ON FUNCTION public.bloc13_test_clock(uuid,uuid,timestamptz,boolean) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.bloc13_test_clock(uuid,uuid,timestamptz,boolean) TO service_role;
-```
-
-Les appels d’opérateur transmettent exclusivement les identifiants du **nouveau** compte de la copie. Aucun identifiant réel n’est fourni. L’heure virtuelle est conservée dans l’ancre existante de cette copie. Les appels du jeu sont effectués avec la session ordinaire de l’essai, pas avec les droits de l’opérateur.
-
-## Scénario exact après approbation et vérification de la copie
-
-1. Vérifier les fonctions identiques au projet réel et l’absence de tout autre compte dans la copie ; comparer aussi les règles et les permissions du jeu.
-2. Créer un seul compte temporaire ; créer son personnage actif ; enregistrer ses identifiants via `bloc13_register_test`. Relever ses données initiales.
-3. Positionner l’ancre **de la copie** un jour ouvré avant 08:00. Candidater au poste `Technicien numérique` : compétence Informatique requise 3, personnage insuffisamment qualifié. Avancer l’ancre de la copie jusqu’à la réponse prévue. Vérifier refus, aucun emploi, aucune vacation et aucun salaire.
-4. Candidater à `Assistant administratif`. Avancer jusqu’au délai normal de réponse. Vérifier embauche unique, solde inchangé et vacation prévue dans l’Agenda.
-5. Rejoindre le lieu de travail. À 07:59:59 dans la copie, tenter le démarrage : refus, aucune activité commencée ni dépense d’énergie. À 08:00, démarrer **la même vacation prévue** via le vrai Agenda. Vérifier statut en cours, énergie −30 et aucun salaire.
-6. Vérifier la durée réelle configurée : quatre heures. À 11:59:59 virtuelles, consulter : aucun salaire. À 12:00 virtuelles, consulter : vacation terminée, progression +10 et salaire prévu par le poste et les réglages (80 € pour ce poste si les réglages actuels sont identiques).
-7. Banque : une seule transaction et opération salariale ; Agenda : la même vacation terminée. Les assertions portent sur l’identifiant de la vacation et sa clé salariale, pas seulement le libellé.
-8. Déconnexion/reconnexion par le formulaire ; trois recharges ; cinq consultations simultanées : même salaire, transaction, solde, emploi, candidatures et progression. Essayer un nouveau travail le même jour : refus, aucun second salaire.
-9. Comparer toutes les données pertinentes avant/après reconnexion. Capturer Banque et Agenda et les résultats financiers. Vérifier absence d’erreur de page.
-
-## Nettoyage et protection
-
-Le lanceur doit utiliser une sortie `finally` : restaurer d’abord **toute la ligne d’horloge de la copie** via `_restore=true`, comparer à `original_clock`, puis supprimer le seul compte temporaire et toutes ses dépendances. Vérifier zéro référence à ses identifiants dans toutes les tables concernées et absence du compte d’authentification. Si une étape de nettoyage échoue, signaler le reste précisément, sans déclarer le nettoyage terminé. Aucun nettoyage d’anciens comptes du projet réel.
-
-Après conservation des preuves, l’environnement jetable peut être retiré séparément avec votre accord. La table et les fonctions de test ne sont jamais installées dans le projet réel.
-
-**Preuve de non-impact proposée :** Cloud distinct vérifié avant exécution ; lanceur sans identifiants d’écriture du projet réel ; aucun appel de jeu vers le projet réel ; empreinte complète de sa ligne `world_state` avant/après par lecture seule. Des actions indépendantes de vrais joueurs peuvent changer leurs données pendant l’essai : leur égalité globale ne peut pas être promise. L’isolation prouve que l’essai ne les écrit pas ; toute différence constatée est rapportée sans la restaurer ni la supprimer.
-
-## Limites et décision
-
-- SQL ci-dessus **non appliqué et non testé**. Aucun résultat de parcours annoncé.
-- Aucune garantie de disponibilité de l’environnement séparé : sa création et son contrôle sont nécessaires avant les essais.
-- Ce test vérifie les vraies fonctions et l’interface dans une copie aux règles identiques, **pas** l’écoulement de quatre heures réelles dans le projet actuel.
-- Une fonction copiée dans la base actuelle ne serait qu’un test partiel ; elle n’est pas proposée pour déclarer le parcours complet réussi.
-- Bloc 13 reste en attente. Bloc 14 interdit.
-
-**Approbation demandée : utiliser cette copie jetable et y installer uniquement le mécanisme ci-dessus, sans aucune modification du projet réel.**
+Après votre accord sur ce plan, le SQL exact sera présenté séparément, sans application.
