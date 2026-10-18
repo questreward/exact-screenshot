@@ -85,6 +85,13 @@
       "when": 1792319424665,
       "tag": "0011_news_notification_time_and_saved_history",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792320290195,
+      "tag": "0012_civic_institutions_and_private_participation",
+      "breakpoints": true
     }
   ]
 }

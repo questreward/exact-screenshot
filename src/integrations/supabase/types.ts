@@ -49,6 +49,7 @@ export type Database = {
       activities: {
         Row: {
           character_id: string
+          civic_engagement_gain: number
           created_at: string
           end_time: string
           energy_cost: number
@@ -72,6 +73,7 @@ export type Database = {
         }
         Insert: {
           character_id: string
+          civic_engagement_gain?: number
           created_at?: string
           end_time: string
           energy_cost?: number
@@ -95,6 +97,7 @@ export type Database = {
         }
         Update: {
           character_id?: string
+          civic_engagement_gain?: number
           created_at?: string
           end_time?: string
           energy_cost?: number
@@ -359,6 +362,45 @@ export type Database = {
         }
         Relationships: []
       }
+      citizen_reports: {
+        Row: {
+          character_id: string
+          created_at: string
+          description: string
+          id: string
+          issue_id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          description: string
+          id?: string
+          issue_id: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          issue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "citizen_reports_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citizen_reports_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "public_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       city_weather: {
         Row: {
           city_id: string
@@ -390,6 +432,266 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: true
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      civic_rewards: {
+        Row: {
+          amount: number
+          character_id: string
+          kind: string
+          occurred_at: string
+          reward_key: string
+        }
+        Insert: {
+          amount: number
+          character_id: string
+          kind: string
+          occurred_at?: string
+          reward_key: string
+        }
+        Update: {
+          amount?: number
+          character_id?: string
+          kind?: string
+          occurred_at?: string
+          reward_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "civic_rewards_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      civic_settings: {
+        Row: {
+          association_gain: number
+          consultation_days: number
+          consultation_gain: number
+          event_gain: number
+          id: number
+          issue_stage_hours: number
+          report_cooldown_minutes: number
+          report_gain: number
+          reports_per_day: number
+        }
+        Insert: {
+          association_gain?: number
+          consultation_days?: number
+          consultation_gain?: number
+          event_gain?: number
+          id?: number
+          issue_stage_hours?: number
+          report_cooldown_minutes?: number
+          report_gain?: number
+          reports_per_day?: number
+        }
+        Update: {
+          association_gain?: number
+          consultation_days?: number
+          consultation_gain?: number
+          event_gain?: number
+          id?: number
+          issue_stage_hours?: number
+          report_cooldown_minutes?: number
+          report_gain?: number
+          reports_per_day?: number
+        }
+        Relationships: []
+      }
+      civic_stats: {
+        Row: {
+          character_id: string
+          engagement: number
+        }
+        Insert: {
+          character_id: string
+          engagement?: number
+        }
+        Update: {
+          character_id?: string
+          engagement?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "civic_stats_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultation_options: {
+        Row: {
+          consequence: string
+          consultation_id: string
+          id: string
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          consequence: string
+          consultation_id: string
+          id?: string
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          consequence?: string
+          consultation_id?: string
+          id?: string
+          label?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_options_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultation_participations: {
+        Row: {
+          character_id: string
+          consultation_id: string
+          option_id: string
+          participated_at: string
+        }
+        Insert: {
+          character_id: string
+          consultation_id: string
+          option_id: string
+          participated_at?: string
+        }
+        Update: {
+          character_id?: string
+          consultation_id?: string
+          option_id?: string
+          participated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_participations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_participations_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_participations_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultations: {
+        Row: {
+          city_id: string
+          closed_at: string | null
+          consultation_key: string | null
+          description: string
+          district_id: string | null
+          ends_at: string
+          id: string
+          institution_id: string
+          issue_id: string | null
+          location_id: string
+          organization_id: string | null
+          starts_at: string
+          status: string
+          title: string
+        }
+        Insert: {
+          city_id: string
+          closed_at?: string | null
+          consultation_key?: string | null
+          description: string
+          district_id?: string | null
+          ends_at: string
+          id?: string
+          institution_id: string
+          issue_id?: string | null
+          location_id: string
+          organization_id?: string | null
+          starts_at: string
+          status?: string
+          title: string
+        }
+        Update: {
+          city_id?: string
+          closed_at?: string | null
+          consultation_key?: string | null
+          description?: string
+          district_id?: string | null
+          ends_at?: string
+          id?: string
+          institution_id?: string
+          issue_id?: string | null
+          location_id?: string
+          organization_id?: string | null
+          starts_at?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "public_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -602,6 +904,117 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      institutions: {
+        Row: {
+          address: string
+          city_id: string
+          description: string
+          id: string
+          institution_key: string
+          level: string
+          location_id: string
+          name: string
+          opening_hours: string
+          parent_id: string | null
+          responsible: string
+          role: string
+          service_state: string
+          status: string
+          type: string
+          visibility: string
+        }
+        Insert: {
+          address: string
+          city_id: string
+          description: string
+          id?: string
+          institution_key: string
+          level?: string
+          location_id: string
+          name: string
+          opening_hours: string
+          parent_id?: string | null
+          responsible?: string
+          role: string
+          service_state?: string
+          status?: string
+          type: string
+          visibility?: string
+        }
+        Update: {
+          address?: string
+          city_id?: string
+          description?: string
+          id?: string
+          institution_key?: string
+          level?: string
+          location_id?: string
+          name?: string
+          opening_hours?: string
+          parent_id?: string | null
+          responsible?: string
+          role?: string
+          service_state?: string
+          status?: string
+          type?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institutions_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institutions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institutions_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      issue_history: {
+        Row: {
+          description: string
+          id: string
+          issue_id: string
+          occurred_at: string
+          status: string
+        }
+        Insert: {
+          description: string
+          id?: string
+          issue_id: string
+          occurred_at?: string
+          status: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          issue_id?: string
+          occurred_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issue_history_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "public_issues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_applications: {
         Row: {
@@ -821,6 +1234,8 @@ export type Database = {
         Row: {
           accessible: boolean
           city_id: string
+          civic_project: string | null
+          civic_state: string
           created_at: string
           description: string
           district_id: string | null
@@ -835,6 +1250,8 @@ export type Database = {
         Insert: {
           accessible?: boolean
           city_id: string
+          civic_project?: string | null
+          civic_state?: string
           created_at?: string
           description?: string
           district_id?: string | null
@@ -849,6 +1266,8 @@ export type Database = {
         Update: {
           accessible?: boolean
           city_id?: string
+          civic_project?: string | null
+          civic_state?: string
           created_at?: string
           description?: string
           district_id?: string | null
@@ -1235,11 +1654,13 @@ export type Database = {
       }
       organization_events: {
         Row: {
+          civic: boolean
           description: string
           duration_minutes: number
           energy_cost: number
           id: string
           influence_gain: number
+          institution_id: string | null
           location_id: string
           organization_id: string
           relation_gain: number
@@ -1249,11 +1670,13 @@ export type Database = {
           title: string
         }
         Insert: {
+          civic?: boolean
           description: string
           duration_minutes?: number
           energy_cost?: number
           id?: string
           influence_gain?: number
+          institution_id?: string | null
           location_id: string
           organization_id: string
           relation_gain?: number
@@ -1263,11 +1686,13 @@ export type Database = {
           title: string
         }
         Update: {
+          civic?: boolean
           description?: string
           duration_minutes?: number
           energy_cost?: number
           id?: string
           influence_gain?: number
+          institution_id?: string | null
           location_id?: string
           organization_id?: string
           relation_gain?: number
@@ -1277,6 +1702,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "organization_events_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "organization_events_location_id_fkey"
             columns: ["location_id"]
@@ -1370,6 +1802,193 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      public_decisions: {
+        Row: {
+          applied_at: string | null
+          category: string
+          city_id: string
+          consequences: Json
+          consultation_id: string | null
+          decided_at: string
+          decision_key: string
+          description: string
+          district_id: string | null
+          id: string
+          institution_id: string
+          issue_id: string | null
+          location_id: string
+          news_id: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          applied_at?: string | null
+          category?: string
+          city_id: string
+          consequences?: Json
+          consultation_id?: string | null
+          decided_at?: string
+          decision_key: string
+          description: string
+          district_id?: string | null
+          id?: string
+          institution_id: string
+          issue_id?: string | null
+          location_id: string
+          news_id?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          applied_at?: string | null
+          category?: string
+          city_id?: string
+          consequences?: Json
+          consultation_id?: string | null
+          decided_at?: string
+          decision_key?: string
+          description?: string
+          district_id?: string | null
+          id?: string
+          institution_id?: string
+          issue_id?: string | null
+          location_id?: string
+          news_id?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_decisions_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: true
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "public_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_decisions_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_issues: {
+        Row: {
+          appeared_at: string
+          category: string
+          city_id: string
+          description: string
+          district_id: string
+          id: string
+          institution_id: string
+          issue_key: string | null
+          location_id: string
+          severity: number
+          stage: number
+          stage_hours: number
+          status: string
+          title: string
+        }
+        Insert: {
+          appeared_at?: string
+          category: string
+          city_id: string
+          description: string
+          district_id: string
+          id?: string
+          institution_id: string
+          issue_key?: string | null
+          location_id: string
+          severity?: number
+          stage?: number
+          stage_hours?: number
+          status?: string
+          title: string
+        }
+        Update: {
+          appeared_at?: string
+          category?: string
+          city_id?: string
+          description?: string
+          district_id?: string
+          id?: string
+          institution_id?: string
+          issue_key?: string | null
+          location_id?: string
+          severity?: number
+          stage?: number
+          stage_hours?: number
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_issues_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_issues_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_issues_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_issues_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       social_interactions: {
         Row: {
@@ -1876,6 +2495,10 @@ export type Database = {
     }
     Functions: {
       apply_job: { Args: { _job_id: string }; Returns: undefined }
+      award_civic: {
+        Args: { _amount: number; _cid: string; _key: string; _kind: string }
+        Returns: undefined
+      }
       bookmark_news: {
         Args: { _news_id: string; _saved: boolean }
         Returns: undefined
@@ -1887,6 +2510,30 @@ export type Database = {
       change_membership: {
         Args: { _join: boolean; _organization_id: string }
         Returns: undefined
+      }
+      civic_actor: {
+        Args: never
+        Returns: {
+          age: number
+          appearance: Json
+          city_id: string
+          created_at: string
+          energy: number
+          first_name: string
+          id: string
+          last_name: string
+          path_id: string
+          progression: Json
+          situation: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "characters"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       create_character: {
         Args: {
@@ -1922,10 +2569,18 @@ export type Database = {
       news_state: { Args: never; Returns: Json }
       notify_news: { Args: { _news_id: string }; Returns: undefined }
       organization_directory: { Args: { _city_id: string }; Returns: Json }
+      participate_consultation: {
+        Args: { _consultation_id: string; _option_id: string }
+        Returns: undefined
+      }
       pay_housing: { Args: never; Returns: undefined }
       prepare_daily_life: { Args: never; Returns: string }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
       refresh_world_news: { Args: never; Returns: number }
+      report_civic_issue: {
+        Args: { _category: string; _description: string; _location_id: string }
+        Returns: string
+      }
       reserve_social_event: { Args: { _event_id: string }; Returns: string }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
       social_actor: { Args: never; Returns: string }
