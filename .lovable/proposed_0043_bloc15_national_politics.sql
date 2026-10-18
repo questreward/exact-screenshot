@@ -419,7 +419,7 @@ BEGIN
   IF a.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR a.value IS NULL OR a.value !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Poste budgétaire invalide'; END IF;
   total:=total+a.value::numeric;
  END LOOP;
- IF NEW.budget_allocations<>'{}'::jsonb AND total<>NEW.cost THEN RAISE EXCEPTION 'Budget non équilibré'; END IF;
+ IF total<>NEW.cost THEN RAISE EXCEPTION 'Budget non équilibré'; END IF;
  RETURN NEW;
 END $$;
 CREATE TRIGGER national_template_validate BEFORE INSERT OR UPDATE ON public.national_law_templates FOR EACH ROW EXECUTE FUNCTION public.national_validate_template();
@@ -467,7 +467,7 @@ BEGIN
  IF l.current_version=s.version AND l.status IN('proposed','examining') THEN
   IF y<s.majority_required THEN UPDATE public.national_laws SET status='refused' WHERE id=l.id;
   ELSIF (SELECT count(DISTINCT chamber) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved')=2 THEN
-   UPDATE public.national_laws SET status='adopted',adopted_at=s.ends_at WHERE id=l.id;
+   UPDATE public.national_laws SET status='adopted',adopted_at=(SELECT max(ends_at) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved') WHERE id=l.id;
    PERFORM public.national_publish('law-adopted:'||l.id||':'||l.current_version,'Une loi nationale est adoptée', (SELECT title FROM public.national_law_versions WHERE law_id=l.id AND version=l.current_version));
   END IF;
  END IF;
