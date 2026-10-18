@@ -66,14 +66,14 @@
 - [x] Pages Élections, campagne et liens Politique/téléphone/Ma Ville/carte/actualités
 - [x] Treize scénarios réels et victoire du joueur ; 61 tests automatiques ; téléphone et rapport BLOC_8_VALIDATION.md
 - [x] Régressions politique et citoyenneté réussies
-- [ ] Régression professionnelle complète : essai arrêté à l’horaire réel de travail ; ne pas modifier l’horloge commune
+- [x] Régression professionnelle finalisée : vacation complète et salaire/transaction uniques après recharges et reconnexion ; horloge restaurée sans avance visible aux autres joueurs
 - [x] Régression sociale complète : 10 scénarios et invitation réussis après correction de la date du test
-- [ ] Validation du Bloc 8 par l’utilisateur
+- [x] Bloc 8 validé selon la consigne de validation conditionnée à la réussite du dernier test salarial
 - Ne pas commencer le Bloc 9 ; attendre la validation de l’utilisateur.
 
 # Validation ciblée du Bloc 8
 - [x] Revérifier dépouillement, conséquences et protection votes/résultats/gagnant/mandat
-- [ ] Reprendre Travail et versement unique après recharge/reconnexion sans modifier les horaires
+- [x] Test final immédiat : compte isolé, avance d’horloge non visible aux autres parties, vacation complète, salaire et transaction uniques dans Banque après recharges et reconnexion
 - [x] Reprendre Atelier social, agenda, récompenses, relations et reconnexion
 - [x] Parcours transversal partiel, comptes nettoyés et rapport BLOC_8_REGRESSION_CIBLEE.md
-- [ ] Vacation/salaire et transversal complet : bloqués par la nuit du monde à vitesse réelle ; prochaine fenêtre à 08:00 du monde
+- [x] Rapport final du Bloc 8 conclu ; compte temporaire nettoyé et absence vérifiée ; aucun Bloc 9
