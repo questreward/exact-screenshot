@@ -149,7 +149,7 @@ try:
       page.on('pageerror', lambda x: errs.append(str(x)))
       await page.goto('http://localhost:8080'); await page.evaluate("async s=>{const {supabase}=await import('/src/integrations/supabase/client.ts');await supabase.auth.setSession(s)}", ss)
       await page.goto('http://localhost:8080/evenements'); await page.get_by_role('heading', name='Événements', exact=True).wait_for()
-      await page.get_by_role('tab', name='Récents').click(); await page.get_by_text('Participation réussie').first.wait_for()
+      await page.get_by_text('Participation réussie').first.wait_for()
       await page.screenshot(path='/tmp/browser/events.png')
       for _ in range(2): await page.reload(); await page.get_by_role('heading', name='Événements', exact=True).wait_for()
       await page.goto('http://localhost:8080/agenda'); await page.get_by_role('heading', name='Agenda', exact=True).wait_for()
