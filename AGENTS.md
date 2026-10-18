@@ -10,35 +10,19 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
-- Game rules live in `src/game/` (UI hints only); authoritative checks live in the `create_character` SECURITY DEFINER DB function — the client is never trusted for money or age.
-- All data access goes through `src/services/game.ts` query options; pages use loader `ensureQueryData` + `useSuspenseQuery`.
-- Money tables (accounts, transactions) and characters have SELECT-only RLS for players; writes only via secured DB functions.
-- In-game pages live under `src/routes/_authenticated/_game/` whose layout redirects to `/creation` when no character exists.
-- Unavailable sections are declared in `src/game/navigation.ts` (available: false) and render via `/section/$id`.
-- World hierarchy is stored in cities, districts, locations and location_spaces; load districts per city and locations per district to keep the atlas extensible and progressive.
-- Player position is stored separately with owner-only read RLS and mutated only through move_character; a character-insert trigger initializes position without rewriting character creation.
-- World clock derives elapsed time from a database anchor; client interpolation only animates its display and never authorizes gameplay.
-- Map zoom and touch gestures use react-zoom-pan-pinch; world rules stay in src/game/world.ts so presentation does not authorize movement.
-- Daily-life and economy RPCs lock character/account rows; clients never set prices, energy or rewards. Unique operation keys prevent duplicate charges and settlement; savings conserve cash within the existing account.
-- Rent retries preserve failures with a distinct key; UI checks successful operations to avoid phantom payments.
-- Activities and economy deadlines use game_now; daily_life_state settles on reads/reconnect, reusing housing, progression, agenda and position.
-- Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.
-- Live daily-life regressions create and clean up isolated temporary accounts; deadline acceleration is preferred, while clock-window tests must restore the full world_state row in the same transaction before commit so concurrent players never observe test time.
-- Social actions serialize on the caller character; social participation uses the existing activities clock and settlement trigger with an exactly-once reward marker, preventing a second agenda or reward engine.
-- Fictional NPCs are separate from real characters; organization directories expose NPCs and the caller only, never other players' private character records.
-- Membership reactivation preserves its identity and records each entry/departure in a separate immutable history, keeping existing membership references stable.
-- News reuses events/news/notifications; service-only deterministic publication follows game_now with unique event keys, while reading and bookmark RPCs derive the caller and keep personal state private.
-- News generation runs as one hourly SQL-only job, never from a page read; aging is derived from world timestamps and media reputation stays distinct from social statistics.
-- Civic actions use character-locked RPCs and a unique reward ledger; engagement never bypasses the existing social, bank or activity systems.
-- Civic evolution settles elapsed city deadlines under an advisory lock on reads; decisions apply idempotent location metadata and publish through the existing event/news pipeline.
-- Civic events reuse citizen organizations and social agenda reservations; engagement is snapshotted on activity insertion and awarded once on completion.
-- Political parties and movements are organizations kinds (party/movement) extended 1:1 by political_profiles and political_branches; generic organization RPCs exclude them so citizen associations and politics stay distinct.
-- Political rewards are snapshotted on activity insertion and granted once through the political_rewards ledger; political stats are separate from social stats and players cannot write them, their role or opinions directly.
-- Political affinity is computed client-side in src/game/politics.ts as an indicative hint only; it never gates server actions.
-- Municipal elections use character-first authenticated RPCs, election row locks and private immutable ballots; fictional electorates are simulated separately from real player votes to avoid exposing player data.
-- Candidacies own the campaign budget and program without duplicating bank accounts; campaign actions reuse activities and exactly-once completion rewards to preserve the single agenda and energy system.
-- Election catch-up uses game_now and election locks; personal rewards settle only for the caller to avoid cross-player deadlocks.
-
-- Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts.
-- Governance uses existing agenda/city locks; closure freezes dated reports and releases planned activities. A predecessor link permits one calendar successor only; no concurrent or third city election.
-- World events extend the existing `events` table (template_id/character_id) with config in world_event_templates/settings; participation and effects go through unique-key ledgers and economy_cash — why: one event system, idempotent rewards.
+- Game rules in `src/game/` are UI hints only; authoritative checks live in SECURITY DEFINER DB functions — the client is never trusted for money, age or rewards.
+- Data access goes through `src/services/game.ts` query options; pages use loader `ensureQueryData` + `useSuspenseQuery`.
+- Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
+- In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
+- World hierarchy: cities > districts > locations > location_spaces, loaded progressively; position changes only through move_character; map gestures use react-zoom-pan-pinch.
+- World clock derives from a DB anchor (game_now); client only animates it. Deadlines settle on reads/reconnect (daily_life_state etc.).
+- Balance values live in config tables (life_rules, life_settings, housing_types, jobs, *_settings); TS helpers are presentation-only with tests.
+- Live regressions use isolated temporary accounts; prefer deadline acceleration; clock-window tests restore the full world_state row in the same transaction.
+- One agenda/energy engine: social, civic, political, campaign, governance and world-event participations reuse activities with exactly-once reward ledgers.
+- Fictional NPCs are separate from players; directories never expose other players' private records. Membership history is immutable and reactivation keeps identity.
+- News reuses events/news/notifications via one hourly SQL job with unique event keys; reads/bookmarks stay private.
+- Parties/movements are organization kinds extended 1:1 (political_profiles/branches); political stats are separate from social stats; affinity in src/game/politics.ts is a hint only.
+- Elections: character-first RPCs, row locks, private immutable ballots; fictional electorates simulated separately; candidacies own campaign budget without new accounts.
+- Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts; one calendar successor per city election.
+- Rent retries keep failures under a distinct key; UI checks successful operations only.
+- World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
