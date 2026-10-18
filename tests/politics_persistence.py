@@ -30,7 +30,7 @@ async def main():
             ctx=await browser.new_context(viewport={'width':1280,'height':1800});page=await ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
             await login(page,session)
             # 1 Discovery
-            await page.goto('http://localhost:8080/politique');await page.wait_for_timeout(4000);await page.screenshot(path=str(OUT/'debug.png'));print(errors, (await page.inner_text('body'))[:600]);await page.get_by_role('heading',name='Mouvements politiques').wait_for()
+            await page.goto('http://localhost:8080/politique');await page.get_by_role('heading',name='Mouvements politiques').wait_for()
             for name in ['Horizon Citoyen','Mouvement Civique','Renouveau Local']:await page.get_by_role('heading',name=name,exact=True).wait_for()
             await page.get_by_text('Démocratie').first.wait_for();await page.get_by_text('Réputation').first.wait_for()
             s=rpc('political_state',{},h);assert len([o for o in s['organizations'] if o['kind']=='movement'])==5 and len([o for o in s['organizations'] if o['kind']=='party'])==4
