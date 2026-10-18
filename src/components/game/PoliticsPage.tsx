@@ -17,7 +17,7 @@ export const POLITICS_TABS = [
 ] as const;
 export type PoliticsSearch = { tab?: string | undefined; a?: string | undefined; b?: string | undefined };
 
-export function useAffinity(s: PoliticalState) {
+export function affinityFor(s: PoliticalState) {
   return (o: PoliticalOrganization) => politicalAffinity(o.ideology, s.opinions, s.topics, s.stances);
 }
 
@@ -44,7 +44,7 @@ export function PoliticsPage({ search }: { search: PoliticsSearch }) {
 }
 
 function OrgCard({ o, s }: { o: PoliticalOrganization; s: PoliticalState }) {
-  const aff = useAffinity(s)(o);
+  const aff = affinityFor(s)(o);
   const member = s.memberships.some(m => m.organization_id === o.id && m.status === "active");
   return <article className="space-y-3 rounded-lg border border-border bg-card p-5">
     <div className="flex items-start gap-3"><span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-2xl text-primary">{o.symbol}</span><div className="min-w-0"><p className="text-xs text-muted-foreground">{POLITICAL_KINDS[o.kind]} · Portée {POLITICAL_SCOPES[o.scope]?.toLowerCase()} · {o.city_name}</p><h3 className="text-lg font-semibold break-words">{o.name}</h3></div></div>
@@ -82,7 +82,7 @@ function Opinions({ s }: { s: PoliticalState }) {
 }
 
 function AffinityList({ s }: { s: PoliticalState }) {
-  const aff = useAffinity(s);
+  const aff = affinityFor(s);
   const rows = s.organizations.map(o => ({ o, v: aff(o) }));
   if (rows.every(r => r.v === null)) return null;
   return <section className="space-y-3 rounded-lg border border-border bg-card p-4"><h2 className="font-semibold">Vos affinités (indicatives)</h2><p className="text-xs text-muted-foreground">Une simple indication : elle ne décide rien à votre place et ne vous empêche jamais de rejoindre une organisation.</p>{rows.map(({ o, v }) => <Link key={o.id} to="/politique/$id" params={{ id: o.id }} className="block"><Meter value={v ?? 0} label={`${o.symbol} ${o.name}`} /></Link>)}</section>;
@@ -92,7 +92,7 @@ function Compare({ s, a, b }: { s: PoliticalState; a?: string | undefined; b?: s
   const navigate = useNavigate();
   const A = s.organizations.find(o => o.id === a) ?? s.organizations[0], B = s.organizations.find(o => o.id === b) ?? s.organizations[1];
   if (!A || !B) return null;
-  const aff = useAffinity(s);
+  const aff = affinityFor(s);
   const values = compareLists(A.core_values, B.core_values), prios = compareLists(A.priorities, B.priorities);
   const pick = (side: "a" | "b", id: string) => navigate({ to: "/politique", search: { tab: "comparer", a: side === "a" ? id : A.id, b: side === "b" ? id : B.id } });
   return <div className="space-y-5">
