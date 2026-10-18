@@ -41,10 +41,11 @@
 - [x] Bloc 5 validé par le cahier des charges du Bloc 6
 
 # Bloc 6 — Citoyenneté et institutions
-- [ ] Institutions, services et contenus fictifs distincts pour les cinq villes
-- [ ] Problèmes publics, signalements privés, évolution selon l’horloge du monde
-- [ ] Consultations uniques, résultats, décisions et conséquences sécurisées
-- [ ] Événements citoyens dans l’agenda existant, engagement plafonné à 100
-- [ ] Ma Ville, profil, accueil, téléphone et liens carte/actualités/organisations
-- [ ] Douze tests obligatoires, scénario Lyon, reconnexion et régressions
+- [x] Institutions, services et contenus fictifs distincts pour les cinq villes
+- [x] Problèmes publics, signalements privés, évolution selon l’horloge du monde
+- [x] Consultations uniques, résultats, décisions et conséquences sécurisées
+- [x] Événements citoyens dans l’agenda existant, engagement plafonné à 100
+- [x] Ma Ville, profil, accueil, téléphone et liens carte/actualités/organisations
+- [x] Douze tests obligatoires, scénario Lyon, reconnexion et régressions ; 50 tests automatiques réussis
+- [ ] Validation du Bloc 6 par l’utilisateur — en attente de son avis
 - Ne pas commencer le Bloc 7 ; présenter le rapport puis attendre les instructions.
