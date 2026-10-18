@@ -75,7 +75,8 @@ export const notificationsQuery = queryOptions({
 });
 
 export const eventsQuery = queryOptions({
-  queryKey: ["events"],
+  // The dashboard list must not share the structured world-events cache entry.
+  queryKey: ["events", "summary"],
   queryFn: async () => {
     const { data, error } = await supabase.from("events").select("*").order("created_at", { ascending: false }).limit(5);
     if (error) throw error;
