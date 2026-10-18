@@ -80,7 +80,7 @@
 
 # Bloc 9 — Mandat, gouvernance et monde réactif
 - [x] Lot fin de mandat : clôture, bilan figé, retour normal, réélection unique sans concurrence ni troisième scrutin ; 17 vérifications isolées, nettoyage et rapport BLOC_9_LOT_FIN_MANDAT.md
-- Les autres tâches du Bloc 9 ci-dessous sont suspendues sur demande de l’utilisateur ; ne pas les poursuivre sans nouvelle instruction.
+- Bloc 9 officiellement terminé et validé par l’utilisateur ; aucune modification ni vérification supplémentaire, sauf correction critique empêchant le jeu de fonctionner. Les cases historiques ci-dessous ne sont pas des tâches à reprendre.
 - [ ] Mandat réel, conseil cohérent avec les élections, trois priorités et bilan factuel
 - [ ] Indicateurs 0–100, problèmes, dossiers et extension des décisions/consultations existantes
 - [ ] Budget municipal distinct, négociation et votes sécurisés, financement unique
@@ -88,3 +88,9 @@
 - [ ] Page Mandat, Ma Ville, téléphone, carte, agenda, actualités et notifications
 - [ ] Seize scénarios obligatoires, parcours complet, sécurité et régression transversale
 - [ ] Rapport final, nettoyage des essais et attente des instructions ; aucun Bloc 10
+
+# Bloc 10 — Économie, patrimoine et projets de vie
+- [x] Autorisation officielle reçue ; préserver les Blocs 1 à 9, ne pas commencer le Bloc 11
+- [ ] Retrouver le cahier des charges complet et ses tests obligatoires — document non présent dans l’historique accessible
+- [ ] Étendre les systèmes personnels existants sans doublons, avec opérations financières sécurisées et échéances persistantes
+- [ ] Tester les parcours réels, les doubles paiements et la reconnexion ; fournir le rapport sans validation prématurée
