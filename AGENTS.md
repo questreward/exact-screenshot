@@ -19,8 +19,8 @@
 - Player position is stored separately with owner-only read RLS and mutated only through move_character; a character-insert trigger initializes position without rewriting character creation.
 - World clock derives elapsed time from a database anchor; client interpolation only animates its display and never authorizes gameplay.
 - Map zoom and touch gestures use react-zoom-pan-pinch; world rules stay in src/game/world.ts so presentation does not authorize movement.
-- Daily-life actions use authenticated database RPCs with locked character/account rows and idempotent settlement; clients send action identifiers, never energy, money, duration or rewards.
-- Activity deadlines use game_now derived from the existing world clock; daily_life_state settles elapsed activities and applications on reads, including after reconnect, without a second money or position system.
+- Daily-life and economy RPCs lock character/account rows; clients never set prices, energy or rewards. Unique operation keys prevent duplicate charges and settlement; savings conserve cash within the existing account.
+- Activities and economy deadlines use game_now; daily_life_state settles on reads/reconnect, reusing housing, progression, agenda and position.
 - Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.
 - Live daily-life regressions create and clean up isolated temporary accounts; deadline acceleration is preferred, while clock-window tests must restore the full world_state row in the same transaction before commit so concurrent players never observe test time.
 - Social actions serialize on the caller character; social participation uses the existing activities clock and settlement trigger with an exactly-once reward marker, preventing a second agenda or reward engine.

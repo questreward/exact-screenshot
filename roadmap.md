@@ -91,6 +91,6 @@
 
 # Bloc 10 — Économie, patrimoine et projets de vie
 - [x] Autorisation officielle reçue ; préserver les Blocs 1 à 9, ne pas commencer le Bloc 11
-- [ ] Retrouver le cahier des charges complet et ses tests obligatoires — document non présent dans l’historique accessible
+- [x] Cahier des charges complet (50 sections, 16 tests obligatoires) reçu
 - [ ] Étendre les systèmes personnels existants sans doublons, avec opérations financières sécurisées et échéances persistantes
 - [ ] Tester les parcours réels, les doubles paiements et la reconnexion ; fournir le rapport sans validation prématurée
