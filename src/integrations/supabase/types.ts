@@ -196,6 +196,362 @@ export type Database = {
           },
         ]
       }
+      admin_document_types: {
+        Row: {
+          category: string
+          explanation: string
+          id: string
+          name: string
+          origin: string
+          sort_order: number
+          validity_days: number
+        }
+        Insert: {
+          category: string
+          explanation: string
+          id: string
+          name: string
+          origin: string
+          sort_order?: number
+          validity_days: number
+        }
+        Update: {
+          category?: string
+          explanation?: string
+          id?: string
+          name?: string
+          origin?: string
+          sort_order?: number
+          validity_days?: number
+        }
+        Relationships: []
+      }
+      admin_procedure_types: {
+        Row: {
+          asked: string
+          category: string
+          description: string
+          id: string
+          min_age: number
+          next_step: string
+          required_documents: string[]
+          sort_order: number
+          title: string
+          why: string
+        }
+        Insert: {
+          asked: string
+          category: string
+          description: string
+          id: string
+          min_age?: number
+          next_step: string
+          required_documents?: string[]
+          sort_order?: number
+          title: string
+          why: string
+        }
+        Update: {
+          asked?: string
+          category?: string
+          description?: string
+          id?: string
+          min_age?: number
+          next_step?: string
+          required_documents?: string[]
+          sort_order?: number
+          title?: string
+          why?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          adult_age: number
+          aid_income_ceiling: number
+          aid_income_floor: number
+          aid_income_reduction: number
+          aid_min_amount: number
+          aid_months: number
+          aid_rate: number
+          aid_response_minutes: number
+          correction_days: number
+          declaration_days: number
+          id: number
+          late_fee: number
+          payment_days: number
+          renewal_notice_days: number
+          student_aid_amount: number
+          student_aid_ceiling: number
+          tax_free_threshold: number
+          tax_rate: number
+          training_credit_rate: number
+        }
+        Insert: {
+          adult_age?: number
+          aid_income_ceiling?: number
+          aid_income_floor?: number
+          aid_income_reduction?: number
+          aid_min_amount?: number
+          aid_months?: number
+          aid_rate?: number
+          aid_response_minutes?: number
+          correction_days?: number
+          declaration_days?: number
+          id?: number
+          late_fee?: number
+          payment_days?: number
+          renewal_notice_days?: number
+          student_aid_amount?: number
+          student_aid_ceiling?: number
+          tax_free_threshold?: number
+          tax_rate?: number
+          training_credit_rate?: number
+        }
+        Update: {
+          adult_age?: number
+          aid_income_ceiling?: number
+          aid_income_floor?: number
+          aid_income_reduction?: number
+          aid_min_amount?: number
+          aid_months?: number
+          aid_rate?: number
+          aid_response_minutes?: number
+          correction_days?: number
+          declaration_days?: number
+          id?: number
+          late_fee?: number
+          payment_days?: number
+          renewal_notice_days?: number
+          student_aid_amount?: number
+          student_aid_ceiling?: number
+          tax_free_threshold?: number
+          tax_rate?: number
+          training_credit_rate?: number
+        }
+        Relationships: []
+      }
+      administrative_documents: {
+        Row: {
+          character_id: string
+          details: Json
+          id: string
+          issued_at: string
+          status: string
+          type_id: string
+          valid_until: string
+        }
+        Insert: {
+          character_id: string
+          details?: Json
+          id?: string
+          issued_at: string
+          status?: string
+          type_id: string
+          valid_until: string
+        }
+        Update: {
+          character_id?: string
+          details?: Json
+          id?: string
+          issued_at?: string
+          status?: string
+          type_id?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "administrative_documents_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_documents_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "admin_document_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      administrative_events: {
+        Row: {
+          amount: number | null
+          character_id: string
+          details: Json
+          event_key: string
+          id: string
+          kind: string
+          label: string
+          occurred_at: string
+          procedure_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          character_id: string
+          details?: Json
+          event_key: string
+          id?: string
+          kind: string
+          label: string
+          occurred_at: string
+          procedure_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          character_id?: string
+          details?: Json
+          event_key?: string
+          id?: string
+          kind?: string
+          label?: string
+          occurred_at?: string
+          procedure_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "administrative_events_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_events_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "administrative_procedures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      administrative_procedure_documents: {
+        Row: {
+          attached_at: string
+          document_id: string
+          procedure_id: string
+          type_id: string
+        }
+        Insert: {
+          attached_at: string
+          document_id: string
+          procedure_id: string
+          type_id: string
+        }
+        Update: {
+          attached_at?: string
+          document_id?: string
+          procedure_id?: string
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "administrative_procedure_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "administrative_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_procedure_documents_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "administrative_procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_procedure_documents_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "admin_document_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      administrative_procedures: {
+        Row: {
+          category: string
+          character_id: string
+          choices: Json
+          closes_at: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          late: boolean
+          period: string
+          renewed_from: string | null
+          response_at: string | null
+          result: Json
+          situation: Json | null
+          started_at: string
+          status: string
+          title: string
+          type_id: string
+        }
+        Insert: {
+          category: string
+          character_id: string
+          choices?: Json
+          closes_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          late?: boolean
+          period: string
+          renewed_from?: string | null
+          response_at?: string | null
+          result?: Json
+          situation?: Json | null
+          started_at: string
+          status?: string
+          title: string
+          type_id: string
+        }
+        Update: {
+          category?: string
+          character_id?: string
+          choices?: Json
+          closes_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          late?: boolean
+          period?: string
+          renewed_from?: string | null
+          response_at?: string | null
+          result?: Json
+          situation?: Json | null
+          started_at?: string
+          status?: string
+          title?: string
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "administrative_procedures_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_procedures_renewed_from_fkey"
+            columns: ["renewed_from"]
+            isOneToOne: true
+            referencedRelation: "administrative_procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "administrative_procedures_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "admin_procedure_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_actions: {
         Row: {
           activity_id: string | null
@@ -4332,6 +4688,66 @@ export type Database = {
         }
         Relationships: []
       }
+      tax_declarations: {
+        Row: {
+          character_id: string
+          credit: number
+          id: string
+          income: number
+          net: number
+          procedure_id: string
+          status: string
+          submitted_at: string
+          tax: number
+          taxable: number
+          training_spent: number
+          version: number
+        }
+        Insert: {
+          character_id: string
+          credit: number
+          id?: string
+          income: number
+          net: number
+          procedure_id: string
+          status?: string
+          submitted_at: string
+          tax: number
+          taxable: number
+          training_spent: number
+          version: number
+        }
+        Update: {
+          character_id?: string
+          credit?: number
+          id?: string
+          income?: number
+          net?: number
+          procedure_id?: string
+          status?: string
+          submitted_at?: string
+          tax?: number
+          taxable?: number
+          training_spent?: number
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_declarations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tax_declarations_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "administrative_procedures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           account_id: string
@@ -4445,6 +4861,31 @@ export type Database = {
         Args: { _decision_id: string }
         Returns: undefined
       }
+      admin_action: {
+        Args: { _command: string; _input?: Json; _request_id: string }
+        Returns: Json
+      }
+      admin_event: {
+        Args: {
+          _amount: number
+          _cid: string
+          _details?: Json
+          _key: string
+          _kind: string
+          _label: string
+          _proc: string
+        }
+        Returns: boolean
+      }
+      admin_housing_aid: { Args: { _snap: Json }; Returns: Json }
+      admin_snapshot: { Args: { _cid: string }; Returns: Json }
+      admin_state: { Args: never; Returns: Json }
+      admin_student_aid: { Args: { _snap: Json }; Returns: Json }
+      admin_tax: {
+        Args: { _income: number; _training: number; _use_credit: boolean }
+        Returns: Json
+      }
+      admin_tax_balance: { Args: { _proc: string }; Returns: number }
       apply_job: { Args: { _job_id: string }; Returns: undefined }
       award_civic: {
         Args: { _amount: number; _cid: string; _key: string; _kind: string }
@@ -4677,6 +5118,7 @@ export type Database = {
         Args: { _stance: string; _topic_id: string }
         Returns: undefined
       }
+      settle_administration: { Args: { _cid: string }; Returns: undefined }
       settle_daily_life: { Args: { _character_id: string }; Returns: undefined }
       settle_governance_politics: { Args: { _cid: string }; Returns: undefined }
       settle_personal_economy: { Args: { _cid: string }; Returns: undefined }

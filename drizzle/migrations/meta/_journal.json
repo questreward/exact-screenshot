@@ -253,6 +253,13 @@
       "when": 1792334370922,
       "tag": "0035_release_former_job_shifts",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792336009043,
+      "tag": "0036_bloc11_administrative_procedures",
+      "breakpoints": true
     }
   ]
 }
