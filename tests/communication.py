@@ -66,25 +66,34 @@ try:
   ev = rows('events', 'character_id=not.is.null&select=id')
   check(not ({p['event_id'] for p in priv} & {e['id'] for e in ev}), '5b Aucun événement personnel publié dans le fil')
 
-  # 6. Publications : 3 par jour, anti-doublon, aucune récompense
-  before = snapshot(cid); rid = str(uuid.uuid4())
-  r = together(*[lambda: call(h3, 'civi_post', {'_template': 'city_love', '_request_id': rid})] * 4)
-  if all(x.status_code >= 400 for x in r) and 'economy_operations_status_check' in r[0].text:
-    print('DEFAUT 6 Publication impossible : le registre refuse le statut « success » (valeurs admises : done/failed) — aucune publication créée', flush=True)
-    check(rows('social_posts', 'character_id=eq.' + cid) == [] and snapshot(cid) == before, '6* Échec sans effet de bord : aucune publication, aucune récompense, données inchangées')
-    h4 = h3; post = None
-  else:
-    raise SystemExit('comportement inattendu : ' + r[0].text[:200])
-  fic = rows('social_posts', 'character_id=is.null&limit=1')[0]
+  # 6. Publications : simple, clics simultanés, recharge, reconnexion, 3 par jour, aucune récompense
+  before = snapshot(cid)
+  p1 = rpc('civi_post', {'_template': 'city_love', '_request_id': str(uuid.uuid4())}, h3)
+  mine1 = rows('social_posts', 'character_id=eq.' + cid)
+  check(len(mine1) == 1 and mine1[0]['id'] == p1 and 'Lyon' in mine1[0]['body'] and S(h3)['posts_today'] == 1, 'P1 Publication simple créée et visible')
+  rid = str(uuid.uuid4())
+  r = together(*[lambda: call(h3, 'civi_post', {'_template': 'work_day', '_request_id': rid})] * 4)
+  check(all(x.status_code < 400 for x in r) and len({x.text for x in r}) == 1 and len(rows('social_posts', 'character_id=eq.' + cid)) == 2, 'P2 Quatre clics simultanés : une seule publication')
+  S(h3); S(h3); call(h3, 'civi_post', {'_template': 'work_day', '_request_id': rid})
+  check(len(rows('social_posts', 'character_id=eq.' + cid)) == 2 and S(h3)['posts_today'] == 2, 'P3 Recharges et renvoi de la même demande : aucun doublon')
+  h4, _ = relogin(A); call(h4, 'civi_post', {'_template': 'work_day', '_request_id': rid})
+  check(len(rows('social_posts', 'character_id=eq.' + cid)) == 2 and len(mine('social_posts', h4, 'character_id=eq.' + cid)) == 2, 'P4 Déconnexion/reconnexion : publications conservées, aucun doublon')
+  rpc('civi_post', {'_template': 'civic', '_request_id': str(uuid.uuid4())}, h4)
+  r4 = call(h4, 'civi_post', {'_template': 'study_day', '_request_id': str(uuid.uuid4())})
+  check(len(rows('social_posts', 'character_id=eq.' + cid)) == 3 and r4.status_code >= 400 and 'Limite' in r4.text and S(h4)['posts_today'] == 3, 'P5 Quatrième publication du jour refusée (maximum 3)')
+  ops = rows('economy_operations', f'character_id=eq.{cid}&operation_key=like.civi:*')
+  check(snapshot(cid) == before and len(ops) == 3 and all(o['amount'] == 0 for o in ops), 'P6 Aucune récompense : argent, transactions, réputation, influence, engagement, relation et énergie inchangés')
+  post = rows('social_posts', 'character_id=eq.' + cid + '&limit=1')[0]; fic = rows('social_posts', 'character_id=is.null&limit=1')[0]
   together(*[lambda: call(h4, 'civi_react', {'_post': fic['id'], '_kind': 'like', '_on': True})] * 3)
-  check(len(rows('social_post_reactions', f'character_id=eq.{cid}&post_id=eq.{fic["id"]}')) == 1, '6d Trois « j’aime » simultanés : une seule réaction')
-  check(snapshot(cid) == before, '6e « J’aime » sans aucune récompense : argent, réputation, influence, engagement, relation et énergie inchangés')
+  together(*[lambda: call(h4, 'civi_react', {'_post': post['id'], '_kind': 'share', '_on': True})] * 3)
+  check(len(rows('social_post_reactions', f'character_id=eq.{cid}&post_id=eq.{fic["id"]}')) == 1 and len(rows('social_post_reactions', f'character_id=eq.{cid}&post_id=eq.{post["id"]}')) == 1 and snapshot(cid) == before,
+    'P8 J’aime et partage : une seule réaction chacun malgré 3 clics, aucune récompense')
 
   # 7. Confidentialité entre personnages
   check(mine('messages', hb) == [] and mine('message_threads', hb) == [] and mine('social_post_reactions', hb) == [], '7a Le second compte ne voit ni messages, ni conversations, ni réactions du premier')
-  check(not [p for p in mine('social_posts', hb, 'select=character_id') if p['character_id']], '7b Le second compte ne voit aucune publication de joueur')
+  check(not [p for p in mine('social_posts', hb, 'select=character_id') if p['character_id']], 'P7 Le second compte ne voit aucune publication du premier')
   check(all(x.status_code >= 400 for x in [call(hb, 'reply_message', {'_message': offer[0]['id'], '_reply': 'later'}),
-    call(hb, 'read_message_thread', {'_thread': th[0]['id']}), call(hb, 'civi_react', {'_post': '00000000-0000-0000-0000-000000000000', '_kind': 'like', '_on': True})]),
+    call(hb, 'read_message_thread', {'_thread': th[0]['id']}), call(hb, 'civi_react', {'_post': post['id'], '_kind': 'like', '_on': True})]),
     '7c Le second compte ne peut ni répondre, ni lire, ni réagir aux contenus privés du premier')
 
   # 8. Monde cohérent avec les données existantes
@@ -99,12 +108,12 @@ try:
   check(all([denied('POST', 'messages', {'thread_id': th[0]['id'], 'character_id': cid, 'sender': 'npc', 'body': 'x', 'source_key': 'x'}),
     denied('PATCH', 'messages?character_id=eq.' + cid, {'read_at': None}), denied('DELETE', 'messages?character_id=eq.' + cid),
     denied('POST', 'social_posts', {'author_kind': 'player', 'author_label': 'x', 'character_id': cid, 'body': 'x', 'source_key': 'y'}),
-    denied('DELETE', 'social_posts?id=eq.' + fic['id']), denied('POST', 'social_post_reactions', {'post_id': fic['id'], 'character_id': cid, 'kind': 'share'}),
+    denied('DELETE', 'social_posts?character_id=eq.' + cid), denied('POST', 'social_post_reactions', {'post_id': fic['id'], 'character_id': cid, 'kind': 'share'}),
     denied('PATCH', 'communication_settings?id=eq.1', {'daily_post_limit': 10}), denied('POST', 'message_templates', {'id': 'z', 'trigger_kind': 'meet', 'body': 'x'}),
     call(h4, 'comm_push', {'_cid': cid, '_npc': npc['id'], '_key': 'z', '_tpl': 'meet_1', '_place': None, '_org': None}).status_code >= 400,
     call(h4, 'comm_generate', {'_cid': cidb}).status_code >= 400, call(h4, 'civi_refresh', {'_city': 'lyon'}).status_code >= 400]),
     '9 Écritures directes et fonctions internes refusées')
-  check(len(rows('messages', 'character_id=eq.' + cid + '&read_at=is.null&sender=eq.npc')) == 0 and len(rows('social_posts', 'id=eq.' + fic['id'])) == 1, '9b Données intactes après les tentatives')
+  check(len(rows('messages', 'character_id=eq.' + cid + '&read_at=is.null&sender=eq.npc')) == 0 and len(rows('social_posts', 'character_id=eq.' + cid)) == 3, '9b Données intactes après les tentatives')
 finally:
   for f in [x for x in ('A', 'B') if x in dir()]:
     pass
