@@ -99,6 +99,13 @@
       "when": 1792320354135,
       "tag": "0013_civic_world_evolution_and_city_state",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792320832688,
+      "tag": "0014_civic_deadlines_and_configurable_events",
+      "breakpoints": true
     }
   ]
 }

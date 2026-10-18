@@ -473,7 +473,13 @@ export type Database = {
           association_gain: number
           consultation_days: number
           consultation_gain: number
+          event_duration_minutes: number
+          event_energy_cost: number
           event_gain: number
+          event_influence_gain: number
+          event_relation_gain: number
+          event_reputation_gain: number
+          event_start_hour: number
           id: number
           issue_stage_hours: number
           report_cooldown_minutes: number
@@ -484,7 +490,13 @@ export type Database = {
           association_gain?: number
           consultation_days?: number
           consultation_gain?: number
+          event_duration_minutes?: number
+          event_energy_cost?: number
           event_gain?: number
+          event_influence_gain?: number
+          event_relation_gain?: number
+          event_reputation_gain?: number
+          event_start_hour?: number
           id?: number
           issue_stage_hours?: number
           report_cooldown_minutes?: number
@@ -495,7 +507,13 @@ export type Database = {
           association_gain?: number
           consultation_days?: number
           consultation_gain?: number
+          event_duration_minutes?: number
+          event_energy_cost?: number
           event_gain?: number
+          event_influence_gain?: number
+          event_relation_gain?: number
+          event_reputation_gain?: number
+          event_start_hour?: number
           id?: number
           issue_stage_hours?: number
           report_cooldown_minutes?: number
