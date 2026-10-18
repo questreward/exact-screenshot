@@ -13,7 +13,7 @@ export type Section = {
 
 // Sections not yet available route to /section/$id and show a "coming soon" screen.
 export const SECTIONS: Section[] = [
-  { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: false },
+  { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
   { id: "telephone", label: "Téléphone", icon: Smartphone, description: "Votre outil principal au quotidien.", available: true },
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
@@ -34,10 +34,10 @@ export type PhoneApp = { id: string; label: string; icon: LucideIcon; available:
 export const PHONE_APPS: PhoneApp[] = [
   { id: "profil", label: "Profil", icon: UserCircle, available: true },
   { id: "banque", label: "Banque", icon: Wallet, available: true },
-  { id: "messages", label: "Messages", icon: MessageCircle, available: false },
+  { id: "messages", label: "Messages", icon: MessageCircle, available: true },
   { id: "contacts", label: "Contacts", icon: Contact, available: true },
   { id: "organisations", label: "Organisations", icon: Users, available: true },
-  { id: "social", label: "Réseau social", icon: Share2, available: false },
+  { id: "social", label: "Civi", icon: Share2, available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, available: true },
   { id: "agenda", label: "Agenda", icon: CalendarDays, available: true },
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, available: true },

@@ -114,6 +114,8 @@
 
 # Bloc 13 — Communication et état du monde
 - [x] Plan approuvé
-- [ ] Étape 2 : SQL exact présenté (non appliqué) — attente accord
-- [ ] Développement après accord
+- [x] SQL 0040 appliqué (version validée), Messages/Civi/Monde développés
+- [x] Tests Bloc 13 : 22 vérifications ; défaut publication Civi signalé
+- [ ] Correctif publication Civi — attend l'accord de l'utilisateur
+- [ ] Régressions anciennes (vie quotidienne, actualités, élections, parcours économique) à relancer
 - Bloc 14 interdit

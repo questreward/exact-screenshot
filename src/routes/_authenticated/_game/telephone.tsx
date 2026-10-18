@@ -14,11 +14,14 @@ import { GovernanceLink } from '@/components/game/GovernancePage';
 import { governanceQuery } from '@/services/game';
 import { economyQuery } from '@/services/game';
 import { EconomyBankLinks } from '@/components/game/EconomyPage';
+import { MessagesApp, CiviApp } from '@/components/game/CommunicationApps';
+import { communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, civiFeedQuery, positionQuery } from '@/services/game';
+import { badgeLabel } from '@/game/communication';
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery), q.ensureQueryData(positionQuery)]); await q.fetchQuery(communicationQuery); await Promise.all([q.ensureQueryData(threadsQuery), q.ensureQueryData(messagesQuery), q.ensureQueryData(messageTemplatesQuery), q.ensureQueryData(civiFeedQuery)]); },
   component: PhonePage,
 });
 
@@ -26,6 +29,7 @@ function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const { data: news } = useSuspenseQuery(newsQuery);
+  const { data: comm } = useSuspenseQuery(communicationQuery);
   const open = (id?: string) => id === "politique" ? navigate({ to: "/politique" }) : id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
@@ -46,6 +50,7 @@ function PhonePage() {
                       a.available ? "bg-gradient-primary text-primary-foreground shadow-elegant" : "bg-muted text-muted-foreground")}>
                       <a.icon className="h-7 w-7" />
                       {a.id === "actualites" && news.unread_count > 0 && <span aria-label={`${news.unread_count} actualités non lues`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{news.unread_count > 99 ? "99+" : news.unread_count}</span>}
+                      {a.id === "messages" && comm.unread > 0 && <span aria-label={`${comm.unread} messages non lus`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{badgeLabel(comm.unread)}</span>}
                       {!a.available && <Lock className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-background p-1" />}
                     </span>
                     <span className="text-xs">{a.label}</span>
@@ -60,7 +65,7 @@ function PhonePage() {
                 <ChevronLeft className="h-4 w-4" /> Accueil
               </button>
               <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
-              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : (
+              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
                   <p className="mt-6 font-semibold">{COMING_SOON}</p>

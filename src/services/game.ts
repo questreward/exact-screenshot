@@ -390,3 +390,42 @@ export async function eventAction(input: { eventId: string; choice: 'participer'
   const { error } = await supabase.rpc('world_event_action', { _event_id: input.eventId, _choice: input.choice });
   if (error) throw new Error(error.message);
 }
+
+// ---------- Bloc 13 : Messages, Civi, Monde ----------
+export const communicationQuery = queryOptions({ queryKey: ['communication'], staleTime: 0, refetchInterval: 20000, queryFn: async (): Promise<import('@/game/communication').CommunicationState> => {
+  const { data, error } = await supabase.rpc('communication_state');
+  if (error) throw new Error(error.message);
+  return data as unknown as import('@/game/communication').CommunicationState;
+} });
+export const threadsQuery = queryOptions({ queryKey: ['communication', 'threads'], staleTime: 0, queryFn: async (): Promise<import('@/game/communication').Thread[]> => {
+  const { data, error } = await supabase.from('message_threads').select('id,npc_id,last_message_at,npc:social_npcs(first_name,last_name,location_id)').order('last_message_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data as unknown as import('@/game/communication').Thread[];
+} });
+export const messagesQuery = queryOptions({ queryKey: ['communication', 'messages'], staleTime: 0, queryFn: async (): Promise<import('@/game/communication').Message[]> => {
+  const { data, error } = await supabase.from('messages').select('id,thread_id,sender,body,template_id,sent_at,read_at,replied_with,location_id').order('sent_at');
+  if (error) throw new Error(error.message);
+  return data as unknown as import('@/game/communication').Message[];
+} });
+export const messageTemplatesQuery = queryOptions({ queryKey: ['communication', 'templates'], staleTime: Infinity, queryFn: async () => {
+  const [m, p] = await Promise.all([supabase.from('message_templates').select('id,trigger_kind,replies'), supabase.from('social_post_templates').select('id,category,body').eq('active', true)]);
+  if (m.error) throw new Error(m.error.message); if (p.error) throw new Error(p.error.message);
+  return { messages: m.data as unknown as { id: string; trigger_kind: string; replies: import('@/game/communication').Reply[] }[], posts: p.data };
+} });
+export const civiFeedQuery = queryOptions({ queryKey: ['communication', 'feed'], staleTime: 0, queryFn: async () => {
+  const [posts, reactions] = await Promise.all([
+    supabase.from('social_posts').select('id,author_kind,author_label,character_id,body,posted_at,news_id,event_id,city_id').order('posted_at', { ascending: false }).limit(60),
+    supabase.from('social_post_reactions').select('post_id,kind'),
+  ]);
+  if (posts.error) throw new Error(posts.error.message); if (reactions.error) throw new Error(reactions.error.message);
+  return { posts: posts.data as unknown as import('@/game/communication').Post[], reactions: reactions.data };
+} });
+export const worldOverviewQuery = queryOptions({ queryKey: ['world-overview'], staleTime: 0, refetchInterval: 30000, queryFn: async (): Promise<import('@/game/communication').WorldOverview> => {
+  const { data, error } = await supabase.rpc('world_overview');
+  if (error) throw new Error(error.message);
+  return data as unknown as import('@/game/communication').WorldOverview;
+} });
+export async function readThread(threadId: string) { const { error } = await supabase.rpc('read_message_thread', { _thread: threadId }); if (error) throw new Error(error.message); }
+export async function replyMessage(input: { messageId: string; replyId: string }) { const { error } = await supabase.rpc('reply_message', { _message: input.messageId, _reply: input.replyId }); if (error) throw new Error(error.message); }
+export async function civiPost(input: { templateId: string; requestId: string }) { const { error } = await supabase.rpc('civi_post', { _template: input.templateId, _request_id: input.requestId }); if (error) throw new Error(error.message); }
+export async function civiReact(input: { postId: string; kind: 'like' | 'share'; on: boolean }) { const { error } = await supabase.rpc('civi_react', { _post: input.postId, _kind: input.kind, _on: input.on }); if (error) throw new Error(error.message); }
