@@ -1244,6 +1244,36 @@ export type Database = {
           },
         ]
       }
+      economy_settings: {
+        Row: {
+          id: number
+          low_balance: number
+          max_goals: number
+          promotion_level: number
+          promotion_progress: number
+          promotion_raise: number
+          promotion_skill: string
+        }
+        Insert: {
+          id?: number
+          low_balance?: number
+          max_goals?: number
+          promotion_level?: number
+          promotion_progress?: number
+          promotion_raise?: number
+          promotion_skill?: string
+        }
+        Update: {
+          id?: number
+          low_balance?: number
+          max_goals?: number
+          promotion_level?: number
+          promotion_progress?: number
+          promotion_raise?: number
+          promotion_skill?: string
+        }
+        Relationships: []
+      }
       election_polls: {
         Row: {
           election_id: string
@@ -4602,6 +4632,7 @@ export type Database = {
         Args: { _command: string; _input?: Json; _request_id: string }
         Returns: undefined
       }
+      personal_economy_state: { Args: never; Returns: Json }
       political_state: { Args: never; Returns: Json }
       prepare_daily_life: { Args: never; Returns: string }
       prepare_municipal_reelection: {
