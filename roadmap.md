@@ -105,3 +105,5 @@
 - [ ] Migration + fermeture faille paiement direct
 - [ ] Écran Mes démarches, documents, Agenda
 - [ ] Tests déclaration / aide / retard / changement / sécurité / reconnexion / hors connexion / transversal / régression
+
+- [x] Correctif période (0037) + tests même seconde ; Bloc 11 en attente de validation client
