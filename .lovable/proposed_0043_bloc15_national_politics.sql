@@ -619,7 +619,7 @@ BEGIN
   IF NOT FOUND OR e.status IN('completed','cancelled') OR public.game_now()<e.candidacies_at OR public.game_now()>=e.candidacies_end_at THEN RAISE EXCEPTION 'Candidatures fermées'; END IF;
   oid:=(_input->>'organization_id')::uuid;
   IF jsonb_typeof(COALESCE(_input->'program','{}'::jsonb))<>'object' OR octet_length(COALESCE(_input->'program','{}'::jsonb)::text)>12000 THEN RAISE EXCEPTION 'Programme invalide'; END IF;
-  IF NOT public.national_eligible(c.id,e.rules) OR NOT EXISTS(SELECT 1 FROM public.memberships m JOIN public.national_party_profiles p ON p.organization_id=m.organization_id WHERE m.character_id=c.id AND m.organization_id=oid AND m.status='active') THEN RAISE EXCEPTION 'Conditions ou parti non remplis'; END IF;
+  IF NOT public.national_eligible(c.id,e.rules) OR NOT EXISTS(SELECT 1 FROM public.memberships m JOIN public.national_party_profiles p ON p.organization_id=m.organization_id JOIN public.organizations o ON o.id=m.organization_id WHERE m.character_id=c.id AND m.organization_id=oid AND m.status='active' AND o.kind='party' AND o.status='active') THEN RAISE EXCEPTION 'Conditions ou parti non remplis'; END IF;
   INSERT INTO public.national_candidacies(election_id,city_id,character_id,organization_id,display_name,program)
   VALUES(e.id,c.city_id,c.id,oid,c.first_name||' '||c.last_name,COALESCE(_input->'program','{}'::jsonb)) RETURNING id INTO lid;
   result:=jsonb_build_object('id',lid);
@@ -726,6 +726,9 @@ BEGIN
  IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Non connecté'; END IF;
  SELECT id INTO cid FROM public.characters WHERE user_id=auth.uid();
  IF cid IS NULL THEN RAISE EXCEPTION 'Personnage introuvable'; END IF;
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN
+  RETURN jsonb_build_object('enabled',false,'assembly_seats',50,'territorial_seats',5,'simulated_seats',45,'senate_seats',25,'assembly_majority',26,'senate_majority',13);
+ END IF;
  SELECT jsonb_build_object(
  'world_now',public.game_now(),
  'settings',(SELECT jsonb_build_object('enabled',enabled,'assembly_seats',assembly_seats,'senate_seats',senate_seats,'assembly_majority',assembly_majority,'senate_majority',senate_majority,'rules',rules) FROM public.national_settings WHERE id=1),
