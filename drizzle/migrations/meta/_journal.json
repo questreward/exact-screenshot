@@ -57,6 +57,13 @@
       "when": 1792317864408,
       "tag": "0007_configurable_social_invitations",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792317879328,
+      "tag": "0008_social_reservation_messages",
+      "breakpoints": true
     }
   ]
 }
