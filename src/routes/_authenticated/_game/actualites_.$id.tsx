@@ -3,10 +3,10 @@ import { markNewsRead, newsQuery } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { NewsArticlePage } from "@/components/game/NewsArticlePage";
 export const Route = createFileRoute("/_authenticated/_game/actualites_/$id")({
-  loader: async ({ context, params }) => {
+  loader: async ({ context, params, preload }) => {
     const state = await context.queryClient.ensureQueryData(newsQuery);
     const article = state.articles.find(a => a.id === params.id);
-    if (!article || article.read_at) return article;
+    if (!article || article.read_at || preload) return article;
     await markNewsRead(article.id);
     const updated = await context.queryClient.fetchQuery(newsQuery);
     return updated.articles.find(a => a.id === params.id);
