@@ -51,7 +51,10 @@ async def verify(f):
   await page.goto('http://localhost:8080/patrimoine');await page.get_by_role('heading',name='Mon patrimoine',exact=True).wait_for()
   await page.get_by_role('button',name='Créer un objectif',exact=True).click();dialog=page.get_by_role('dialog');await dialog.get_by_label('Nom',exact=True).fill('Acheter un ordinateur');await dialog.get_by_label('Montant ou niveau cible').fill('650');await dialog.get_by_role('button',name='Créer',exact=True).click();await dialog.wait_for(state='hidden')
   goal=next(g for g in state()['goals'] if g['name']=='Acheter un ordinateur')
-  await page.get_by_role('button',name='Mettre de côté',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('200');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();await page.get_by_role('dialog').wait_for(state='hidden')
+  await page.get_by_role('button',name='Mettre de côté',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('200');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();
+  try: await page.get_by_role('dialog').wait_for(state='hidden',timeout=5000)
+  except Exception:
+   await page.screenshot(path=str(out/'failure.png'));print(await page.get_by_role('status').all_text_contents());raise
   s=state();check(s['available']==2800 and s['saved']==200,'TEST 1 Épargne : 200 € transférés, total conservé, transaction')
   await page.get_by_role('button',name='Récupérer',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('100');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();await page.get_by_role('dialog').wait_for(state='hidden')
   s=state();check(s['available']==2900 and s['saved']==100,'TEST 2 Retrait : 100 € rendus, épargne réduite')
