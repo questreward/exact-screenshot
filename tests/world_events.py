@@ -26,7 +26,7 @@ def finish(aid, start=True, h=None):
   if start: rpc('start_life_activity', {'_activity_id': aid}, h)
   past = iso(datetime.utcnow() - timedelta(days=3650))
   a = rows('activities', 'id=eq.' + aid)[0]
-  patch('activities', 'id=eq.' + aid, {'end_time': a['start_time']})  # échéance accélérée sur la seule ligne de test
+  patch('activities', 'id=eq.' + aid, {'end_time': a['start_time']} if start else {'start_time': past, 'end_time': past})  # échéance accélérée sur la seule ligne de test
 def part(cid, eid): r = rows('world_event_participations', f'character_id=eq.{cid}&event_id=eq.{eid}'); return r[0] if r else None
 def txs(cid, key): return rows('transactions', 'account_id=eq.' + rows('accounts', 'character_id=eq.' + cid)[0]['id'] + '&operation_key=eq.' + key)
 made = []
