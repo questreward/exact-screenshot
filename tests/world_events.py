@@ -14,7 +14,7 @@ def together(*calls):
 def iso(d): return d.isoformat().replace('+00:00', 'Z')
 def place(city, kind): return rows('locations', f'city_id=eq.{city}&kind=eq.{kind}&accessible=eq.true&district_id=not.is.null&order=name&limit=1')[0]
 def make(cid, tmpl, lid, offset_min, city='lyon', org=None, personal=True, dur=120):
-  now = datetime.fromisoformat(rpc('world_clock')['now'].replace('Z', '+00:00')) if 'now' in rpc('world_clock') else None
+  now = datetime.fromisoformat(rpc('world_clock')['world_now'].split('+')[0].split('.')[0]).replace(tzinfo=__import__('datetime').timezone.utc)
   st = now + timedelta(minutes=offset_min)
   t = rows('world_event_templates', 'id=eq.' + tmpl)[0]
   e = req('/rest/v1/events', {'title': 'TEST ' + t['title'], 'description': t['description'], 'city_id': city, 'starts_at': iso(st), 'ends_at': iso(st + timedelta(minutes=dur)),
