@@ -20,7 +20,7 @@ Exception additive proposée : nouveau déclencheur sur `activities`, uniquement
 Écritures futures prévues : nouvelle règle `life_rules`, lignes `activities/events/news/indicator_history` et deltas `city_indicators` après application d’une loi. Aucune maintenant, aucune modification des lignes anciennes.
 
 ## 3. Fonctions serveur nouvelles / modifiées
-**Nouvelles uniquement**, préfixe `national_` : authentification du personnage sans appel à `civic_actor` (celui-ci modifie déjà la vie quotidienne) ; validation de configuration ; candidature/programme ; vote national ; dépouillement et attribution ; composition Sénat ; formation/nominations ; dépôt/amendement ; ouverture/clôture des votes ; réservation de séance ; vote parlementaire ; application des lois et financement ; publication ; état public filtré ; rattrapage des échéances.
+20 fonctions nouvelles `national_` : authentification sans règlement de vie quotidienne, configuration/éligibilité, scrutin/dépouillement/sièges, Sénat, exécutif, lois/versions/séances/votes, budget/effets, publication, état et rattrapage. Le SQL donne chaque signature et contrôle.
 Internes/configuration réservées à l’opérateur ; joueurs : `national_action` et `national_state`. Horaires via `game_now()` en lecture. Rattrapage séparé, aucune tâche horaire actuelle modifiée.
 
 ## 4. Écrans à ajouter — développement ultérieur
@@ -45,18 +45,20 @@ Vote parlementaire unique (séance, siège), une séance par version/chambre ; �
 Financement unique par version ; effet unique (version, ville, indicateur), ligne d’indicateur verrouillée avant addition bornée ; publication unique par fait. Un échec annule toute l’opération, pas seulement une partie.
 
 ## 7. Effets sur les villes
-Indicateurs réellement existants : logement (`housing`), emploi (`employment`), transports (`transport`), environnement (`environment`), sécurité (`safety`), services (`services`), commerce (`commerce`), culture (`culture`), satisfaction (`satisfaction`). Santé et éducation ne sont **pas** des indicateurs existants : aucun indicateur inventé. Un modèle éducatif peut viser `services` seulement après votre décision explicite.
-Les effets sont des deltas déterministes de modèles contrôlés serveur, figés dans la version. Valeur finale = min(100, max(0, valeur actuelle + delta)). Le registre conserve avant/après et delta réellement appliqué ; aucune réapplication après recharge. Aucun modèle actif ou delta prérempli : montants, durée et lien avec les budgets restent à décider. Effets ponctuels seulement proposés ; aucun effacement automatique inventé.
+Neuf indicateurs existants : `housing/employment/transport/environment/safety/services/commerce/culture/satisfaction`. Santé/éducation absents : aucun indicateur inventé ; éventuel lien avec services à décider.
+Deltas de modèles serveur figés par version ; valeur = min(100,max(0,actuelle+delta)), avant/après conservés. Effet ponctuel proposé, aucun modèle actif prérempli ; points/coûts/délais à décider.
 
 ## 8. Données existantes modifiées / comparaison avant-après
 À cette étape : **aucune donnée modifiée**. Le SQL de préparation crée uniquement des objets nationaux et ajoute leurs cinq circonscriptions ; il n’active rien et n’insère aucun événement/activité/effet.
-Avant une application ultérieure : comptages et empreintes de toutes les tables des Blocs 1–14, fonctions, politiques, droits et horloge. Après application : mêmes empreintes pour l’existant ; seules nouvelles tables/fonctions attendues. Les 65 événements gardent retard 0. Comparaison individuelle des élections et mandats municipaux, pas uniquement leur nombre.
+Avant/après application future : empreintes/comptages des tables, fonctions, politiques, droits, horloge et chaque scrutin/mandat municipal. Seul ajout attendu : objets nationaux et déclencheur déclaré ; 65 anciens événements à retard 0.
 Contrôle effectué en lecture seule durant cette préparation : 65 événements et 65 retards nuls avant/après, cinq élections municipales, zéro mandat municipal, zéro table nationale. Empreintes de l’horloge, des élections et des mandats identiques avant/après. Aucun test ni appel à une fonction qui règle le jeu.
 En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indicateurs, `baseline` inchangée, aucune suppression/cascade vers l’existant. Ces effets attendus seront distingués des régressions.
 
-## 9. Régressions à préparer, sans les lancer
-Blocs 1–3 : identité/personnage privé, Banque, énergie, emploi/salaire unique, études, Agenda, déplacements. Blocs 4–7 : relations, adhésions, opinions, citoyenneté, actualités/lectures/favoris privés. Blocs 8–9 : calendriers, votes, dépouillements et mandats municipaux identiques. Blocs 10–11 : patrimoine, loyer/retente unique, démarches. Blocs 12–14 : génération, récompenses, Civi sans gain, Messages, Monde, confidentialité, travaux +20 min/plafond 40, durée figée et véhicules inchangés.
-Tests nationaux : cinq circonscriptions, 50/25 sièges, Sénat sans vote joueur, absence d’élus locaux, privé/public, refus d’accès, calendrier, double candidature/vote, concurrence, votes des deux chambres sur versions distinctes, amendment, absence, financement insuffisant, borne 0/100, effet/publication unique, reconnexion et rattrapage, nettoyage des seuls comptes temporaires autorisés. Aucun changement d’horloge ; si le calendrier empêche un essai isolé, signaler la limite.
+## 9. Tests à préparer seulement
+- Blocs 1–14 : personnage/identité privés, Banque/salaire/loyer uniques, études, Agenda, relations, citoyenneté, politique, patrimoine/démarches, événements, Messages/Civi sans gains, Monde/Carte, confidentialité, transports +20 min/plafond 40, véhicules inchangés.
+- Municipal : comparer intégralement calendriers, résultats, mandats, fonctions et permissions avant/après.
+- National : 5 circonscriptions, 50/25 sièges, Sénat sans vote direct et absence de collège ; candidature/vote/concurrence ; rôles et écritures interdites ; mêmes/différentes versions des chambres ; refus/amendement ; budget insuffisant ; bornes 0/100 ; effet/article unique ; Agenda/présence ; recharge/reconnexion/rattrapage.
+- Comptes temporaires isolés seulement après accord ; aucun changement d’horloge. Calendrier incompatible avec l’isolation = limite signalée, pas de contournement.
 
 ## 10. Risques et paramètres à valider
 - **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; aucune fausse élection municipale ni faux mandat pour contourner.
