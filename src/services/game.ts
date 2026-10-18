@@ -380,7 +380,7 @@ export async function adminAction(input: { command: string; requestId: string; i
   if (error) throw new Error(error.message);
 }
 
-export const eventsQuery = queryOptions({ queryKey: ['events'], staleTime: 0, refetchInterval: 20000, queryFn: async (): Promise<import('@/game/events').EventsState> => {
+export const worldEventsQuery = queryOptions({ queryKey: ['events'], staleTime: 0, refetchInterval: 20000, queryFn: async (): Promise<import('@/game/events').EventsState> => {
   const { data, error } = await supabase.rpc('world_events_state');
   if (error) throw new Error(error.message);
   if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data['events'])) throw new Error('Événements indisponibles');

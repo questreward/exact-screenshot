@@ -5,7 +5,7 @@ import { Sparkles, MapPin, Clock, Check, X, AlertTriangle, Newspaper, User, Info
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { eventsQuery, eventAction } from '@/services/game';
+import { worldEventsQuery, eventAction } from '@/services/game';
 import { canAct, filterEvents, rewardSummary, PARTICIPATION_LABEL, type EventTab, type WorldEvent } from '@/game/events';
 import { gameHour } from '@/game/life';
 import { useLifeMutation } from './LifeControls';
@@ -52,7 +52,7 @@ export function EventCard({ e, now }: { e: WorldEvent; now: string }) {
 }
 
 export function EventsPage() {
-  const { data } = useSuspenseQuery(eventsQuery);
+  const { data } = useSuspenseQuery(worldEventsQuery);
   const [tab, setTab] = useState<EventTab>('aujourdhui');
   return <div className="space-y-6 animate-rise">
     <div><p className="mb-1 text-xs uppercase tracking-wider text-primary">CIVITAS · Monde vivant</p><h1 className="text-3xl font-bold">Événements</h1>
@@ -73,7 +73,7 @@ export function EventsPage() {
 }
 
 export function LocationEvents({ locationId }: { locationId: string }) {
-  const { data } = useSuspenseQuery(eventsQuery);
+  const { data } = useSuspenseQuery(worldEventsQuery);
   const list = data.events.filter(e => e.location_id === locationId && e.phase !== 'termine');
   if (list.length === 0) return null;
   return <div className="space-y-2 border-y border-border py-3">
