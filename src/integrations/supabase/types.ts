@@ -1247,6 +1247,33 @@ export type Database = {
           },
         ]
       }
+      communication_settings: {
+        Row: {
+          daily_like_reward_limit: number
+          daily_post_limit: number
+          enabled: boolean
+          feed_window_days: number
+          id: number
+          invite_offer_min_score: number
+        }
+        Insert: {
+          daily_like_reward_limit?: number
+          daily_post_limit?: number
+          enabled?: boolean
+          feed_window_days?: number
+          id?: number
+          invite_offer_min_score?: number
+        }
+        Update: {
+          daily_like_reward_limit?: number
+          daily_post_limit?: number
+          enabled?: boolean
+          feed_window_days?: number
+          id?: number
+          invite_offer_min_score?: number
+        }
+        Relationships: []
+      }
       consultation_options: {
         Row: {
           consequence: string
@@ -2918,6 +2945,137 @@ export type Database = {
           },
         ]
       }
+      message_templates: {
+        Row: {
+          active: boolean
+          body: string
+          id: string
+          replies: Json
+          trigger_kind: string
+        }
+        Insert: {
+          active?: boolean
+          body: string
+          id: string
+          replies?: Json
+          trigger_kind: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          id?: string
+          replies?: Json
+          trigger_kind?: string
+        }
+        Relationships: []
+      }
+      message_threads: {
+        Row: {
+          character_id: string
+          id: string
+          last_message_at: string
+          npc_id: string
+        }
+        Insert: {
+          character_id: string
+          id?: string
+          last_message_at?: string
+          npc_id: string
+        }
+        Update: {
+          character_id?: string
+          id?: string
+          last_message_at?: string
+          npc_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_threads_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          character_id: string
+          id: string
+          location_id: string | null
+          read_at: string | null
+          replied_with: string | null
+          sender: string
+          sent_at: string
+          source_key: string
+          template_id: string | null
+          thread_id: string
+        }
+        Insert: {
+          body: string
+          character_id: string
+          id?: string
+          location_id?: string | null
+          read_at?: string | null
+          replied_with?: string | null
+          sender: string
+          sent_at?: string
+          source_key: string
+          template_id?: string | null
+          thread_id: string
+        }
+        Update: {
+          body?: string
+          character_id?: string
+          id?: string
+          location_id?: string | null
+          read_at?: string | null
+          replied_with?: string | null
+          sender?: string
+          sent_at?: string
+          source_key?: string
+          template_id?: string | null
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       municipal_council_groups: {
         Row: {
           base_support: number
@@ -4491,6 +4649,161 @@ export type Database = {
           },
         ]
       }
+      social_post_reactions: {
+        Row: {
+          character_id: string
+          created_at: string
+          kind: string
+          post_id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          kind: string
+          post_id: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          kind?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_post_reactions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_post_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_post_templates: {
+        Row: {
+          active: boolean
+          body: string
+          category: string
+          id: string
+        }
+        Insert: {
+          active?: boolean
+          body: string
+          category: string
+          id: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          category?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      social_posts: {
+        Row: {
+          author_kind: string
+          author_label: string
+          body: string
+          character_id: string | null
+          city_id: string | null
+          event_id: string | null
+          id: string
+          news_id: string | null
+          npc_id: string | null
+          organization_id: string | null
+          posted_at: string
+          source_key: string
+          template_id: string | null
+        }
+        Insert: {
+          author_kind: string
+          author_label: string
+          body: string
+          character_id?: string | null
+          city_id?: string | null
+          event_id?: string | null
+          id?: string
+          news_id?: string | null
+          npc_id?: string | null
+          organization_id?: string | null
+          posted_at?: string
+          source_key: string
+          template_id?: string | null
+        }
+        Update: {
+          author_kind?: string
+          author_label?: string
+          body?: string
+          character_id?: string | null
+          city_id?: string | null
+          event_id?: string | null
+          id?: string
+          news_id?: string | null
+          npc_id?: string | null
+          organization_id?: string | null
+          posted_at?: string
+          source_key?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "social_post_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_relations: {
         Row: {
           character_id: string
@@ -5238,6 +5551,15 @@ export type Database = {
         Args: { _join: boolean; _organization_id: string }
         Returns: undefined
       }
+      civi_post: {
+        Args: { _request_id: string; _template: string }
+        Returns: string
+      }
+      civi_react: {
+        Args: { _kind: string; _on: boolean; _post: string }
+        Returns: undefined
+      }
+      civi_refresh: { Args: { _city: string }; Returns: undefined }
       civic_actor: {
         Args: never
         Returns: {
@@ -5274,6 +5596,19 @@ export type Database = {
         Returns: string
       }
       civic_state: { Args: never; Returns: Json }
+      comm_generate: { Args: { _cid: string }; Returns: undefined }
+      comm_push: {
+        Args: {
+          _cid: string
+          _key: string
+          _npc: string
+          _org: string
+          _place: string
+          _tpl: string
+        }
+        Returns: undefined
+      }
+      communication_state: { Args: never; Returns: Json }
       create_character: {
         Args: {
           _age: number
@@ -5396,11 +5731,16 @@ export type Database = {
         Returns: string
       }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
+      read_message_thread: { Args: { _thread: string }; Returns: undefined }
       refresh_civic_city: { Args: { _city: string }; Returns: undefined }
       refresh_election: { Args: { _election: string }; Returns: undefined }
       refresh_governance_city: { Args: { _city: string }; Returns: undefined }
       refresh_governance_world: { Args: never; Returns: number }
       refresh_world_news: { Args: never; Returns: number }
+      reply_message: {
+        Args: { _message: string; _reply: string }
+        Returns: string
+      }
       report_civic_issue: {
         Args: { _category: string; _description: string; _location_id: string }
         Returns: string
@@ -5490,6 +5830,7 @@ export type Database = {
       world_events_personal: { Args: { _cid: string }; Returns: undefined }
       world_events_settle: { Args: { _cid: string }; Returns: undefined }
       world_events_state: { Args: never; Returns: Json }
+      world_overview: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
