@@ -1,0 +1,16 @@
+import { describe, expect, it } from "vitest";
+import { filterNews, newsAge, NEWS_CATEGORIES, type NewsArticle, type NewsState } from "./news";
+const article = (patch: Partial<NewsArticle> = {}): NewsArticle => ({ id: "1", title: "Travaux à Lyon", summary: "", body: "", image: null, category: "Transport", author: "", published_at: "2026-10-18T10:00:00Z", scope: "local", importance: 60, status: "published", city_id: "lyon", region: "Auvergne-Rhône-Alpes", city_name: "Lyon", read_at: null, bookmarked: false, relevance: 20, source: null, location: null, organization: null, event: null, agenda_activity_id: null, ...patch });
+const state = (articles: NewsArticle[]): NewsState => ({ world_now: "2026-10-18T12:00:00Z", city_id: "lyon", region: "Auvergne-Rhône-Alpes", unread_count: 1, articles, preferences: { news_personalized: true, news_notifications: true }, settings: { new_hours: 24, recent_hours: 72, archive_days: 7, important_threshold: 80, page_size: 20 } });
+const filters = { query: "", scope: "", category: "", mode: "all", archived: false };
+describe("Actualités du monde", () => {
+  it("propose les dix catégories demandées", () => { expect(NEWS_CATEGORIES).toEqual(["Société", "Éducation", "Emploi", "Économie", "Vie locale", "Culture", "Sport", "Transport", "Technologie", "Environnement"]); });
+  it("limite Locales à la ville du personnage", () => { expect(filterNews(state([article(), article({ id: "2", city_id: "lille" })]), { ...filters, scope: "local" }).map(a => a.id)).toEqual(["1"]); });
+  it("conserve l’accès aux nationales malgré la personnalisation", () => { expect(filterNews(state([article(), article({ id: "2", scope: "national" })]), { ...filters, scope: "national" }).map(a => a.id)).toEqual(["2"]); });
+  it("exclut les lectures du filtre non-lus", () => { expect(filterNews(state([article({ read_at: "2026-10-18T11:00:00Z" })]), { ...filters, mode: "unread" })).toHaveLength(0); });
+  it("réserve les enregistrés aux favoris", () => { expect(filterNews(state([article(), article({ id: "2", bookmarked: true })]), { ...filters, mode: "saved" }).map(a => a.id)).toEqual(["2"]); });
+  it("cherche par source, catégorie et ville sans accents", () => { expect(filterNews(state([article({ category: "Éducation" })]), { ...filters, query: "education" })).toHaveLength(1); expect(filterNews(state([article()]), { ...filters, query: "Lyon" })).toHaveLength(1); expect(filterNews(state([article({ source: { id: "s", name: "Civitas Matin", description: "", kind: "press", reputation: 72, scope: "national" } })]), { ...filters, query: "matin" })).toHaveLength(1); });
+  it("détermine l’ancienneté uniquement selon l’heure du monde", () => { expect(newsAge(article(), state([]))).toBe("new"); expect(newsAge(article({ published_at: "2026-10-01T10:00:00Z" }), state([]))).toBe("archived"); });
+  it("ne garde pas les vieux articles importants en tête", () => { expect(filterNews(state([article({ importance: 100, published_at: "2026-10-14T10:00:00Z" }), article({ id: "2", importance: 40 })]), filters)[0]?.id).toBe("2"); });
+  it("la personnalisation ne supprime aucun article", () => { expect(filterNews(state([article(), article({ id: "2", city_id: "marseille", relevance: 0 })]), filters)).toHaveLength(2); });
+});
