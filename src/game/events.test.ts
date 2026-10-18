@@ -31,3 +31,14 @@ describe('événements (présentation)', () => {
     expect(rewardSummary({ money: 40, skill: null, skill_amount: 0, relation: 0, reputation: 2, civic: 0, political: 0, energy: 10, success_rate: 100 })).toEqual(['+40 €', '+2 réputation']);
   });
 });
+
+import { travelDelay, cityEffectLevel, markersByLocation } from './events';
+describe('Bloc 14', () => {
+  it('cumule les travaux avec un plafond de 40 minutes', () => { expect(travelDelay([])).toBe(0); expect(travelDelay([20])).toBe(20); expect(travelDelay([20, 20])).toBe(40); expect(travelDelay([20, 20, 20])).toBe(40); });
+  it('niveau national selon la satisfaction 70/50/30', () => { expect(cityEffectLevel(70)).toBe('none'); expect(cityEffectLevel(60)).toBe('low'); expect(cityEffectLevel(49)).toBe('medium'); expect(cityEffectLevel(29)).toBe('strong'); expect(cityEffectLevel(null)).toBe('none'); });
+  it('un seul marqueur par lieu, jamais pour un événement personnel', () => {
+    const e = (id: string, loc: string, personal = false, marker = true) => ({ ...base, id, location_id: loc, personal, marker });
+    const m = markersByLocation([e('a', 'L1'), e('b', 'L1'), e('a', 'L1'), e('c', 'L2', true), e('d', 'L3', false, false)]);
+    expect(m.size).toBe(1); expect(m.get('L1')?.length).toBe(2);
+  });
+});

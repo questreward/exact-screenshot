@@ -391,6 +391,13 @@ export async function eventAction(input: { eventId: string; choice: 'participer'
   if (error) throw new Error(error.message);
 }
 
+export type TransportPreview = { base_minutes: number; delay_minutes: number; total_minutes: number; events: { id: string; title: string; minutes: number }[] };
+export const transportPreviewQuery = (target: string) => queryOptions({ queryKey: ['transport-preview', target], staleTime: 0, enabled: !!target, queryFn: async (): Promise<TransportPreview> => {
+  const { data, error } = await supabase.rpc('transport_delay_preview', { _target_location_id: target });
+  if (error) throw new Error(error.message);
+  return data as unknown as TransportPreview;
+} });
+
 // ---------- Bloc 13 : Messages, Civi, Monde ----------
 export const communicationQuery = queryOptions({ queryKey: ['communication'], staleTime: 0, refetchInterval: 20000, queryFn: async (): Promise<import('@/game/communication').CommunicationState> => {
   const { data, error } = await supabase.rpc('communication_state');

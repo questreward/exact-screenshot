@@ -136,5 +136,5 @@
 
 ## Bloc 14 – Monde vivant, déplacements et Carte
 - [x] Plan étape 2 approuvé
-- [ ] SQL 0042 proposé (.lovable/proposed_0042_bloc14_world_travel_map.sql) — en attente d’accord
-- [ ] Application, interface, tests — après accord
+- [x] SQL 0042 appliqué après accord
+- [x] Interface et tests Bloc 14 (35/35) ; validation finale par l’utilisateur en attente

@@ -1,10 +1,10 @@
 import { Suspense, useState } from "react";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter } from "@/services/game";
+import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery } from "@/services/game";
 import { locationType, movementAllowed } from "@/game/world";
 import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
@@ -15,6 +15,7 @@ import { SocialContacts } from "./SocialContacts";
 import { CIVIC_LOCATION_STATE } from "@/game/civic";
 import { MunicipalLocationProjects } from './MunicipalLocationProjects';
 import { LocationEvents } from './EventsPage';
+import { markersByLocation } from "@/game/events";
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -68,7 +69,7 @@ function MapSurface({ children, phase, resetKey }: { children: React.ReactNode; 
   </div>;
 }
 
-function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin }: { label: string; active?: boolean; selected?: boolean; onClick: () => void; icon?: typeof MapPin }) {
+function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin, events = 0, onEvents }: { label: string; active?: boolean; selected?: boolean; onClick: () => void; icon?: typeof MapPin; events?: number; onEvents?: () => void }) {
   return <g role="button" tabIndex={0} aria-label={label} onClick={e => { e.stopPropagation(); onClick(); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }} className={`world-marker ${active ? "is-player" : ""} ${selected ? "is-selected" : ""}`}>
     <circle r="24" className="marker-hit" />
     {active && <circle r="30" className="marker-pulse" />}
@@ -76,6 +77,9 @@ function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin }: { 
     <Icon x={-10} y={-10} width={20} height={20} className="marker-icon" />
     <rect x={-105} y={27} width={210} height={26} rx={4} className="marker-caption" />
     <text textAnchor="middle" y={45} className="marker-label">{label}</text>
+    {events > 0 && onEvents && <g role="button" tabIndex={0} aria-label={events > 1 ? `${events} événements : ${label}` : `Événement : ${label}`} data-testid="event-marker" className="event-badge" transform="translate(20,-22)" onClick={e => { e.stopPropagation(); onEvents(); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onEvents(); } }}>
+      <circle r="16" className="event-badge-hit" /><circle r="12" className="event-badge-body" /><text textAnchor="middle" y={5} className="event-badge-label">{events > 1 ? events : "!"}</text>
+    </g>}
   </g>;
 }
 
@@ -128,9 +132,12 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
 
 function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
+  const { data: ev } = useQuery(worldEventsQuery);
+  const markers = markersByLocation(ev?.events ?? []);
+  const openEvents = (id: string) => { onSelect(id); setTimeout(() => document.getElementById("evenements-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 400); };
   // The district detail projects persisted location coordinates into a local frame.
   return <g transform="translate(400,350)">{locations.map(l => {
-    return <g key={l.id} transform={`translate(${(Number(l.map_x)-Number(district.map_x))*22},${(Number(l.map_y)-Number(district.map_y))*22})`}><MapMarker label={l.name} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} /></g>;
+    return <g key={l.id} transform={`translate(${(Number(l.map_x)-Number(district.map_x))*22},${(Number(l.map_y)-Number(district.map_y))*22})`}><MapMarker label={l.name} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} events={markers.get(l.id)?.length ?? 0} onEvents={() => openEvents(l.id)} /></g>;
   })}</g>;
 }
 
@@ -161,7 +168,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
       <p className="text-sm text-muted-foreground">{l.description}</p>
       <Suspense fallback={<p className="text-xs text-muted-foreground">Projets municipaux…</p>}><MunicipalLocationProjects locationId={l.id}/></Suspense>
-      <Suspense fallback={null}><LocationEvents locationId={l.id}/></Suspense>
+      <Suspense fallback={null}><LocationEvents locationId={l.id} full/></Suspense>
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { worldEventsQuery, eventAction } from '@/services/game';
-import { canAct, displayPhase, filterEvents, rewardSummary, PARTICIPATION_LABEL, type EventTab, type WorldEvent } from '@/game/events';
+import { canAct, displayPhase, filterEvents, rewardSummary, PARTICIPATION_LABEL, CITY_EFFECT_LABEL, INDICATOR_LABEL, type EventTab, type WorldEvent } from '@/game/events';
 import { gameHour } from '@/game/life';
 import { useLifeMutation } from './LifeControls';
 import { WorldClock } from './WorldClock';
@@ -35,6 +35,8 @@ export function EventCard({ e, now }: { e: WorldEvent; now: string }) {
     <dl className="space-y-1 text-sm">
       <div className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><dd className="capitalize">{when(e)}</dd></div>
       {e.location_name && <div className="flex gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><dd>{e.location_name}</dd></div>}
+      {(e.travel_delay_minutes ?? 0) > 0 && <div className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-destructive" /><dd>Transport public : +{e.travel_delay_minutes} min sur les trajets concernés</dd></div>}
+      {e.city_effect && <div className="flex gap-2"><Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><dd>Effet dans votre ville : <strong>{CITY_EFFECT_LABEL[e.city_effect.level]}</strong>{e.city_effect.amount > 0 && ` (+${e.city_effect.amount} ${INDICATOR_LABEL[e.city_effect.indicator] ?? e.city_effect.indicator})`}</dd></div>}
       {e.reason && <div className="flex gap-2"><Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><dd>{e.reason}</dd></div>}
     </dl>
     {e.interactive && e.reward && <p className="text-xs text-muted-foreground">Énergie : −{e.reward.energy}{gains.length > 0 && <> · En cas de réussite : <span className="text-primary">{gains.join(' · ')}</span></>}{e.reward.success_rate < 100 && <> · Réussite non garantie</>}</p>}
@@ -72,10 +74,11 @@ export function EventsPage() {
   </div>;
 }
 
-export function LocationEvents({ locationId }: { locationId: string }) {
+export function LocationEvents({ locationId, full = false }: { locationId: string; full?: boolean }) {
   const { data } = useSuspenseQuery(worldEventsQuery);
   const list = data.events.filter(e => e.location_id === locationId && e.phase !== 'termine');
   if (list.length === 0) return null;
+  if (full) return <section id="evenements-lieu" aria-label="Événements de ce lieu" className="space-y-3"><p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="h-4 w-4" />{list.length > 1 ? `${list.length} événements ici` : 'Événement ici'}</p>{list.map(e => <EventCard key={e.id} e={e} now={data.now} />)}</section>;
   return <div className="space-y-2 border-y border-border py-3">
     <p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="h-4 w-4" />Événements ici</p>
     {list.map(e => <p key={e.id} className="text-sm"><span className="font-semibold">{e.title}</span><br /><span className="text-xs capitalize text-muted-foreground">{when(e)}</span></p>)}

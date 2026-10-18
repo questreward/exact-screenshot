@@ -295,6 +295,13 @@
       "when": 1792342899576,
       "tag": "0041_bloc13_fix_civi_post_status",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1792352672261,
+      "tag": "0042_bloc14_world_travel_map",
+      "breakpoints": true
     }
   ]
 }
