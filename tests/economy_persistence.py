@@ -39,6 +39,8 @@ def cleanup():
    for t in ['tax_declarations','administrative_events']:req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
    req('/rest/v1/administrative_procedures?character_id=eq.'+cid+'&renewed_from=not.is.null',method='DELETE')
    for t in ['administrative_procedures','administrative_documents']:req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
+   for t in ['world_event_participations','world_event_effects']:req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
+   req('/rest/v1/events?character_id=eq.'+cid,method='DELETE')
    for t in ['activities','job_applications','employments','study_enrollments','character_housing','character_positions','political_rewards','political_stats','civic_stats','social_stats','social_relations','social_interactions','membership_history','memberships']:
     req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
    for a in rows('accounts','character_id=eq.'+cid):req('/rest/v1/transactions?account_id=eq.'+a['id'],method='DELETE')
