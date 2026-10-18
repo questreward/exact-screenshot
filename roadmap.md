@@ -91,8 +91,8 @@
 
 # Bloc 10 — Économie, patrimoine et projets de vie
 - [x] Correction ciblée des loyers : SQL exact préparé ; autorisation explicite reçue
-- [ ] Appliquer le SQL autorisé et exécuter exactement les huit tests décrits sur un compte temporaire isolé
-- [ ] Comparer les données existantes avant/après, nettoyer le compte temporaire et rendre les résultats sans valider le Bloc 10
+- [x] SQL autorisé appliqué ; huit tests réussis sur un compte temporaire isolé, dont quatre demandes concurrentes avant le premier paiement
+- [x] Données des 89 tables publiques identiques avant/après nettoyage complet ; rapport ciblé rendu, Bloc 10 non validé
 - [x] Autorisation officielle reçue ; préserver les Blocs 1 à 9, ne pas commencer le Bloc 11
 - [x] Cahier des charges complet (50 sections, 16 tests obligatoires) reçu
 - [ ] Étendre les systèmes personnels existants sans doublons, avec opérations financières sécurisées et échéances persistantes
