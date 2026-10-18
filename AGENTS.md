@@ -31,3 +31,6 @@
 - Civic actions use character-locked RPCs and a unique reward ledger; engagement never bypasses the existing social, bank or activity systems.
 - Civic evolution settles elapsed city deadlines under an advisory lock on reads; decisions apply idempotent location metadata and publish through the existing event/news pipeline.
 - Civic events reuse citizen organizations and social agenda reservations; engagement is snapshotted on activity insertion and awarded once on completion.
+- Political parties and movements are organizations kinds (party/movement) extended 1:1 by political_profiles and political_branches; generic organization RPCs exclude them so citizen associations and politics stay distinct.
+- Political rewards are snapshotted on activity insertion and granted once through the political_rewards ledger; political stats are separate from social stats and players cannot write them, their role or opinions directly.
+- Political affinity is computed client-side in src/game/politics.ts as an indicative hint only; it never gates server actions.

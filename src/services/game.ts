@@ -6,6 +6,7 @@ import type { LifeState } from "@/game/life-state";
 import type { SocialState, Organization } from "@/game/social";
 import type { NewsState } from "@/game/news";
 import type { CivicState } from "@/game/civic";
+import type { PoliticalState } from "@/game/politics";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -297,3 +298,26 @@ export const civicLocationsQuery=(cityId:string)=>queryOptions({queryKey:['civic
   const {data,error}=await supabase.from('locations').select('*').eq('city_id',cityId).eq('accessible',true).not('district_id','is',null).order('name');
   if(error) throw new Error(error.message); return data;
 }});
+
+// Bloc 7 — political state and secured political actions.
+export const politicsQuery = queryOptions({
+  queryKey: ['politics'], staleTime: 0, refetchInterval: 30000,
+  queryFn: async (): Promise<PoliticalState> => {
+    const { data, error } = await supabase.rpc('political_state');
+    if (error) throw new Error(error.message);
+    if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data['organizations'])) throw new Error('Politique indisponible');
+    return data as unknown as PoliticalState;
+  },
+});
+export async function setPoliticalOpinion(input: { topicId: string; stance: string }) {
+  const { error } = await supabase.rpc('set_political_opinion', { _topic_id: input.topicId, _stance: input.stance });
+  if (error) throw new Error(error.message);
+}
+export async function changePoliticalMembership(input: { organizationId: string; join: boolean }) {
+  const { error } = await supabase.rpc('change_political_membership', { _organization_id: input.organizationId, _join: input.join });
+  if (error) throw new Error(error.message);
+}
+export async function reservePoliticalEvent(eventId: string) {
+  const { error } = await supabase.rpc('reserve_political_event', { _event_id: eventId });
+  if (error) throw new Error(error.message);
+}
