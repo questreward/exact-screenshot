@@ -143,5 +143,6 @@
 ## Bloc 15 — Politique nationale et institutions
 - [x] Accord lu : 50 sièges Assemblée, 25 Sénat simulé, 5 circonscriptions ; systèmes municipaux et horloge protégés.
 - [x] Analyse en lecture seule et plan technique ; SQL proposé 0043 écrit sans application, aucun test lancé.
+- [ ] Nouvel accord : verrouiller 5+45/25 sièges et 26/13 majorités, relire/corriger uniquement le SQL proposé, signaler les liens indirects et présenter le fichier intégral ; aucune application, activation, création de compte ni test.
 - [ ] Accord explicite sur le SQL exact et les paramètres encore ouverts (calendrier, seuils, simulations, séances, budget, effets) avant toute application ou développement.
 - Bloc 16 interdit.
