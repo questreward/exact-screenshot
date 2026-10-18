@@ -78,7 +78,7 @@ async def main():
             aid=rows('activities','character_id=eq.'+cid+'&organization_event_id=eq.'+ev['id'])[0]['id'];a=rows('activities','id=eq.'+aid)[0];assert a['political_reputation_gain']==ev['political_reputation_gain']
             denied('reserve_political_event',{'_event_id':ev['id']},h)
             r=requests.patch(BASE+'/rest/v1/activities?id=eq.'+aid,json={'political_reputation_gain':99},headers=h);assert rows('activities','id=eq.'+aid)[0]['political_reputation_gain']==ev['political_reputation_gain']
-            await page.goto('http://localhost:8080/agenda');await page.get_by_text(ev['title']).first.wait_for()
+            await page.goto('http://localhost:8080/agenda');await page.get_by_role('button',name='Semaine',exact=True).click();await page.get_by_text(ev['title']).first.wait_for()
             now=datetime.fromisoformat(rpc('game_now',{},h).replace('Z','+00:00'));rpc('move_character',{'_location_id':ev['location']['id']},h) if rows('character_positions','character_id=eq.'+cid)[0]['location_id']!=ev['location']['id'] else None
             patch('activities','id=eq.'+aid,{'start_time':(now-timedelta(minutes=1)).isoformat(),'end_time':(now+timedelta(minutes=59)).isoformat()});rpc('start_life_activity',{'_activity_id':aid},h)
             patch('activities','id=eq.'+aid,{'start_time':(now-timedelta(hours=1)).isoformat(),'end_time':(now-timedelta(minutes=1)).isoformat()})
