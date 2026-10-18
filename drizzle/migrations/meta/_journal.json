@@ -225,6 +225,13 @@
       "when": 1792331071776,
       "tag": "0031_fix_savings_target_reference",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792331255754,
+      "tag": "0032_personal_expense_dates_and_rent_idempotency",
+      "breakpoints": true
     }
   ]
 }
