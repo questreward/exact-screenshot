@@ -122,3 +122,9 @@
 - [ ] Restes d'un compte de test (vie quotidienne) — nettoyage seulement avec accord
 - [ ] Validation Bloc 13 par l'utilisateur
 - Bloc 14 interdit
+
+## Vérifications ciblées demandées — 18 octobre
+- [ ] Identifier, supprimer et vérifier uniquement le compte temporaire restant autorisé
+- [ ] Nouveau compte isolé : échec de loyer, paiement, concurrence, recharge, reconnexion et historique
+- [ ] Rejouer Actualités avec événement lié, Vie quotidienne sans double débit, Élections sur créneau libre
+- [ ] Rapport détaillé ; aucune correction du jeu, aucune intervention sur l’horloge commune, Bloc 14 interdit
