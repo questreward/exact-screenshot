@@ -54,7 +54,7 @@ async def verify(f):
   await page.get_by_role('button',name='Mettre de côté',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('200');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();
   try: await page.get_by_role('dialog').wait_for(state='hidden',timeout=5000)
   except Exception:
-   await page.screenshot(path=str(out/'failure.png'));print(await page.get_by_role('status').all_text_contents());raise
+   await page.screenshot(path=str(out/'failure.png'));print(await page.locator('[data-sonner-toast]').all_text_contents());print('INPUT',await page.get_by_role('dialog').locator('input').evaluate('(e)=>({valid:e.checkValidity(),msg:e.validationMessage,form:!!e.form})'));print('BUTTON',await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).get_attribute('type'));raise
   s=state();check(s['available']==2800 and s['saved']==200,'TEST 1 Épargne : 200 € transférés, total conservé, transaction')
   await page.get_by_role('button',name='Récupérer',exact=True).click();await page.get_by_role('dialog').get_by_label('Montant (€)',exact=True).fill('100');await page.get_by_role('dialog').get_by_role('button',name='Confirmer',exact=True).click();await page.get_by_role('dialog').wait_for(state='hidden')
   s=state();check(s['available']==2900 and s['saved']==100,'TEST 2 Retrait : 100 € rendus, épargne réduite')
