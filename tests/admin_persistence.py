@@ -149,8 +149,8 @@ try:
   check(len(tx(cm, 'Aide au logement*')) == paid, 'Versements suspendus tant que le dossier est à compléter')
   check(denied(hm, 'submit', {'procedure_id': maid})[0], 'Renvoi refusé avec documents périmés')
   home = rows('character_housing', 'character_id=eq.' + cm)[0]
-  other = next(l for l in rows('locations', 'city_id=eq.lyon&kind=eq.logement&accessible=eq.true') if l['id'] != home['location_id'])
-  patch('character_housing', 'character_id=eq.' + cm, {'location_id': other['id']})  # fixture : déménagement
+  newtype = next(t['id'] for t in rows('housing_types', 'select=id') if t['id'] != home['type_id'])
+  patch('character_housing', 'character_id=eq.' + cm, {'type_id': newtype})  # fixture : déménagement
   A(hm, 'report_change', {'change': 'housing'})
   check(next(d for d in st(hm)['documents'] if d['type_id'] == 'housing_proof')['status'] == 'perime', 'C2 Changement de logement : justificatif de logement périmé')
   sdt = prepare('student', 18); hs = sdt['h']; cs = sdt['cid']; st(hs)
