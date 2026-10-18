@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Appearance } from "@/game/appearance";
 import type { PathId } from "@/game/rules";
 import type { LifeState } from "@/game/life-state";
+import type { SocialState, Organization } from "@/game/social";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -224,5 +225,33 @@ export async function cancelLifeActivity(activityId: string) {
 }
 export async function payHousing() {
   const { error } = await supabase.rpc("pay_housing");
+  if (error) throw new Error(error.message);
+}
+export const socialQuery = queryOptions({
+  queryKey: ['social'], staleTime: 0, refetchInterval: 10000,
+  queryFn: async (): Promise<SocialState> => {
+    const { data, error } = await supabase.rpc('social_state');
+    if (error) throw new Error(error.message);
+    return data as unknown as SocialState;
+  },
+});
+export const organizationsQuery = (cityId: string) => queryOptions({
+  queryKey: ['organizations', cityId], staleTime: 0,
+  queryFn: async (): Promise<Organization[]> => {
+    const { data, error } = await supabase.rpc('organization_directory', { _city_id: cityId });
+    if (error) throw new Error(error.message);
+    return data as unknown as Organization[];
+  },
+});
+export async function interactSocial(input: { npcId: string; actionId: string }) {
+  const { error } = await supabase.rpc('social_interact', { _npc_id: input.npcId, _action_id: input.actionId });
+  if (error) throw new Error(error.message);
+}
+export async function changeMembership(input: { organizationId: string; join: boolean }) {
+  const { error } = await supabase.rpc('change_membership', { _organization_id: input.organizationId, _join: input.join });
+  if (error) throw new Error(error.message);
+}
+export async function reserveSocialEvent(eventId: string) {
+  const { error } = await supabase.rpc('reserve_social_event', { _event_id: eventId });
   if (error) throw new Error(error.message);
 }
