@@ -379,3 +379,14 @@ export async function adminAction(input: { command: string; requestId: string; i
   const { error } = await supabase.rpc('admin_action', { _command: input.command, _request_id: input.requestId, _input: (input.input ?? {}) as import('@/integrations/supabase/types').Json });
   if (error) throw new Error(error.message);
 }
+
+export const eventsQuery = queryOptions({ queryKey: ['events'], staleTime: 0, refetchInterval: 20000, queryFn: async (): Promise<import('@/game/events').EventsState> => {
+  const { data, error } = await supabase.rpc('world_events_state');
+  if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data['events'])) throw new Error('Événements indisponibles');
+  return data as unknown as import('@/game/events').EventsState;
+} });
+export async function eventAction(input: { eventId: string; choice: 'participer' | 'ignorer' }) {
+  const { error } = await supabase.rpc('world_event_action', { _event_id: input.eventId, _choice: input.choice });
+  if (error) throw new Error(error.message);
+}
