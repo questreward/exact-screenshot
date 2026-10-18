@@ -281,6 +281,13 @@
       "when": 1792339580205,
       "tag": "0039_bloc12_world_events",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792341048534,
+      "tag": "0040_bloc13_communication",
+      "breakpoints": true
     }
   ]
 }
