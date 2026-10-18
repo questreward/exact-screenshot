@@ -251,7 +251,7 @@ BEGIN
  FOREACH k IN ARRAY ARRAY['voting_age','candidate_age','civic_min','reputation_min','influence_min','session_minutes','session_energy','office_civic_min','office_reputation_min','office_influence_min','fictional_vote_unit','initial_budget'] LOOP
   IF NOT (_rules ? k) OR (_rules->>k) !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Paramètre manquant ou invalide : %',k; END IF;
   n:=(_rules->>k)::numeric;
-  IF n>1000000000000 THEN RAISE EXCEPTION 'Paramètre hors limite : %',k; END IF;
+  IF n>CASE WHEN k='initial_budget' THEN 1000000000000 ELSE 2147483647 END THEN RAISE EXCEPTION 'Paramètre hors limite : %',k; END IF;
  END LOOP;
  IF (_rules->>'candidate_age')::int<18 OR (_rules->>'voting_age')::int<18
  OR (_rules->>'session_minutes')::int NOT BETWEEN 1 AND 1440
@@ -261,8 +261,8 @@ BEGIN
  END LOOP;
  IF EXISTS(SELECT 1 FROM public.national_elections WHERE status<>'cancelled') THEN RAISE EXCEPTION 'Configuration figée après création du premier scrutin'; END IF;
  UPDATE public.national_settings SET rules=_rules,enabled=_enabled WHERE id=1;
- INSERT INTO public.national_treasury(id,balance) VALUES(1,(_rules->>'initial_budget')::bigint)
- ON CONFLICT(id) DO UPDATE SET balance=EXCLUDED.balance;
+ IF EXISTS(SELECT 1 FROM public.national_treasury WHERE id=1 AND balance<>(_rules->>'initial_budget')::bigint) THEN RAISE EXCEPTION 'Fonds nationaux déjà initialisés : pas de réinitialisation'; END IF;
+ INSERT INTO public.national_treasury(id,balance) VALUES(1,(_rules->>'initial_budget')::bigint) ON CONFLICT DO NOTHING;
 END $$;
 
 CREATE FUNCTION public.national_eligible(_cid uuid,_rules jsonb,_office boolean DEFAULT false) RETURNS boolean
@@ -295,7 +295,7 @@ BEGIN
    SELECT * INTO np FROM public.social_npcs WHERE organization_id=p.organization_id AND city_id=ci.city_id ORDER BY id LIMIT 1;
    IF NOT FOUND THEN RAISE EXCEPTION 'Aucun candidat fictif existant pour % dans %',p.name,ci.city_id; END IF;
    INSERT INTO public.national_candidacies(election_id,city_id,npc_id,organization_id,display_name,program,fictional_votes)
-   VALUES(eid,ci.city_id,np.id,p.organization_id,np.first_name||' '||np.last_name,p.program,p.simulation_weight*(r->>'fictional_vote_unit')::int);
+   VALUES(eid,ci.city_id,np.id,p.organization_id,np.first_name||' '||np.last_name,p.program,(p.simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint)::integer);
   END LOOP;
  END LOOP;
  RETURN eid;
@@ -718,9 +718,9 @@ DECLARE s public.national_sessions; l public.national_laws;
 BEGIN
  IF NEW.type<>'national' THEN RETURN NEW; END IF;
  IF TG_OP='UPDATE' THEN
-  IF OLD.character_id<>NEW.character_id OR OLD.source_key IS DISTINCT FROM NEW.source_key OR OLD.start_time<>NEW.start_time OR OLD.end_time<>NEW.end_time OR OLD.location_id<>NEW.location_id OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.progression_gain<>0 THEN RAISE EXCEPTION 'Activité nationale immuable'; END IF;
+  IF OLD.character_id<>NEW.character_id OR OLD.type<>NEW.type OR OLD.energy_cost<>NEW.energy_cost OR OLD.source_key IS DISTINCT FROM NEW.source_key OR OLD.start_time<>NEW.start_time OR OLD.end_time<>NEW.end_time OR OLD.location_id<>NEW.location_id OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.progression_gain<>0 THEN RAISE EXCEPTION 'Activité nationale immuable'; END IF;
  END IF;
- IF NEW.source_key IS NULL OR NEW.source_key NOT LIKE 'national-session:%' OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.energy_gain<>0 OR NEW.progression_gain<>0 OR NEW.political_reputation_gain<>0 OR NEW.political_influence_gain<>0 OR NEW.political_engagement_gain<>0 OR NEW.social_reputation_gain<>0 OR NEW.social_influence_gain<>0 OR NEW.social_relation_gain<>0 OR NEW.civic_engagement_gain<>0 THEN RAISE EXCEPTION 'Activité nationale invalide'; END IF;
+ IF NEW.source_key IS NULL OR NEW.source_key NOT LIKE 'national-session:%' OR NEW.target_location_id IS NOT NULL OR NEW.organization_event_id IS NOT NULL OR NEW.social_npc_id IS NOT NULL OR NEW.campaign_action_id IS NOT NULL OR NEW.governance_action_id IS NOT NULL OR NEW.travel_delay_minutes<>0 OR cardinality(NEW.travel_event_ids)<>0 OR NEW.reward<>0 OR NEW.money_cost<>0 OR NEW.energy_gain<>0 OR NEW.progression_gain<>0 OR NEW.political_reputation_gain<>0 OR NEW.political_influence_gain<>0 OR NEW.political_engagement_gain<>0 OR NEW.social_reputation_gain<>0 OR NEW.social_influence_gain<>0 OR NEW.social_relation_gain<>0 OR NEW.civic_engagement_gain<>0 THEN RAISE EXCEPTION 'Activité nationale invalide'; END IF;
  SELECT * INTO s FROM public.national_sessions WHERE id=substring(NEW.source_key from 18)::uuid;
  SELECT * INTO l FROM public.national_laws WHERE id=s.law_id;
  IF s.id IS NULL OR NEW.start_time<>s.starts_at OR NEW.end_time<>s.ends_at OR NOT EXISTS(SELECT 1 FROM public.national_seats WHERE legislature_id=l.legislature_id AND chamber=s.chamber AND character_id=NEW.character_id) THEN RAISE EXCEPTION 'Séance ou mandat invalide'; END IF;
