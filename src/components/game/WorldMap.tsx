@@ -11,6 +11,7 @@ import { WorldClock, useWorldClock } from "./WorldClock";
 import worldSquare from "@/assets/world-square.jpg";
 import { DailyActions } from "./LifeControls";
 import { TransportControl } from "./TransportControl";
+import { SocialContacts } from "./SocialContacts";
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -147,7 +148,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { data: p } = useSuspenseQuery(positionQuery);
   const { data: spaces } = useSuspenseQuery(spacesQuery(l.id));
   const q = useQueryClient();
-  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
+  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
   const here = p?.location_id === l.id;
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
@@ -161,6 +162,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Voyage disponible dans une prochaine étape</p>}
       {spaces.map(s => <div key={s.id} className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>)}
       <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
+      {here && <Suspense fallback={<p className="text-xs text-muted-foreground">Rencontres…</p>}><SocialContacts locationId={l.id}/></Suspense>}
     </div>
   </article>;
 }
