@@ -34,3 +34,6 @@
 - Political parties and movements are organizations kinds (party/movement) extended 1:1 by political_profiles and political_branches; generic organization RPCs exclude them so citizen associations and politics stay distinct.
 - Political rewards are snapshotted on activity insertion and granted once through the political_rewards ledger; political stats are separate from social stats and players cannot write them, their role or opinions directly.
 - Political affinity is computed client-side in src/game/politics.ts as an indicative hint only; it never gates server actions.
+- Municipal elections use character-first authenticated RPCs, election row locks and private immutable ballots; fictional electorates are simulated separately from real player votes to avoid exposing player data.
+- Candidacies own the campaign budget and program without duplicating bank accounts; campaign actions reuse activities and exactly-once completion rewards to preserve the single agenda and energy system.
+- Election catch-up advances NPCs, polls and counting from game_now under the election lock; personal result rewards settle only for the caller to avoid cross-player character-lock deadlocks.

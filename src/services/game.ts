@@ -7,6 +7,7 @@ import type { SocialState, Organization } from "@/game/social";
 import type { NewsState } from "@/game/news";
 import type { CivicState } from "@/game/civic";
 import type { PoliticalState } from "@/game/politics";
+import type { ElectionState, Program } from "@/game/elections";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -321,3 +322,15 @@ export async function reservePoliticalEvent(eventId: string) {
   const { error } = await supabase.rpc('reserve_political_event', { _event_id: eventId });
   if (error) throw new Error(error.message);
 }
+
+export const electionsQuery=queryOptions({queryKey:['elections'],staleTime:0,refetchInterval:30000,queryFn:async():Promise<ElectionState>=>{
+  const {data,error}=await supabase.rpc('election_state');
+  if(error)throw new Error(error.message);
+  if(!data||typeof data!=='object'||Array.isArray(data)||!Array.isArray(data['elections']))throw new Error('Élections indisponibles');
+  return data as unknown as ElectionState;
+}});
+export async function submitCandidacy(input:{electionId:string;organizationId?:string}){const {data,error}=await supabase.rpc('submit_candidacy',{_election_id:input.electionId,...(input.organizationId?{_organization_id:input.organizationId}:{})});if(error)throw new Error(error.message);return data;}
+export async function saveCandidateProgram(input:{candidacyId:string;slogan:string;program:Program}){const {error}=await supabase.rpc('save_candidate_program',{_candidacy_id:input.candidacyId,_slogan:input.slogan,_program:input.program as unknown as import('@/integrations/supabase/types').Json});if(error)throw new Error(error.message);}
+export async function manageCampaign(input:{candidacyId:string;command:string;npcId?:string;role?:string}){const {error}=await supabase.rpc('manage_campaign',{_candidacy_id:input.candidacyId,_command:input.command,...(input.npcId?{_npc_id:input.npcId}:{}),...(input.role?{_role:input.role}:{})});if(error)throw new Error(error.message);}
+export async function startCampaignAction(input:{candidacyId:string;ruleId:string;choices?:Record<string,string>}){const {data,error}=await supabase.rpc('start_campaign_action',{_candidacy_id:input.candidacyId,_rule_id:input.ruleId,...(input.choices?{_choices:input.choices}:{})});if(error)throw new Error(error.message);return data;}
+export async function castElectionVote(input:{electionId:string;candidacyId:string}){const {error}=await supabase.rpc('cast_election_vote',{_election_id:input.electionId,_candidacy_id:input.candidacyId});if(error)throw new Error(error.message);}

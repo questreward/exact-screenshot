@@ -56,4 +56,13 @@
 - [x] Adhésion (rôle Membre), départ, activités politiques dans l’agenda existant, personnalités via les relations existantes
 - [x] Actualités politiques, carte, téléphone, profil
 - [x] Douze tests réels réussis, 56 tests automatiques, régressions Blocs 3/4/6 ; rapport BLOC_7_VALIDATION.md
-- [ ] Validation du Bloc 7 par l’utilisateur — en attente ; ne pas commencer le Bloc 8
+- [x] Bloc 7 validé par le cahier des charges du Bloc 8
+
+# Bloc 8 — Candidatures, campagnes et élections
+- [ ] Élections municipales locales, calendrier serveur, PNJ candidats actifs
+- [ ] Candidature contrôlée, programme, équipe et budget distinct
+- [ ] Actions et débats dans l’agenda existant, sondages évolutifs
+- [ ] Vote privé unique, dépouillement, mandat et conséquences locales
+- [ ] Pages Élections, campagne et liens Politique/téléphone/Ma Ville/carte/actualités
+- [ ] Treize scénarios réels, régressions, vérification téléphone et rapport
+- Ne pas commencer le Bloc 9 ; attendre la validation de l’utilisateur.
