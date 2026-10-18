@@ -218,6 +218,13 @@
       "when": 1792330869514,
       "tag": "0030_economy_salary_keys_and_action_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792331071776,
+      "tag": "0031_fix_savings_target_reference",
+      "breakpoints": true
     }
   ]
 }
