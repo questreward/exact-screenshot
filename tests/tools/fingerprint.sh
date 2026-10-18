@@ -1,0 +1,2 @@
+#!/bin/bash
+psql -At -c "select table_name from information_schema.tables where table_schema='public' and table_type='BASE TABLE' and table_name not in ('communication_settings','message_templates','social_post_templates','message_threads','messages','social_posts','social_post_reactions') order by 1" | while read t; do psql -At -c "select '$t', count(*), md5(coalesce(string_agg(x::text,'|' order by x::text),'')) from public.\"$t\" x"; done
