@@ -163,12 +163,47 @@ IF EXISTS(SELECT 1 FROM public.activities WHERE character_id=cid AND status='pla
 UPDATE public.characters SET energy=energy-a.energy_cost,updated_at=now() WHERE characters.id=cid; IF a.money_cost>0 THEN UPDATE public.accounts SET balance=balance-a.money_cost WHERE accounts.id=acc.id; INSERT INTO public.transactions(account_id,amount,label) VALUES(acc.id,-a.money_cost,a.title); END IF;
 IF _activity_id IS NULL THEN INSERT INTO public.activities(character_id,type,title,start_time,end_time,location_id,target_location_id,energy_cost,energy_gain,money_cost,reward,progression_gain,status,travel_delay_minutes,travel_event_ids) VALUES(cid,a.type,a.title,t,a.end_time,a.location_id,a.target_location_id,a.energy_cost,a.energy_gain,a.money_cost,a.reward,a.progression_gain,'running',COALESCE(a.travel_delay_minutes,0),COALESCE(a.travel_event_ids,'{}')) RETURNING activities.id INTO result_id; ELSE UPDATE public.activities SET status='running',start_time=a.start_time,end_time=a.end_time,reward=a.reward WHERE activities.id=a.id RETURNING activities.id INTO result_id; END IF; RETURN result_id; END $function$;
 
--- 10. world_events_state : mêmes filtres, ajout de 3 champs en lecture
---     travel_delay_minutes, city_effect (ville du joueur), marker (lieu public actif)
---     [Le corps complet sera recopié à l'identique avec uniquement ces 3 clés
---      ajoutées dans jsonb_build_object :]
---  'travel_delay_minutes', CASE WHEN e.character_id IS NULL THEN e.travel_delay_minutes ELSE 0 END,
---  'city_effect', (SELECT jsonb_build_object('level',ce.level,'amount',ce.amount,'indicator',ce.indicator)
---                  FROM public.world_event_city_effects ce WHERE ce.event_id=e.id AND ce.city_id=pos.city_id),
---  'marker', e.character_id IS NULL AND e.location_id IS NOT NULL AND e.status='published'
---            AND e.starts_at <= now_t AND (e.ends_at IS NULL OR e.ends_at > now_t)
+-- 10. world_events_state : corps identique, 3 champs ajoutés en lecture seule
+CREATE OR REPLACE FUNCTION public.world_events_state()
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$ DECLARE cid uuid; c public.characters; pos public.character_positions; s public.world_event_settings; now_t timestamptz; r jsonb; BEGIN
+  cid := public.prepare_daily_life();
+  SELECT * INTO c FROM public.characters WHERE id = cid FOR UPDATE;
+  SELECT * INTO pos FROM public.character_positions WHERE character_id = cid;
+  SELECT * INTO s FROM public.world_event_settings WHERE id = 1; now_t := public.game_now();
+  PERFORM public.world_events_generate(pos.city_id);
+  PERFORM public.world_events_personal(cid);
+  PERFORM public.world_events_settle(cid);
+  SELECT jsonb_build_object('now', now_t, 'enabled', s.enabled, 'city_id', pos.city_id, 'events', COALESCE(jsonb_agg(x ORDER BY x->>'starts_at'), '[]'::jsonb)) INTO r FROM (
+    SELECT jsonb_build_object('id', e.id, 'title', e.title, 'description', e.description, 'category', COALESCE(e.game_category, 'Actualités'),
+      'press_category', e.category, 'city_id', e.city_id, 'scope', e.scope, 'location_id', e.location_id, 'location_name', l.name, 'district_id', l.district_id,
+      'starts_at', e.starts_at, 'ends_at', e.ends_at, 'importance', e.importance, 'interactive', e.interactive, 'personal', e.character_id IS NOT NULL,
+      'reason', e.reason, 'duration_kind', e.duration_kind, 'news_id', nw.id,
+      'phase', CASE WHEN e.starts_at > now_t THEN 'a_venir' WHEN e.ends_at IS NOT NULL AND e.ends_at <= now_t THEN 'termine' ELSE 'en_cours' END,
+      'participation', (SELECT jsonb_build_object('choice', p.choice, 'status', p.status, 'outcome', p.outcome, 'activity_id', p.activity_id)
+                        FROM public.world_event_participations p WHERE p.event_id = e.id AND p.character_id = cid),
+      'conflict', (SELECT a.title FROM public.activities a WHERE a.character_id = cid AND a.status IN ('planned','running') AND e.interactive
+                   AND a.source_key IS DISTINCT FROM 'wevent:' || e.id AND a.start_time < e.starts_at + interval '60 minutes' AND a.end_time > e.starts_at LIMIT 1),
+      'reward', CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('money', LEAST(t.reward_money, s.max_reward_money), 'skill', t.reward_skill,
+        'skill_amount', t.reward_skill_amount, 'relation', t.reward_relation, 'reputation', t.reward_reputation, 'civic', t.reward_civic,
+        'political', t.reward_political_reputation + t.reward_political_influence, 'energy', t.energy_cost, 'success_rate', t.success_rate) END,
+      'eligible', t.id IS NULL OR public.world_event_eligible(t, c),
+      'travel_delay_minutes', CASE WHEN e.character_id IS NULL THEN e.travel_delay_minutes ELSE 0 END,
+      'city_effect', (SELECT jsonb_build_object('level', ce.level, 'amount', ce.amount, 'indicator', ce.indicator)
+                      FROM public.world_event_city_effects ce WHERE ce.event_id = e.id AND ce.city_id = pos.city_id AND e.character_id IS NULL),
+      'marker', e.character_id IS NULL AND e.location_id IS NOT NULL AND e.status = 'published'
+                AND e.starts_at <= now_t AND (e.ends_at IS NULL OR e.ends_at > now_t)) AS x
+    FROM public.events e
+    LEFT JOIN public.locations l ON l.id = e.location_id
+    LEFT JOIN public.world_event_templates t ON t.id = e.template_id
+    LEFT JOIN public.news nw ON nw.event_id = e.id
+    WHERE (e.character_id = cid OR (e.character_id IS NULL AND (e.city_id = pos.city_id OR e.scope <> 'local')))
+      AND e.status <> 'cancelled'
+      AND (e.template_id IS NOT NULL OR (e.status = 'published' AND e.starts_at <= now_t))
+      AND e.starts_at BETWEEN now_t - make_interval(days => s.horizon_days) AND now_t + make_interval(days => s.horizon_days)
+  ) q;
+  RETURN r;
+END $function$;
