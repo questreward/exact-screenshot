@@ -47,5 +47,13 @@
 - [x] Événements citoyens dans l’agenda existant, engagement plafonné à 100
 - [x] Ma Ville, profil, accueil, téléphone et liens carte/actualités/organisations
 - [x] Douze tests obligatoires, scénario Lyon, reconnexion et régressions ; 50 tests automatiques réussis
-- [ ] Validation du Bloc 6 par l’utilisateur — en attente de son avis
+- [x] Bloc 6 validé par le cahier des charges du Bloc 7
 - Ne pas commencer le Bloc 7 ; présenter le rapport puis attendre les instructions.
+# Bloc 7 — Politique et mouvements
+- [x] Partis (4) et mouvements (5) fictifs sur organisations/adhésions existantes, idéologie à 8 axes, valeurs, priorités, implantation
+- [x] Opinions libres (non définie → forte), affinité indicative, comparateur neutre
+- [x] Profil politique : intérêt, engagement, réputation et influence politiques contrôlés côté serveur
+- [x] Adhésion (rôle Membre), départ, activités politiques dans l’agenda existant, personnalités via les relations existantes
+- [x] Actualités politiques, carte, téléphone, profil
+- [x] Douze tests réels réussis, 56 tests automatiques, régressions Blocs 3/4/6 ; rapport BLOC_7_VALIDATION.md
+- [ ] Validation du Bloc 7 par l’utilisateur — en attente ; ne pas commencer le Bloc 8
