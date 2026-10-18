@@ -26,3 +26,5 @@
 - Social actions serialize on the caller character; social participation uses the existing activities clock and settlement trigger with an exactly-once reward marker, preventing a second agenda or reward engine.
 - Fictional NPCs are separate from real characters; organization directories expose NPCs and the caller only, never other players' private character records.
 - Membership reactivation preserves its identity and records each entry/departure in a separate immutable history, keeping existing membership references stable.
+- News reuses events/news/notifications; service-only deterministic publication follows game_now with unique event keys, while reading and bookmark RPCs derive the caller and keep personal state private.
+- News generation runs as one hourly SQL-only job, never from a page read; aging is derived from world timestamps and media reputation stays distinct from social statistics.

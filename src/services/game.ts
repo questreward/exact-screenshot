@@ -4,6 +4,7 @@ import type { Appearance } from "@/game/appearance";
 import type { PathId } from "@/game/rules";
 import type { LifeState } from "@/game/life-state";
 import type { SocialState, Organization } from "@/game/social";
+import type { NewsState } from "@/game/news";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -118,7 +119,7 @@ export async function createCharacter(input: {
 }
 
 export async function saveSettings(userId: string, patch: {
-  language?: string; notifications_enabled?: boolean; reduced_motion?: boolean; profile_public?: boolean;
+  language?: string; notifications_enabled?: boolean; reduced_motion?: boolean; profile_public?: boolean; news_personalized?: boolean; news_notifications?: boolean;
 }) {
   const { error } = await supabase
     .from("user_settings")
@@ -253,5 +254,23 @@ export async function changeMembership(input: { organizationId: string; join: bo
 }
 export async function reserveSocialEvent(eventId: string) {
   const { error } = await supabase.rpc('reserve_social_event', { _event_id: eventId });
+  if (error) throw new Error(error.message);
+}
+
+export const newsQuery = queryOptions({
+  queryKey: ["news"], staleTime: 0, refetchInterval: 60000,
+  queryFn: async (): Promise<NewsState> => {
+    const { data, error } = await supabase.rpc("news_state");
+    if (error) throw new Error(error.message);
+    if (!data || typeof data !== "object" || Array.isArray(data) || !Array.isArray(data["articles"]) || typeof data["world_now"] !== "string") throw new Error("Actualités indisponibles");
+    return data as unknown as NewsState;
+  },
+});
+export async function markNewsRead(newsId: string) {
+  const { error } = await supabase.rpc("mark_news_read", { _news_id: newsId });
+  if (error) throw new Error(error.message);
+}
+export async function bookmarkNews(input: { newsId: string; saved: boolean }) {
+  const { error } = await supabase.rpc("bookmark_news", { _news_id: input.newsId, _saved: input.saved });
   if (error) throw new Error(error.message);
 }

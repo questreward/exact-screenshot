@@ -18,6 +18,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
+import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authenticated/_game/actualites'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
@@ -26,6 +27,7 @@ import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authe
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
+import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
 import { Route as AuthenticatedGameSectionIdRouteImport } from './routes/_authenticated/_game/section.$id'
 
@@ -72,6 +74,12 @@ const AuthenticatedCreationRoute = AuthenticatedCreationRouteImport.update({
   path: '/creation',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGameActualitesRoute =
+  AuthenticatedGameActualitesRouteImport.update({
+    id: '/actualites',
+    path: '/actualites',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameAgendaRoute = AuthenticatedGameAgendaRouteImport.update({
   id: '/agenda',
   path: '/agenda',
@@ -117,6 +125,12 @@ const AuthenticatedGameVieRoute = AuthenticatedGameVieRouteImport.update({
   path: '/vie',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameActualitesIdRoute =
+  AuthenticatedGameActualitesIdRouteImport.update({
+    id: '/actualites_/$id',
+    path: '/actualites/$id',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameOrganisationsIdRoute =
   AuthenticatedGameOrganisationsIdRouteImport.update({
     id: '/organisations_/$id',
@@ -138,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -146,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
@@ -157,6 +173,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -165,6 +182,7 @@ export interface FileRoutesByTo {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
@@ -179,6 +197,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
+  '/_authenticated/_game/actualites': typeof AuthenticatedGameActualitesRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -187,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
+  '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/_authenticated/_game/section/$id': typeof AuthenticatedGameSectionIdRoute
 }
@@ -200,6 +220,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/actualites'
     | '/agenda'
     | '/carte'
     | '/organisations'
@@ -208,6 +229,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/actualites/$id'
     | '/organisations/$id'
     | '/section/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -219,6 +241,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/actualites'
     | '/agenda'
     | '/carte'
     | '/organisations'
@@ -227,6 +250,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/actualites/$id'
     | '/organisations/$id'
     | '/section/$id'
   id:
@@ -240,6 +264,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
+    | '/_authenticated/_game/actualites'
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/organisations'
@@ -248,6 +273,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
     | '/_authenticated/_game/vie'
+    | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/organisations_/$id'
     | '/_authenticated/_game/section/$id'
   fileRoutesById: FileRoutesById
@@ -327,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCreationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_game/actualites': {
+      id: '/_authenticated/_game/actualites'
+      path: '/actualites'
+      fullPath: '/actualites'
+      preLoaderRoute: typeof AuthenticatedGameActualitesRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/agenda': {
       id: '/_authenticated/_game/agenda'
       path: '/agenda'
@@ -383,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/actualites_/$id': {
+      id: '/_authenticated/_game/actualites_/$id'
+      path: '/actualites/$id'
+      fullPath: '/actualites/$id'
+      preLoaderRoute: typeof AuthenticatedGameActualitesIdRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/organisations_/$id': {
       id: '/_authenticated/_game/organisations_/$id'
       path: '/organisations/$id'
@@ -401,6 +441,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedGameRouteRouteChildren {
+  AuthenticatedGameActualitesRoute: typeof AuthenticatedGameActualitesRoute
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
@@ -409,12 +450,14 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
+  AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
   AuthenticatedGameSectionIdRoute: typeof AuthenticatedGameSectionIdRoute
 }
 
 const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
   {
+    AuthenticatedGameActualitesRoute: AuthenticatedGameActualitesRoute,
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
@@ -423,6 +466,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
     AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,
+    AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameOrganisationsIdRoute:
       AuthenticatedGameOrganisationsIdRoute,
     AuthenticatedGameSectionIdRoute: AuthenticatedGameSectionIdRoute,

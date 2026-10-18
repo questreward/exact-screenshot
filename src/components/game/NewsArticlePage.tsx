@@ -1,0 +1,24 @@
+import { Link } from "@tanstack/react-router";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowLeft, Bookmark, CheckCheck, MapPin, Users, CalendarDays, Radio } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { markNewsRead, newsQuery } from "@/services/game";
+import { newsDate } from "@/game/news";
+import { articleImage, NewsLabels, useBookmark } from "./NewsFeed";
+
+export function NewsArticlePage({ id }: { id: string }) {
+  const { data: state } = useSuspenseQuery(newsQuery);
+  const q = useQueryClient();
+  const bookmark = useBookmark();
+  const read = useMutation({ mutationFn: markNewsRead, onSuccess: () => q.invalidateQueries({ queryKey: newsQuery.queryKey }), onError: (e: Error) => toast.error(e.message) });
+  const a = state.articles.find(a => a.id === id);
+  if (!a) return <div className="space-y-5"><h1 className="text-2xl font-semibold">Article indisponible</h1><Button asChild variant="outline"><Link to="/actualites"><ArrowLeft />Actualités</Link></Button></div>;
+  const image = articleImage(a.image);
+  return <article className="mx-auto max-w-3xl space-y-6 animate-rise"><Button asChild variant="ghost" className="px-0"><Link to="/actualites"><ArrowLeft />Actualités</Link></Button><NewsLabels article={a} state={state} /><h1 className="text-3xl leading-tight font-bold break-words sm:text-4xl">{a.title}</h1><div className="border-y border-border py-4 text-sm"><p className="font-semibold">{a.source?.name ?? "CIVITAS"} · {a.author}</p><p className="mt-1 text-xs text-muted-foreground">{newsDate(a.published_at)}{a.read_at ? " · Lu" : ""}</p></div><p className="text-lg font-medium leading-relaxed">{a.summary}</p>{image && <figure><img src={image} alt={a.category === "Culture" ? "Une rencontre culturelle fictive dans CIVITAS" : "Les déplacements dans une ville fictive de CIVITAS"} width={1536} height={1024} className="aspect-[3/2] w-full rounded-lg object-cover" /><figcaption className="mt-2 text-xs text-muted-foreground">Illustration · CIVITAS</figcaption></figure>}<div className="space-y-5 text-base leading-8">{a.body.split(/\n\s*\n/).map((p, i) => <p key={i}>{p}</p>)}</div>
+    <div className="flex flex-wrap gap-3 border-y border-border py-4"><Button variant={a.read_at ? "secondary" : "default"} disabled={!!a.read_at || read.isPending} onClick={() => read.mutate(a.id)}><CheckCheck />{a.read_at ? "Article lu" : "Marquer comme lu"}</Button><Button variant="outline" disabled={bookmark.isPending} aria-pressed={a.bookmarked} onClick={() => bookmark.mutate({ newsId: a.id, saved: !a.bookmarked })}><Bookmark className={a.bookmarked ? "fill-primary text-primary" : ""} />{a.bookmarked ? "Enregistré" : "Enregistrer"}</Button></div>
+    {a.source && <section className="border-b border-border pb-5"><h2 className="flex items-center gap-2 text-lg font-semibold"><Radio className="h-5 w-5 text-primary" />La source</h2><p className="mt-3 font-semibold">{a.source.name}</p><p className="mt-1 text-sm text-muted-foreground">{a.source.description}</p><p className="mt-3 text-sm text-primary">Réputation : {a.source.reputation} / 100</p><p className="mt-1 text-xs text-muted-foreground">Média fictif · CIVITAS</p></section>}
+    {a.event && <section className="space-y-3"><h2 className="text-lg font-semibold">Événement lié</h2><p className="font-medium">{a.event.title}</p><p className="text-sm text-muted-foreground">{a.event.description}</p><p className="text-xs text-muted-foreground">{newsDate(a.event.starts_at)}</p></section>}
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">{a.location && <Button asChild variant="outline"><Link to="/carte" search={{ city: a.location.city_id, district: a.location.district_id, location: a.location.id }}><MapPin />Voir sur la carte</Link></Button>}{a.organization && <Button asChild variant="outline"><Link to="/organisations/$id" params={{ id: a.organization.id }} search={{ city: a.organization.city_id }}><Users />Organisation concernée</Link></Button>}{a.agenda_activity_id && <Button asChild variant="outline"><Link to="/agenda"><CalendarDays />Voir dans l’agenda</Link></Button>}</div>
+  </article>;
+}

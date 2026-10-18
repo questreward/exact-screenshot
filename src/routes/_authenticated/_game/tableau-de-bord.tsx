@@ -12,13 +12,14 @@ import { gameMeta } from "@/game/metadata";
 import { lifeQuery } from "@/services/game";
 import { LifeSummary } from "@/components/game/LifeSummary";
 import { SocialSummary } from "@/components/game/SocialSummary";
-import { socialQuery } from "@/services/game";
+import { socialQuery, newsQuery } from "@/services/game";
+import { NewsSummary } from "@/components/game/NewsFeed";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
   loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
     q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(socialQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery),
   ]); },
   component: Dashboard,
 });
@@ -40,6 +41,7 @@ function Dashboard() {
       <PositionBlock />
       <LifeSummary />
       <SocialSummary />
+      <NewsSummary />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2"><CharacterCard character={character} /></div>
@@ -70,6 +72,7 @@ function Dashboard() {
               <li key={n.id} className="rounded-2xl bg-accent/60 p-3">
                 <p className="font-semibold">{n.title}</p>
                 <p className="text-sm text-muted-foreground">{n.body}</p>
+                {n.news_id && <Link to="/actualites/$id" params={{ id: n.news_id }} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary">Lire l’article</Link>}
               </li>
             ))}
           </ul>
