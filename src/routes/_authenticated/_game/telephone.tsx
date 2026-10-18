@@ -4,7 +4,8 @@ import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
-import { bankQuery, characterQuery, formatMoney, lifeQuery } from "@/services/game";
+import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery } from "@/services/game";
+import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { gameMeta } from "@/game/metadata";
@@ -12,14 +13,14 @@ import { gameMeta } from "@/game/metadata";
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery)]); },
   component: PhonePage,
 });
 
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
+  const open = (id?: string) => id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
   return (
@@ -51,7 +52,7 @@ function PhonePage() {
                 <ChevronLeft className="h-4 w-4" /> Accueil
               </button>
               <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
-              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : (
+              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
                   <p className="mt-6 font-semibold">{COMING_SOON}</p>
