@@ -41,3 +41,4 @@
 
 - Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts.
 - Governance uses existing agenda/city locks; closure freezes dated reports and releases planned activities. A predecessor link permits one calendar successor only; no concurrent or third city election.
+- World events extend the existing `events` table (template_id/character_id) with config in world_event_templates/settings; participation and effects go through unique-key ledgers and economy_cash — why: one event system, idempotent rewards.
