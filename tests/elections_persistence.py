@@ -59,6 +59,16 @@ async def main():
    for t,q,d in [('election_votes','election_id=eq.'+eid,{'candidacy_id':result['winner_id']}),('candidacies','id=eq.'+aid,{'budget':99999,'support':100}),('election_results','election_id=eq.'+eid,{'votes':99999}),('election_polls','election_id=eq.'+eid,{'estimates':[]})]:
     before=rows(t,q);requests.patch(BASE+'/rest/v1/'+t+'?'+q,json=d,headers=h);assert rows(t,q)==before,t
    assert req('/rest/v1/election_votes?election_id=eq.'+eid,h=ho)==[];assert requests.post(BASE+'/rest/v1/municipal_mandates',json={'election_id':eid,'candidacy_id':aid,'city_id':'lyon'},headers=h).status_code>=400;denied('refresh_election',{'_election':eid},h);denied('election_state',{},{'apikey':PUB});print('13 Écritures forgées sans effet, bulletins privés, mandat impossible à forger')
+   # A second isolated count verifies the real-player victory path and unique rewards.
+   win=fixture(now);wid=win['id'];winner=rpc('submit_candidacy',{'_election_id':wid},h)
+   patch('candidacies','id=eq.'+winner,{'support':100,'visibility':100,'campaign_reputation':100,'base_reputation':100,'base_influence':100,'program_score':100,'program':ca['program']})
+   for rival in rows('candidacies','election_id=eq.'+wid+'&npc_id=not.is.null'):
+    patch('candidacies','id=eq.'+rival['id'],{'support':0,'visibility':0,'campaign_reputation':0,'base_reputation':0,'base_influence':0,'program_score':0})
+   patch('elections','id=eq.'+wid,{'starts_at':(now-timedelta(hours=7)).isoformat(),'candidacy_ends_at':(now-timedelta(hours=6)).isoformat(),'campaign_starts_at':(now-timedelta(hours=5)).isoformat(),'debate_at':(now-timedelta(hours=4)).isoformat(),'vote_starts_at':(now-timedelta(hours=3)).isoformat(),'vote_ends_at':(now-timedelta(hours=2)).isoformat(),'count_at':(now-timedelta(hours=1)).isoformat()})
+   won=next(x for x in rpc('election_state',{},h)['elections'] if x['id']==wid);assert won['winner_id']==winner and won['mandate']['candidacy_id']==winner
+   rewards=rows('political_rewards','character_id=eq.'+cid+'&reward_key=eq.election:'+wid);assert len(rewards)==1 and rewards[0]['reputation']==8
+   rpc('election_state',{},h);assert rows('political_rewards','character_id=eq.'+cid+'&reward_key=eq.election:'+wid)==rewards
+   await page.goto('http://localhost:8080/elections/'+wid);await page.get_by_role('tab',name='Résultats',exact=True).click();await page.get_by_text('Vous avez remporté le mandat municipal.',exact=True).wait_for();print('Complément: joueur élu maire, résultat visible et récompense unique')
    await page.set_viewport_size({'width':390,'height':844})
    for path in ['/elections','/elections/'+eid,'/politique','/ma-ville']:
     await page.goto('http://localhost:8080'+path);await page.wait_for_timeout(700);assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth'),path
