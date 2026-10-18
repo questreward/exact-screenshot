@@ -126,7 +126,7 @@
 - Bloc 14 interdit
 
 ## Vérifications ciblées demandées — 18 octobre
-- [ ] Dernière vérification autorisée : nouveau compte actif, plage de travail réelle, refus/embauche/vacation/salaire/Banque/Agenda/reconnexion/persistance, suppression intégrale vérifiée ; sans horloge, fonction, migration ou élection modifiée
+- [ ] Dernière vérification autorisée : nouveau compte actif, plage de travail réelle, refus/embauche/vacation/salaire/Banque/Agenda/reconnexion/persistance, suppression intégrale vérifiée ; bloquée à 17:42 UTC : jeudi 2 septembre 2027 vers 05:30 dans le monde, vitesse 1 ; début possible à partir du 18 octobre 20:12:05 UTC (22:12 Paris). Aucun compte créé, aucun scénario lancé hors horaires ; sans horloge, fonction, migration ou élection modifiée
 - [x] Identifier, supprimer et vérifier uniquement le compte temporaire restant autorisé
 - [x] Nouveau compte isolé : 8/8 loyers + deuxième demande immédiate et cinq demandes après paiement, tous réussis
 - [x] Actualités 8/8 ; Vie quotidienne étudiant réussie, loyer unique confirmé ; limites actif/Élections ci-dessus
