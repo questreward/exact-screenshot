@@ -267,6 +267,13 @@
       "when": 1792336718352,
       "tag": "0037_admin_unique_period",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792338336099,
+      "tag": "0038_admin_change_per_type",
+      "breakpoints": true
     }
   ]
 }
