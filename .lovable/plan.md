@@ -1,7 +1,7 @@
 # Bloc 15 — Politique nationale et institutions
 
 ## Statut et décisions
-**Proposition non appliquée, aucun développement ni test.** Bloc 14 validé, Bloc 16 exclu. Décisions : Assemblée 50/Sénat 25, cinq circonscriptions, lois dédiées, deux chambres approuvant la même version. SQL : `.lovable/proposed_0043_bloc15_national_politics.sql`, hors migrations.
+**Proposition non appliquée, aucun développement ni test.** Bloc 14 validé, Bloc 16 exclu. Décisions : Assemblée 5+45/Sénat 25, majorités 26/13, lois dédiées, deux chambres approuvant la même version. SQL : `.lovable/proposed_0043_bloc15_national_politics.sql`, hors migrations.
 
 Système désactivé, paramètres indéfinis laissés vides. Ce SQL est un socle proposé, non un lancement complet : campagnes/débats et notifications nationales générales restent à définir.
 
@@ -20,7 +20,7 @@ Exception additive proposée : nouveau déclencheur sur `activities`, uniquement
 Écritures futures prévues : nouvelle règle `life_rules`, lignes `activities/events/news/indicator_history` et deltas `city_indicators` après application d’une loi. Aucune maintenant, aucune modification des lignes anciennes.
 
 ## 3. Fonctions serveur nouvelles / modifiées
-20 fonctions nouvelles `national_` : authentification sans règlement de vie quotidienne, configuration/éligibilité, scrutin/dépouillement/sièges, Sénat, exécutif, lois/versions/séances/votes, budget/effets, publication, état et rattrapage. Le SQL donne chaque signature et contrôle.
+Fonctions nouvelles `national_` : authentification sans règlement de vie quotidienne, configuration/éligibilité, scrutin/dépouillement/sièges, Sénat, exécutif, lois/versions/séances/votes, budget/effets, publication, état et rattrapage. Le SQL donne chaque signature et contrôle.
 Internes/configuration réservées à l’opérateur ; joueurs : `national_action` et `national_state`. Horaires via `game_now()` en lecture. Rattrapage séparé, aucune tâche horaire actuelle modifiée.
 
 ## 4. Écrans à ajouter — développement ultérieur
@@ -30,7 +30,7 @@ Internes/configuration réservées à l’opérateur ; joueurs : `national_actio
 - Loi : version, auteur politique public, texte, deux votes distincts, résultat, entrée en vigueur, effets et historique.
 - Gouvernement / Budget : composition, postes, allocations fictives, disponible/engagé et registre public.
 - Parti existant : volet national, sans afficher les membres privés ni leurs statistiques.
-- Agenda : séances ajoutées à `activities`, même départ/fin que la Vie. Pas de séance virtuelle ou bâtiment national inventé : proposition de participation depuis un lieu administratif existant de la ville, à valider.
+- Agenda : séances ajoutées à `activities`, horaires figés ; démarrage national explicite pour éviter le recalcul du départ par la Vie. Coût d’énergie de séance uniquement. Vérification en lecture seule : Hôtel de ville et Maison des services publics accessibles dans chacune des cinq villes. Aucun bâtiment inventé ; lieu choisi à la réservation, recontrôlé au départ.
 - Monde / Ma Ville : origine des effets nationaux. Actualités / Civi : réutilisation des événements publics. Carte : lieux existants seulement, aucun nouveau pays ni déplacement national.
 Accès téléphone/menu, pages distinctes, français et grands boutons ; aucun écran ajouté maintenant.
 
@@ -62,10 +62,10 @@ En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indica
 
 ## 10. Risques et paramètres à valider
 - **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; aucune fausse élection municipale ni faux mandat pour contourner.
-- Propositions à décider : scrutin territorial à un tour ; 45 sièges fictifs proportionnels à des poids de partis configurés (plus forts restes, égalité par identifiant stable) ; Sénat proportionnel aux sièges des conseils actifs (même méthode) ; votes fictionnels paramétrés distincts des bulletins réels ; majorité absolue proposée 26/50 et 13/25, absence = abstention ; réexamen par nouvelle version.
-- À décider : dates/mandats, âges/seuils, poids fictifs, durée/énergie/lieu des séances, ministères/nominations, unité/plafond/budget, textes/effets et campagnes/débats. Aucune campagne financée inventée.
+- Majorités confirmées : 26/50 et 13/25. Propositions à décider : scrutin territorial à un tour, plus forts restes des poids fictifs et conseils locaux actifs, égalités par identifiant, poids des voix fictives, absences = abstention. Une séance par chambre/version ; réexamen = nouvelle version. Sénat anonyme simulé par groupes issus des conseils, pas nomination des maires comme sénateurs.
+- À décider : dates/mandats, âges/seuils, poids fictifs, durée/énergie/lieu des séances, ministères/nominations, unité/plafond/budget et textes/effets. Campagnes/débats exclus jusqu’à cahier séparé. Les limites techniques de saisie ne constituent pas des valeurs d’équilibrage approuvées.
 - Gouvernement proposé depuis le groupe le plus représenté, sans coalition/confiance inventée ; PNJ choisis par l’opérateur, pas de promotion automatique.
 - Échéances figées ; rattrapage chronologique, aucun vote tardif. Majorité insuffisante = refus ; fonds insuffisants = attente, pas d’effets partiels.
 - Les lois ne bloquent pas les lieux, ne modifient pas les transports, salaires, loyers, élections municipales ou argent personnel. Multijoueur complet, diplomatie, deuxième pays, finance avancée et Bloc 16 exclus.
 
-**Suite :** relire le SQL proposé et décider des paramètres encore ouverts. Aucun appel de migration ni activation avant votre accord explicite sur le fichier exact et ses limites.
+**Relecture statique terminée, sans validation par exécution.** Corrections : majorités fixes, valeurs nulles rejetées, versions figées, application atomique, démarrage national explicite, garde complet des activités, lieux contrôlés dès ouverture. Installation future ajouterait le déclencheur sur `activities` mais aucune règle ni activité nationale. Sénat agrégé depuis les conseils réels : modèle de répartition encore à valider. Aucun appel de migration ni activation avant accord sur le fichier exact et ses limites.
