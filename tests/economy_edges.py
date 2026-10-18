@@ -59,7 +59,7 @@ try:
  check(denied_action(h,'promotion',{}),'Promotion refusée sans compétences et expérience')
  action(h,'quit');check(not rows('employments','character_id=eq.'+cid) and not rows('activities','character_id=eq.'+cid+'&type=eq.work&status=eq.planned'),'Départ d’emploi : vacations futures annulées, historique conservé')
  check(any(v['kind']=='départ' for v in st()['history']),'Historique professionnel conserve le départ')
- rpc('apply_job',{'_job_id':job['id']},h);patch('job_applications','character_id=eq.'+cid,{'response_at':'2000-01-01T00:00:00Z'});st()
+ job2=next(j for j in rows('jobs','city_id=eq.lyon') if j['id']!=job['id'] and not j.get('economy_skill'));rpc('apply_job',{'_job_id':job2['id']},h);patch('job_applications','character_id=eq.'+cid+'&job_id=eq.'+job2['id'],{'response_at':'2000-01-01T00:00:00Z'});st()
  check(len(rows('employments','character_id=eq.'+cid))==1 and st()['available']==165,'Nouvelle candidature : un emploi, aucun salaire anticipé')
  student=prepare('student',18);sh=student['h'];sc=student['cid']
  check(denied_action(sh,'career',{}),'Parcours étudiant : niveau requis non contournable')
