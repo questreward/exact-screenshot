@@ -6,7 +6,7 @@ No existing player's data is written. Credentials are kept in memory, never prin
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from economy_persistence import prepare, cleanup, rows, rpc, patch, checks
+from economy_persistence import prepare, cleanup, rows, rpc, patch, req, created
 from playwright.async_api import async_playwright
 
 OUT = Path('/tmp/browser/rent-retry')
@@ -71,7 +71,19 @@ async def run():
         patch('accounts', 'id=eq.' + aid, {'balance': 200})
         await page.reload()
         await button.wait_for()
-        await button.click()
+        # Race the real button request with three independent requests while unpaid.
+        race_replies = []
+        def race():
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                return list(pool.map(lambda _: rpc('pay_housing_attempt', h=h), range(3)))
+        async def concurrent_payment(route):
+            replies, _ = await asyncio.gather(asyncio.to_thread(race), route.continue_())
+            race_replies.extend(replies)
+        await page.route('**/rest/v1/rpc/pay_housing_attempt', concurrent_payment)
+        async with page.expect_response(lambda r: '/rest/v1/rpc/pay_housing_attempt' in r.url) as response:
+            await button.click()
+        browser_reply = await (await response.value).json()
+        await page.unroute('**/rest/v1/rpc/pay_housing_attempt', concurrent_payment)
         paid_button = page.get_by_role('button', name='Payé aujourd’hui', exact=True)
         await paid_button.wait_for()
         success = next(o for o in operations() if o['status'] == 'done')
@@ -79,10 +91,8 @@ async def run():
         await page.get_by_role('heading', name='Mon logement', exact=True).locator('..').screenshot(path=str(OUT/'2-paiement.png'))
 
         before = snapshot()
-        # Real simultaneous requests independently of the disabled browser control.
-        with ThreadPoolExecutor(max_workers=4) as pool:
-            replies = list(pool.map(lambda _: rpc('pay_housing_attempt', h=h), range(4)))
-        passed(3, all(r['status'] == 'already_paid' for r in replies) and snapshot() == before and len([o for o in operations() if o['status'] == 'done']) == 1, 'Clics multiples simultanés : aucune seconde réussite et aucun second débit')
+        replies = [browser_reply, *race_replies]
+        passed(3, len(replies) == 4 and sum(r['status'] == 'paid' for r in replies) == 1 and sum(r['status'] == 'already_paid' for r in replies) == 3 and snapshot() == before and len([o for o in operations() if o['status'] == 'done']) == 1, 'Quatre demandes simultanées avant paiement : une réussite, trois refus, un seul débit')
 
         for _ in range(3):
             await page.reload()
@@ -118,5 +128,8 @@ if __name__ == '__main__':
     try:
         asyncio.run(run())
     finally:
+        for uid in created:
+            for table in ['notifications', 'user_settings']:
+                req('/rest/v1/' + table + '?user_id=eq.' + uid, method='DELETE')
         cleanup()
     print('8/8 tests réussis ; compte temporaire nettoyé.', flush=True)
