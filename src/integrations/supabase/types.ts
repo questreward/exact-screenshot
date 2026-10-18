@@ -4628,6 +4628,7 @@ export type Database = {
         Returns: undefined
       }
       pay_housing: { Args: never; Returns: undefined }
+      pay_housing_attempt: { Args: never; Returns: Json }
       personal_economy_action: {
         Args: { _command: string; _input?: Json; _request_id: string }
         Returns: undefined

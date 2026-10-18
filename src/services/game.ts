@@ -232,8 +232,12 @@ export async function cancelLifeActivity(activityId: string) {
   if (error) throw new Error(error.message);
 }
 export async function payHousing() {
-  const { error } = await supabase.rpc("pay_housing");
+  const { data, error } = await supabase.rpc("pay_housing_attempt");
   if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Résultat du paiement indisponible');
+  if (data['status'] === 'insufficient_funds') throw new Error('Solde insuffisant. Échec conservé, aucun débit.');
+  if (data['status'] === 'already_paid') throw new Error('Logement déjà payé aujourd’hui. Aucun nouveau débit.');
+  if (data['status'] !== 'paid') throw new Error('Paiement non enregistré');
 }
 export const socialQuery = queryOptions({
   queryKey: ['social'], staleTime: 0, refetchInterval: 10000,

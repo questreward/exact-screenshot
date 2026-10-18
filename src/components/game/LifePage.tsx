@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from 'sonner';
 import { Briefcase, GraduationCap, Home, CalendarDays, LoaderCircle, Check, Wallet, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { lifeQuery, citiesQuery, districtsQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
+import { lifeQuery, economyQuery, citiesQuery, districtsQuery, enrollStudies, applyJob, payHousing, formatMoney } from "@/services/game";
+import { isRentPaid } from '@/game/rent';
 import { academicLevel, gameHour } from "@/game/life";
 import { WorldClock } from "./WorldClock";
 import { DailyActions, LocationLink, useLifeMutation } from "./LifeControls";
@@ -14,7 +16,14 @@ export function LifePage() {
   const { data: districts } = useSuspenseQuery(districtsQuery(life.character.city_id));
   const enroll = useLifeMutation(enrollStudies, "Inscription enregistrée");
   const apply = useLifeMutation(applyJob, "Candidature envoyée");
-  const rent = useLifeMutation(payHousing, "Dépense de logement enregistrée");
+  const { data: economy } = useSuspenseQuery(economyQuery);
+  const q = useQueryClient();
+  const rent = useMutation({ mutationFn: payHousing,
+    onSuccess: () => toast.success('Dépense de logement enregistrée'),
+    onError: (error: Error) => toast.error(error.message),
+    onSettled: async () => { await Promise.all(['economy', 'daily-life', 'bank'].map(key => q.invalidateQueries({ queryKey: [key] }))); },
+  });
+  const paidToday = isRentPaid(life.world_now.slice(0,10), life.housing?.last_paid_date ?? null, economy.operations);
   const student = life.character.path_id === "student" && !(typeof life.character.progression === 'object' && life.character.progression !== null && !Array.isArray(life.character.progression) && life.character.progression['career_active'] === true);
   return <div className="space-y-6 animate-rise">
     <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="mb-1 text-xs uppercase tracking-wider text-primary">CIVITAS · Vie quotidienne</p><h1 className="text-3xl font-bold">{student ? "Mes études" : "Ma vie professionnelle"}</h1></div><Button asChild variant="outline"><Link to="/agenda"><CalendarDays /> Agenda</Link></Button></div>
@@ -41,6 +50,6 @@ export function LifePage() {
       </article>; })}</div>
     </section>}
     <section className="space-y-4 border-t border-border pt-5"><h2 className="text-xl font-semibold">Actions quotidiennes</h2><DailyActions /></section>
-    {life.housing && <section className="space-y-4 border-t border-border pt-5"><h2 className="flex items-center gap-2 text-xl font-semibold"><Home className="text-primary" />Mon logement</h2><dl className="grid gap-3 sm:grid-cols-3"><div><dt className="text-sm text-muted-foreground">Type</dt><dd className="font-semibold">{life.housing.name}</dd></div><div><dt className="text-sm text-muted-foreground">Logement actuel</dt><dd>{life.housing.location.name}</dd></div><div><dt className="text-sm text-muted-foreground">Localisation</dt><dd>{districts.find(d => d.id === life.housing?.location.district_id)?.name} · {cities.find(c => c.id === life.housing?.location.city_id)?.name}</dd></div></dl><p className="text-sm text-muted-foreground">{formatMoney(life.housing.daily_cost)} / jour · Paiement manuel, sans dette automatique.</p><div className="flex flex-wrap gap-2"><LocationLink location={life.housing.location} label="Rentrer chez moi" /><Button variant="outline" disabled={rent.isPending || life.housing.last_paid_date === life.world_now.slice(0,10)} onClick={() => rent.mutate(undefined)}><Wallet />{life.housing.last_paid_date===life.world_now.slice(0,10) ? "Payé aujourd’hui" : "Payer le logement"}</Button></div></section>}
+    {life.housing && <section className="space-y-4 border-t border-border pt-5"><h2 className="flex items-center gap-2 text-xl font-semibold"><Home className="text-primary" />Mon logement</h2><dl className="grid gap-3 sm:grid-cols-3"><div><dt className="text-sm text-muted-foreground">Type</dt><dd className="font-semibold">{life.housing.name}</dd></div><div><dt className="text-sm text-muted-foreground">Logement actuel</dt><dd>{life.housing.location.name}</dd></div><div><dt className="text-sm text-muted-foreground">Localisation</dt><dd>{districts.find(d => d.id === life.housing?.location.district_id)?.name} · {cities.find(c => c.id === life.housing?.location.city_id)?.name}</dd></div></dl><p className="text-sm text-muted-foreground">{formatMoney(life.housing.daily_cost)} / jour · Paiement manuel, sans dette automatique.</p><div className="flex flex-wrap gap-2"><LocationLink location={life.housing.location} label="Rentrer chez moi" /><Button variant="outline" disabled={rent.isPending || paidToday} onClick={() => rent.mutate(undefined)}><Wallet />{paidToday ? "Payé aujourd’hui" : "Payer le logement"}</Button></div></section>}
   </div>;
 }

@@ -20,6 +20,7 @@
 - World clock derives elapsed time from a database anchor; client interpolation only animates its display and never authorizes gameplay.
 - Map zoom and touch gestures use react-zoom-pan-pinch; world rules stay in src/game/world.ts so presentation does not authorize movement.
 - Daily-life and economy RPCs lock character/account rows; clients never set prices, energy or rewards. Unique operation keys prevent duplicate charges and settlement; savings conserve cash within the existing account.
+- Rent retries preserve failures with a distinct key; UI checks successful operations to avoid phantom payments.
 - Activities and economy deadlines use game_now; daily_life_state settles on reads/reconnect, reusing housing, progression, agenda and position.
 - Configurable balance values live in life_rules, life_settings, housing_types and jobs; src/game/life.ts contains presentation-only helpers and tests.
 - Live daily-life regressions create and clean up isolated temporary accounts; deadline acceleration is preferred, while clock-window tests must restore the full world_state row in the same transaction before commit so concurrent players never observe test time.
