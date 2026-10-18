@@ -18,9 +18,12 @@
 - Présentation vérifiée sur ordinateur et téléphone à 390 × 844, sans débordement horizontal ni erreur de page pendant le scénario électoral.
 - Dernier contrôle de compilation : OK. Élections et personnages temporaires nettoyés ; l'horloge commune n'a pas été modifiée.
 
-## Essais non conclus
-- Régression quotidienne : le parcours étudiant, logement, repas, transport et reconnexion réussit ; le parcours professionnel s'arrête car aucune activité en cours n'est trouvée après « Travailler ». Les horaires réels du monde restent appliqués. La régression professionnelle complète n'est donc pas validée dans cette exécution.
-- Régression sociale : rencontre, discussion, adhésion et départ réussissent ; le scénario s'arrête sur un atelier absent de la journée affichée après déplacement de son échéance dans le passé. La vérification sociale complète reste non conclue, sans modification des règles ni de l'agenda pour contourner cet essai.
+## Régressions ciblées finalisées
+- Atelier social, récompenses uniques, relations, agenda et reconnexion vérifiés ; défaut de date dans l’ancien essai corrigé sans modification des règles.
+- Vacation professionnelle complète 08:00–12:00 testée avec le compte temporaire : énergie −30, progression +10, aucun salaire avant l’échéance, puis +80 € et solde 1 580 €.
+- Téléphone → Banque affiche une seule transaction salariale ; cinq recharges, déconnexion/reconnexion, cinq consultations concurrentes et nouvelle recharge conservent le même solde et la même transaction.
+- L’avance d’horloge était confinée à une transaction qui restaure exactement l’horloge avant validation ; les autres sessions ne voient pas l’avance. Compte et données temporaires supprimés et nettoyage confirmé.
+- Le dernier essai était limité au salaire comme demandé ; le parcours transversal antérieur n’a pas été rejoué intégralement.
 
 ## Corrections effectuées
 - Références ambiguës dans les contrôles d'engagement et le calcul du dépouillement corrigées.
@@ -37,4 +40,4 @@
 - Réglages initiaux proposés : candidat/électeur à partir de 18 ans, engagement citoyen minimum 10, réputation politique minimum 5, ancienneté minimum 0 jour ; budget indépendant 1 200 €, soutien d'organisation 600 €, plafond 3 000 €, trois actions quotidiennes et trois dons de 150 €, mandat de 120 jours du monde. Ce sont des choix de cette première version, soumis à validation.
 - Une candidature refusée ne peut pas être redéposée dans la même élection ; programme verrouillé au lancement de campagne.
 
-**Mise à jour : l’Atelier social est désormais vérifié ; seule la vacation professionnelle et le parcours complet restent à rejouer pendant les horaires autorisés. Voir BLOC_8_REGRESSION_CIBLEE.md. Bloc 8 non déclaré validé ; Bloc 9 non commencé.**
+**Bloc 8 validé** après réussite du dernier test demandé. Voir BLOC_8_REGRESSION_CIBLEE.md. Bloc 9 non commencé.
