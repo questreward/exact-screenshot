@@ -30,4 +30,12 @@
 - [x] Activités sociales intégrées à l’agenda existant, réputation et influence
 - [x] Contacts, organisations, profil, accueil, notifications et carte
 - [x] Dix tests obligatoires, régressions des blocs validés et rapport final
-- [ ] Validation du Bloc 4 par l’utilisateur — en attente de son accord ; Bloc 5 non commencé
+- [x] Bloc 4 officiellement validé par l’utilisateur
+
+# Bloc 5 — Information et actualités
+- [ ] Sources fictives et articles liés aux événements existants, publication contrôlée selon l’horloge du monde
+- [ ] Fil personnalisé ouvert, recherche, filtres et détail avec liens carte/organisation/agenda
+- [ ] Lectures, favoris, préférences et notifications pertinentes privés et persistants
+- [ ] Téléphone déverrouillé et aperçu compact sur l’accueil
+- [ ] Onze tests obligatoires, régressions des Blocs 1 à 4 et rapport de validation
+- Ne pas commencer le Bloc 6 ; attendre les instructions après présentation des résultats.
