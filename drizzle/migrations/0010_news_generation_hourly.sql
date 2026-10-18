@@ -1,0 +1,3 @@
+DO $$ DECLARE definition text; BEGIN SELECT pg_get_functiondef('public.refresh_world_news()'::regprocedure) INTO definition; definition:=replace(definition,'kind text;','event_kind text;'); definition:=replace(definition,'kind:=','event_kind:='); EXECUTE definition; END $$;
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+SELECT cron.schedule('civitas-world-news','0 * * * *','SELECT public.refresh_world_news()');

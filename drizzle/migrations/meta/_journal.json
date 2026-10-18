@@ -71,6 +71,13 @@
       "when": 1792318885733,
       "tag": "0009_world_news_sources_reading_and_publication",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792319004997,
+      "tag": "0010_news_generation_hourly",
+      "breakpoints": true
     }
   ]
 }

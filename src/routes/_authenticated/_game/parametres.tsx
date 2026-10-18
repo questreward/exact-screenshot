@@ -71,6 +71,12 @@ function SettingsPage() {
         </div>
       </section>
 
+      <section className="border-y border-border py-3">
+        <h2 className="text-lg font-semibold">Actualités</h2>
+        <div className={row}><label htmlFor="news-personalized" className="font-semibold">Fil personnalisé</label><Switch id="news-personalized" checked={settings?.news_personalized ?? true} disabled={!userId} onCheckedChange={v => update({ news_personalized: v })} /></div>
+        <div className={row}><label htmlFor="news-notifications" className="font-semibold">Alertes importantes</label><Switch id="news-notifications" checked={settings?.news_notifications ?? true} disabled={!userId} onCheckedChange={v => update({ news_notifications: v })} /></div>
+      </section>
+
       <Button variant="outline" size="lg" className="w-full" onClick={signOut}><LogOut /> Se déconnecter</Button>
     </div>
   );

@@ -4,7 +4,7 @@ import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
-import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery } from "@/services/game";
+import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery } from "@/services/game";
 import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,14 +13,15 @@ import { gameMeta } from "@/game/metadata";
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery)]); },
   component: PhonePage,
 });
 
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
+  const { data: news } = useSuspenseQuery(newsQuery);
+  const open = (id?: string) => id === "actualites" ? navigate({ to: "/actualites" }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
   return (
@@ -39,6 +40,7 @@ function PhonePage() {
                     <span className={cn("relative flex h-16 w-16 items-center justify-center rounded-2xl",
                       a.available ? "bg-gradient-primary text-primary-foreground shadow-elegant" : "bg-muted text-muted-foreground")}>
                       <a.icon className="h-7 w-7" />
+                      {a.id === "actualites" && news.unread_count > 0 && <span aria-label={`${news.unread_count} actualités non lues`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{news.unread_count > 99 ? "99+" : news.unread_count}</span>}
                       {!a.available && <Lock className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-background p-1" />}
                     </span>
                     <span className="text-xs">{a.label}</span>
