@@ -35,10 +35,15 @@ def cleanup():
  for uid in created:
   for c in rows('characters','user_id=eq.'+uid):
    cid=c['id']
+   for pr in rows('administrative_procedures','character_id=eq.'+cid+'&select=id'):req('/rest/v1/administrative_procedure_documents?procedure_id=eq.'+pr['id'],method='DELETE')
+   for t in ['tax_declarations','administrative_events']:req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
+   req('/rest/v1/administrative_procedures?character_id=eq.'+cid+'&renewed_from=not.is.null',method='DELETE')
+   for t in ['administrative_procedures','administrative_documents']:req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
    for t in ['activities','job_applications','employments','study_enrollments','character_housing','character_positions','political_rewards','political_stats','civic_stats','social_stats','social_relations','social_interactions','membership_history','memberships']:
     req('/rest/v1/'+t+'?character_id=eq.'+cid,method='DELETE')
    for a in rows('accounts','character_id=eq.'+cid):req('/rest/v1/transactions?account_id=eq.'+a['id'],method='DELETE')
    req('/rest/v1/accounts?character_id=eq.'+cid,method='DELETE'); req('/rest/v1/characters?id=eq.'+cid,method='DELETE')
+  req('/rest/v1/notifications?user_id=eq.'+uid,method='DELETE');req('/rest/v1/user_settings?user_id=eq.'+uid,method='DELETE')
   req('/auth/v1/admin/users/'+uid,method='DELETE')
   check(not rows('characters','user_id=eq.'+uid),'Compte et données temporaires supprimés')
 
