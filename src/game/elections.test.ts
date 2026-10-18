@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
-import {votingHint,candidacyHints,type Election} from './elections';
-const election={city_id:'lyon',voted:false,rules:{voting_age:18,candidate_age:18,civic_min:10,independent_civic_min:10,reputation_min:5,influence_min:0},vote_starts_at:'2026-10-22T00:00:00Z',vote_ends_at:'2026-10-23T00:00:00Z'} as Election;
+import {votingHint,candidacyHints} from './elections';
+const election={city_id:'lyon',voted:false,rules:{voting_age:18,candidate_age:18,civic_min:10,independent_civic_min:10,reputation_min:5,influence_min:0},vote_starts_at:'2026-10-22T00:00:00Z',vote_ends_at:'2026-10-23T00:00:00Z'};
 describe('Municipal electoral hints (server validates)',()=>{
  it('requires the configured age',()=>{expect(votingHint(election,{age:17,city_id:'lyon',world_now:'2026-10-22T12:00:00Z'})).toBe(false);expect(votingHint(election,{age:18,city_id:'lyon',world_now:'2026-10-22T12:00:00Z'})).toBe(true);});
  it('requires the player city',()=>{expect(votingHint(election,{age:20,city_id:'lille',world_now:'2026-10-22T12:00:00Z'})).toBe(false);});
