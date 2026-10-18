@@ -133,3 +133,8 @@
 - [x] Nouveau compte isolé : 8/8 loyers + deuxième demande immédiate et cinq demandes après paiement, tous réussis
 - [x] Actualités 8/8 ; Vie quotidienne étudiant réussie, loyer unique confirmé ; limites actif/Élections ci-dessus
 - [x] Rapport détaillé ; aucun fichier du jeu ni règle modifié, horloge inchangée, données des nouveaux essais supprimées
+
+## Bloc 14 – Monde vivant, déplacements et Carte
+- [x] Plan étape 2 approuvé
+- [ ] SQL 0042 proposé (.lovable/proposed_0042_bloc14_world_travel_map.sql) — en attente d’accord
+- [ ] Application, interface, tests — après accord
