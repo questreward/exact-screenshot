@@ -162,7 +162,7 @@ try:
   changes = [p for p in st(hs)['procedures'] if p['type_id'] == 'situation_change']
   check(len(changes) == 2 and changes[0]['category'] == 'Études', 'C3 Passage études → vie active enregistré')
   # recalcul : aide renvoyée avec nouveaux documents → nouveau montant réévalué
-  hire(cm, hm); docs(hm, 'income_proof', 'situation_proof')
+  hire(cm, hm); docs(hm, 'income_proof', 'situation_proof', 'housing_proof')
   A(hm, 'confirm', {'procedure_id': maid}); A(hm, 'submit', {'procedure_id': maid})
   patch('administrative_procedures', 'id=eq.' + maid, {'response_at': (now - timedelta(minutes=1)).isoformat()}); st(hm)
   check(proc(hm, 'housing_aid')['status'] == 'acceptee', 'C4 Démarche recalculée après mise à jour des justificatifs')
