@@ -116,6 +116,9 @@
 - [x] Plan approuvé
 - [x] SQL 0040 appliqué (version validée), Messages/Civi/Monde développés
 - [x] Tests Bloc 13 : 22 vérifications ; défaut publication Civi signalé
-- [ ] Correctif publication Civi — attend l'accord de l'utilisateur
-- [ ] Régressions anciennes (vie quotidienne, actualités, élections, parcours économique) à relancer
+- [x] Correctif publication Civi (0041) appliqué ; tests Bloc 13 26/26
+- [x] Parcours économique 30/30
+- [ ] Actualités, Vie quotidienne, Élections non concluants — décision utilisateur
+- [ ] Restes d'un compte de test (vie quotidienne) — nettoyage seulement avec accord
+- [ ] Validation Bloc 13 par l'utilisateur
 - Bloc 14 interdit
