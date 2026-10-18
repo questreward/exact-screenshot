@@ -134,6 +134,62 @@
       "when": 1792325491989,
       "tag": "0018_unambiguous_electoral_counting",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792327953920,
+      "tag": "0019_municipal_governance_foundations",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792328041189,
+      "tag": "0020_governance_initialization_and_safe_civic_integration",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792328105124,
+      "tag": "0021_municipal_actions_council_and_funding",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792328156179,
+      "tag": "0022_governance_world_evolution_and_private_state",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792328357509,
+      "tag": "0023_governance_privacy_and_authorization_hardening",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792328563814,
+      "tag": "0024_deterministic_governance_catchup_and_mandate_report",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792328708084,
+      "tag": "0025_unambiguous_municipal_event_title",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792329257240,
+      "tag": "0026_mandate_end_frozen_report_and_single_reelection",
+      "breakpoints": true
     }
   ]
 }

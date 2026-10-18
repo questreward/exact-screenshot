@@ -79,6 +79,8 @@
 - [x] Rapport final du Bloc 8 conclu ; compte temporaire nettoyé et absence vérifiée ; aucun Bloc 9
 
 # Bloc 9 — Mandat, gouvernance et monde réactif
+- [x] Lot fin de mandat : clôture, bilan figé, retour normal, réélection unique sans concurrence ni troisième scrutin ; 17 vérifications isolées, nettoyage et rapport BLOC_9_LOT_FIN_MANDAT.md
+- Les autres tâches du Bloc 9 ci-dessous sont suspendues sur demande de l’utilisateur ; ne pas les poursuivre sans nouvelle instruction.
 - [ ] Mandat réel, conseil cohérent avec les élections, trois priorités et bilan factuel
 - [ ] Indicateurs 0–100, problèmes, dossiers et extension des décisions/consultations existantes
 - [ ] Budget municipal distinct, négociation et votes sécurisés, financement unique

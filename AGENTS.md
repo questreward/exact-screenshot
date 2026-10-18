@@ -36,4 +36,7 @@
 - Political affinity is computed client-side in src/game/politics.ts as an indicative hint only; it never gates server actions.
 - Municipal elections use character-first authenticated RPCs, election row locks and private immutable ballots; fictional electorates are simulated separately from real player votes to avoid exposing player data.
 - Candidacies own the campaign budget and program without duplicating bank accounts; campaign actions reuse activities and exactly-once completion rewards to preserve the single agenda and energy system.
-- Election catch-up advances NPCs, polls and counting from game_now under the election lock; personal result rewards settle only for the caller to avoid cross-player character-lock deadlocks.
+- Election catch-up uses game_now and election locks; personal rewards settle only for the caller to avoid cross-player deadlocks.
+
+- Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts.
+- Governance uses existing agenda/city locks; closure freezes dated reports and releases planned activities. A predecessor link permits one calendar successor only; no concurrent or third city election.

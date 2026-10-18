@@ -8,6 +8,7 @@ import type { NewsState } from "@/game/news";
 import type { CivicState } from "@/game/civic";
 import type { PoliticalState } from "@/game/politics";
 import type { ElectionState, Program } from "@/game/elections";
+import type { GovernanceState } from "@/game/governance";
 
 // All data access lives here. Reads go through RLS; sensitive writes go through
 // the secured create_character database function.
@@ -334,3 +335,18 @@ export async function saveCandidateProgram(input:{candidacyId:string;slogan:stri
 export async function manageCampaign(input:{candidacyId:string;command:string;npcId?:string;role?:string}){const {error}=await supabase.rpc('manage_campaign',{_candidacy_id:input.candidacyId,_command:input.command,...(input.npcId?{_npc_id:input.npcId}:{}),...(input.role?{_role:input.role}:{})});if(error)throw new Error(error.message);}
 export async function startCampaignAction(input:{candidacyId:string;ruleId:string;choices?:Record<string,string>}){const {data,error}=await supabase.rpc('start_campaign_action',{_candidacy_id:input.candidacyId,_rule_id:input.ruleId,...(input.choices?{_choices:input.choices}:{})});if(error)throw new Error(error.message);return data;}
 export async function castElectionVote(input:{electionId:string;candidacyId:string}){const {error}=await supabase.rpc('cast_election_vote',{_election_id:input.electionId,_candidacy_id:input.candidacyId});if(error)throw new Error(error.message);}
+
+export const governanceQuery=queryOptions({queryKey:['governance'],staleTime:0,refetchInterval:30000,queryFn:async():Promise<GovernanceState>=>{
+ const {data,error}=await supabase.rpc('governance_state');
+ if(error)throw new Error(error.message);
+ if(!data||typeof data!=='object'||Array.isArray(data)||!Array.isArray(data['indicators']))throw new Error('Mandat indisponible');
+ return data as unknown as GovernanceState;
+}});
+export async function setMandatePriorities(input:{mandateId:string;priorities:string[]}){const {error}=await supabase.rpc('set_mandate_priorities',{_mandate_id:input.mandateId,_priorities:input.priorities});if(error)throw new Error(error.message);}
+export async function createMunicipalDossier(input:{mandateId:string;ruleId:string;issueId?:string}){const {data,error}=await supabase.rpc('create_municipal_dossier',{_mandate_id:input.mandateId,_rule_id:input.ruleId,...(input.issueId?{_issue_id:input.issueId}:{})});if(error)throw new Error(error.message);return data;}
+export async function reserveGovernanceAction(input:{decisionId:string;command:string;groupId?:string;compromise?:boolean}){const {data,error}=await supabase.rpc('reserve_governance_action',{_decision_id:input.decisionId,_command:input.command,...(input.groupId?{_group_id:input.groupId}:{}),_compromise:input.compromise??false});if(error)throw new Error(error.message);return data;}
+export async function openGovernanceConsultation(decisionId:string){const {data,error}=await supabase.rpc('open_governance_consultation',{_decision_id:decisionId});if(error)throw new Error(error.message);return data;}
+export async function fundMunicipalProject(decisionId:string){const {error}=await supabase.rpc('fund_municipal_project',{_decision_id:decisionId});if(error)throw new Error(error.message);}
+export async function abandonMunicipalDossier(decisionId:string){const {error}=await supabase.rpc('abandon_municipal_dossier',{_decision_id:decisionId});if(error)throw new Error(error.message);}
+export async function reserveMunicipalEvent(decisionId:string){const {data,error}=await supabase.rpc('reserve_municipal_event',{_decision_id:decisionId});if(error)throw new Error(error.message);return data;}
+export const locationProjectsQuery=(locationId:string)=>queryOptions({queryKey:['municipal-projects',locationId],queryFn:async()=>{const {data,error}=await supabase.from('public_decisions').select('id,title,workflow,cost,duration_days,ends_at,impact_expected,impact_real').eq('location_id',locationId).not('mandate_id','is',null).order('decided_at',{ascending:false});if(error)throw new Error(error.message);return data;}});
