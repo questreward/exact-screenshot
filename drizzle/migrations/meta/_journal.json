@@ -288,6 +288,13 @@
       "when": 1792341048534,
       "tag": "0040_bloc13_communication",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792342899576,
+      "tag": "0041_bloc13_fix_civi_post_status",
+      "breakpoints": true
     }
   ]
 }
