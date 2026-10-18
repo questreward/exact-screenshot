@@ -118,7 +118,15 @@
 - [x] Tests Bloc 13 : 22 vérifications ; défaut publication Civi signalé
 - [x] Correctif publication Civi (0041) appliqué ; tests Bloc 13 26/26
 - [x] Parcours économique 30/30
-- [ ] Actualités, Vie quotidienne, Élections non concluants — décision utilisateur
-- [ ] Restes d'un compte de test (vie quotidienne) — nettoyage seulement avec accord
+- [x] Actualités : 8/8 vérifications ciblées avec événement réel lié
+- [ ] Vie quotidienne actif : non concluant, départ de vacation hors horaires ; attendre une plage réelle autorisée sans changer l’horloge
+- [ ] Élections : non concluant, aucun créneau réellement isolé dans les cinq villes ; environnement isolé requis
+- [x] Compte temporaire restant supprimé avec accord et absence vérifiée
 - [ ] Validation Bloc 13 par l'utilisateur
 - Bloc 14 interdit
+
+## Vérifications ciblées demandées — 18 octobre
+- [x] Identifier, supprimer et vérifier uniquement le compte temporaire restant autorisé
+- [x] Nouveau compte isolé : 8/8 loyers + deuxième demande immédiate et cinq demandes après paiement, tous réussis
+- [x] Actualités 8/8 ; Vie quotidienne étudiant réussie, loyer unique confirmé ; limites actif/Élections ci-dessus
+- [x] Rapport détaillé ; aucun fichier du jeu ni règle modifié, horloge inchangée, données des nouveaux essais supprimées
