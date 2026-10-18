@@ -50,7 +50,8 @@ try:
   try:rpc('pay_housing',h=h)
   except RuntimeError:pass
  with ThreadPoolExecutor(max_workers=4) as pool:list(pool.map(pay,range(4)))
- check(st()['available']==165 and len(rows('transactions','account_id=eq.'+account['id']+'&operation_key=eq.rent:'+str(today)))==1,'Logement manuel : quatre demandes, un débit de 30 €')
+ # After a preserved failure, the successful retry has its own key (rent:<date>:retry).
+ check(st()['available']==165 and len(rows('transactions','account_id=eq.'+account['id']+'&operation_key=like.rent:'+str(today)+'*'))==1,'Logement manuel : quatre demandes, un débit de 30 €')
  # A failed scheduled date must not suppress an explicitly retried manual payment.
  check(rows('character_housing','character_id=eq.'+cid)[0]['last_paid_date']==str(today),'Logement : paiement réel enregistré après échec automatique')
  job=rows('jobs','city_id=eq.lyon&title=eq.Assistant administratif')[0]
