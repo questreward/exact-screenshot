@@ -111,3 +111,9 @@
 - [x] Bloc 12 : SQL étape 2 approuvé
 - [x] Bloc 12 : migration 0039 appliquée
 - [x] Bloc 12 : écran Événements, Carte, Agenda, tests, régressions ; validation client en attente
+
+# Bloc 13 — Communication et état du monde
+- [x] Plan approuvé
+- [ ] Étape 2 : SQL exact présenté (non appliqué) — attente accord
+- [ ] Développement après accord
+- Bloc 14 interdit
