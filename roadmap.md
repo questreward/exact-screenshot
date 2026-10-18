@@ -127,7 +127,7 @@
 
 ## Vérifications ciblées demandées — 18 octobre
 - [x] Proposition exacte préparée : copie jetable indépendante, fonctions du jeu inchangées, SQL de contrôle réservé à l’opérateur uniquement dans la copie ; aucune application
-- [ ] Isolation proposée : attente d’approbation explicite et d’un Cloud séparé vérifié ; aucun compte ni environnement créé
+- [ ] Étape 1 uniquement autorisée : créer/vérifier un Remix avec Cloud indépendant ; bloquée par l’absence d’action de création de Remix dans cette session, création par l’utilisateur requise ; aucun SQL ni compte temporaire autorisé avant vérification
 - [ ] Dernière vérification autorisée : nouveau compte actif, plage de travail réelle, refus/embauche/vacation/salaire/Banque/Agenda/reconnexion/persistance, suppression intégrale vérifiée ; bloquée à 17:42 UTC : jeudi 2 septembre 2027 vers 05:30 dans le monde, vitesse 1 ; début possible à partir du 18 octobre 20:12:05 UTC (22:12 Paris). Aucun compte créé, aucun scénario lancé hors horaires ; sans horloge, fonction, migration ou élection modifiée
 - [x] Identifier, supprimer et vérifier uniquement le compte temporaire restant autorisé
 - [x] Nouveau compte isolé : 8/8 loyers + deuxième demande immédiate et cinq demandes après paiement, tous réussis
