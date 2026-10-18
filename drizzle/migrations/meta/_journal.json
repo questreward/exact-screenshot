@@ -232,6 +232,13 @@
       "when": 1792331255754,
       "tag": "0032_personal_expense_dates_and_rent_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1792331745928,
+      "tag": "0033_preserve_failed_rent_and_allow_manual_retry",
+      "breakpoints": true
     }
   ]
 }
