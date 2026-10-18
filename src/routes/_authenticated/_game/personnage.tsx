@@ -11,7 +11,7 @@ import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/personnage")({
   head: () => ({ meta: gameMeta("Personnage", "Votre identité et votre apparence dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { const c = await q.ensureQueryData(characterQuery); await Promise.all([q.ensureQueryData(lifeQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(organizationsQuery(c?.city_id ?? 'paris')),q.ensureQueryData(civicQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { const c = await q.ensureQueryData(characterQuery); await Promise.all([q.ensureQueryData(lifeQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(organizationsQuery(c?.city_id ?? 'paris')),q.ensureQueryData(civicQuery),q.ensureQueryData(politicsQuery)]); },
   component: CharacterPage,
 });
 
