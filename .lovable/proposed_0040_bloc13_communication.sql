@@ -9,7 +9,6 @@ CREATE TABLE public.communication_settings (
   id integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   enabled boolean NOT NULL DEFAULT true,
   daily_post_limit integer NOT NULL DEFAULT 3 CHECK (daily_post_limit BETWEEN 0 AND 10),
-  reputation_per_post integer NOT NULL DEFAULT 1 CHECK (reputation_per_post BETWEEN 0 AND 3),
   daily_like_reward_limit integer NOT NULL DEFAULT 0,          -- les « j'aime » ne rapportent rien
   invite_offer_min_score integer NOT NULL DEFAULT 40,
   feed_window_days integer NOT NULL DEFAULT 7
@@ -248,8 +247,8 @@ DECLARE cid uuid; m public.messages; rep jsonb; nid uuid; BEGIN
   RETURN nid;
 END $$;
 
--- 6g. Publier sur Civi (modèle uniquement) — récompense plafonnée via social_stats,
---     registre anti-doublon = economy_operations (registre existant, clé unique).
+-- 6g. Publier sur Civi (modèle uniquement) — AUCUNE récompense (ni réputation, ni influence,
+--     ni argent, ni relation). Registre anti-doublon/quota = economy_operations (clé unique, montant 0).
 CREATE FUNCTION public.civi_post(_template text, _request_id uuid)
 RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE cid uuid; c public.characters; s public.communication_settings; t public.social_post_templates; city text;
@@ -271,8 +270,7 @@ DECLARE cid uuid; c public.characters; s public.communication_settings; t public
           'player:' || cid || ':req:' || _request_id)
   RETURNING id INTO pid;
   INSERT INTO public.economy_operations (character_id, operation_key, kind, amount, status, payload)
-  VALUES (cid, 'civi:post:' || d || ':' || (n + 1), 'social_reward', 0, 'success', jsonb_build_object('post_id', pid, 'reputation', s.reputation_per_post));
-  UPDATE public.social_stats SET reputation = reputation + s.reputation_per_post WHERE character_id = cid;
+  VALUES (cid, 'civi:post:' || d || ':' || (n + 1), 'social_post', 0, 'success', jsonb_build_object('post_id', pid));
   RETURN pid;
 END $$;
 
