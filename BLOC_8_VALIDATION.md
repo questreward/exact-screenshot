@@ -37,4 +37,4 @@
 - Réglages initiaux proposés : candidat/électeur à partir de 18 ans, engagement citoyen minimum 10, réputation politique minimum 5, ancienneté minimum 0 jour ; budget indépendant 1 200 €, soutien d'organisation 600 €, plafond 3 000 €, trois actions quotidiennes et trois dons de 150 €, mandat de 120 jours du monde. Ce sont des choix de cette première version, soumis à validation.
 - Une candidature refusée ne peut pas être redéposée dans la même élection ; programme verrouillé au lancement de campagne.
 
-**Bloc 8 présenté pour validation, avec les deux régressions anciennes non conclues explicitement signalées. Bloc 9 non commencé.**
+**Mise à jour : l’Atelier social est désormais vérifié ; seule la vacation professionnelle et le parcours complet restent à rejouer pendant les horaires autorisés. Voir BLOC_8_REGRESSION_CIBLEE.md. Bloc 8 non déclaré validé ; Bloc 9 non commencé.**

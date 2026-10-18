@@ -13,13 +13,36 @@ def patch(t,q,d):return req('/rest/v1/'+t+'?'+q,d,method='PATCH')
 def rpc(n,d,h):return req('/rest/v1/rpc/'+n,d,h)
 def denied(n,d,h):r=requests.post(BASE+'/rest/v1/rpc/'+n,json=d,headers=h);assert r.status_code>=400,(n,r.status_code)
 def create():
- email='social-'+uuid.uuid4().hex+'@example.com';password=uuid.uuid4().hex+'Aa7!';u=req('/auth/v1/admin/users',{'email':email,'password':password,'email_confirm':True});users.append(u['id']);s=req('/auth/v1/token?grant_type=password',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'});h={'apikey':PUB,'Authorization':'Bearer '+s['access_token'],'Content-Type':'application/json'};cid=rpc('create_character',{'_first_name':'Essai','_last_name':'Social','_age':18,'_city_id':'lyon','_path_id':'student','_appearance':{}},h);return cid,s,h,email,password
+ email='social-'+uuid.uuid4().hex+'@example.com';password=uuid.uuid4().hex+'Aa7!';u=req('/auth/v1/admin/users',{'email':email,'password':password,'email_confirm':True});users.append(u['id']);s=req('/auth/v1/token?grant_type=password',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'});h={'apikey':PUB,'Authorization':'Bearer '+s['access_token'],'Content-Type':'application/json'};cid=rpc('create_character',{'_first_name':'Essai','_last_name':'Social','_age':18,'_city_id':'lyon','_path_id':'young_worker' if os.environ.get('CIVITAS_CROSS_CHECK') else 'student','_appearance':{}},h);return cid,s,h,email,password
 async def main():
  async with async_playwright() as pw:
   browser=await pw.chromium.launch(headless=True)
   try:
    cid,session,h,email,password=create();other,_,h2,_,_=create();ctx=await browser.new_context(viewport={'width':1280,'height':1800});page=await ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    await page.goto('http://localhost:8080');await page.evaluate("async s=>{const {supabase}=await import('/src/integrations/supabase/client.ts');await supabase.auth.setSession(s)}",session)
+   if os.environ.get('CIVITAS_CROSS_CHECK'):
+    await page.goto('http://localhost:8080/vie')
+    rejected_offer=page.get_by_role('article').filter(has=page.get_by_role('heading',name='Développeur junior',exact=True))
+    await rejected_offer.get_by_role('button',name='Postuler',exact=True).click();await rejected_offer.get_by_text('Candidature refusée.',exact=False).wait_for(timeout=90000)
+    assert rows('employments','character_id=eq.'+cid)==[] and rows('accounts','character_id=eq.'+cid)[0]['balance']==1500
+    assert rows('activities','character_id=eq.'+cid+'&type=eq.work')==[]
+    accepted=page.get_by_role('article').filter(has=page.get_by_role('heading',name='Assistant administratif',exact=True));await accepted.get_by_role('button',name='Postuler',exact=True).click()
+    await page.get_by_role('link',name='Voir mon lieu de travail').wait_for(timeout=90000)
+    employment=rows('employments','character_id=eq.'+cid)[0];assert employment['status']=='active'
+    job=rows('jobs','id=eq.'+employment['job_id'])[0];rpc('move_character',{'_location_id':job['location_id']},h)
+    t=datetime.fromisoformat(rpc('game_now',{},h).replace('Z','+00:00'));planned=rows('activities','character_id=eq.'+cid+'&type=eq.work&status=eq.planned&order=start_time.asc')[0]
+    patch('activities','id=eq.'+planned['id'],{'start_time':(t-timedelta(minutes=1)).isoformat(),'end_time':(t+timedelta(hours=4)).isoformat()})
+    before=rows('characters','id=eq.'+cid)[0]['energy']
+    if t.weekday()<5 and 8<=t.hour<14:
+     rpc('start_life_activity',{'_activity_id':planned['id']},h);assert rows('characters','id=eq.'+cid)[0]['energy']==before-30
+     patch('activities','id=eq.'+planned['id'],{'end_time':(t-timedelta(seconds=1)).isoformat()});rpc('daily_life_state',{},h)
+     for _ in range(3):await page.reload();rpc('daily_life_state',{},h)
+     assert rows('accounts','character_id=eq.'+cid)[0]['balance']==1580
+     print('TRAVAIL: vacation réussie, énergie −30, salaire 80 unique')
+    else:
+     denied('start_life_activity',{'_activity_id':planned['id']},h);assert rows('characters','id=eq.'+cid)[0]['energy']==before
+     patch('activities','id=eq.'+planned['id'],{'start_time':planned['start_time'],'end_time':planned['end_time']})
+     print('TRAVAIL BLOQUÉ PAR HORAIRE RÉEL:',t.isoformat(),'— refus/embauche réussis, énergie et banque inchangées, vacation/salaire non vérifiés')
    org=next(o for o in rpc('organization_directory',{'_city_id':'lyon'},h) if o['kind']=='culture');npc=rows('social_npcs','organization_id=eq.'+org['id'])[0];event=org['events'][0]
    denied('social_interact',{'_npc_id':npc['id'],'_action_id':'introduce'},h)
    await page.goto('http://localhost:8080/carte?city=lyon&district='+org['location']['district_id']+'&location='+org['location']['id']);await page.get_by_role('button',name='Se déplacer ici',exact=True).click();await page.get_by_role('button',name='Vous êtes ici',exact=True).wait_for();await page.get_by_role('button',name=npc['first_name']+' '+npc['last_name'],exact=False).click();await page.get_by_role('button',name='Se présenter',exact=True).click();await page.get_by_text('Connaissance',exact=False).first.wait_for();rel=rows('social_relations','character_id=eq.'+cid)[0];assert rel['score']==5
@@ -30,13 +53,15 @@ async def main():
    await page.get_by_role('button',name='Rejoindre',exact=True).click();await page.get_by_role('button',name='Quitter l’organisation',exact=True).wait_for();await page.get_by_role('button',name='Participer',exact=True).click();await page.get_by_role('link',name='Voir dans l’agenda',exact=True).wait_for();aid=rows('activities','character_id=eq.'+cid+'&type=eq.social&status=eq.planned')[0]['id'];assert rows('social_participations','activity_id=eq.'+aid)[0]['status']=='reserved'
    denied('start_life_activity',{'_type':'social'},h);denied('start_life_activity',{'_activity_id':aid},h)
    now=datetime.fromisoformat(rpc('game_now',{},h).replace('Z','+00:00'));patch('activities','id=eq.'+aid,{'start_time':(now-timedelta(minutes=1)).isoformat(),'end_time':(now+timedelta(minutes=44)).isoformat()});await page.get_by_role('link',name='Voir dans l’agenda',exact=True).click();await page.get_by_role('button',name=event['title'],exact=False).click();await page.get_by_role('button',name='Commencer',exact=True).click();await page.get_by_role('dialog').get_by_text('En cours',exact=True).wait_for();assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==1;assert rows('social_participations','activity_id=eq.'+aid)[0]['status']=='running';denied('change_membership',{'_organization_id':org['id'],'_join':False},h);denied('move_character',{'_location_id':rows('locations','city_id=eq.lyon&kind=eq.parc&limit=1')[0]['id']},h)
-   patch('activities','id=eq.'+aid,{'start_time':(now-timedelta(hours=1)).isoformat(),'end_time':(now-timedelta(minutes=1)).isoformat()});await page.reload();await page.get_by_role('button',name=event['title'],exact=False).click();await page.get_by_role('dialog').get_by_text('Terminé',exact=True).wait_for();assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==7;assert rows('social_stats','character_id=eq.'+cid)[0]['influence']==2
+   # Keep this temporary activity on today's agenda, including just after midnight.
+   finish=datetime.fromisoformat(rpc('game_now',{},h).replace('Z','+00:00'))
+   patch('activities','id=eq.'+aid,{'start_time':(finish-timedelta(minutes=2)).isoformat(),'end_time':(finish-timedelta(minutes=1)).isoformat()});await page.reload();await page.get_by_role('button',name=event['title'],exact=False).click();await page.get_by_role('dialog').get_by_text('Terminé',exact=True).wait_for();assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==7;assert rows('social_stats','character_id=eq.'+cid)[0]['influence']==2
    with ThreadPoolExecutor(max_workers=5) as pool:list(pool.map(lambda _:rpc('daily_life_state',{},h),range(5)))
    assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==7;print('5 Agenda, participation, fin différée et récompense unique')
    # Second real participation, accelerating only its isolated deadline.
    second=next(o for o in rpc('organization_directory',{'_city_id':'lyon'},h) if o['kind']=='sport');rpc('change_membership',{'_organization_id':second['id'],'_join':True},h);rpc('move_character',{'_location_id':second['location']['id']},h);aid2=rpc('reserve_social_event',{'_event_id':second['events'][0]['id']},h);patch('activities','id=eq.'+aid2,{'start_time':(now-timedelta(minutes=1)).isoformat(),'end_time':(now+timedelta(minutes=44)).isoformat()});rpc('start_life_activity',{'_activity_id':aid2},h);patch('activities','id=eq.'+aid2,{'start_time':(now-timedelta(hours=1)).isoformat(),'end_time':(now-timedelta(minutes=1)).isoformat()});rpc('daily_life_state',{},h);assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==13;print('6 Deux activités: réputation 13, aucune hausse anticipée');assert rows('social_stats','character_id=eq.'+cid)[0]['influence']==4;print('7 Influence 4, indépendante de la banque')
    await page.goto('http://localhost:8080/organisations/'+org['id']+'?city=lyon');await page.get_by_role('link',name='Voir sur la carte',exact=True).click();assert ('location='+org['location']['id']) in page.url;await page.get_by_role('heading',name=org['location']['name'],exact=True).wait_for();print('8 Carte au bon lieu')
-   snapshot=rpc('social_state',{},h);bank=rows('accounts','character_id=eq.'+cid)[0]['balance'];assert bank==500
+   snapshot=rpc('social_state',{},h);bank=rows('accounts','character_id=eq.'+cid)[0]['balance'];assert bank in ([1500,1580] if os.environ.get('CIVITAS_CROSS_CHECK') else [500])
    await page.goto('http://localhost:8080/parametres');await page.get_by_role('main').get_by_role('button',name='Se déconnecter',exact=True).click();session2=req('/auth/v1/token?grant_type=password',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'});await page.evaluate("async s=>{const {supabase}=await import('/src/integrations/supabase/client.ts');await supabase.auth.setSession(s)}",session2);await page.goto('http://localhost:8080/personnage');await page.get_by_role('link',name=org['name']+' · Membre',exact=True).wait_for();after=rpc('social_state',{},h)
    for k in ['stats','relations','memberships','participations']:assert snapshot[k]==after[k]
    await page.wait_for_timeout(750);await page.screenshot(path=str(OUT/'profil-desktop.png'));await page.set_viewport_size({'width':390,'height':844});await page.goto('http://localhost:8080/telephone?app=contacts');await page.get_by_role('button',name=npc['first_name']+' '+npc['last_name'],exact=False).wait_for();assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth');await page.wait_for_timeout(750);await page.screenshot(path=str(OUT/'contacts-mobile.png'));await page.goto('http://localhost:8080/organisations/'+org['id']+'?city=lyon');await page.get_by_role('heading',name=org['name'],exact=True).wait_for();assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth');await page.wait_for_timeout(750);await page.screenshot(path=str(OUT/'organisation-mobile.png'));print('9 Reconnexion et présentations téléphone/ordinateur')
@@ -48,11 +73,26 @@ async def main():
    denied('start_life_activity',{'_activity_id':aid},h2);denied('settle_daily_life',{'_character_id':cid},h2);denied('social_state',{}, {'apikey':PUB,'Content-Type':'application/json'})
    directory=rpc('organization_directory',{'_city_id':'lyon'},h2);assert not any(not m['fictional'] and m['first_name']=='Essai' for o in directory for m in o['members']);assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==13;assert errors==[],errors;print('10 Écritures, rôles, autre joueur, anonyme et faux départ refusés; aucun accès privé')
    rpc('move_character',{'_location_id':npc['location_id']},h);patch('social_relations','id=eq.'+rel['id'],{'last_interaction':past});rpc('social_interact',{'_npc_id':npc['id'],'_action_id':'invite'},h);invite=rows('activities','character_id=eq.'+cid+'&social_npc_id=eq.'+npc['id']+'&status=eq.planned')[0];assert invite['social_reputation_gain']==3 and invite['social_influence_gain']==1;patch('activities','id=eq.'+invite['id'],{'start_time':(now-timedelta(minutes=1)).isoformat(),'end_time':(now+timedelta(minutes=44)).isoformat()});rpc('start_life_activity',{'_activity_id':invite['id']},h);patch('activities','id=eq.'+invite['id'],{'start_time':(now-timedelta(hours=1)).isoformat(),'end_time':(now-timedelta(minutes=1)).isoformat()});rpc('daily_life_state',{},h);assert rows('social_stats','character_id=eq.'+cid)[0]['reputation']==16 and rows('social_stats','character_id=eq.'+cid)[0]['influence']==5;print('Invitation: agenda partagé, +3 réputation, +1 influence après durée complète')
+   if os.environ.get('CIVITAS_CROSS_CHECK'):
+    political=rpc('political_state',{},h);party=next(o for o in political['organizations'] if o['kind']=='party');rpc('change_political_membership',{'_organization_id':party['id'],'_join':True},h)
+    event=next(e for e in party['events'] if e['location']['city_id']=='lyon');reserved=rpc('reserve_political_event',{'_event_id':event['id']},h)
+    for path in ['/agenda','/politique','/elections','/ma-ville','/actualites','/telephone?app=banque']:
+     await page.goto('http://localhost:8080'+path);await page.get_by_role('heading',level=1).first.wait_for();await page.wait_for_timeout(300)
+    before=rpc('daily_life_state',{},h);saved_social=rpc('social_state',{},h);saved_politics=rpc('political_state',{},h);account=rows('accounts','character_id=eq.'+cid)[0];transactions=rows('transactions','account_id=eq.'+account['id']+'&order=id')
+    notifications=rows('notifications','user_id=eq.'+users[0]);assert notifications
+    await page.goto('http://localhost:8080/parametres');await page.get_by_role('main').get_by_role('button',name='Se déconnecter',exact=True).click();await page.wait_for_url('**/auth*')
+    restored=req('/auth/v1/token?grant_type=password',{'email':email,'password':password},{'apikey':PUB,'Content-Type':'application/json'});await page.evaluate("async s=>{const {supabase}=await import('/src/integrations/supabase/client.ts');await supabase.auth.setSession(s)}",restored)
+    await page.goto('http://localhost:8080/agenda');await page.get_by_role('heading',name='Agenda',exact=True).wait_for()
+    after=rpc('daily_life_state',{},h);assert after['character']['energy']==before['character']['energy'];assert any(a['id']==reserved for a in after['activities'])
+    assert rpc('social_state',{},h)['relations']==saved_social['relations'];assert rpc('political_state',{},h)['memberships']==saved_politics['memberships']
+    assert rows('accounts','character_id=eq.'+cid)[0]['balance']==account['balance'];assert rows('transactions','account_id=eq.'+account['id']+'&order=id')==transactions
+    await page.screenshot(path='/tmp/browser/validation-bloc8/transversal-reconnexion.png');assert errors==[]
+    print('TRANSVERSAL PARTIEL: offre/refus/embauche → atelier → agenda → politique/événement → élections/Ma Ville/actualités/banque → reconnexion; données conservées, travail effectif conditionné aux horaires')
   finally:
    for uid in users:
     for c in rows('characters','user_id=eq.'+uid):
      for a in rows('accounts','character_id=eq.'+c['id']):req('/rest/v1/transactions?account_id=eq.'+a['id'],method='DELETE')
-     for t in ['social_participations','social_interactions','social_relations','social_stats','membership_history','activities','job_applications','employments','study_enrollments','character_housing','character_positions','memberships','accounts']:req('/rest/v1/'+t+'?character_id=eq.'+c['id'],method='DELETE')
+     for t in ['social_participations','social_interactions','social_relations','social_stats','membership_history','political_rewards','political_opinions','political_stats','civic_rewards','civic_stats','activities','job_applications','employments','study_enrollments','character_housing','character_positions','memberships','accounts']:req('/rest/v1/'+t+'?character_id=eq.'+c['id'],method='DELETE')
      req('/rest/v1/characters?id=eq.'+c['id'],method='DELETE')
     req('/auth/v1/admin/users/'+uid,method='DELETE')
    await browser.close()
