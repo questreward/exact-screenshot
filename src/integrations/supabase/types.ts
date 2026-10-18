@@ -48,6 +48,7 @@ export type Database = {
       }
       activities: {
         Row: {
+          campaign_action_id: string | null
           character_id: string
           civic_engagement_gain: number
           created_at: string
@@ -75,6 +76,7 @@ export type Database = {
           type: string
         }
         Insert: {
+          campaign_action_id?: string | null
           character_id: string
           civic_engagement_gain?: number
           created_at?: string
@@ -102,6 +104,7 @@ export type Database = {
           type: string
         }
         Update: {
+          campaign_action_id?: string | null
           character_id?: string
           civic_engagement_gain?: number
           created_at?: string
@@ -129,6 +132,13 @@ export type Database = {
           type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "activities_campaign_action_id_fkey"
+            columns: ["campaign_action_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_actions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "activities_character_id_fkey"
             columns: ["character_id"]
@@ -169,6 +179,259 @@ export type Database = {
             columns: ["type"]
             isOneToOne: false
             referencedRelation: "life_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_actions: {
+        Row: {
+          activity_id: string | null
+          candidacy_id: string
+          character_id: string | null
+          cost: number
+          created_at: string
+          debate_choices: Json | null
+          id: string
+          outcome: string | null
+          reputation_delta: number
+          rewarded_at: string | null
+          rule_id: string
+          support_delta: number
+          visibility_delta: number
+        }
+        Insert: {
+          activity_id?: string | null
+          candidacy_id: string
+          character_id?: string | null
+          cost: number
+          created_at?: string
+          debate_choices?: Json | null
+          id?: string
+          outcome?: string | null
+          reputation_delta: number
+          rewarded_at?: string | null
+          rule_id: string
+          support_delta: number
+          visibility_delta: number
+        }
+        Update: {
+          activity_id?: string | null
+          candidacy_id?: string
+          character_id?: string | null
+          cost?: number
+          created_at?: string
+          debate_choices?: Json | null
+          id?: string
+          outcome?: string | null
+          reputation_delta?: number
+          rewarded_at?: string | null
+          rule_id?: string
+          support_delta?: number
+          visibility_delta?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_actions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_actions_candidacy_id_fkey"
+            columns: ["candidacy_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_actions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_actions_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_rules: {
+        Row: {
+          category: string
+          cost: number
+          duration_minutes: number
+          energy_cost: number
+          id: string
+          reputation_gain: number
+          risk: number
+          support_gain: number
+          title: string
+          visibility_gain: number
+        }
+        Insert: {
+          category: string
+          cost?: number
+          duration_minutes?: number
+          energy_cost?: number
+          id: string
+          reputation_gain?: number
+          risk?: number
+          support_gain?: number
+          title: string
+          visibility_gain?: number
+        }
+        Update: {
+          category?: string
+          cost?: number
+          duration_minutes?: number
+          energy_cost?: number
+          id?: string
+          reputation_gain?: number
+          risk?: number
+          support_gain?: number
+          title?: string
+          visibility_gain?: number
+        }
+        Relationships: []
+      }
+      campaign_teams: {
+        Row: {
+          candidacy_id: string
+          cost: number
+          npc_id: string
+          role: string
+          skill: number
+        }
+        Insert: {
+          candidacy_id: string
+          cost: number
+          npc_id: string
+          role: string
+          skill: number
+        }
+        Update: {
+          candidacy_id?: string
+          cost?: number
+          npc_id?: string
+          role?: string
+          skill?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_teams_candidacy_id_fkey"
+            columns: ["candidacy_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_teams_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidacies: {
+        Row: {
+          base_influence: number
+          base_reputation: number
+          budget: number
+          campaign_reputation: number
+          character_id: string | null
+          display_name: string
+          donations: number
+          election_id: string
+          id: string
+          npc_id: string | null
+          organization_id: string | null
+          program: Json
+          program_score: number
+          refusal_reason: string | null
+          slogan: string
+          started_at: string | null
+          status: string
+          submitted_at: string | null
+          support: number
+          visibility: number
+        }
+        Insert: {
+          base_influence?: number
+          base_reputation?: number
+          budget?: number
+          campaign_reputation?: number
+          character_id?: string | null
+          display_name: string
+          donations?: number
+          election_id: string
+          id?: string
+          npc_id?: string | null
+          organization_id?: string | null
+          program?: Json
+          program_score?: number
+          refusal_reason?: string | null
+          slogan?: string
+          started_at?: string | null
+          status?: string
+          submitted_at?: string | null
+          support?: number
+          visibility?: number
+        }
+        Update: {
+          base_influence?: number
+          base_reputation?: number
+          budget?: number
+          campaign_reputation?: number
+          character_id?: string | null
+          display_name?: string
+          donations?: number
+          election_id?: string
+          id?: string
+          npc_id?: string | null
+          organization_id?: string | null
+          program?: Json
+          program_score?: number
+          refusal_reason?: string | null
+          slogan?: string
+          started_at?: string | null
+          status?: string
+          submitted_at?: string | null
+          support?: number
+          visibility?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidacies_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidacies_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidacies_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "social_npcs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidacies_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -760,6 +1023,226 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      election_polls: {
+        Row: {
+          election_id: string
+          estimates: Json
+          id: string
+          margin: number
+          published_at: string
+          sample_size: number
+        }
+        Insert: {
+          election_id: string
+          estimates: Json
+          id?: string
+          margin?: number
+          published_at: string
+          sample_size?: number
+        }
+        Update: {
+          election_id?: string
+          estimates?: Json
+          id?: string
+          margin?: number
+          published_at?: string
+          sample_size?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "election_polls_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      election_results: {
+        Row: {
+          candidacy_id: string
+          election_id: string
+          percentage: number
+          rank: number
+          votes: number
+        }
+        Insert: {
+          candidacy_id: string
+          election_id: string
+          percentage: number
+          rank: number
+          votes: number
+        }
+        Update: {
+          candidacy_id?: string
+          election_id?: string
+          percentage?: number
+          rank?: number
+          votes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "election_results_candidacy_id_fkey"
+            columns: ["candidacy_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "election_results_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      election_votes: {
+        Row: {
+          candidacy_id: string
+          character_id: string
+          election_id: string
+          voted_at: string
+        }
+        Insert: {
+          candidacy_id: string
+          character_id: string
+          election_id: string
+          voted_at?: string
+        }
+        Update: {
+          candidacy_id?: string
+          character_id?: string
+          election_id?: string
+          voted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "election_votes_candidacy_id_fkey"
+            columns: ["candidacy_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "election_votes_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "election_votes_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      elections: {
+        Row: {
+          abstention: number | null
+          campaign_starts_at: string
+          candidacy_ends_at: string
+          city_id: string
+          closed_at: string | null
+          count_at: string
+          debate_at: string
+          description: string
+          election_key: string
+          eligible_voters: number
+          id: string
+          institution_id: string
+          last_npc_day: string | null
+          location_id: string
+          name: string
+          participation: number | null
+          round: number
+          rules: Json
+          starts_at: string
+          status: string
+          type: string
+          vote_ends_at: string
+          vote_starts_at: string
+          winner_id: string | null
+        }
+        Insert: {
+          abstention?: number | null
+          campaign_starts_at: string
+          candidacy_ends_at: string
+          city_id: string
+          closed_at?: string | null
+          count_at: string
+          debate_at: string
+          description?: string
+          election_key: string
+          eligible_voters?: number
+          id?: string
+          institution_id: string
+          last_npc_day?: string | null
+          location_id: string
+          name: string
+          participation?: number | null
+          round?: number
+          rules?: Json
+          starts_at: string
+          status?: string
+          type?: string
+          vote_ends_at: string
+          vote_starts_at: string
+          winner_id?: string | null
+        }
+        Update: {
+          abstention?: number | null
+          campaign_starts_at?: string
+          candidacy_ends_at?: string
+          city_id?: string
+          closed_at?: string | null
+          count_at?: string
+          debate_at?: string
+          description?: string
+          election_key?: string
+          eligible_voters?: number
+          id?: string
+          institution_id?: string
+          last_npc_day?: string | null
+          location_id?: string
+          name?: string
+          participation?: number | null
+          round?: number
+          rules?: Json
+          starts_at?: string
+          status?: string
+          type?: string
+          vote_ends_at?: string
+          vote_starts_at?: string
+          winner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elections_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elections_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elections_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
             referencedColumns: ["id"]
           },
         ]
@@ -1410,12 +1893,78 @@ export type Database = {
           },
         ]
       }
+      municipal_mandates: {
+        Row: {
+          candidacy_id: string
+          city_id: string
+          decision_id: string | null
+          election_id: string
+          ends_at: string
+          function: string
+          id: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          candidacy_id: string
+          city_id: string
+          decision_id?: string | null
+          election_id: string
+          ends_at: string
+          function?: string
+          id?: string
+          starts_at: string
+          status?: string
+        }
+        Update: {
+          candidacy_id?: string
+          city_id?: string
+          decision_id?: string | null
+          election_id?: string
+          ends_at?: string
+          function?: string
+          id?: string
+          starts_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipal_mandates_candidacy_id_fkey"
+            columns: ["candidacy_id"]
+            isOneToOne: false
+            referencedRelation: "candidacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_mandates_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_mandates_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "public_decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipal_mandates_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: true
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news: {
         Row: {
           author: string
           body: string
           category: string
           city_id: string | null
+          election_id: string | null
           event_id: string | null
           id: string
           image: string | null
@@ -1436,6 +1985,7 @@ export type Database = {
           body?: string
           category?: string
           city_id?: string | null
+          election_id?: string | null
           event_id?: string | null
           id?: string
           image?: string | null
@@ -1456,6 +2006,7 @@ export type Database = {
           body?: string
           category?: string
           city_id?: string | null
+          election_id?: string | null
           event_id?: string | null
           id?: string
           image?: string | null
@@ -1477,6 +2028,13 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
             referencedColumns: ["id"]
           },
           {
@@ -2921,6 +3479,10 @@ export type Database = {
         Args: { _activity_id: string }
         Returns: undefined
       }
+      cast_election_vote: {
+        Args: { _candidacy_id: string; _election_id: string }
+        Returns: undefined
+      }
       change_membership: {
         Args: { _join: boolean; _organization_id: string }
         Returns: undefined
@@ -2977,8 +3539,28 @@ export type Database = {
         Returns: string
       }
       daily_life_state: { Args: never; Returns: Json }
+      election_news: {
+        Args: {
+          _body: string
+          _candidate?: string
+          _election: string
+          _key: string
+          _title: string
+        }
+        Returns: string
+      }
+      election_state: { Args: never; Returns: Json }
       enroll_studies: { Args: { _field_id: string }; Returns: undefined }
       game_now: { Args: never; Returns: string }
+      manage_campaign: {
+        Args: {
+          _candidacy_id: string
+          _command: string
+          _npc_id?: string
+          _role?: string
+        }
+        Returns: undefined
+      }
       mark_news_read: { Args: { _news_id: string }; Returns: undefined }
       move_character: {
         Args: { _location_id: string }
@@ -3008,6 +3590,7 @@ export type Database = {
       prepare_daily_life: { Args: never; Returns: string }
       publish_world_event: { Args: { _event_id: string }; Returns: string }
       refresh_civic_city: { Args: { _city: string }; Returns: undefined }
+      refresh_election: { Args: { _election: string }; Returns: undefined }
       refresh_world_news: { Args: never; Returns: number }
       report_civic_issue: {
         Args: { _category: string; _description: string; _location_id: string }
@@ -3015,6 +3598,10 @@ export type Database = {
       }
       reserve_political_event: { Args: { _event_id: string }; Returns: string }
       reserve_social_event: { Args: { _event_id: string }; Returns: string }
+      save_candidate_program: {
+        Args: { _candidacy_id: string; _program: Json; _slogan: string }
+        Returns: undefined
+      }
       set_political_opinion: {
         Args: { _stance: string; _topic_id: string }
         Returns: undefined
@@ -3027,12 +3614,20 @@ export type Database = {
       }
       social_level: { Args: { _score: number }; Returns: string }
       social_state: { Args: never; Returns: Json }
+      start_campaign_action: {
+        Args: { _candidacy_id: string; _choices?: Json; _rule_id: string }
+        Returns: string
+      }
       start_life_activity: {
         Args: {
           _activity_id?: string
           _target_location_id?: string
           _type?: string
         }
+        Returns: string
+      }
+      submit_candidacy: {
+        Args: { _election_id: string; _organization_id?: string }
         Returns: string
       }
       world_clock: { Args: never; Returns: Json }

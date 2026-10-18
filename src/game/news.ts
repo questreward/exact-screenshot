@@ -11,6 +11,7 @@ export type NewsArticle = {
   organization: { id: string; name: string; city_id: string } | null;
   event: { id: string; title: string; description: string; starts_at: string; status: string } | null;
   agenda_activity_id: string | null;
+  election_id?: string | null;
   related_entities?: { political?: boolean; personalities?: { id: string; name: string; role: string }[] } | null;
 };
 export type NewsState = {
