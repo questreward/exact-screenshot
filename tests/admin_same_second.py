@@ -21,7 +21,7 @@ try:
   patch('character_housing', 'character_id=eq.' + cid, {'type_id': next(t['id'] for t in rows('housing_types', 'select=id') if t['id'] != home['type_id'])})
   action(h, 'quit')
   r = together(lambda: post(h, 'report_change', {'change': 'job'}), lambda: post(h, 'report_change', {'change': 'housing'}))
-  ch = [p for p in st(h)['procedures'] if p['type_id'] == 'situation_change']
+  print([x.text[:200] for x in r]); ch = [p for p in st(h)['procedures'] if p['type_id'] == 'situation_change']
   check(all(x.status_code < 400 for x in r) and len(ch) == 2 and len({p['period'] for p in ch}) == 2, f'1 Deux changements simultanés enregistrés (même seconde : {base(ch[0]["period"])[:19] == base(ch[1]["period"])[:19]})')
   # 5. Deux clics simultanés sur « Commencer » → une seule démarche
   hire(cid, h)
