@@ -78,6 +78,13 @@
       "when": 1792319004997,
       "tag": "0010_news_generation_hourly",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792319424665,
+      "tag": "0011_news_notification_time_and_saved_history",
+      "breakpoints": true
     }
   ]
 }
