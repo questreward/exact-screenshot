@@ -1303,7 +1303,12 @@ export type Database = {
       }
       social_rules: {
         Row: {
+          activity_energy_cost: number
+          activity_influence_gain: number
+          activity_relation_gain: number
+          activity_reputation_gain: number
           cooldown_minutes: number
+          duration_minutes: number
           energy_cost: number
           id: string
           influence_gain: number
@@ -1313,7 +1318,12 @@ export type Database = {
           title: string
         }
         Insert: {
+          activity_energy_cost?: number
+          activity_influence_gain?: number
+          activity_relation_gain?: number
+          activity_reputation_gain?: number
           cooldown_minutes?: number
+          duration_minutes?: number
           energy_cost?: number
           id: string
           influence_gain?: number
@@ -1323,7 +1333,12 @@ export type Database = {
           title: string
         }
         Update: {
+          activity_energy_cost?: number
+          activity_influence_gain?: number
+          activity_relation_gain?: number
+          activity_reputation_gain?: number
           cooldown_minutes?: number
+          duration_minutes?: number
           energy_cost?: number
           id?: string
           influence_gain?: number
