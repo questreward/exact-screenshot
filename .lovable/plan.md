@@ -3,7 +3,7 @@
 ## Statut et décisions
 **Proposition non appliquée, aucun développement ni test.** Bloc 14 validé, Bloc 16 exclu. Décisions : Assemblée 5+45/Sénat 25, majorités 26/13, lois dédiées, deux chambres approuvant la même version. SQL : `.lovable/proposed_0043_bloc15_national_politics.sql`, hors migrations.
 
-Système désactivé, paramètres indéfinis laissés vides. Ce SQL est un socle proposé, non un lancement complet : campagnes/débats et notifications nationales générales restent à définir.
+Système désactivé, activation explicitement refusée dans ce socle ; paramètres indéfinis laissés vides. Ce SQL est un socle proposé, non un lancement complet : campagnes/débats et notifications nationales générales restent à définir.
 
 ## 1. Tables nouvelles — existant / ajout
 - Réglages/partis : `national_settings` (50/25, désactivé), `national_constituencies` (cinq villes), `national_party_profiles` (extension 1:1 des organisations : programme et poids fictif). Membres, opinions, relations et statistiques réutilisés sans progression parallèle.
@@ -36,7 +36,7 @@ Accès téléphone/menu, pages distinctes, français et grands boutons ; aucun �
 
 ## 5. Permissions et confidentialité
 GRANT/RLS sur chaque nouvelle table ; joueurs SELECT seulement, aucun INSERT/UPDATE/DELETE. SECURITY DEFINER, schéma fixe, rôle/mandat/date/ville vérifiés serveur ; internes révoquées aux joueurs.
-Bulletins/demandes/votes individuels privés ; totaux, programmes acceptés et propositions publiées publics. Projections excluant identités de compte et statistiques privées ; brouillons visibles à l’auteur seul. Autorisation par personnage authentifié, jamais par nom.
+Bulletins/demandes/votes individuels privés ; totaux, candidatures explicitement publiées par l’opérateur et propositions publiées publics. Aucune phase de publication des candidatures inventée. Projections excluant identités de compte et statistiques privées ; brouillons visibles à l’auteur seul. Autorisation par personnage authentifié, jamais par nom.
 Événements nationaux créés avec `character_id` et `template_id` nuls : ni fuite d’événement personnel ni seconde application via le registre du Bloc 14. Civi n’accorde aucune récompense.
 
 ## 6. Anti-doublon et concurrence
@@ -61,11 +61,17 @@ En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indica
 - Comptes temporaires isolés seulement après accord ; aucun changement d’horloge. Calendrier incompatible avec l’isolation = limite signalée, pas de contournement.
 
 ## 10. Risques et paramètres à valider
-- **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; aucune fausse élection municipale ni faux mandat pour contourner.
-- Majorités confirmées : 26/50 et 13/25. Propositions à décider : scrutin territorial à un tour, plus forts restes des poids fictifs et conseils locaux actifs, égalités par identifiant, poids des voix fictives, absences = abstention. Une séance par chambre/version ; réexamen = nouvelle version. Sénat anonyme simulé par groupes issus des conseils, pas nomination des maires comme sénateurs.
+- **Blocage réel** : 5 élections municipales et **0 mandat municipal actuellement** ; aucun collège d’élus locaux actif. Sénat non constitué tant que cette source manque ; répartition et traitement des groupes indépendants/non configurés À DÉCIDER ; aucune fausse élection municipale ni faux mandat pour contourner.
+- Majorités confirmées : 26/50 et 13/25. Méthodes territoriale et de répartition, égalités, poids fictifs et traitement des absences : À DÉCIDER, sans algorithme opérationnel dans le socle. Une séance par chambre/version ; réexamen = nouvelle version. Sénat anonyme simulé par groupes issus des conseils, pas nomination des maires comme sénateurs.
 - À décider : dates/mandats, âges/seuils, poids fictifs, durée/énergie/lieu des séances, ministères/nominations, unité/plafond/budget et textes/effets. Campagnes/débats exclus jusqu’à cahier séparé. Les limites techniques de saisie ne constituent pas des valeurs d’équilibrage approuvées.
-- Gouvernement proposé depuis le groupe le plus représenté, sans coalition/confiance inventée ; PNJ choisis par l’opérateur, pas de promotion automatique.
+- Composition et formation du gouvernement À DÉCIDER ; PNJ choisis par l’opérateur, pas de promotion automatique. Formation/nomination bloquées dans le socle.
 - Échéances figées ; rattrapage chronologique, aucun vote tardif. Majorité insuffisante = refus ; fonds insuffisants = attente, pas d’effets partiels.
 - Les lois ne bloquent pas les lieux, ne modifient pas les transports, salaires, loyers, élections municipales ou argent personnel. Multijoueur complet, diplomatie, deuxième pays, finance avancée et Bloc 16 exclus.
 
 **Relecture statique terminée, sans validation par exécution.** Corrections : majorités fixes, valeurs nulles rejetées, versions figées, application atomique, démarrage national explicite, garde complet des activités, lieux contrôlés dès ouverture. Installation future ajouterait le déclencheur sur `activities` mais aucune règle ni activité nationale. Sénat agrégé depuis les conseils réels : modèle de répartition encore à valider. Aucun appel de migration ni activation avant accord sur le fichier exact et ses limites.
+
+## Relecture du cahier transmis le 18 octobre à 22:18 UTC
+- Aucun appel de migration, aucune activation, aucun compte ni test. Vérification live SELECT uniquement : cinq villes, 65 événements à retard nul, cinq élections municipales, aucun mandat municipal ni table nationale.
+- Corrigé dans la proposition : publicité explicite des candidatures ; poids du Sénat tirés du même instantané ; référence différée vers la version courante ; contrôle de version absente ; autorisation privée du démarrage national ; clôture uniquement des séances nationales expirées avant une action.
+- Supprimé : âges minimaux 18, plafond budgétaire arbitraire, durée maximale 1440 et algorithmes/conditions d’accès imposés. Éligibilité, dépouillement/répartition, votes simulés et formation/nomination sont des fonctions bloquantes À DÉCIDER ; pas un lancement complet.
+- Le déclencheur sur activities reste un ajout proposé touchant une table existante, pas une fonction existante remplacée. Les garanties sont statiques, non validées par exécution.
