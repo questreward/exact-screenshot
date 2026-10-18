@@ -144,6 +144,6 @@
 - [x] Accord lu : 50 sièges Assemblée, 25 Sénat simulé, 5 circonscriptions ; systèmes municipaux et horloge protégés.
 - [x] Analyse en lecture seule et plan technique ; SQL proposé 0043 écrit sans application, aucun test lancé.
 - [x] Nouvel accord : paramètres 5+45/25 et 26/13 verrouillés, relecture statique et corrections du SQL proposé, liens indirects explicités et fichier intégral présenté ; aucun SQL appliqué, activation, compte ni test.
-- [ ] Comparer le cahier reçu au socle proposé, corriger uniquement la proposition si nécessaire et présenter les paramètres À DÉCIDER ; aucune exécution ni test.
+- [x] Cahier comparé et proposition corrigée : confidentialité, instantané, versions, séances ; paramètres non décidés bloqués ; rapport et SQL révisé présentés sans exécution ni test.
 - [ ] Accord explicite sur le SQL exact et les paramètres encore ouverts (calendrier, seuils, simulations, séances, budget, effets) avant toute application ou développement.
 - Bloc 16 interdit.

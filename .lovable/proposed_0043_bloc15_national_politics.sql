@@ -288,28 +288,11 @@ END $$;
 -- Calendrier propre : aucune création/modification de scrutin municipal.
 CREATE FUNCTION public.national_create_election(_name text,_candidacies_at timestamptz,_candidacies_end timestamptz,_vote_at timestamptz,_vote_end timestamptz,_term_end timestamptz) RETURNS uuid
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE eid uuid; r jsonb; ci record; p record; np public.social_npcs;
 BEGIN
- PERFORM pg_advisory_xact_lock(151515);
- SELECT rules INTO r FROM public.national_settings WHERE id=1 AND enabled;
- IF r IS NULL OR _name IS NULL OR length(_name) NOT BETWEEN 3 AND 120 OR num_nonnulls(_candidacies_at,_candidacies_end,_vote_at,_vote_end,_term_end)<>5 OR NOT (_candidacies_at<_candidacies_end AND _candidacies_end<=_vote_at AND _vote_at<_vote_end AND _vote_end<_term_end) OR _candidacies_at<=public.game_now() THEN RAISE EXCEPTION 'Configuration ou date invalide'; END IF;
- IF EXISTS(SELECT 1 FROM public.national_elections WHERE status<>'cancelled' AND candidacies_at<_term_end AND term_end_at>_candidacies_at) THEN RAISE EXCEPTION 'Calendrier national concurrent'; END IF;
- IF NOT EXISTS(SELECT 1 FROM public.national_party_profiles WHERE simulation_weight>0 AND (simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint)<=2147483647) THEN RAISE EXCEPTION 'Poids de simulation à définir'; END IF;
- INSERT INTO public.national_elections(name,candidacies_at,candidacies_end_at,vote_at,vote_end_at,term_end_at,rules)
- VALUES(_name,_candidacies_at,_candidacies_end,_vote_at,_vote_end,_term_end,r) RETURNING id INTO eid;
- FOR ci IN SELECT city_id FROM public.national_constituencies ORDER BY city_id LOOP
-  FOR p IN SELECT npf.*,o.name FROM public.national_party_profiles npf JOIN public.organizations o ON o.id=npf.organization_id WHERE o.kind='party' AND o.status='active' AND npf.simulation_weight>0 ORDER BY o.id LOOP
-   SELECT * INTO np FROM public.social_npcs WHERE organization_id=p.organization_id AND city_id=ci.city_id ORDER BY id LIMIT 1;
-   IF NOT FOUND THEN RAISE EXCEPTION 'Aucun candidat fictif existant pour % dans %',p.name,ci.city_id; END IF;
-   IF p.simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint>2147483647 THEN RAISE EXCEPTION 'Poids fictif hors capacité entière'; END IF;
-   INSERT INTO public.national_candidacies(election_id,city_id,npc_id,organization_id,display_name,program,fictional_votes)
-   VALUES(eid,ci.city_id,np.id,p.organization_id,np.first_name||' '||np.last_name,p.program,(p.simulation_weight::bigint*(r->>'fictional_vote_unit')::bigint)::integer);
-  END LOOP;
- END LOOP;
- RETURN eid;
+ RAISE EXCEPTION 'Calendrier, règles et pondérations électorales À DÉCIDER : opération non disponible dans ce socle';
 END $$;
 
--- Répartition proposée : plus forts restes, ordre UUID stable à égalité ; 45/25 exacts.
+-- Répartition 45/25 : méthode et égalités À DÉCIDER, fonction bloquante.
 CREATE FUNCTION public.national_allocate_simulated(_lid uuid,_chamber text,_weights jsonb,_count integer,_offset integer) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 BEGIN
@@ -360,8 +343,8 @@ BEGIN
   IF d.value IS NULL OR d.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR d.value !~ '^-?[0-9]+$' OR d.value::numeric NOT BETWEEN -100 AND 100 THEN RAISE EXCEPTION 'Effet de ville invalide'; END IF;
  END LOOP;
  FOR a IN SELECT * FROM jsonb_each_text(NEW.budget_allocations) LOOP
-  -- Les postes sont les 9 indicateurs existants seulement ; pas de Santé/Éducation.
-  IF a.key NOT IN('housing','employment','transport','environment','safety','services','commerce','culture','satisfaction') OR a.value IS NULL OR a.value !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Poste budgétaire invalide'; END IF;
+  -- Noms des postes budgétaires À DÉCIDER ; contrôle de format seulement.
+  IF a.key='' OR a.value IS NULL OR a.value !~ '^[0-9]+$' THEN RAISE EXCEPTION 'Poste budgétaire invalide'; END IF;
   total:=total+a.value::numeric;
  END LOOP;
  IF total<>NEW.cost THEN RAISE EXCEPTION 'Budget non équilibré'; END IF;
@@ -524,7 +507,7 @@ BEGIN
  WHEN 'vote' THEN
   SELECT * INTO e FROM public.national_elections WHERE id=(_input->>'election_id')::uuid FOR UPDATE;
   IF NOT FOUND OR e.status IN('completed','cancelled') OR c.age<(e.rules->>'voting_age')::int OR public.game_now()<e.vote_at OR public.game_now()>=e.vote_end_at THEN RAISE EXCEPTION 'Vote inaccessible'; END IF;
-  SELECT * INTO k FROM public.national_candidacies WHERE id=(_input->>'candidacy_id')::uuid AND election_id=e.id AND city_id=c.city_id AND status='accepted' AND published_at IS NOT NULL;
+  SELECT * INTO k FROM public.national_candidacies WHERE id=(_input->>'candidacy_id')::uuid AND election_id=e.id AND city_id=c.city_id AND status='accepted' AND published_at<=public.game_now();
   IF NOT FOUND THEN RAISE EXCEPTION 'Candidat de votre circonscription requis'; END IF;
   INSERT INTO public.national_ballots(election_id,character_id,city_id,candidacy_id) VALUES(e.id,c.id,c.city_id,k.id);
   result:=jsonb_build_object('voted',true);
@@ -630,7 +613,7 @@ BEGIN
  'world_now',public.game_now(),
  'settings',(SELECT jsonb_build_object('enabled',enabled,'assembly_seats',assembly_seats,'senate_seats',senate_seats,'assembly_majority',assembly_majority,'senate_majority',senate_majority,'rules',rules) FROM public.national_settings WHERE id=1),
  'elections',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',e.id,'name',e.name,'status',e.status,'candidacies_at',e.candidacies_at,'candidacies_end_at',e.candidacies_end_at,'vote_at',e.vote_at,'vote_end_at',e.vote_end_at,'term_end_at',e.term_end_at)||jsonb_build_object('voted',EXISTS(SELECT 1 FROM public.national_ballots b WHERE b.election_id=e.id AND b.character_id=cid))) FROM public.national_elections e),'[]'::jsonb),
- 'candidates',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',k.id,'election_id',k.election_id,'city_id',k.city_id,'organization_id',k.organization_id,'display_name',k.display_name,'program',k.program,'mine',k.character_id=cid)) FROM public.national_candidacies k WHERE k.character_id=cid OR (k.status='accepted' AND k.published_at IS NOT NULL)),'[]'::jsonb),
+ 'candidates',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',k.id,'election_id',k.election_id,'city_id',k.city_id,'organization_id',k.organization_id,'display_name',k.display_name,'program',k.program,'mine',k.character_id=cid)) FROM public.national_candidacies k WHERE k.character_id=cid OR (k.status='accepted' AND k.published_at<=public.game_now())),'[]'::jsonb),
  'legislatures',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'election_id',election_id,'starts_at',starts_at,'ends_at',ends_at,'senate_composed',senate_composed_at IS NOT NULL)) FROM public.national_legislatures),'[]'::jsonb),
  'groups',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',g.id,'legislature_id',g.legislature_id,'chamber',g.chamber,'organization_id',g.organization_id,'name',g.name,'seats',(SELECT count(*) FROM public.national_seats s WHERE s.group_id=g.id))) FROM public.national_groups g),'[]'::jsonb),
  'seats',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'legislature_id',legislature_id,'chamber',chamber,'seat_no',seat_no,'group_id',group_id,'city_id',city_id,'display_name',display_name,'simulated',simulated,'mine',character_id=cid)) FROM public.national_seats),'[]'::jsonb),

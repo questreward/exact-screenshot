@@ -75,3 +75,5 @@ En fonctionnement futur : seuls ajouts nationaux et deltas autorisés des indica
 - Corrigé dans la proposition : publicité explicite des candidatures ; poids du Sénat tirés du même instantané ; référence différée vers la version courante ; contrôle de version absente ; autorisation privée du démarrage national ; clôture uniquement des séances nationales expirées avant une action.
 - Supprimé : âges minimaux 18, plafond budgétaire arbitraire, durée maximale 1440 et algorithmes/conditions d’accès imposés. Éligibilité, dépouillement/répartition, votes simulés et formation/nomination sont des fonctions bloquantes À DÉCIDER ; pas un lancement complet.
 - Le déclencheur sur activities reste un ajout proposé touchant une table existante, pas une fonction existante remplacée. Les garanties sont statiques, non validées par exécution.
+
+- Dernière relecture statique : une candidature datée dans le futur reste privée ; création des scrutins également bloquée (dates/pondérations À DÉCIDER). Aucun nom de poste budgétaire imposé.
