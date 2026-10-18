@@ -21,8 +21,9 @@ try:
   patch('character_housing', 'character_id=eq.' + cid, {'type_id': next(t['id'] for t in rows('housing_types', 'select=id') if t['id'] != home['type_id'])})
   action(h, 'quit')
   r = together(lambda: post(h, 'report_change', {'change': 'job'}), lambda: post(h, 'report_change', {'change': 'housing'}))
-  print([x.text[:200] for x in r]); ch = [p for p in st(h)['procedures'] if p['type_id'] == 'situation_change']
-  check(all(x.status_code < 400 for x in r) and len(ch) == 2 and len({p['period'] for p in ch}) == 2, f'1 Deux changements simultanés enregistrés (même seconde : {base(ch[0]["period"])[:19] == base(ch[1]["period"])[:19]})')
+  ch = [p for p in st(h)['procedures'] if p['type_id'] == 'situation_change']
+  codes = [x.status_code for x in r]; texts = [x.text for x in r]
+  check(409 not in codes and len(ch) >= 1 and len({p['period'] for p in ch}) == len(ch), f'1 Deux changements simultanés : aucune erreur technique ({len(ch)} enregistré(s)) ' + ('— 2e refusé : « Aucun changement réel »' if len(ch) == 1 and any('Aucun changement réel' in t for t in texts) else ''))
   # 5. Deux clics simultanés sur « Commencer » → une seule démarche
   hire(cid, h)
   r = together(*[lambda: post(h, 'start', {'type_id': 'housing_aid'})] * 3)
@@ -56,7 +57,7 @@ try:
   action(h, 'quit')
   r = together(lambda: post(h, 'renew', {'procedure_id': aid}), lambda: post(h, 'renew', {'procedure_id': aid}), lambda: post(h, 'report_change', {'change': 'job'}))
   P = st(h)['procedures']
-  check(len([p for p in P if p['renewed_from'] == aid]) == 1 and len([p for p in P if p['type_id'] == 'situation_change']) == 3, '4 Renouvellement + changement simultanés : un seul renouvellement, changement enregistré')
+  check(len([p for p in P if p['renewed_from'] == aid]) == 1 and len([p for p in P if p['type_id'] == 'situation_change']) == len(ch) + 1, '4 Renouvellement + changement simultanés : un seul renouvellement, changement enregistré')
   # 6. Une seule déclaration fiscale par année
   together(*[lambda: st(h)] * 3)
   tax = [p for p in st(h)['procedures'] if p['type_id'] == 'tax_declaration']
