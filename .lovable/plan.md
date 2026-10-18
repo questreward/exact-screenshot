@@ -16,6 +16,7 @@ Les paramètres non décidés restent sans valeur et le système est désactivé
 
 ## 2. Tables existantes éventuellement étendues
 **Aucune colonne, contrainte, politique ou fonction existante modifiée.** Lectures : `cities`, `organizations`, `political_profiles`, `social_npcs`, `characters`, `memberships`, `political_stats`, `civic_stats`, `municipal_mandates`, `municipal_council_groups`, `locations`, `character_positions`, `news_sources`.
+Exception additive explicitement proposée : un nouveau déclencheur sur `activities`, qui ne contrôle que le nouveau type `national` et retourne immédiatement pour les activités existantes. Il interdit une séance forgée ou des récompenses nationales non prévues. Aucun déclencheur existant n’est modifié ; son ajout devra faire partie de votre accord SQL.
 Ajouts futurs seulement : nouvelle règle `national` dans `life_rules`, activités nationales dans `activities`, faits publics dans `events` et leurs articles dans `news`, nouvelles traces dans `indicator_history`. Seules les valeurs de `city_indicators` peuvent évoluer **après entrée en vigueur**, jamais lors de la préparation du SQL. Les fonctions existantes gèrent alors leur fonctionnement normal ; rien n’est remplacé.
 
 ## 3. Fonctions serveur nouvelles / modifiées
@@ -50,6 +51,7 @@ Les effets sont des deltas déterministes de modèles contrôlés serveur, figé
 ## 8. Données existantes modifiées / comparaison avant-après
 À cette étape : **aucune donnée modifiée**. Le SQL de préparation crée uniquement des objets nationaux et ajoute leurs cinq circonscriptions ; il n’active rien et n’insère aucun événement/activité/effet.
 Avant une application ultérieure : comptages et empreintes de toutes les tables des Blocs 1–14, fonctions, politiques, droits et horloge. Après application : mêmes empreintes pour l’existant ; seules nouvelles tables/fonctions attendues. Les 65 événements gardent retard 0. Comparaison individuelle des élections et mandats municipaux, pas uniquement leur nombre.
+Contrôle effectué en lecture seule durant cette préparation : 65 événements et 65 retards nuls avant/après, cinq élections municipales, zéro mandat municipal, zéro table nationale. Empreintes de l’horloge, des élections et des mandats identiques avant/après. Aucun test ni appel à une fonction qui règle le jeu.
 Après un fonctionnement autorisé : distinguer mutations nationales attendues (nouveaux événements/articles/activités/traces et indicateurs) de toute autre modification. Préserver `baseline` des indicateurs. Aucune suppression/cascade vers l’existant. Ne pas promettre que toutes les données seront inchangées pendant le fonctionnement : les effets sur les villes sont précisément l’ajout demandé.
 
 ## 9. Régressions à préparer, sans les lancer

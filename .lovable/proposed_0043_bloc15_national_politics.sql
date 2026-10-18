@@ -592,6 +592,7 @@ BEGIN
   SELECT * INTO e FROM public.national_elections WHERE id=(_input->>'election_id')::uuid FOR UPDATE;
   IF NOT FOUND OR e.status IN('completed','cancelled') OR public.game_now()<e.candidacies_at OR public.game_now()>=e.candidacies_end_at THEN RAISE EXCEPTION 'Candidatures fermées'; END IF;
   oid:=(_input->>'organization_id')::uuid;
+  IF jsonb_typeof(COALESCE(_input->'program','{}'::jsonb))<>'object' OR octet_length(COALESCE(_input->'program','{}'::jsonb)::text)>12000 THEN RAISE EXCEPTION 'Programme invalide'; END IF;
   IF NOT public.national_eligible(c.id,e.rules) OR NOT EXISTS(SELECT 1 FROM public.memberships m JOIN public.national_party_profiles p ON p.organization_id=m.organization_id WHERE m.character_id=c.id AND m.organization_id=oid AND m.status='active') THEN RAISE EXCEPTION 'Conditions ou parti non remplis'; END IF;
   INSERT INTO public.national_candidacies(election_id,city_id,character_id,organization_id,display_name,program)
   VALUES(e.id,c.city_id,c.id,oid,c.first_name||' '||c.last_name,COALESCE(_input->'program','{}'::jsonb)) RETURNING id INTO lid;
@@ -610,7 +611,7 @@ BEGIN
   INSERT INTO public.national_ballots(election_id,character_id,city_id,candidacy_id) VALUES(e.id,c.id,c.city_id,k.id);
   result:=jsonb_build_object('voted',true);
  WHEN 'law' THEN
-  SELECT * INTO seat FROM public.national_seats ns JOIN LATERAL (SELECT id FROM public.national_legislatures nl WHERE nl.id=ns.legislature_id AND nl.starts_at<=public.game_now() AND nl.ends_at>public.game_now()) active ON true WHERE ns.character_id=c.id;
+  SELECT ns.* INTO seat FROM public.national_seats ns JOIN public.national_legislatures nl ON nl.id=ns.legislature_id WHERE ns.character_id=c.id AND nl.starts_at<=public.game_now() AND nl.ends_at>public.game_now();
   IF seat.id IS NULL OR NOT public.national_eligible(c.id,r) THEN RAISE EXCEPTION 'Réservé à un parlementaire éligible'; END IF;
   SELECT * INTO t FROM public.national_law_templates WHERE id=_input->>'template_id' AND active;
   IF NOT FOUND THEN RAISE EXCEPTION 'Modèle non validé'; END IF;
