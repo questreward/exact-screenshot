@@ -133,6 +133,7 @@ AS $function$
 DECLARE e public.events; nid uuid;
 BEGIN SELECT * INTO e FROM public.events WHERE id=_event_id FOR UPDATE;
 IF NOT FOUND OR e.status='cancelled' OR e.starts_at IS NULL OR e.starts_at>public.game_now() THEN RETURN NULL; END IF;
+IF e.character_id IS NOT NULL THEN RETURN NULL; END IF; -- Bloc 14 : un événement personnel n'est jamais diffusé publiquement
 IF e.source_id IS NULL OR NOT EXISTS(SELECT 1 FROM public.news_sources WHERE id=e.source_id AND status='active') THEN RETURN NULL; END IF;
 INSERT INTO public.news(title,summary,body,image,category,source_id,published_at,city_id,region,scope,importance,event_id,location_id,organization_id)
 VALUES(COALESCE(e.news_title,e.title),COALESCE(e.news_summary,e.description),COALESCE(e.news_body,e.description),e.image,e.category,e.source_id,e.starts_at,e.city_id,e.region,e.scope,e.importance,e.id,e.location_id,e.organization_id)
@@ -207,3 +208,12 @@ AS $function$ DECLARE cid uuid; c public.characters; pos public.character_positi
   ) q;
   RETURN r;
 END $function$;
+
+-- 11. Confidentialité des événements personnels (Bloc 14, point 4)
+-- Politique RESTRICTIVE : s'ajoute à « events read » existante (non modifiée).
+-- Un événement personnel n'est lisible directement que par son propriétaire ;
+-- les événements publics restent régis par la politique existante.
+CREATE POLICY events_personal_owner_only ON public.events
+  AS RESTRICTIVE FOR SELECT TO anon, authenticated
+  USING (character_id IS NULL OR EXISTS (
+    SELECT 1 FROM public.characters c WHERE c.id = events.character_id AND c.user_id = auth.uid()));
