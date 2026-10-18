@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CharacterCard } from "@/components/game/CharacterCard";
 import { APPEARANCE_OPTIONS, normalizeAppearance, type Appearance, type Option } from "@/game/appearance";
-import { characterQuery, lifeQuery, socialQuery, organizationsQuery, civicQuery } from "@/services/game";
+import { characterQuery, lifeQuery, socialQuery, organizationsQuery, civicQuery, politicsQuery } from "@/services/game";
+import { PoliticalSummary } from "@/components/game/PoliticalSummary";
 import { CivicSummary } from '@/components/game/CivicSummary';
 import { Link } from "@tanstack/react-router";
 import { SocialSummary } from "@/components/game/SocialSummary";
@@ -32,6 +33,7 @@ function CharacterPage() {
       <section className="border-y border-border py-4"><h2 className="mb-2 text-lg font-semibold">Vie</h2><p>{c.situation}</p><p className="mt-1 text-sm text-muted-foreground">{life.housing?.name} · {life.housing?.location.name} · Énergie {life.character.energy}/100</p></section>
       <SocialSummary />
       <CivicSummary profile/>
+      <PoliticalSummary />
       <section><h2 className="mb-3 text-lg font-semibold">Mes organisations</h2><ul className="space-y-3">{orgs.filter(o => social.memberships.some(m => m.organization_id === o.id && m.status === 'active')).map(o => <li key={o.id}><Link to="/organisations/$id" params={{ id: o.id }} search={{ city: c.city_id }} className="text-primary">{o.name} · Membre</Link></li>)}</ul>{!social.memberships.some(m => m.status === 'active') && <p className="text-sm text-muted-foreground">Aucune adhésion active.</p>}</section>
       <section><h2 className="mb-3 text-lg font-semibold">Relations importantes</h2><ul className="space-y-2">{social.relations.slice(0,3).map(r => <li key={r.id}><Link to="/telephone" search={{ app: 'contacts' }} className="text-sm text-primary">{r.npc.first_name} {r.npc.last_name} · {r.level}</Link></li>)}</ul></section>
       <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
