@@ -50,7 +50,8 @@ try:
   try:rpc('pay_housing',h=h)
   except RuntimeError:pass
  with ThreadPoolExecutor(max_workers=4) as pool:list(pool.map(pay,range(4)))
- check(st()['available']==165 and len(rows('transactions','account_id=eq.'+account['id']+'&operation_key=eq.rent:'+str(today)))==1,'Logement manuel : quatre demandes, un débit de 30 €')
+ # After a preserved failure, the successful retry has its own key (rent:<date>:retry).
+ check(st()['available']==165 and len(rows('transactions','account_id=eq.'+account['id']+'&operation_key=like.rent:'+str(today)+'*'))==1,'Logement manuel : quatre demandes, un débit de 30 €')
  # A failed scheduled date must not suppress an explicitly retried manual payment.
  check(rows('character_housing','character_id=eq.'+cid)[0]['last_paid_date']==str(today),'Logement : paiement réel enregistré après échec automatique')
  job=rows('jobs','city_id=eq.lyon&title=eq.Assistant administratif')[0]
@@ -58,7 +59,7 @@ try:
  check(denied_action(h,'promotion',{}),'Promotion refusée sans compétences et expérience')
  action(h,'quit');check(not rows('employments','character_id=eq.'+cid) and not rows('activities','character_id=eq.'+cid+'&type=eq.work&status=eq.planned'),'Départ d’emploi : vacations futures annulées, historique conservé')
  check(any(v['kind']=='départ' for v in st()['history']),'Historique professionnel conserve le départ')
- rpc('apply_job',{'_job_id':job['id']},h);patch('job_applications','character_id=eq.'+cid,{'response_at':'2000-01-01T00:00:00Z'});st()
+ job2=next(j for j in rows('jobs','city_id=eq.lyon') if j['id']!=job['id'] and not j.get('economy_skill'));rpc('apply_job',{'_job_id':job2['id']},h);patch('job_applications','character_id=eq.'+cid+'&job_id=eq.'+job2['id'],{'response_at':'2000-01-01T00:00:00Z'});st()
  check(len(rows('employments','character_id=eq.'+cid))==1 and st()['available']==165,'Nouvelle candidature : un emploi, aucun salaire anticipé')
  student=prepare('student',18);sh=student['h'];sc=student['cid']
  check(denied_action(sh,'career',{}),'Parcours étudiant : niveau requis non contournable')
