@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { expectedNpcClients, serviceAmount } from "./services";
+import { expectedNpcClients, serviceAmount, dealerWholesale, dealerTradeOffer } from "./services";
 
 describe("entreprises de services", () => {
   it("un entretien à 200 € dans un garage à 80 % coûte 160 €", () => {
