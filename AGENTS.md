@@ -38,3 +38,4 @@
 - Rent retries log failures under a distinct key; UI counts successes.
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Service businesses (garage, moving…) are business sectors reusing businesses/treasury; clients pay via service_pay (economy_cash → business_move), a fictive CIVITAS provider at reference price applies when no player is chosen; weekly NPC clients settle on read once per (business, week).
+- Real-estate agency chains owner ↔ agency ↔ tenant via agency_mandates; tenant rent settles on tenant read (unique per lease/period), agency cut via business_move, owner share as agency_payouts collected on read; agency_buy/agency_rent_listing wrap shop_buy/housing_action in one transaction instead of editing them.
