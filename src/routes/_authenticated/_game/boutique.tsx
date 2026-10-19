@@ -167,7 +167,7 @@ function ShopPage() {
       </TabsContent>
     </Tabs>}
 
-    {confirm && s && <BuyDialog p={confirm} s={s} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
+    {confirm && s && <BuyDialog p={confirm} s={s} pct={promo.get(confirm.id) ?? 0} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
       onCash={() => buy.mutate(confirm)} onCredit={(down, months) => buyCredit.mutate({ p: confirm, down, months })} />}
 
     {sell && <Dialog title="Revendre à la boutique" onClose={() => setSell(null)}>
@@ -196,13 +196,14 @@ function Dialog({ title, onClose, children }: { title: string; onClose: () => vo
       <p className="font-heading text-lg font-bold">{title}</p>{children}</div></div>;
 }
 
-function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduct; s: ShopState; pending: boolean; onClose: () => void; onCash: () => void; onCredit: (down: number, months: number) => void }) {
+function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopProduct; s: ShopState; pct: number; pending: boolean; onClose: () => void; onCash: () => void; onCredit: (down: number, months: number) => void }) {
   const immo = !!p.details.realestate; const creditable = immo || p.kind === "vehicle";
   const cfg = s.credit.settings;
   const fees = immo ? notaryFees(p.price) : 0;
   const minDown = Math.ceil(p.price * cfg.min_down_percent / 100);
   const durations = (immo ? [60, 120, 180, 240, 300] : [12, 24, 36, 48, 60, 72, 84]).filter(m => m >= (immo ? cfg.immo_min_months : cfg.auto_min_months) && m <= (immo ? cfg.immo_max_months : cfg.auto_max_months));
-  const [mode, setMode] = useState<"cash" | "credit">(creditable && p.price + fees > s.balance ? "credit" : "cash");
+  const cash = storePrice(p.price, pct);
+  const [mode, setMode] = useState<"cash" | "credit">(creditable && cash + fees > s.balance ? "credit" : "cash");
   const [down, setDown] = useState(String(Math.max(minDown, Math.min(Math.max(0, s.balance - fees), Math.round(p.price * 0.2)))));
   const [months, setMonths] = useState(immo ? 240 : 48);
   const rate = immo ? cfg.immo_rate : cfg.auto_rate;
@@ -218,15 +219,16 @@ function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduc
       <Button variant={mode === "cash" ? "default" : "outline"} className="h-11" onClick={() => setMode("cash")}>Comptant</Button>
       <Button variant={mode === "credit" ? "default" : "outline"} className="h-11" onClick={() => setMode("credit")}>À crédit</Button></div>}
     {mode === "cash" ? <>
-      <ul className="my-3 space-y-1 text-sm">{row("Prix", eur(p.price))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - p.price - fees))}</ul>
-      {p.price + fees > s.balance && <p className="mb-3 text-sm text-destructive">Solde insuffisant.</p>}
+      <ul className="my-3 space-y-1 text-sm">{pct > 0 && row("Prix normal", eur(p.price))}{row(pct > 0 ? `Prix promo (−${pct} %)` : "Prix", eur(cash))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - cash - fees))}</ul>
+      {cash + fees > s.balance && <p className="mb-3 text-sm text-destructive">Solde insuffisant.</p>}
       <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="h-12" onClick={onClose}>Annuler</Button>
-        <Button className="h-12" disabled={pending || p.price + fees > s.balance} onClick={onCash}>Payer</Button></div>
+        <Button className="h-12" disabled={pending || cash + fees > s.balance} onClick={onCash}>Payer</Button></div>
     </> : <>
       <div className="my-3 space-y-2">
         <label className="block text-sm">Apport (min. {eur(minDown)})<input type="number" inputMode="numeric" className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={down} onChange={e => setDown(e.target.value)} /></label>
         <label className="block text-sm">Durée<select className={`${select} mt-1`} value={months} onChange={e => setMonths(Number(e.target.value))}>
           {durations.map(m => <option key={m} value={m}>{immo ? `${m / 12} ans` : `${m} mois`}</option>)}</select></label></div>
+      {pct > 0 && <p className="mb-2 text-xs text-muted-foreground">La promo s'applique seulement au comptant.</p>}
       <ul className="mb-3 space-y-1 text-sm">{row("Montant emprunté", eur(principal))}{row("Taux", `${rate} %`)}{row("Mensualité", `${eur(monthly)} / mois`)}
         {row("Coût des intérêts", eur(creditCost(principal, rate, months)))}{immo && row("Frais de notaire (comptant)", eur(fees))}{row("Payé aujourd'hui", eur(d + fees))}</ul>
       {creditProblem && <p className="mb-3 text-sm text-destructive">{creditProblem}</p>}
@@ -235,4 +237,32 @@ function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduc
         <Button className="h-12" disabled={pending || !!creditProblem} onClick={() => onCredit(d, months)}>Signer le crédit</Button></div>
     </>}
   </Dialog>;
+}
+
+function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onWish }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; onBuy: () => void; onWish: (cmd: "wish" | "goal") => void }) {
+  const creditable = p.kind === "vehicle" || !!p.details.realestate;
+  const price = storePrice(p.price, pct);
+  const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
+  const blocked = p.kind === "vehicle" && !s.license;
+  return <li className="flex flex-col rounded-xl border border-border bg-card p-4">
+    <div className="flex items-start justify-between gap-2">
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
+      {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}</div>
+    <p className="font-heading text-lg font-bold">{p.name}</p>
+    <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
+    {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
+    {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
+    <div className="mt-3 flex items-center justify-between gap-2"><div>
+      {pct > 0 && <p className="text-xs text-muted-foreground line-through">{eur(p.price)}</p>}
+      <p className="font-heading text-xl font-bold">{eur(price)}</p>
+      {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
+      {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
+        : <Button className="h-11" disabled={blocked || (!creditable && cash > s.balance)} onClick={onBuy}>
+          {blocked ? "Permis requis" : !creditable && cash > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
+    {!p.owned && <div className="mt-2 grid grid-cols-2 gap-2">
+      <Button variant="outline" className="h-11" disabled={busy} aria-pressed={wished} onClick={() => onWish("wish")}>
+        <Heart className={`h-4 w-4 ${wished ? "fill-primary text-primary" : ""}`} />{wished ? "Dans mes envies" : "Envie"}</Button>
+      <Button variant={isGoal ? "default" : "outline"} className="h-11" disabled={busy} aria-pressed={isGoal} onClick={() => onWish("goal")}>
+        <Target className="h-4 w-4" />{isGoal ? "Mon objectif" : "Objectif"}</Button></div>}
+  </li>;
 }
