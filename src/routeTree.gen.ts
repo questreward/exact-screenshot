@@ -24,6 +24,7 @@ import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
+import { Route as AuthenticatedGameDebatsPublicsRouteImport } from './routes/_authenticated/_game/debats-publics'
 import { Route as AuthenticatedGameDemarchesRouteImport } from './routes/_authenticated/_game/demarches'
 import { Route as AuthenticatedGameElectionsRouteImport } from './routes/_authenticated/_game/elections'
 import { Route as AuthenticatedGameEvenementsRouteImport } from './routes/_authenticated/_game/evenements'
@@ -36,6 +37,7 @@ import { Route as AuthenticatedGameMaVieRouteImport } from './routes/_authentica
 import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
 import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authenticated/_game/mandat'
 import { Route as AuthenticatedGameMesDocumentsRouteImport } from './routes/_authenticated/_game/mes-documents'
+import { Route as AuthenticatedGameMonParcoursRouteImport } from './routes/_authenticated/_game/mon-parcours'
 import { Route as AuthenticatedGameMonProfilRouteImport } from './routes/_authenticated/_game/mon-profil'
 import { Route as AuthenticatedGameMondeRouteImport } from './routes/_authenticated/_game/monde'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
@@ -49,6 +51,7 @@ import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameProjetsRouteImport } from './routes/_authenticated/_game/projets'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
 import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authenticated/_game/sante'
+import { Route as AuthenticatedGameSondagesRouteImport } from './routes/_authenticated/_game/sondages'
 import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
@@ -137,6 +140,12 @@ const AuthenticatedGameDebatsRoute = AuthenticatedGameDebatsRouteImport.update({
   path: '/debats',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameDebatsPublicsRoute =
+  AuthenticatedGameDebatsPublicsRouteImport.update({
+    id: '/debats-publics',
+    path: '/debats-publics',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameDemarchesRoute =
   AuthenticatedGameDemarchesRouteImport.update({
     id: '/demarches',
@@ -202,6 +211,12 @@ const AuthenticatedGameMesDocumentsRoute =
   AuthenticatedGameMesDocumentsRouteImport.update({
     id: '/mes-documents',
     path: '/mes-documents',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameMonParcoursRoute =
+  AuthenticatedGameMonParcoursRouteImport.update({
+    id: '/mon-parcours',
+    path: '/mon-parcours',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameMonProfilRoute =
@@ -278,6 +293,12 @@ const AuthenticatedGameSanteRoute = AuthenticatedGameSanteRouteImport.update({
   path: '/sante',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameSondagesRoute =
+  AuthenticatedGameSondagesRouteImport.update({
+    id: '/sondages',
+    path: '/sondages',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameSyndicatsRoute =
   AuthenticatedGameSyndicatsRouteImport.update({
     id: '/syndicats',
@@ -364,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
+  '/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
   '/evenements': typeof AuthenticatedGameEvenementsRoute
@@ -376,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
   '/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
+  '/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -389,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
+  '/sondages': typeof AuthenticatedGameSondagesRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -416,6 +440,7 @@ export interface FileRoutesByTo {
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
+  '/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
   '/evenements': typeof AuthenticatedGameEvenementsRoute
@@ -428,6 +453,7 @@ export interface FileRoutesByTo {
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
   '/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
+  '/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -441,6 +467,7 @@ export interface FileRoutesByTo {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
+  '/sondages': typeof AuthenticatedGameSondagesRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -471,6 +498,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
+  '/_authenticated/_game/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
   '/_authenticated/_game/demarches': typeof AuthenticatedGameDemarchesRoute
   '/_authenticated/_game/elections': typeof AuthenticatedGameElectionsRoute
   '/_authenticated/_game/evenements': typeof AuthenticatedGameEvenementsRoute
@@ -483,6 +511,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/_authenticated/_game/mandat': typeof AuthenticatedGameMandatRoute
   '/_authenticated/_game/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
+  '/_authenticated/_game/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/_authenticated/_game/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/_authenticated/_game/monde': typeof AuthenticatedGameMondeRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
@@ -496,6 +525,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/projets': typeof AuthenticatedGameProjetsRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
   '/_authenticated/_game/sante': typeof AuthenticatedGameSanteRoute
+  '/_authenticated/_game/sondages': typeof AuthenticatedGameSondagesRoute
   '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -525,6 +555,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/crises'
     | '/debats'
+    | '/debats-publics'
     | '/demarches'
     | '/elections'
     | '/evenements'
@@ -537,6 +568,7 @@ export interface FileRouteTypes {
     | '/ma-ville'
     | '/mandat'
     | '/mes-documents'
+    | '/mon-parcours'
     | '/mon-profil'
     | '/monde'
     | '/organisations'
@@ -550,6 +582,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/reseau'
     | '/sante'
+    | '/sondages'
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
@@ -577,6 +610,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/crises'
     | '/debats'
+    | '/debats-publics'
     | '/demarches'
     | '/elections'
     | '/evenements'
@@ -589,6 +623,7 @@ export interface FileRouteTypes {
     | '/ma-ville'
     | '/mandat'
     | '/mes-documents'
+    | '/mon-parcours'
     | '/mon-profil'
     | '/monde'
     | '/organisations'
@@ -602,6 +637,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/reseau'
     | '/sante'
+    | '/sondages'
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
@@ -631,6 +667,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/crises'
     | '/_authenticated/_game/debats'
+    | '/_authenticated/_game/debats-publics'
     | '/_authenticated/_game/demarches'
     | '/_authenticated/_game/elections'
     | '/_authenticated/_game/evenements'
@@ -643,6 +680,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/ma-ville'
     | '/_authenticated/_game/mandat'
     | '/_authenticated/_game/mes-documents'
+    | '/_authenticated/_game/mon-parcours'
     | '/_authenticated/_game/mon-profil'
     | '/_authenticated/_game/monde'
     | '/_authenticated/_game/organisations'
@@ -656,6 +694,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/projets'
     | '/_authenticated/_game/reseau'
     | '/_authenticated/_game/sante'
+    | '/_authenticated/_game/sondages'
     | '/_authenticated/_game/syndicats'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
@@ -787,6 +826,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameDebatsRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/debats-publics': {
+      id: '/_authenticated/_game/debats-publics'
+      path: '/debats-publics'
+      fullPath: '/debats-publics'
+      preLoaderRoute: typeof AuthenticatedGameDebatsPublicsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/demarches': {
       id: '/_authenticated/_game/demarches'
       path: '/demarches'
@@ -869,6 +915,13 @@ declare module '@tanstack/react-router' {
       path: '/mes-documents'
       fullPath: '/mes-documents'
       preLoaderRoute: typeof AuthenticatedGameMesDocumentsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/mon-parcours': {
+      id: '/_authenticated/_game/mon-parcours'
+      path: '/mon-parcours'
+      fullPath: '/mon-parcours'
+      preLoaderRoute: typeof AuthenticatedGameMonParcoursRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/mon-profil': {
@@ -960,6 +1013,13 @@ declare module '@tanstack/react-router' {
       path: '/sante'
       fullPath: '/sante'
       preLoaderRoute: typeof AuthenticatedGameSanteRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/sondages': {
+      id: '/_authenticated/_game/sondages'
+      path: '/sondages'
+      fullPath: '/sondages'
+      preLoaderRoute: typeof AuthenticatedGameSondagesRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/syndicats': {
@@ -1056,6 +1116,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
+  AuthenticatedGameDebatsPublicsRoute: typeof AuthenticatedGameDebatsPublicsRoute
   AuthenticatedGameDemarchesRoute: typeof AuthenticatedGameDemarchesRoute
   AuthenticatedGameElectionsRoute: typeof AuthenticatedGameElectionsRoute
   AuthenticatedGameEvenementsRoute: typeof AuthenticatedGameEvenementsRoute
@@ -1068,6 +1129,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
   AuthenticatedGameMandatRoute: typeof AuthenticatedGameMandatRoute
   AuthenticatedGameMesDocumentsRoute: typeof AuthenticatedGameMesDocumentsRoute
+  AuthenticatedGameMonParcoursRoute: typeof AuthenticatedGameMonParcoursRoute
   AuthenticatedGameMonProfilRoute: typeof AuthenticatedGameMonProfilRoute
   AuthenticatedGameMondeRoute: typeof AuthenticatedGameMondeRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
@@ -1081,6 +1143,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameProjetsRoute: typeof AuthenticatedGameProjetsRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
   AuthenticatedGameSanteRoute: typeof AuthenticatedGameSanteRoute
+  AuthenticatedGameSondagesRoute: typeof AuthenticatedGameSondagesRoute
   AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
@@ -1103,6 +1166,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,
+    AuthenticatedGameDebatsPublicsRoute: AuthenticatedGameDebatsPublicsRoute,
     AuthenticatedGameDemarchesRoute: AuthenticatedGameDemarchesRoute,
     AuthenticatedGameElectionsRoute: AuthenticatedGameElectionsRoute,
     AuthenticatedGameEvenementsRoute: AuthenticatedGameEvenementsRoute,
@@ -1115,6 +1179,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,
     AuthenticatedGameMandatRoute: AuthenticatedGameMandatRoute,
     AuthenticatedGameMesDocumentsRoute: AuthenticatedGameMesDocumentsRoute,
+    AuthenticatedGameMonParcoursRoute: AuthenticatedGameMonParcoursRoute,
     AuthenticatedGameMonProfilRoute: AuthenticatedGameMonProfilRoute,
     AuthenticatedGameMondeRoute: AuthenticatedGameMondeRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
@@ -1128,6 +1193,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameProjetsRoute: AuthenticatedGameProjetsRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
     AuthenticatedGameSanteRoute: AuthenticatedGameSanteRoute,
+    AuthenticatedGameSondagesRoute: AuthenticatedGameSondagesRoute,
     AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
