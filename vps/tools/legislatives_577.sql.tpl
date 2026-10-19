@@ -17,28 +17,28 @@
 --   jour 1 = 1er tour, jour 2 = 2e tour.
 BEGIN;
 
--- 1. Colonnes et contraintes -------------------------------------------------------------
+-- 1. Colonnes et contraintes (NOT VALID : les lignes déjà enregistrées ne sont pas re-vérifiées, seules les nouvelles le sont) -------------------------------------------------------------
 ALTER TABLE public.national_groups ADD COLUMN party_code text REFERENCES public.legislative_parties(code);
 ALTER TABLE public.national_seats ADD COLUMN constituency_code text REFERENCES public.legislative_constituencies(code);
 CREATE UNIQUE INDEX national_seats_constituency_unique ON public.national_seats (legislature_id, constituency_code) WHERE constituency_code IS NOT NULL;
 
 ALTER TABLE public.national_seats DROP CONSTRAINT national_seats_check1;
-ALTER TABLE public.national_seats ADD CONSTRAINT national_seats_check1 CHECK ((chamber='assembly' AND seat_no<=577) OR (chamber='senate' AND seat_no<=25));
+ALTER TABLE public.national_seats ADD CONSTRAINT national_seats_check1 CHECK ((chamber='assembly' AND seat_no<=577) OR (chamber='senate' AND seat_no<=25)) NOT VALID;
 ALTER TABLE public.national_seats DROP CONSTRAINT national_assembly_5_plus_45;
 ALTER TABLE public.national_seats ADD CONSTRAINT national_assembly_5_plus_45 CHECK (
   chamber<>'assembly'
   OR (constituency_code IS NULL AND (
        ((seat_no BETWEEN 1 AND 5) AND NOT simulated AND city_id IS NOT NULL AND num_nonnulls(character_id,npc_id)=1)
     OR ((seat_no BETWEEN 6 AND 50) AND simulated AND city_id IS NULL AND character_id IS NULL AND npc_id IS NULL)))
-  OR (constituency_code IS NOT NULL AND (seat_no BETWEEN 1 AND 577) AND city_id IS NULL AND npc_id IS NULL AND simulated=(character_id IS NULL)));
+  OR (constituency_code IS NOT NULL AND (seat_no BETWEEN 1 AND 577) AND city_id IS NULL AND npc_id IS NULL AND simulated=(character_id IS NULL))) NOT VALID;
 
 ALTER TABLE public.national_sessions DROP CONSTRAINT national_sessions_eligible_seats_check;
-ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_eligible_seats_check CHECK (eligible_seats = ANY (ARRAY[50,25,577]));
+ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_eligible_seats_check CHECK (eligible_seats = ANY (ARRAY[50,25,577])) NOT VALID;
 ALTER TABLE public.national_sessions DROP CONSTRAINT national_sessions_check;
 ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_check CHECK (
   (chamber='assembly' AND eligible_seats=50 AND majority_required=26)
   OR (chamber='assembly' AND eligible_seats=577 AND majority_required=289)
-  OR (chamber='senate' AND eligible_seats=25 AND majority_required=13));
+  OR (chamber='senate' AND eligible_seats=25 AND majority_required=13)) NOT VALID;
 
 -- Villes jouables : 1re circonscription de chaque ville (lieu de vote des joueurs)
 UPDATE public.legislative_constituencies SET city_id=v.city FROM (VALUES ('7501','paris'),('6901','lyon'),('1301','marseille'),('5901','lille'),('3301','bordeaux')) v(code,city)
