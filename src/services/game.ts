@@ -870,3 +870,33 @@ export async function petitionAction(input: { command: "create" | "sign" | "vote
   const { error } = await untyped.rpc("petition_action", { _command: command, _input: rest });
   if (error) throw new Error(error.message);
 }
+
+// ---- Débats entre joueurs ----
+export type Debate = {
+  id: string; topic: string; status: "invited" | "declined" | "expired" | "running" | "voting" | "done"; round: number;
+  created_at: string; invite_ends_at: string; turn_ends_at: string | null; voting_ends_at: string | null;
+  challenger: PlayerCard; opponent: PlayerCard; winner_id: string | null; forfeit: boolean;
+  votes_challenger: number | null; votes_opponent: number | null;
+  role: "challenger" | "opponent" | "public"; my_vote: string | null;
+  turns: { round: number; character_id: string; body: string; created_at: string }[];
+};
+export type DebateState = {
+  me: string; now: string;
+  settings: { rounds: number; topic_max: number; turn_max: number; turn_hours: number; voting_hours: number; invite_hours: number; win_reputation: number; campaign_support: number };
+  mine: Debate[]; public: Debate[];
+};
+export const debateQuery = queryOptions({
+  queryKey: ["debates", "state"],
+  retry: false,
+  refetchInterval: 10000,
+  queryFn: async (): Promise<DebateState> => {
+    const { data, error } = await untyped.rpc("debate_state", {});
+    if (error) throw new Error(error.message);
+    return data as DebateState;
+  },
+});
+export async function debateAction(input: { command: "challenge" | "respond" | "turn" | "vote"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("debate_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
