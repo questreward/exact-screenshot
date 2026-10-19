@@ -475,3 +475,52 @@ export async function leaveLocationSpace() {
   if (error) throw new Error(error.message);
   return data;
 }
+
+// P3 — Organisations fondées par les joueurs (règles et argent vérifiés côté base)
+export type OrgKindChoice = "association" | "movement" | "party";
+export type PlayerOrgState = {
+  organization: { id: string; name: string; kind: string; city_id: string; description: string; symbol: string | null; reputation: number; influence: number; location_id: string };
+  level: string;
+  my_role: "founder" | "manager" | "member" | null;
+  settings: { event_cost: number; player_weekly_dues: number };
+  members: { character_id: string; name: string; role: string }[];
+  npc_members: { id: string; name: string; profession: string | null }[];
+  events: { id: string; title: string; start_hour: number; location_id: string }[];
+  balance?: number;
+  ledger?: { amount: number; kind: string; label: string; world_at: string }[];
+};
+export const playerOrgQuery = (orgId: string) => queryOptions({
+  queryKey: ["organizations", "player-org", orgId],
+  queryFn: async (): Promise<PlayerOrgState | null> => {
+    const { data, error } = await untyped.rpc("org_state", { _org: orgId });
+    if (error) return null;
+    return data as PlayerOrgState;
+  },
+  retry: false,
+});
+export const cityLocationsQuery = (cityId: string) => queryOptions({
+  queryKey: ["city-locations", cityId],
+  queryFn: async (): Promise<{ id: string; name: string; kind: string }[]> => {
+    const { data, error } = await supabase.from("locations").select("id, name, kind").eq("city_id", cityId).eq("accessible", true).order("name");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+});
+export async function foundOrganization(input: { kind: OrgKindChoice; name: string; symbol: string; description: string; locationId: string }) {
+  const { data, error } = await untyped.rpc("found_organization", { _kind: input.kind, _name: input.name, _symbol: input.symbol, _description: input.description, _location_id: input.locationId });
+  if (error) throw new Error(error.message);
+  return data as string;
+}
+export async function donateToOrganization(input: { orgId: string; amount: number }) {
+  const { error } = await untyped.rpc("donate_to_organization", { _org: input.orgId, _amount: input.amount, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+}
+export async function setMemberRole(input: { orgId: string; characterId: string; role: "manager" | "member" }) {
+  const { error } = await untyped.rpc("set_member_role", { _org: input.orgId, _character: input.characterId, _role: input.role });
+  if (error) throw new Error(error.message);
+}
+export async function createOrgEvent(input: { orgId: string; title: string; locationId: string; startHour: number }) {
+  const { data, error } = await untyped.rpc("create_org_event", { _org: input.orgId, _title: input.title, _location_id: input.locationId, _start_hour: input.startHour, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data;
+}
