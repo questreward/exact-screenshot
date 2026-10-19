@@ -16,6 +16,7 @@ function sectionLink(s: Section) {
   if (s.id === "ma-ville") return { to: "/ma-ville" as const };
   if (s.id === "politique") return { to: "/politique" as const };
   if (s.id === "actualites") return { to: "/actualites" as const };
+  if (s.id === "jt") return { to: "/jt" as const };
   if (s.id === "organisations") return { to: "/organisations" as const };
   if (s.id === "vie") return { to: "/vie" as const };
   if (s.id === "carte") return { to: "/carte" as const };
