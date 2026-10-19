@@ -34,3 +34,4 @@
 - Player-founded organizations keep money in org_treasuries/org_ledger (unique operation keys, never negative); personal money moves only via economy_cash; no withdrawal to personal accounts.
 - Protests are social activities (source_key 'protest:<id>') settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news, never by a scheduled job.
 - Overdraft is a separate bank debt (bank_profiles.overdraft_used); account balances never go negative, so economy_cash stays unchanged. Loans settle on read with unique installment keys.
+- Personal incidents are drawn deterministically per character and game week (hashtext), settled on read; unpaid parts become insurance_profiles.debt, never a negative balance.
