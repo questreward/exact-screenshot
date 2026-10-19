@@ -454,3 +454,13 @@ export async function travelIntercity(input: { toCity: string; mode: "train" | "
   if (error) throw new Error(error.message);
   return data;
 }
+export async function enterLocationSpace(spaceId: string) {
+  const { data, error } = await untyped.rpc("enter_location_space", { _space_id: spaceId });
+  if (error) throw new Error(error.message);
+  return data;
+}
+export async function leaveLocationSpace() {
+  const { data, error } = await untyped.rpc("leave_location_space", {});
+  if (error) throw new Error(error.message);
+  return data;
+}
