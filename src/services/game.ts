@@ -1317,3 +1317,20 @@ export async function careerAction(command: "interview_start" | "interview_answe
   if (error) throw new Error(error.message);
   return data as { status?: string; score?: number; details?: CareerProfile; motif?: string; changement?: boolean; level?: number; salary?: number; interview_id?: string };
 }
+
+// ---- Boutique : catalogue réel, achats via le compte courant, patrimoine existant ----
+export type ShopProduct = { id: string; name: string; price: number; brand: string; section: string; desc: string; dep: number; owned: boolean; sales: number };
+export type ShopState = {
+  balance: number; products: ShopProduct[];
+  orders: { reference: string; name: string; brand: string; price: number; at: string }[];
+  assets: { name: string; kind: string; brand: string | null; price: number; acquired_at: string; value: number }[];
+};
+export const shopQuery = queryOptions({
+  queryKey: ["shop", "state"], retry: false,
+  queryFn: async (): Promise<ShopState> => { const { data, error } = await untyped.rpc("shop_state", {}); if (error) throw new Error(error.message); return data as ShopState; },
+});
+export async function shopBuy(catalogId: string, requestId: string) {
+  const { data, error } = await untyped.rpc("shop_buy", { _catalog_id: catalogId, _request_id: requestId });
+  if (error) throw new Error(error.message);
+  return data as { reference: string; already: boolean };
+}
