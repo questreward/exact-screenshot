@@ -199,7 +199,7 @@
 # Grande extension — Priorité 1 (2 vagues)
 - [x] Vague 1 : conséquences différées (0066), projets citoyens (0067), crises (0068) — préparés et testés, en attente d'installation
 - [ ] Vague 2 : réputations multiples, compétences, journal de vie
-- [x] Priorité 2 vague A : sondages, débats publics, CV citoyen (0073 préparée, à installer)
+- [x] Priorité 2 vague A : sondages, débats publics, CV citoyen (installée)
 - [ ] Priorité 2 vague B : coalitions, vie interne des partis, vérification des faits
 - [ ] Priorités 3 et 4 (après accord)
 
