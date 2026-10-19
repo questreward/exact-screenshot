@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { shopBuy, shopQuery, type ShopProduct } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
-import { SECTIONS, filterProducts, type ShopSort } from "@/game/shop";
+import { SECTIONS, filterProducts, notaryFees, type ShopSort } from "@/game/shop";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
   head: () => ({ meta: gameMeta("Boutique", "Achetez de vrais produits avec votre compte : téléphones, maison, mode, loisirs. Historique et patrimoine.") }),
@@ -49,7 +50,7 @@ function ShopPage() {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <select className={select} value={section} onChange={e => setSection(e.target.value)} aria-label="Rubrique"><option value="">Toutes rubriques</option>{Object.entries(SECTIONS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
           <select className={select} value={brand} onChange={e => setBrand(e.target.value)} aria-label="Marque"><option value="">Toutes marques</option>{brands.map(b => <option key={b}>{b}</option>)}</select>
-          <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
+          <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
           <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
         </div>
         <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
@@ -57,9 +58,11 @@ function ShopPage() {
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
           <p className="font-heading text-lg font-bold">{p.name}</p>
           <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
+          {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
+          {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
           <div className="mt-3 flex items-center justify-between gap-2"><p className="font-heading text-xl font-bold">{eur(p.price)}</p>
             {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
-              : <Button className="h-11" disabled={p.price > s.balance} onClick={() => setConfirm(p)}>{p.price > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
+              : <Button className="h-11" disabled={p.price + (p.details.realestate ? notaryFees(p.price) : 0) > s.balance || (p.kind === "vehicle" && !s.license)} onClick={() => setConfirm(p)}>{p.kind === "vehicle" && !s.license ? "Permis requis" : p.price + (p.details.realestate ? notaryFees(p.price) : 0) > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
         </li>)}</ul>
       </TabsContent>
 
@@ -78,6 +81,7 @@ function ShopPage() {
             <div><p className="font-semibold">{a.brand ? `${a.brand} ` : ""}{a.name}</p><p className="text-xs text-muted-foreground">Acheté {eur(a.price)} le {day(a.acquired_at)}</p></div>
             <p className="font-semibold">{eur(a.value)}</p></li>)}</ul>}
         <p className="text-xs text-muted-foreground">Revente et seconde main : Disponible dans une prochaine étape.</p>
+        <Link to="/logement" className="block rounded-xl border border-border bg-card p-3 text-center text-sm font-semibold text-primary">Louer ou habiter un bien → Logement</Link>
       </TabsContent>
     </Tabs>}
 
@@ -86,7 +90,9 @@ function ShopPage() {
         <p className="font-heading text-lg font-bold">Confirmer l'achat</p>
         <p className="mt-1">{confirm.brand} {confirm.name}</p>
         <ul className="my-3 space-y-1 text-sm"><li className="flex justify-between"><span className="text-muted-foreground">Prix</span><b>{eur(confirm.price)}</b></li>
-          <li className="flex justify-between"><span className="text-muted-foreground">Solde après achat</span><b>{eur(s.balance - confirm.price)}</b></li></ul>
+          {confirm.details.realestate && <li className="flex justify-between"><span className="text-muted-foreground">Frais de notaire</span><b>{eur(notaryFees(confirm.price))}</b></li>}
+          <li className="flex justify-between"><span className="text-muted-foreground">Solde après achat</span><b>{eur(s.balance - confirm.price - (confirm.details.realestate ? notaryFees(confirm.price) : 0))}</b></li></ul>
+        {confirm.details.realestate && <p className="mb-3 text-xs text-muted-foreground">Paiement comptant. Le crédit immobilier arrive dans une prochaine étape. Pour y habiter : page Logement.</p>}
         <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="h-12" onClick={() => setConfirm(null)}>Annuler</Button>
           <Button className="h-12" disabled={buy.isPending} onClick={() => buy.mutate(confirm)}>Payer</Button></div>
       </div></div>}
