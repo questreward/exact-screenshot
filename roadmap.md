@@ -174,3 +174,5 @@
 - [x] Décisions validées et plan approuvé
 - [x] Migration 0048 écrite (manifestations, pression, JT local/national, interviews) et écrans (Ma Ville, page JT)
 - [x] Migration 0048 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
+- [x] Validé en jeu par l'utilisateur
+- Plus tard : vrai JT télévisé (présentateur, chaînes fictives, mise en scène)
