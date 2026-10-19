@@ -842,3 +842,31 @@ export const trophyFactsQuery = queryOptions({
     };
   },
 });
+
+// ---- Pétitions et référendums ----
+export type Petition = {
+  id: string; scope: "city" | "national"; city_id: string | null; title: string; body: string; author: string; mine: boolean;
+  threshold: number; signatures: number; status: "open" | "expired" | "referendum" | "rejected" | "council" | "accepted" | "refused" | "assembly";
+  created_at: string; ends_at: string; referendum_ends_at: string | null; council_ends_at: string | null;
+  yes_pct: number | null; council_note: string | null; signed: boolean; voted: boolean | null;
+};
+export type PetitionState = {
+  now: string; city_id: string; city_name: string; mayor: boolean; can_create: boolean;
+  settings: { city_pct: number; national_pct: number; signing_days: number; referendum_days: number; council_days: number; title_max: number; body_max: number; min_age: number };
+  city: Petition[]; national: Petition[];
+};
+export const petitionQuery = queryOptions({
+  queryKey: ["petitions", "state"],
+  retry: false,
+  refetchInterval: 15000,
+  queryFn: async (): Promise<PetitionState> => {
+    const { data, error } = await untyped.rpc("petition_state", {});
+    if (error) throw new Error(error.message);
+    return data as PetitionState;
+  },
+});
+export async function petitionAction(input: { command: "create" | "sign" | "vote" | "council"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("petition_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
