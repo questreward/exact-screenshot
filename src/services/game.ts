@@ -586,7 +586,7 @@ export async function repayLoanEarly() {
   const { error } = await untyped.rpc("repay_loan_early", { _request_id: crypto.randomUUID() });
   if (error) throw new Error(error.message);
 }
-export async function useOverdraft(amount: number) {
+export async function drawOverdraft(amount: number) {
   const { error } = await untyped.rpc("use_overdraft", { _amount: amount, _request_id: crypto.randomUUID() });
   if (error) throw new Error(error.message);
 }
