@@ -524,3 +524,38 @@ export async function createOrgEvent(input: { orgId: string; title: string; loca
   if (error) throw new Error(error.message);
   return data;
 }
+
+// P4 — Manifestations et journal télévisé
+export type ProtestItem = { id: string; cause: string; description: string; starts_at: string; ends_at: string; status: "planned" | "success" | "failed"; player_count: number; npc_count: number; registered: number; joined: boolean; mine: boolean; organizer: string; location: { id: string; name: string }; consultation: string | null; option: string | null; decision: string | null; effects: string[] };
+export type ProtestsState = { settings: { success_threshold: number; energy_cost: number; duration_minutes: number; min_age: number; pressure_percent: number }; age: number; city_id: string; now: string; protests: ProtestItem[]; consultations: { id: string; title: string; ends_at: string; options: { id: string; label: string }[] }[]; decisions: { id: string; title: string }[]; locations: { id: string; name: string; kind: string }[] };
+export const protestsQuery = queryOptions({
+  queryKey: ["protests", "state"],
+  queryFn: async (): Promise<ProtestsState> => {
+    const { data, error } = await untyped.rpc("protests_state", {});
+    if (error) throw new Error(error.message);
+    return data as ProtestsState;
+  },
+});
+export async function callProtest(input: { cause: string; description: string; locationId: string; dayOffset: number; hour: number; consultationId?: string; optionId?: string; decisionId?: string }) {
+  const { data, error } = await untyped.rpc("call_protest", { _cause: input.cause, _description: input.description, _location_id: input.locationId, _day_offset: input.dayOffset, _hour: input.hour, _consultation_id: input.consultationId || null, _option_id: input.optionId || null, _decision_id: input.decisionId || null });
+  if (error) throw new Error(error.message);
+  return data as string;
+}
+export async function joinProtest(protestId: string) {
+  const { error } = await untyped.rpc("join_protest", { _protest: protestId });
+  if (error) throw new Error(error.message);
+}
+export type TvSegment = { id: string; kind: "news" | "interview"; title: string; body: string; news_id: string | null };
+export type TvState = { date: string; city_id: string; local: TvSegment[]; national: TvSegment[]; invitations: { id: string; question: string; deadline: string; answer: string | null; scope: string }[] };
+export const tvQuery = (cityId?: string) => queryOptions({
+  queryKey: ["tv", "state", cityId ?? "mine"],
+  queryFn: async (): Promise<TvState> => {
+    const { data, error } = await untyped.rpc("tv_state", { _city: cityId ?? null });
+    if (error) throw new Error(error.message);
+    return data as TvState;
+  },
+});
+export async function answerTvInterview(input: { interviewId: string; answer: string }) {
+  const { error } = await untyped.rpc("answer_tv_interview", { _interview: input.interviewId, _answer: input.answer });
+  if (error) throw new Error(error.message);
+}
