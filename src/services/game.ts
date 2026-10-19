@@ -778,6 +778,36 @@ export async function hideArticle(input: { id: string }) {
   if (error) throw new Error(error.message);
 }
 
+// ---- Médias des joueurs (journal + chaîne, abonnés, caisse du média) ----
+export type MediaItem = PressArticle & { format: "article" | "emission"; tone: "neutre" | "positif" | "critique"; indicator: string | null; cited: string | null; reported: boolean };
+export type MediaOutlet = { owner_id: string; outlet: string; channel: string | null; author: string; portrait: string | null; subscribers: number; subscribed: boolean; items: number; mine: boolean };
+export type MediaState = {
+  settings: { sub_price: number; owner_pay_max: number; report_hide: number; npc_per_item: number; npc_cents: number; mention_week_cap: number; opinion_week_cap: number };
+  indicators: string[];
+  mine: null | { outlet: string; channel: string | null; balance: number; subscribers: number; paid_this_week: boolean;
+    weeks: { week: number; readers: number; revenue: number }[]; ledger: { kind: string; amount: number; label: string; at: string }[] };
+  outlets: MediaOutlet[]; feed: MediaItem[]; subscriptions: { owner_id: string; outlet: string }[]; people: { id: string; name: string }[];
+};
+export const mediaQuery = queryOptions({
+  queryKey: ["press", "media-state"],
+  refetchInterval: 30000,
+  queryFn: async (): Promise<MediaState> => {
+    const { data, error } = await untyped.rpc("media_state", {});
+    if (error) throw new Error(error.message);
+    return data as MediaState;
+  },
+});
+async function mediaRpc(fn: string, args: Record<string, unknown>) {
+  const { error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+}
+export const openChannel = (i: { name: string }) => mediaRpc("media_channel", { _name: i.name });
+export const publishMedia = (i: { requestId: string; format: "article" | "emission"; title: string; body: string; photo: string | null; cited: string | null; tone: string; indicator: string | null }) =>
+  mediaRpc("media_publish", { _request_id: i.requestId, _format: i.format, _title: i.title, _body: i.body, _photo: i.photo, _cited: i.cited, _tone: i.tone, _indicator: i.indicator });
+export const subscribeMedia = (i: { owner: string; on: boolean }) => mediaRpc("media_subscribe", { _owner: i.owner, _on: i.on });
+export const reportMedia = (i: { id: string }) => mediaRpc("media_report", { _article: i.id });
+export const payMediaOwner = (i: { amount: number }) => mediaRpc("media_owner_pay", { _amount: i.amount });
+
 // ---- Législatives réelles (577 circonscriptions) ----
 export type LegislativeState = {
   now: string; my_constituency: string | null; eligible: boolean; focus: string | null;
