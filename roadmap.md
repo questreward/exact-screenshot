@@ -163,4 +163,4 @@
 ## P2 — Personnages fictifs vivants
 - [x] Décisions : tous les PNJ bougent, peuvent aborder le joueur, voyagent parfois
 - [x] Migration 0046 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
-- [ ] Vérification en jeu par l'utilisateur (Personnes présentes, message spontané)
+- [x] Vérifié en jeu par l'utilisateur ; P2 validé
