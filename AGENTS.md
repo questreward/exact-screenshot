@@ -37,4 +37,5 @@
 - Player businesses keep money in business_treasuries/business_ledger (never negative); weekly results settle on read by owner or employee; salaries to players are reserved as payroll rows and collected by the payee via economy_cash, since economy_cash only acts for the signed-in character.
 - Player network (profiles, contacts, follows, private messages) is separate from NPC relations/messages; other players' data is exposed only through network_card/network_profile RPCs, never by widening characters RLS.
 - Player-to-player interactions share one block guard trigger (guard_player_block); transfers are debited at send and credited on recipient read (transfer_collect), like payroll; 'live' updates use query polling because the VPS runs no realtime server.
-- France map: static open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles — independence; v6 workers break in Vite.
+- France map: static open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles (independence; v6 breaks in Vite).
+- Rent retries keep failures under a distinct key; UI counts only successes.
