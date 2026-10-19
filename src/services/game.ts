@@ -1114,3 +1114,24 @@ export const lifeProfileQuery = queryOptions({
     return data as LifeProfile;
   },
 });
+
+// ---- Identité : carte fictive, photo, signature (numéros et dates fixés par le serveur) ----
+export type IdentityCardData = {
+  first_name: string; last_name: string; age: number; appearance: unknown; city: string | null; created_at: string;
+  nationality: string; civitas_id: string; doc_number: string; birth_date: string; birth_city: string;
+  issued_at: string; expires_at: string; expired: boolean; signature_style: string | null; signature_text: string | null;
+  photo: string | null; use_photo: boolean; settings: { photo_max_chars: number; signature_styles: string[] };
+};
+export const identityQuery = queryOptions({
+  queryKey: ["identity", "card"],
+  retry: false,
+  queryFn: async (): Promise<IdentityCardData> => {
+    const { data, error } = await untyped.rpc("identity_card", {});
+    if (error) throw new Error(error.message);
+    return data as IdentityCardData;
+  },
+});
+export async function identityUpdate(command: "appearance" | "signature" | "photo" | "delete_photo" | "use_photo", input: Record<string, unknown> = {}) {
+  const { error } = await untyped.rpc("identity_update", { _command: command, _input: input });
+  if (error) throw new Error(error.message);
+}

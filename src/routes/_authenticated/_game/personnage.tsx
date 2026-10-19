@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/_game/personnage")({
 });
 
 const LABELS: Record<keyof Appearance, string> = {
-  silhouette: "Silhouette", skin: "Teint", hair: "Cheveux", hairColor: "Couleur", outfit: "Vêtements", style: "Style",
+  silhouette: "Silhouette", skin: "Teint", hair: "Cheveux", hairColor: "Couleur", outfit: "Vêtements", style: "Style", accessory: "Accessoire",
 };
 
 function CharacterPage() {

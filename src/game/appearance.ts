@@ -6,6 +6,7 @@ export type Appearance = {
   hairColor: string;
   outfit: string;
   style: string;
+  accessory: string;
 };
 
 export type Option = { id: string; label: string; value?: string };
@@ -49,6 +50,14 @@ export const APPEARANCE_OPTIONS = {
     { id: "chic", label: "Chic" },
     { id: "sport", label: "Sportif" },
   ],
+  accessory: [
+    { id: "none", label: "Aucun" },
+    { id: "glasses", label: "Lunettes" },
+    { id: "sunglasses", label: "Lunettes de soleil" },
+    { id: "earrings", label: "Boucles d'oreilles" },
+    { id: "cap", label: "Casquette" },
+    { id: "scarf", label: "Écharpe" },
+  ],
 } satisfies Record<keyof Appearance, Option[]>;
 
 export const DEFAULT_APPEARANCE: Appearance = {
@@ -58,6 +67,7 @@ export const DEFAULT_APPEARANCE: Appearance = {
   hairColor: "brown",
   outfit: "coral",
   style: "casual",
+  accessory: "none",
 };
 
 export function optionValue(group: keyof Appearance, id: string): string {
