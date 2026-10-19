@@ -14,7 +14,7 @@ export function InsuranceCard({ compact = false }: { compact?: boolean }) {
   const cov = (t: string) => s.coverage.find(c => c.type === t);
   return <section className="space-y-4 rounded-lg border border-border bg-card p-5">
     <div className="flex items-center gap-2"><ShieldCheck className="h-6 w-6 text-primary" /><h2 className="text-xl font-semibold">Assurances</h2></div>
-    <p className="text-sm text-muted-foreground">Des imprévus peuvent arriver chaque semaine (habitation, santé, accident). Assuré, vous ne payez que la franchise.</p>
+    <p className="text-sm text-muted-foreground">Des imprévus peuvent arriver chaque semaine (habitation, santé, accident, sinistre auto si vous avez une voiture). Assuré, vous ne payez que la franchise.</p>
     {(s.debt ?? 0) > 0 && <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">Imprévus restant à payer : {formatMoney(s.debt ?? 0)} (remboursés automatiquement dès que votre compte le permet).</p>}
 
     {s.contracts.length > 0 && <div className="space-y-2">{s.contracts.map(c => <div key={c.id} className="flex items-center justify-between gap-2 rounded-md border border-border p-3">

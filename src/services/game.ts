@@ -1321,10 +1321,20 @@ export async function careerAction(command: "interview_start" | "interview_answe
 // ---- Boutique : catalogue réel, achats via le compte courant, patrimoine existant ----
 export type ShopProduct = { id: string; name: string; price: number; kind: string; brand: string; section: string; desc: string; dep: number; owned: boolean; sales: number;
   details: { condition?: string; year?: number; km?: number; fuel?: string; conso?: number; maintenance?: number; city?: string; district?: string; surface?: number; rooms?: number; dpe?: string; charges_monthly?: number; tax_yearly?: number; realestate?: boolean } };
+export type ShopAsset = { id: string; catalog_id: string; name: string; kind: string; brand: string | null; price: number; acquired_at: string; value: number;
+  condition: string; next_maintenance: string | null; maintenance: number | null; shop: boolean; realestate: boolean; lived_in: boolean; credit_remaining: number | null; sell_price: number };
+export type PurchaseCredit = { id: string; label: string; kind: "auto" | "immo"; price: number; down_payment: number; principal: number; months: number; rate: number;
+  monthly: number; remaining: number; paid_count: number; missed: number; next_due: string; status: "active" | "repaid" | "sold" | "seized" };
+export type CreditSettings = { auto_rate: number; immo_rate: number; auto_min_months: number; auto_max_months: number; immo_min_months: number; immo_max_months: number;
+  min_down_percent: number; max_debt_percent: number; seizure_after: number };
+export type SecondhandListing = { id: string; catalog_id: string; name: string; brand: string | null; section: string; kind: string; price: number; new_price: number; condition: string; owned: boolean };
 export type ShopState = {
   balance: number; license: boolean; age: number; city: string; products: ShopProduct[];
   orders: { reference: string; name: string; brand: string; price: number; at: string }[];
-  assets: { name: string; kind: string; brand: string | null; price: number; acquired_at: string; value: number }[];
+  assets: ShopAsset[];
+  credit: { income: number; burden: number; max_monthly: number; score: number | null; settings: CreditSettings; list: PurchaseCredit[] };
+  secondhand: SecondhandListing[];
+  sales: { name: string; amount: number; credit_repaid: number; at: string }[];
 };
 export const shopQuery = queryOptions({
   queryKey: ["shop", "state"], retry: false,
@@ -1334,6 +1344,25 @@ export async function shopBuy(catalogId: string, requestId: string) {
   const { data, error } = await untyped.rpc("shop_buy", { _catalog_id: catalogId, _request_id: requestId });
   if (error) throw new Error(error.message);
   return data as { reference: string; already: boolean };
+}
+export async function shopBuyCredit(catalogId: string, downPayment: number, months: number, requestId: string) {
+  const { data, error } = await untyped.rpc("shop_buy_credit", { _catalog_id: catalogId, _down_payment: downPayment, _months: months, _request_id: requestId });
+  if (error) throw new Error(error.message);
+  return data as { reference: string; monthly: number; already: boolean };
+}
+export async function shopSell(assetId: string, requestId: string) {
+  const { data, error } = await untyped.rpc("shop_sell", { _asset_id: assetId, _request_id: requestId });
+  if (error) throw new Error(error.message);
+  return data as { amount: number; credit_repaid: number; already: boolean };
+}
+export async function secondhandBuy(listingId: string, requestId: string) {
+  const { data, error } = await untyped.rpc("secondhand_buy", { _listing_id: listingId, _request_id: requestId });
+  if (error) throw new Error(error.message);
+  return data as { reference?: string; already: boolean };
+}
+export async function maintainAsset(catalogId: string) {
+  const { error } = await untyped.rpc("personal_economy_action", { _command: "maintain", _request_id: crypto.randomUUID(), _input: { catalog_id: catalogId } });
+  if (error) throw new Error(error.message);
 }
 
 // ---- Logement : locations et emménagement dans un bien acheté (système de logement existant) ----
