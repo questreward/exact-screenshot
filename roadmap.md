@@ -182,5 +182,7 @@
 - [x] P5a : migration 0049 écrite (prêt, découvert, note, impayés, saisie) et écrans (Patrimoine, Banque)
 - [x] P5a : migration 0049 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
 - [x] P5b : migration 0050 écrite (assurances, imprévus) et écrans
-- [ ] P5b : application sur le VPS (attend la commande de l'utilisateur)
-- [ ] P5c, P5d : après validation de P5b
+- [x] P5b : appliqué sur le VPS
+- [x] P5c : migration 0051 écrite (entreprises, caisse séparée, équipe fictive + joueurs, salaire dirigeant) et écran
+- [ ] P5c : application sur le VPS (attend la commande de l'utilisateur)
+- [ ] P5d : après validation de P5c
