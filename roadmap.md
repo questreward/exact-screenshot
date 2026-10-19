@@ -184,5 +184,5 @@
 - [x] P5b : migration 0050 écrite (assurances, imprévus) et écrans
 - [x] P5b : appliqué sur le VPS
 - [x] P5c : migration 0051 écrite (entreprises, caisse séparée, équipe fictive + joueurs, salaire dirigeant) et écran
-- [ ] P5c : application sur le VPS (attend la commande de l'utilisateur)
+- [x] P5c : appliqué sur le VPS
 - [ ] P5d : après validation de P5c
