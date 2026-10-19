@@ -141,9 +141,6 @@ function ProfilePage() {
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Mon profil : Disponible dans une prochaine étape.</p>}
     {card && tab === "carte" && <CardTab card={card} />}
-    {false && <div className="space-y-3">
-      <p className="text-center text-xs text-muted-foreground">DOCUMENT FICTIF — CIVITAS. Numéro et dates attribués par le jeu ; aucune valeur réelle.</p>
-    </div>}
     {card && tab === "apparence" && <AppearanceTab card={card} />}
     {card && tab === "signature" && <SignatureTab card={card} />}
     {card && tab === "resume" && <SummaryTab />}
