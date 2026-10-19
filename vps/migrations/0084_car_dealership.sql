@@ -220,6 +220,18 @@ DECLARE cid uuid; c public.characters; u public.dealer_used; b public.businesses
   RETURN jsonb_build_object('already', false, 'amount', amount, 'reference', ref);
 END $$;
 
+-- Tarif de la concession (distinct de service_set_price, car un patron peut tenir plusieurs entreprises de services)
+CREATE FUNCTION public.dealer_set_price(_percent integer) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE cid uuid; s public.service_settings; b public.businesses; BEGIN
+  cid := public.prepare_daily_life();
+  SELECT * INTO s FROM public.service_settings WHERE id = 1;
+  SELECT * INTO b FROM public.businesses WHERE owner_id = cid AND status = 'active' AND sector_id = 'concession' FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Aucune concession'; END IF;
+  IF _percent IS NULL OR _percent NOT BETWEEN s.min_percent AND s.max_percent THEN
+    RAISE EXCEPTION 'Tarif entre % et % %% du prix catalogue', s.min_percent, s.max_percent; END IF;
+  INSERT INTO public.service_prices (business_id, percent) VALUES (b.id, _percent) ON CONFLICT (business_id) DO UPDATE SET percent = EXCLUDED.percent;
+END $$;
+
 -- 5. Lecture ---------------------------------------------------------------------------------------
 CREATE FUNCTION public.dealer_state() RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE cid uuid; c public.characters; s public.service_settings; mine public.businesses; t timestamptz := public.game_now(); BEGIN
@@ -275,15 +287,15 @@ END $$;
 -- 7. Droits --------------------------------------------------------------------------------------------
 REVOKE ALL ON FUNCTION public.dealer_for_client(uuid, uuid), public.dealer_check_buyer(uuid, public.economy_catalog) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.dealer_restock(text, integer, uuid), public.dealer_buy(uuid, text, integer, integer, uuid),
-  public.dealer_trade_in(uuid, uuid, uuid), public.dealer_used_buy(uuid, uuid), public.dealer_used_price(integer, uuid), public.dealer_state() FROM PUBLIC, anon;
+  public.dealer_trade_in(uuid, uuid, uuid), public.dealer_used_buy(uuid, uuid), public.dealer_used_price(integer, uuid), public.dealer_state(), public.dealer_set_price(integer) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.dealer_restock(text, integer, uuid), public.dealer_buy(uuid, text, integer, integer, uuid),
-  public.dealer_trade_in(uuid, uuid, uuid), public.dealer_used_buy(uuid, uuid), public.dealer_used_price(integer, uuid), public.dealer_state() TO authenticated;
+  public.dealer_trade_in(uuid, uuid, uuid), public.dealer_used_buy(uuid, uuid), public.dealer_used_price(integer, uuid), public.dealer_state(), public.dealer_set_price(integer) TO authenticated;
 
 -- 8. Contrôles -----------------------------------------------------------------------------------------
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.business_sectors WHERE id = 'concession') THEN RAISE EXCEPTION 'Secteur concession manquant'; END IF;
   IF position('''concession''' IN pg_get_functiondef('public.service_settle(uuid)'::regprocedure)) = 0 THEN RAISE EXCEPTION 'service_settle non branché'; END IF;
-  IF (SELECT count(*) FROM pg_proc WHERE proname LIKE 'dealer\_%' AND pronamespace = 'public'::regnamespace) <> 8 THEN RAISE EXCEPTION 'Fonctions concession incomplètes'; END IF;
+  IF (SELECT count(*) FROM pg_proc WHERE proname LIKE 'dealer\_%' AND pronamespace = 'public'::regnamespace) <> 9 THEN RAISE EXCEPTION 'Fonctions concession incomplètes'; END IF;
 END $$;
 
 COMMIT;
