@@ -208,7 +208,7 @@
 # Boutique, voitures, immobilier (document reçu)
 - [x] Phase 1 vague 1 : boutique, catalogue, achats, historique, patrimoine (0076 préparée)
 - [x] Phase 1 vague 2 : voitures, locations, achat immobilier (0077 préparée)
-- [ ] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main
+- [x] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main (0078 préparée)
 - [ ] Phase 3 : commerces, boutiques de joueurs, marché, promotions, wishlist, objectifs
 
 # Documents administratifs
