@@ -261,7 +261,7 @@ BEGIN
   PERFORM pg_advisory_xact_lock(151515);
   PERFORM public.legislative_refresh();
   t := public.game_now();
-  SELECT le.* INTO le FROM public.legislative_elections le JOIN public.national_elections ne ON ne.id=le.national_election_id
+  SELECT le2.* INTO le FROM public.legislative_elections le2 JOIN public.national_elections ne ON ne.id=le2.national_election_id
     WHERE ne.counted_at IS NULL AND ne.status<>'cancelled' ORDER BY ne.candidacies_at DESC LIMIT 1;
   IF le.id IS NULL THEN RAISE EXCEPTION 'Aucune élection législative en cours'; END IF;
   SELECT * INTO e FROM public.national_elections WHERE id=le.national_election_id;
