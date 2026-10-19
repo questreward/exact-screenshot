@@ -4,9 +4,8 @@ import { Landmark, LoaderCircle, ShieldAlert, HandCoins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLifeMutation } from "@/components/game/LifeControls";
-import { bankLoansQuery, drawOverdraft, repayLoanEarly, requestLoan } from "@/services/game";
+import { bankLoansQuery, drawOverdraft, formatMoney, repayLoanEarly, requestLoan } from "@/services/game";
 import { monthlyPayment, scoreLabel } from "@/game/bank";
-import { formatMoney } from "@/game/rules";
 import { newsDate } from "@/game/news";
 
 const fieldClass = "h-12 w-full rounded-md border border-input bg-background px-3 text-sm";
