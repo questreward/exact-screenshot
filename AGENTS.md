@@ -28,3 +28,4 @@
 - Rent retries keep failures under a distinct key; UI checks successful operations only.
 - World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
+- National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.

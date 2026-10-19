@@ -915,6 +915,24 @@ CREATE TRIGGER national_version_provenance BEFORE INSERT ON public.national_law_
 REVOKE ALL ON FUNCTION public.national_version_validate() FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.national_version_validate() TO service_role;
 
+-- Ancrage du mandat à la clôture prévue, même après reconnexion tardive.
+CREATE FUNCTION public.national_legislature_calendar() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+DECLARE e public.national_elections;
+BEGIN
+ SELECT * INTO e FROM public.national_elections WHERE id=NEW.election_id;
+ IF NOT FOUND OR NEW.starts_at IS DISTINCT FROM e.vote_end_at OR NEW.ends_at IS DISTINCT FROM e.term_end_at THEN RAISE EXCEPTION 'Mandat national ancré à la clôture du vote pour 28 jours'; END IF;
+ IF TG_OP='INSERT' AND (NEW.senate_composed_at IS NOT NULL OR NEW.senate_source<>'[]'::jsonb) THEN RAISE EXCEPTION 'Sénat initialement non constitué'; END IF;
+ IF TG_OP='UPDATE' THEN
+  IF (to_jsonb(NEW)-'senate_composed_at'-'senate_source') IS DISTINCT FROM (to_jsonb(OLD)-'senate_composed_at'-'senate_source') THEN RAISE EXCEPTION 'Mandat national immuable'; END IF;
+  IF NEW.senate_composed_at IS DISTINCT FROM OLD.senate_composed_at OR NEW.senate_source IS DISTINCT FROM OLD.senate_source THEN RAISE EXCEPTION 'Admissibilité du Sénat non validée : constitution bloquée'; END IF;
+ END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER national_legislature_dates BEFORE INSERT OR UPDATE ON public.national_legislatures FOR EACH ROW EXECUTE FUNCTION public.national_legislature_calendar();
+REVOKE ALL ON FUNCTION public.national_legislature_calendar() FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.national_legislature_calendar() TO service_role;
+
 REVOKE ALL ON FUNCTION public.national_version_immutable() FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.national_version_immutable() TO service_role;
 
