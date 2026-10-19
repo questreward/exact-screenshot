@@ -29,4 +29,4 @@
 - World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
-- Proposed national installation separates unchanged DDL from one atomic seed statement and read-only checks; schema and data tools cannot share a global transaction, so this procedural difference requires explicit approval before execution.
+- National installation requires one atomic transaction covering schema, seeds and integrity assertions; current schema/data tools cannot share it, so installation stays blocked until a supported unified executor exists, rather than leaving partial state or using compensating cleanup.
