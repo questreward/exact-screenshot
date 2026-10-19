@@ -777,3 +777,29 @@ export async function hideArticle(input: { id: string }) {
   const { error } = await untyped.rpc("press_hide", { _article: input.id });
   if (error) throw new Error(error.message);
 }
+
+// ---- Législatives réelles (577 circonscriptions) ----
+export type LegislativeState = {
+  now: string; my_constituency: string | null; eligible: boolean; focus: string | null;
+  election: null | { id: string; candidacies_at: string; candidacies_end_at: string; round1_at: string; round2_at: string; vote_end_at: string; counted: boolean; round1_counted: boolean };
+  my_candidacy: null | { constituency_code: string; party_code: string };
+  my_votes: Record<string, string>;
+  player_candidates: { party_code: string; name: string }[];
+  results: { round: number; party_code: string; name: string; votes: number; qualified: boolean; elected: boolean }[];
+  assembly: null | { by_party: Record<string, number>; seats: Record<string, { n: string; d: string; p: boolean }> };
+};
+export const legislativeQuery = (code: string | null) => queryOptions({
+  queryKey: ["legislatives", "state", code ?? "mine"],
+  retry: false,
+  refetchInterval: 30000,
+  queryFn: async (): Promise<LegislativeState> => {
+    const { data, error } = await untyped.rpc("legislative_state", { _code: code });
+    if (error) throw new Error(error.message);
+    return data as LegislativeState;
+  },
+});
+export async function legislativeAction(input: { command: "candidacy" | "withdraw" | "vote"; constituency_code?: string; party_code?: string }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("legislative_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
