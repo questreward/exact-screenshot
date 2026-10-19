@@ -1224,3 +1224,44 @@ export const candidacyPhotoQuery = (id: string) => queryOptions({
     return (data as string | null) ?? null;
   },
 });
+
+// ---- Sondages, débats publics, CV citoyen (règles et contrôles côté serveur) ----
+export type PollGroup = { group: string; count: number; counts: number[] | null };
+export type Poll = { id: string; question: string; options: string[]; sponsor_kind: string; sponsor_label: string; created_at: string; ends_at: string; open: boolean; mine: boolean;
+  results: { players: number[]; total: number; simulated: number[]; simulated_sample: number; filters: Record<string, PollGroup[]> | null; min_answers_filters: number; my_answer: number | null } };
+export type PollsState = { now: string; sponsors: { kind: string; label: string }[]; polls: Poll[] };
+export const pollsQuery = queryOptions({
+  queryKey: ["polls", "state"], retry: false,
+  queryFn: async (): Promise<PollsState> => { const { data, error } = await untyped.rpc("polls_state", {}); if (error) throw new Error(error.message); return data as PollsState; },
+});
+export async function pollAction(command: "create" | "answer", input: Record<string, unknown>) {
+  const { error } = await untyped.rpc("poll_action", { _command: command, _input: input }); if (error) throw new Error(error.message);
+}
+export type Forum = { id: string; topic_kind: string; title: string; context: string | null; created_at: string; closes_at: string; open: boolean; mine: boolean; author: string; posts: number };
+export type ForumPost = { id: string; kind: "position" | "reponse" | "question"; parent_id: string | null; body: string; created_at: string; mine: boolean; author_id: string; author: string; soutiens: number; critiques: number; my_reaction: string | null };
+export type ForumsState = { now: string; forums: Forum[]; posts: ForumPost[] | null };
+export const forumsQuery = (forum: string | null) => queryOptions({
+  queryKey: ["forums", forum ?? "list"], retry: false,
+  queryFn: async (): Promise<ForumsState> => { const { data, error } = await untyped.rpc("forums_state", { _forum: forum }); if (error) throw new Error(error.message); return data as ForumsState; },
+});
+export async function forumAction(command: "create" | "post" | "react", input: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc("forum_action", { _command: command, _input: input }); if (error) throw new Error(error.message); return data as { id?: string };
+}
+type Dated = { since?: string; until?: string | null; at?: string | null; active?: boolean };
+export type CitizenCv = {
+  identity: { name: string; age: number; city: string };
+  studies: ({ title: string; semester: number; progress: number } & Dated)[];
+  jobs: ({ title: string; employer: string; level: number } & Dated)[];
+  businesses: ({ name: string; status: string } & Dated)[];
+  organizations: ({ name: string; kind: string; role: string } & Dated)[];
+  unions: ({ name: string } & Dated)[];
+  mandates: ({ function: string; city: string } & Dated)[];
+  projects: ({ title: string; status: string } & Dated)[];
+  distinctions: ({ title: string } & Dated)[];
+  engagements: Record<string, number>;
+  skills: { dimension: string; value: number }[] | null;
+};
+export const citizenCvQuery = queryOptions({
+  queryKey: ["cv", "state"], retry: false,
+  queryFn: async (): Promise<CitizenCv> => { const { data, error } = await untyped.rpc("citizen_cv", {}); if (error) throw new Error(error.message); return data as CitizenCv; },
+});

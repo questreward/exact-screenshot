@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -22,6 +22,7 @@ export const SECTIONS: Section[] = [
   { id: "mes-documents", label: "Mes documents", icon: FolderLock, description: "Coffre-fort : contrats, quittances, impôts, formulaires.", available: true },
   { id: "orientation", label: "Mon orientation", icon: Compass, description: "Parti soutenu ou indépendant, positionnement et historique.", available: true },
   { id: "ma-vie", label: "Ma vie", icon: BookOpenText, description: "Journal de vie, réputations et compétences.", available: true },
+  { id: "mon-parcours", label: "Mon parcours", icon: ScrollText, description: "Ton CV citoyen : études, emplois, engagements, mandats.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
