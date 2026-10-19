@@ -104,8 +104,8 @@ BEGIN
   SELECT jsonb_object_agg(k,1) INTO weights FROM (SELECT p.organization_id::text k FROM public.national_party_profiles p UNION ALL SELECT 'divers') q;
  ELSE
   SELECT jsonb_object_agg(k,s) INTO weights FROM (
-   SELECT CASE WHEN p.organization_id IS NULL THEN 'divers' ELSE p.organization_id::text END k, sum((x->>'seats')::int) s
-   FROM jsonb_array_elements(source) x LEFT JOIN public.national_party_profiles p ON p.organization_id=(x->>'organization_id')::uuid
+   SELECT CASE WHEN p.organization_id IS NULL THEN 'divers' ELSE p.organization_id::text END k, sum((src.value->>'seats')::int) s
+   FROM jsonb_array_elements(source) src LEFT JOIN public.national_party_profiles p ON p.organization_id=(src.value->>'organization_id')::uuid
    GROUP BY 1) q;
  END IF;
  SELECT sum(value::numeric) INTO total FROM jsonb_each_text(weights);
