@@ -536,7 +536,7 @@ export const protestsQuery = queryOptions({
     return data as ProtestsState;
   },
 });
-export async function callProtest(input: { cause: string; description: string; locationId: string; dayOffset: number; hour: number; consultationId?: string; optionId?: string; decisionId?: string }) {
+export async function callProtest(input: { cause: string; description: string; locationId: string; dayOffset: number; hour: number; consultationId?: string | undefined; optionId?: string | undefined; decisionId?: string | undefined }) {
   const { data, error } = await untyped.rpc("call_protest", { _cause: input.cause, _description: input.description, _location_id: input.locationId, _day_offset: input.dayOffset, _hour: input.hour, _consultation_id: input.consultationId || null, _option_id: input.optionId || null, _decision_id: input.decisionId || null });
   if (error) throw new Error(error.message);
   return data as string;
