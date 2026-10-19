@@ -220,3 +220,6 @@
 # Relations internationales (document reçu)
 - [ ] Phase 1 : carte du monde, fiches pays, relations, diplomatie, traités, commerce, sanctions, embargos, énergie, conséquences économiques
 - [ ] Phases suivantes (après accord)
+
+# Entreprises de services et agences (document reçu)
+- [ ] Phase 1 (après Carrière, Boutique, International — ordre à confirmer)
