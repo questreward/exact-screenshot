@@ -1,6 +1,7 @@
 // Chargé uniquement dans le navigateur (import dynamique depuis la page France).
 import { useEffect, useRef } from "react";
-import maplibregl, { type GeoJSONSource, type Map as MLMap } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+type GeoJSONSource = maplibregl.GeoJSONSource; type MLMap = maplibregl.Map;
 import "maplibre-gl/dist/maplibre-gl.css";
 import { PLAYABLE_INSEE, type CommuneRow } from "@/game/france";
 
@@ -50,9 +51,9 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
     };
     const loadVisible = () => {
       if (m.getZoom() < 7) return;
-      const b = m.getBounds();
+      
       const deps = m.queryRenderedFeatures(undefined, { layers: ["dep-fill"] }).map(f => String(f.properties?.["code"]));
-      void b; for (const d of new Set(deps)) void loadDep(d);
+      for (const d of new Set(deps)) void loadDep(d);
     };
 
     m.on("load", () => {
