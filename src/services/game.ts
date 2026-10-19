@@ -1214,3 +1214,13 @@ export async function documentAction(command: "seen" | "save" | "submit" | "corr
   if (error) throw new Error(error.message);
   return data as { id?: string; data?: Record<string, unknown> };
 }
+export const candidacyPhotoQuery = (id: string) => queryOptions({
+  queryKey: ["orientation", "candidacy-photo", id],
+  retry: false,
+  staleTime: 5 * 60_000,
+  queryFn: async (): Promise<string | null> => {
+    const { data, error } = await untyped.rpc("candidacy_photo", { _candidacy: id });
+    if (error) return null; // fonction pas encore installée ou candidat fictif : on garde l'initiale
+    return (data as string | null) ?? null;
+  },
+});

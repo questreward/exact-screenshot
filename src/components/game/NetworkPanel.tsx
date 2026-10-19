@@ -1,3 +1,4 @@
+import { PlayerFace } from "@/components/game/CivicProfileCard";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -38,7 +39,7 @@ export function NetworkPanel() {
     {tab === "contacts" && <Contacts onChat={setChat} />}
     {tab === "messages" && (n.threads.length === 0 ? <p className="text-sm text-muted-foreground">Aucune conversation. Ouvrez un contact pour lui écrire.</p> :
       <div className="space-y-2">{n.threads.map(t => <button key={t.id} onClick={() => setChat(t.other.id)} className="flex min-h-14 w-full items-center justify-between gap-2 rounded-md border border-border p-3 text-left">
-        <div className="min-w-0"><p className="font-semibold">{t.other.name}</p><p className="truncate text-sm text-muted-foreground">{t.last_body}</p></div>
+        <PlayerFace id={t.other.id} name={t.other.name} /><div className="min-w-0 flex-1"><p className="font-semibold">{t.other.name}</p><p className="truncate text-sm text-muted-foreground">{t.last_body}</p></div>
         {t.unread > 0 && <span className="rounded-full bg-primary px-2 text-xs text-primary-foreground">{t.unread}</span>}
       </button>)}</div>)}
     {tab === "profil" && <><MyProfile bio={n.bio.bio} listed={n.bio.listed} max={n.settings.bio_max} followers={n.followers} me={n.me} /><Blocked list={n.blocked} /></>}
@@ -103,7 +104,7 @@ function Chat({ id, onBack, max }: { id: string; onBack: () => void; max: number
   return <div className="space-y-3">
     <Button variant="ghost" className="h-12" onClick={onBack}>← Retour</Button>
     {!data ? <LoaderCircle className="mx-auto animate-spin" /> : <>
-      <h3 className="text-lg font-semibold">{data.other.name}</h3>
+      <h3 className="flex items-center gap-2 text-lg font-semibold"><PlayerFace id={id} name={data.other.name} />{data.other.name}</h3>
       <div className="space-y-2">{data.messages.length === 0 ? <p className="text-sm text-muted-foreground">Aucun message pour l'instant.</p> : data.messages.map(m =>
         <div key={m.id} className={`max-w-[85%] rounded-lg p-3 text-sm ${m.mine ? "ml-auto bg-primary text-primary-foreground" : "bg-muted"}`}>
           <p className="whitespace-pre-wrap">{m.body}</p><p className="mt-1 text-[10px] opacity-70">{newsDate(m.sent_at)}</p></div>)}</div>
