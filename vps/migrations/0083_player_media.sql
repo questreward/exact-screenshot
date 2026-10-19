@@ -19,7 +19,7 @@ CREATE TABLE public.media_settings (
   npc_per_item integer NOT NULL DEFAULT 6,         -- lecteurs fictifs gagnés par contenu publié dans la semaine
   npc_per_player integer NOT NULL DEFAULT 2,       -- lecteurs fictifs attirés par chaque abonné joueur
   npc_cap integer NOT NULL DEFAULT 300,
-  npc_cents integer NOT NULL DEFAULT 20,           -- centimes rapportés par lecteur fictif et par semaine
+  npc_cents integer NOT NULL DEFAULT 50,           -- centimes rapportés par lecteur fictif et par semaine
   owner_pay_max integer NOT NULL DEFAULT 150,      -- rémunération maximale du propriétaire par semaine
   report_hide integer NOT NULL DEFAULT 3,
   mention_rep integer NOT NULL DEFAULT 1,
