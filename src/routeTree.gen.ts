@@ -39,6 +39,7 @@ import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
+import { Route as AuthenticatedGameVieAdministrativeRouteImport } from './routes/_authenticated/_game/vie-administrative'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameElectionsIdRouteImport } from './routes/_authenticated/_game/elections_.$id'
 import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
@@ -206,6 +207,12 @@ const AuthenticatedGameVieRoute = AuthenticatedGameVieRouteImport.update({
   path: '/vie',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameVieAdministrativeRoute =
+  AuthenticatedGameVieAdministrativeRouteImport.update({
+    id: '/vie-administrative',
+    path: '/vie-administrative',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameActualitesIdRoute =
   AuthenticatedGameActualitesIdRouteImport.update({
     id: '/actualites_/$id',
@@ -272,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -308,6 +316,7 @@ export interface FileRoutesByTo {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/vie': typeof AuthenticatedGameVieRoute
+  '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -347,6 +356,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
+  '/_authenticated/_game/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/elections_/$id': typeof AuthenticatedGameElectionsIdRoute
   '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/vie-administrative'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/vie'
+    | '/vie-administrative'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -459,6 +471,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
     | '/_authenticated/_game/vie'
+    | '/_authenticated/_game/vie-administrative'
     | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/elections_/$id'
     | '/_authenticated/_game/organisations_/$id'
@@ -689,6 +702,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/vie-administrative': {
+      id: '/_authenticated/_game/vie-administrative'
+      path: '/vie-administrative'
+      fullPath: '/vie-administrative'
+      preLoaderRoute: typeof AuthenticatedGameVieAdministrativeRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/actualites_/$id': {
       id: '/_authenticated/_game/actualites_/$id'
       path: '/actualites/$id'
@@ -756,6 +776,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
+  AuthenticatedGameVieAdministrativeRoute: typeof AuthenticatedGameVieAdministrativeRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameElectionsIdRoute: typeof AuthenticatedGameElectionsIdRoute
   AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
@@ -787,6 +808,8 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
     AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,
+    AuthenticatedGameVieAdministrativeRoute:
+      AuthenticatedGameVieAdministrativeRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameElectionsIdRoute: AuthenticatedGameElectionsIdRoute,
     AuthenticatedGameOrganisationsIdRoute:
