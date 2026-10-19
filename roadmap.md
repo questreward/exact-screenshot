@@ -154,3 +154,8 @@
 - [ ] Application v3 bloquée : exécuteur officiellement pris en charge réunissant structure, initialisation et assertions dans une transaction unique nécessaire, puis nouvel accord explicite. Aucun rollback compensatoire ni installation partielle autorisé.
 - [ ] Vérifications après application bloquées par l’absence d’application ; paramètres Sénat/votes simulés/textes/deltas à préciser avant activation.
 - Bloc 16 interdit.
+
+## P1 — Déplacements entre villes et espaces intérieurs
+- [x] Roadmap approuvée et préparation documentaire réalisée.
+- [x] Sept décisions initiales et six décisions complémentaires validées ; cahier des charges final v2 livré le 19 octobre 2026.
+- SQL, développement, migration, comptes et tests non autorisés à cette étape ; application future conditionnée à un exécuteur atomique fiable et aux accords requis, dans l’ordre des migrations.
