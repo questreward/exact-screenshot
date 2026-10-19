@@ -21,6 +21,7 @@ import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authenticated/_game/actualites'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
+import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
 import { Route as AuthenticatedGameDemarchesRouteImport } from './routes/_authenticated/_game/demarches'
 import { Route as AuthenticatedGameElectionsRouteImport } from './routes/_authenticated/_game/elections'
@@ -28,6 +29,7 @@ import { Route as AuthenticatedGameEvenementsRouteImport } from './routes/_authe
 import { Route as AuthenticatedGameFamilleRouteImport } from './routes/_authenticated/_game/famille'
 import { Route as AuthenticatedGameFranceRouteImport } from './routes/_authenticated/_game/france'
 import { Route as AuthenticatedGameJtRouteImport } from './routes/_authenticated/_game/jt'
+import { Route as AuthenticatedGameJusticeRouteImport } from './routes/_authenticated/_game/justice'
 import { Route as AuthenticatedGameLoisRouteImport } from './routes/_authenticated/_game/lois'
 import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
 import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authenticated/_game/mandat'
@@ -40,6 +42,8 @@ import { Route as AuthenticatedGamePetitionsRouteImport } from './routes/_authen
 import { Route as AuthenticatedGamePolitiqueRouteImport } from './routes/_authenticated/_game/politique'
 import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authenticated/_game/presse'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
+import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authenticated/_game/sante'
+import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
 import { Route as AuthenticatedGameTropheesRouteImport } from './routes/_authenticated/_game/trophees'
@@ -111,6 +115,12 @@ const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
   path: '/carte',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameClassementsRoute =
+  AuthenticatedGameClassementsRouteImport.update({
+    id: '/classements',
+    path: '/classements',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameDebatsRoute = AuthenticatedGameDebatsRouteImport.update({
   id: '/debats',
   path: '/debats',
@@ -150,6 +160,12 @@ const AuthenticatedGameJtRoute = AuthenticatedGameJtRouteImport.update({
   path: '/jt',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameJusticeRoute =
+  AuthenticatedGameJusticeRouteImport.update({
+    id: '/justice',
+    path: '/justice',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameLoisRoute = AuthenticatedGameLoisRouteImport.update({
   id: '/lois',
   path: '/lois',
@@ -217,6 +233,17 @@ const AuthenticatedGameReseauRoute = AuthenticatedGameReseauRouteImport.update({
   path: '/reseau',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameSanteRoute = AuthenticatedGameSanteRouteImport.update({
+  id: '/sante',
+  path: '/sante',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
+const AuthenticatedGameSyndicatsRoute =
+  AuthenticatedGameSyndicatsRouteImport.update({
+    id: '/syndicats',
+    path: '/syndicats',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameTableauDeBordRoute =
   AuthenticatedGameTableauDeBordRouteImport.update({
     id: '/tableau-de-bord',
@@ -294,6 +321,7 @@ export interface FileRoutesByFullPath {
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/classements': typeof AuthenticatedGameClassementsRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
@@ -301,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/famille': typeof AuthenticatedGameFamilleRoute
   '/france': typeof AuthenticatedGameFranceRoute
   '/jt': typeof AuthenticatedGameJtRoute
+  '/justice': typeof AuthenticatedGameJusticeRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
@@ -313,6 +342,8 @@ export interface FileRoutesByFullPath {
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/presse': typeof AuthenticatedGamePresseRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
+  '/sante': typeof AuthenticatedGameSanteRoute
+  '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
@@ -336,6 +367,7 @@ export interface FileRoutesByTo {
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
+  '/classements': typeof AuthenticatedGameClassementsRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
@@ -343,6 +375,7 @@ export interface FileRoutesByTo {
   '/famille': typeof AuthenticatedGameFamilleRoute
   '/france': typeof AuthenticatedGameFranceRoute
   '/jt': typeof AuthenticatedGameJtRoute
+  '/justice': typeof AuthenticatedGameJusticeRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
@@ -355,6 +388,8 @@ export interface FileRoutesByTo {
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/presse': typeof AuthenticatedGamePresseRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
+  '/sante': typeof AuthenticatedGameSanteRoute
+  '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
@@ -381,6 +416,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/actualites': typeof AuthenticatedGameActualitesRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
+  '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
   '/_authenticated/_game/demarches': typeof AuthenticatedGameDemarchesRoute
   '/_authenticated/_game/elections': typeof AuthenticatedGameElectionsRoute
@@ -388,6 +424,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/famille': typeof AuthenticatedGameFamilleRoute
   '/_authenticated/_game/france': typeof AuthenticatedGameFranceRoute
   '/_authenticated/_game/jt': typeof AuthenticatedGameJtRoute
+  '/_authenticated/_game/justice': typeof AuthenticatedGameJusticeRoute
   '/_authenticated/_game/lois': typeof AuthenticatedGameLoisRoute
   '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/_authenticated/_game/mandat': typeof AuthenticatedGameMandatRoute
@@ -400,6 +437,8 @@ export interface FileRoutesById {
   '/_authenticated/_game/politique': typeof AuthenticatedGamePolitiqueRoute
   '/_authenticated/_game/presse': typeof AuthenticatedGamePresseRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
+  '/_authenticated/_game/sante': typeof AuthenticatedGameSanteRoute
+  '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
   '/_authenticated/_game/trophees': typeof AuthenticatedGameTropheesRoute
@@ -425,6 +464,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/agenda'
     | '/carte'
+    | '/classements'
     | '/debats'
     | '/demarches'
     | '/elections'
@@ -432,6 +472,7 @@ export interface FileRouteTypes {
     | '/famille'
     | '/france'
     | '/jt'
+    | '/justice'
     | '/lois'
     | '/ma-ville'
     | '/mandat'
@@ -444,6 +485,8 @@ export interface FileRouteTypes {
     | '/politique'
     | '/presse'
     | '/reseau'
+    | '/sante'
+    | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
     | '/trophees'
@@ -467,6 +510,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/agenda'
     | '/carte'
+    | '/classements'
     | '/debats'
     | '/demarches'
     | '/elections'
@@ -474,6 +518,7 @@ export interface FileRouteTypes {
     | '/famille'
     | '/france'
     | '/jt'
+    | '/justice'
     | '/lois'
     | '/ma-ville'
     | '/mandat'
@@ -486,6 +531,8 @@ export interface FileRouteTypes {
     | '/politique'
     | '/presse'
     | '/reseau'
+    | '/sante'
+    | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
     | '/trophees'
@@ -511,6 +558,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/actualites'
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
+    | '/_authenticated/_game/classements'
     | '/_authenticated/_game/debats'
     | '/_authenticated/_game/demarches'
     | '/_authenticated/_game/elections'
@@ -518,6 +566,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/famille'
     | '/_authenticated/_game/france'
     | '/_authenticated/_game/jt'
+    | '/_authenticated/_game/justice'
     | '/_authenticated/_game/lois'
     | '/_authenticated/_game/ma-ville'
     | '/_authenticated/_game/mandat'
@@ -530,6 +579,8 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/politique'
     | '/_authenticated/_game/presse'
     | '/_authenticated/_game/reseau'
+    | '/_authenticated/_game/sante'
+    | '/_authenticated/_game/syndicats'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
     | '/_authenticated/_game/trophees'
@@ -639,6 +690,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameCarteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/classements': {
+      id: '/_authenticated/_game/classements'
+      path: '/classements'
+      fullPath: '/classements'
+      preLoaderRoute: typeof AuthenticatedGameClassementsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/debats': {
       id: '/_authenticated/_game/debats'
       path: '/debats'
@@ -686,6 +744,13 @@ declare module '@tanstack/react-router' {
       path: '/jt'
       fullPath: '/jt'
       preLoaderRoute: typeof AuthenticatedGameJtRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/justice': {
+      id: '/_authenticated/_game/justice'
+      path: '/justice'
+      fullPath: '/justice'
+      preLoaderRoute: typeof AuthenticatedGameJusticeRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/lois': {
@@ -772,6 +837,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameReseauRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/sante': {
+      id: '/_authenticated/_game/sante'
+      path: '/sante'
+      fullPath: '/sante'
+      preLoaderRoute: typeof AuthenticatedGameSanteRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/syndicats': {
+      id: '/_authenticated/_game/syndicats'
+      path: '/syndicats'
+      fullPath: '/syndicats'
+      preLoaderRoute: typeof AuthenticatedGameSyndicatsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/tableau-de-bord': {
       id: '/_authenticated/_game/tableau-de-bord'
       path: '/tableau-de-bord'
@@ -856,6 +935,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameActualitesRoute: typeof AuthenticatedGameActualitesRoute
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
+  AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
   AuthenticatedGameDemarchesRoute: typeof AuthenticatedGameDemarchesRoute
   AuthenticatedGameElectionsRoute: typeof AuthenticatedGameElectionsRoute
@@ -863,6 +943,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameFamilleRoute: typeof AuthenticatedGameFamilleRoute
   AuthenticatedGameFranceRoute: typeof AuthenticatedGameFranceRoute
   AuthenticatedGameJtRoute: typeof AuthenticatedGameJtRoute
+  AuthenticatedGameJusticeRoute: typeof AuthenticatedGameJusticeRoute
   AuthenticatedGameLoisRoute: typeof AuthenticatedGameLoisRoute
   AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
   AuthenticatedGameMandatRoute: typeof AuthenticatedGameMandatRoute
@@ -875,6 +956,8 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGamePolitiqueRoute: typeof AuthenticatedGamePolitiqueRoute
   AuthenticatedGamePresseRoute: typeof AuthenticatedGamePresseRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
+  AuthenticatedGameSanteRoute: typeof AuthenticatedGameSanteRoute
+  AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
   AuthenticatedGameTropheesRoute: typeof AuthenticatedGameTropheesRoute
@@ -893,6 +976,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameActualitesRoute: AuthenticatedGameActualitesRoute,
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
+    AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,
     AuthenticatedGameDemarchesRoute: AuthenticatedGameDemarchesRoute,
     AuthenticatedGameElectionsRoute: AuthenticatedGameElectionsRoute,
@@ -900,6 +984,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameFamilleRoute: AuthenticatedGameFamilleRoute,
     AuthenticatedGameFranceRoute: AuthenticatedGameFranceRoute,
     AuthenticatedGameJtRoute: AuthenticatedGameJtRoute,
+    AuthenticatedGameJusticeRoute: AuthenticatedGameJusticeRoute,
     AuthenticatedGameLoisRoute: AuthenticatedGameLoisRoute,
     AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,
     AuthenticatedGameMandatRoute: AuthenticatedGameMandatRoute,
@@ -912,6 +997,8 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGamePolitiqueRoute: AuthenticatedGamePolitiqueRoute,
     AuthenticatedGamePresseRoute: AuthenticatedGamePresseRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
+    AuthenticatedGameSanteRoute: AuthenticatedGameSanteRoute,
+    AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
     AuthenticatedGameTropheesRoute: AuthenticatedGameTropheesRoute,

@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -35,6 +35,10 @@ export const SECTIONS: Section[] = [
   { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
   { id: "famille", label: "Famille", icon: Heart, description: "Couple, enfants, logement partagé et amis proches.", available: true },
+  { id: "sante", label: "Santé", icon: HeartPulse, description: "Santé, moral, sport et médecin.", available: true },
+  { id: "justice", label: "Justice", icon: Scale, description: "Porter plainte, se défendre, jugements.", available: true },
+  { id: "syndicats", label: "Syndicats", icon: Megaphone, description: "Se syndiquer, revendiquer, faire grève.", available: true },
+  { id: "classements", label: "Classements", icon: BarChart3, description: "Les joueurs les plus influents et populaires.", available: true },
   { id: "trophees", label: "Trophées", icon: Trophy, description: "Vos succès et vos prochains objectifs.", available: true },
   { id: "parametres", label: "Paramètres", icon: Settings, description: "Langue, notifications, confidentialité.", available: true },
 ];
