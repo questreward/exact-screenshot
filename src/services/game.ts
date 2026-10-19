@@ -658,3 +658,18 @@ export const businessJoin = (offer: string) => bizRpc("business_join", { _offer:
 export const businessLeave = (employee: string) => bizRpc("business_leave", { _employee: employee });
 export const businessWork = (biz: string) => bizRpc("business_work", { _biz: biz });
 export const businessClose = (biz: string) => bizRpc("business_close", { _biz: biz });
+
+// P5d — Impôts des entreprises
+export type BusinessTaxState = {
+  settings: { profit_rate: number; local_weekly: number };
+  debt: number; total_paid: number;
+  weeks: { week: number; profit: number; profit_tax: number; local_tax: number; paid: number }[];
+};
+export const businessTaxQuery = queryOptions({
+  queryKey: ["bank", "business-tax-state"],
+  queryFn: async (): Promise<BusinessTaxState> => {
+    const { data, error } = await untyped.rpc("business_tax_state", {});
+    if (error) throw new Error(error.message);
+    return data as BusinessTaxState;
+  },
+});

@@ -9,6 +9,7 @@ import {
   businessOpenOffer, businessQuery, businessSetOwnerSalary, businessWork, formatMoney, foundBusiness, type BusinessState,
 } from "@/services/game";
 import { weeklyCosts } from "@/game/business";
+import { BusinessTaxes } from "@/components/game/BusinessTaxes";
 
 export function BusinessCard() {
   const { data: s, isLoading } = useQuery(businessQuery);
@@ -110,6 +111,8 @@ function MyBusiness({ s }: { s: BusinessState }) {
           <b className={w.revenue - w.costs >= 0 ? "text-primary" : "text-destructive"}>{w.revenue - w.costs >= 0 ? "+" : ""}{formatMoney(w.revenue - w.costs)}</b>
           <span className="text-muted-foreground"> · {w.workers} pers., {w.shifts} services</span></p>)}
     </div>
+
+    <BusinessTaxes />
 
     {confirmClose ? <div className="flex gap-2">
       <Button variant="destructive" className="h-12 flex-1" disabled={close.isPending} onClick={() => close.mutate(b.id)}>Confirmer la fermeture</Button>
