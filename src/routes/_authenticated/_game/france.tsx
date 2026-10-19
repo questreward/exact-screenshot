@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Map as MapIcon, Search, LocateFixed, X, Landmark, MapPin, Layers, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { gameMeta } from "@/game/metadata";
-import { citiesQuery, positionQuery } from "@/services/game";
+import { citiesQuery, legislativeQuery, positionQuery } from "@/services/game";
+import { CircoElection, LegislativesPanel } from "@/components/game/LegislativesPanel";
 import { circoLabel, formatPopulation, PLAYABLE_CENTER, PLAYABLE_INSEE, searchCommunes, type CommuneIndexRow, type CommuneRow } from "@/game/france";
 import type { MapSelection } from "@/components/game/FranceMap";
 import { ASSEMBLY_MAJORITY, ASSEMBLY_SEATS, seatsByParty, type LegData } from "@/game/legislatives";
@@ -32,6 +33,8 @@ function FrancePage() {
   const [circoCommunes, setCircoCommunes] = useState<CommuneRow[] | null>(null);
   const [leg, setLeg] = useState<LegData | null>(null);
   useEffect(() => { void fetch("/geo/legislatives-2024.json").then(r => r.json()).then(setLeg).catch(() => {}); }, []);
+  const live = useQuery(legislativeQuery(null)).data?.assembly;
+  const legView = useMemo<LegData | null>(() => leg && live ? { ...leg, seats: Object.fromEntries(Object.entries(leg.seats).map(([k, v]) => [k, live.seats[k] ? { ...v, n: live.seats[k]!.n, d: live.seats[k]!.d } : v])) } : leg, [leg, live]);
 
   useEffect(() => {
     void fetch("/geo/departements.json").then(r => r.json()).then((g: { features: { properties: { code: string; nom: string } }[] }) =>
@@ -75,7 +78,8 @@ function FrancePage() {
     </div>
 
     <ClientOnly fallback={<MapFallback />}><Suspense fallback={<MapFallback />}><FranceMap onSelect={setSel} focus={focus} showCircos={showCircos} /></Suspense></ClientOnly>
-    {leg && <Assembly leg={leg} />}
+    {leg && <LegislativesPanel leg={leg} />}
+    {legView && <Assembly leg={legView} live={!!live} />}
     <p className="text-xs text-muted-foreground">Zoomez pour voir les circonscriptions, puis toutes les communes. Touchez un élément pour sa fiche.</p>
 
     {sel && <section className="relative space-y-2 rounded-lg border border-primary bg-card p-5">
@@ -100,8 +104,8 @@ function FrancePage() {
           : circoCommunes.length === 0 ? <p className="text-sm text-muted-foreground">Circonscription située à l'intérieur d'une grande ville.</p>
           : <><p className="text-sm text-muted-foreground">{circoCommunes.length} commune{circoCommunes.length > 1 ? "s" : ""} · {formatPopulation(circoCommunes.reduce((s, r) => s + r[3], 0))}</p>
             <p className="text-sm">{circoCommunes.slice(0, 12).map(r => r[1]).join(", ")}{circoCommunes.length > 12 ? "…" : ""}</p></>}
-        {leg?.seats[sel.code] && <CircoResults leg={leg} code={sel.code} />}
-        <p className="text-xs text-muted-foreground">Candidatures et vote aux prochaines législatives : Disponible dans une prochaine étape.</p>
+        {legView?.seats[sel.code] && <CircoResults leg={legView} code={sel.code} />}
+        {leg && <CircoElection leg={leg} code={sel.code} />}
       </>}
       {sel.kind === "departement" && <>
         <p className="text-xs font-semibold text-primary">Département</p>
@@ -122,14 +126,14 @@ function PartyBar({ leg, rows }: { leg: LegData; rows: [string, number][] }) {
 function CircoResults({ leg, code }: { leg: LegData; code: string }) {
   const s = leg.seats[code]!; const p = leg.parties[s.n];
   return <div className="space-y-3 rounded-lg border border-border p-3">
-    <div className="flex items-center gap-2"><span className="h-4 w-4 shrink-0 rounded-full" style={{ background: p?.color }} /><div><p className="font-semibold">{s.d}</p><p className="text-xs text-muted-foreground">Député (personnage inventé) · {p?.label}</p></div></div>
+    <div className="flex items-center gap-2"><span className="h-4 w-4 shrink-0 rounded-full" style={{ background: p?.color }} /><div><p className="font-semibold">{s.d}</p><p className="text-xs text-muted-foreground">Député · {p?.label}</p></div></div>
     <p className="text-xs text-muted-foreground">{s.i.toLocaleString("fr-FR")} inscrits · vrais scores des législatives 2024</p>
     <p className="text-xs font-semibold uppercase text-primary">1er tour</p><PartyBar leg={leg} rows={s.r1} />
     {s.r2.length > 0 ? <><p className="text-xs font-semibold uppercase text-primary">2e tour</p><PartyBar leg={leg} rows={s.r2} /></> : <p className="text-xs text-muted-foreground">Élu dès le 1er tour.</p>}
   </div>;
 }
 
-function Assembly({ leg }: { leg: LegData }) {
+function Assembly({ leg, live }: { leg: LegData; live: boolean }) {
   const rows = seatsByParty(leg);
   const outside = Object.entries(leg.seats).filter(([code]) => code.startsWith("Z") && ["ZX", "ZZ", "ZW", "ZP", "ZN"].some(p => code.startsWith(p)));
   return <section className="space-y-3 rounded-xl border border-border bg-card p-4">
@@ -137,6 +141,6 @@ function Assembly({ leg }: { leg: LegData }) {
     <div className="relative flex h-5 overflow-hidden rounded-full">{rows.map(r => <div key={r.code} title={leg.parties[r.code]?.label} style={{ width: `${r.seats / ASSEMBLY_SEATS * 100}%`, background: leg.parties[r.code]?.color }} />)}
       <div className="absolute inset-y-0 w-0.5 bg-foreground" style={{ left: `${ASSEMBLY_MAJORITY / ASSEMBLY_SEATS * 100}%` }} /></div>
     <ul className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm sm:grid-cols-3">{rows.map(r => <li key={r.code} className="flex items-center gap-2"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: leg.parties[r.code]?.color }} /><span className="truncate">{leg.parties[r.code]?.label}</span><span className="ml-auto font-semibold tabular-nums">{r.seats}</span></li>)}</ul>
-    <p className="text-xs text-muted-foreground">Point de départ : résultats réels de 2024. Les députés sont des personnages inventés. {outside.length} circonscriptions (Français de l'étranger, Pacifique) ne figurent pas sur la carte.</p>
+    <p className="text-xs text-muted-foreground">{live ? "Assemblée élue dans le jeu." : "Point de départ : résultats réels de 2024."} Les députés simulés sont des personnages inventés. {outside.length} circonscriptions (Français de l'étranger, Pacifique) ne figurent pas sur la carte.</p>
   </section>;
 }
