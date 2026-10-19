@@ -1383,3 +1383,31 @@ export async function housingAction(command: "rent" | "move_in", input: Record<s
   if (error) throw new Error(error.message);
   return data as { lease_id: string; deposit?: number; move?: number };
 }
+
+// ---- Marché : magasins des villes, commerces de joueurs, marché entre joueurs ----
+export type CityStore = { id: string; city_id: string; city: string; name: string; kind: string; district: string; sections: string[]; discount: number; hours: string; here: boolean };
+export type MarketListing = { id: string; catalog_id: string; name: string; brand: string | null; section: string; kind: string; price: number; new_price: number; note: string;
+  status: "open" | "reserved"; mine: boolean; seller: string; created_at: string; reserved_for_me: boolean; reserved_price: number | null; reserved_until: string | null; owned: boolean };
+export type MarketOffer = { id: string; listing_id: string; name: string; amount: number; price: number; buyer?: string; status: string; reserved_until?: string | null; at: string };
+export type ShopStockItem = { id: string; catalog_id: string; name: string; brand: string | null; price: number; new_price: number; quantity: number; owned: boolean };
+export type MarketState = {
+  me: string; city: string; collected: number; balance: number; license: boolean;
+  settings: { fee_percent: number; max_price_percent: number; min_offer_percent: number; reservation_days: number; max_listings: number; wholesale_percent: number; shop_min_percent: number; shop_max_percent: number; max_stock: number };
+  stores: CityStore[]; listings: MarketListing[];
+  my_assets: { id: string; name: string; brand: string | null; new_price: number; listed: boolean; credit: boolean }[];
+  offers_received: MarketOffer[]; offers_sent: MarketOffer[];
+  sales: { name: string; amount: number; fee: number; at: string }[];
+  shops: { id: string; name: string; city_id: string; owner: string; mine: boolean; stock: ShopStockItem[]; listings: number }[];
+  my_business: null | { id: string; name: string; sector: string; treasury: number;
+    stock: { id: string; catalog_id: string; name: string; quantity: number; price: number; unit_cost: number; new_price: number; sold_npc: number; sold_players: number }[];
+    wholesale: { id: string; name: string; brand: string | null; price: number; unit_cost: number }[] };
+};
+export const marketQuery = queryOptions({
+  queryKey: ["market", "state"], retry: false,
+  queryFn: async (): Promise<MarketState> => { const { data, error } = await untyped.rpc("market_state", {}); if (error) throw new Error(error.message); return data as MarketState; },
+});
+export async function marketRpc<T = unknown>(fn: "store_buy" | "business_restock" | "business_stock_buy" | "market_list" | "market_cancel" | "market_offer" | "market_offer_answer" | "market_buy", args: Record<string, unknown>): Promise<T> {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return data as T;
+}
