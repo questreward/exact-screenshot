@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, Handshake, SearchCheck, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -41,6 +41,8 @@ export const SECTIONS: Section[] = [
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
   { id: "debats-publics", label: "Débats publics", icon: MessagesSquare, description: "Positions, questions et réponses sur une loi, un projet ou une crise.", available: true },
   { id: "sondages", label: "Sondages", icon: PieChart, description: "Opinion des joueurs et opinion simulée des habitants.", available: true },
+  { id: "vie-des-partis", label: "Vie des partis", icon: Handshake, description: "Coalitions, votes internes, présidence et programme.", available: true },
+  { id: "verification", label: "Vérification des faits", icon: SearchCheck, description: "Vérifier une affirmation avec les données de la ville.", available: true },
   { id: "famille", label: "Famille", icon: Heart, description: "Couple, enfants, logement partagé et amis proches.", available: true },
   { id: "projets", label: "Projets citoyens", icon: Hammer, description: "Proposez et portez des projets pour votre ville.", available: true },
   { id: "crises", label: "Crises", icon: Siren, description: "Crises en cours, réponses et conséquences à venir.", available: true },
