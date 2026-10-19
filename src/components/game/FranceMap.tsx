@@ -64,7 +64,14 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
       m.addSource("playable", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       m.addLayer({ id: "dep-fill", type: "fill", source: "deps", paint: { "fill-color": card, "fill-opacity": 1 } });
       m.addLayer({ id: "circo-line", type: "line", source: "circos", minzoom: 6, layout: { visibility: showCircos ? "visible" : "none" }, paint: { "line-color": primary, "line-opacity": 0.45, "line-width": 0.8 } });
-      m.addLayer({ id: "circo-fill", type: "fill", source: "circos", minzoom: 6, layout: { visibility: showCircos ? "visible" : "none" }, paint: { "fill-color": primary, "fill-opacity": 0.02 } });
+      m.addLayer({ id: "circo-fill", type: "fill", source: "circos", layout: { visibility: showCircos ? "visible" : "none" }, paint: { "fill-color": primary, "fill-opacity": 0.02 } });
+      // Couleur du parti du député (base : législatives 2024)
+      void fetch("/geo/legislatives-2024.json").then(r => r.json()).then((leg: { parties: Record<string, { color: string }>; seats: Record<string, { n: string }> }) => {
+        const pairs = Object.entries(leg.seats).flatMap(([code, s]) => [code, leg.parties[s.n]?.color ?? primary]);
+        if (!m.getLayer("circo-fill") || !pairs.length) return;
+        m.setPaintProperty("circo-fill", "fill-color", ["match", ["get", "codeCirconscription"], ...pairs, primary] as never);
+        m.setPaintProperty("circo-fill", "fill-opacity", ["interpolate", ["linear"], ["zoom"], 4, 0.7, 8, 0.4, 11, 0.15] as never);
+      }).catch(() => undefined);
       m.addLayer({ id: "dep-line", type: "line", source: "deps", paint: { "line-color": muted, "line-opacity": 0.5, "line-width": ["interpolate", ["linear"], ["zoom"], 4, 0.4, 9, 1.4] } });
       m.addLayer({ id: "reg-line", type: "line", source: "regions", paint: { "line-color": fg, "line-opacity": 0.7, "line-width": ["interpolate", ["linear"], ["zoom"], 4, 1, 9, 2.5] } });
       m.addLayer({ id: "communes", type: "circle", source: "communes", minzoom: 7, paint: {
@@ -85,7 +92,7 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
         const hit = m.queryRenderedFeatures([[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]], { layers: ["communes", "playable"] });
         const p = hit[0]?.properties;
         if (p) { const r = rows.current[p["dep"]]?.find(x => x[0] === p["code"]); if (r) { selectRef.current({ kind: "commune", row: r, dep: p["dep"] }); return; } }
-        const c = m.getLayoutProperty("circo-fill", "visibility") === "visible" && m.getZoom() >= 6 ? m.queryRenderedFeatures(e.point, { layers: ["circo-fill"] })[0]?.properties : null;
+        const c = m.getLayoutProperty("circo-fill", "visibility") === "visible" ? m.queryRenderedFeatures(e.point, { layers: ["circo-fill"] })[0]?.properties : null;
         if (c) { selectRef.current({ kind: "circo", code: c["codeCirconscription"], dep: c["codeDepartement"], depName: c["nomDepartement"] }); return; }
         const d = m.queryRenderedFeatures(e.point, { layers: ["dep-fill"] })[0]?.properties;
         if (d) selectRef.current({ kind: "departement", code: d["code"], name: d["nom"] });
