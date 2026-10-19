@@ -14,7 +14,7 @@ BEGIN;
 
 CREATE TABLE public.career_settings (
   id integer PRIMARY KEY CHECK (id = 1),
-  pass_score integer NOT NULL DEFAULT 55,
+  pass_score integer NOT NULL DEFAULT 50,
   interviews_per_day integer NOT NULL DEFAULT 3,
   max_level integer NOT NULL DEFAULT 4,
   layoff_days integer NOT NULL DEFAULT 14,
