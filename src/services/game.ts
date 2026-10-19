@@ -900,3 +900,33 @@ export async function debateAction(input: { command: "challenge" | "respond" | "
   const { error } = await untyped.rpc("debate_action", { _command: command, _input: rest });
   if (error) throw new Error(error.message);
 }
+
+// ---- Famille et vie privée ----
+export type FamilyPerson = { id: string; name: string; age: number; situation: string; player: boolean };
+export type FamilyState = {
+  me: string; now: string; age: number;
+  settings: { min_age: number; npc_couple_score: number; npc_friend_score: number; union_after_days: number; rent_share_pct: number; child_weekly_cost: number; child_days_per_year: number; child_max: number; adoption_min_age: number; friend_max: number; friend_energy: number };
+  couple: null | { id: string; union_kind: "pacs" | "mariage" | null; started_at: string; union_at: string | null; union_pending: "pacs" | "mariage" | null; union_requested_by_me: boolean; partner: FamilyPerson;
+    cohabitation: null | { status: "pending" | "active"; host_is_me: boolean; since: string | null; share: number } };
+  requests: { id: string; from: PlayerCard }[];
+  sent: { id: string; to: PlayerCard }[];
+  children: { id: string; first_name: string; origin: "naissance" | "adoption"; status: "pending" | "home" | "adult"; wellbeing: number; requested_by_me: boolean; age: number | null; unpaid_weeks: number }[];
+  friends: { id: string; status: "pending" | "active"; incoming: boolean; person: FamilyPerson }[];
+  hangout_today: boolean;
+  close_npcs: { id: string; name: string; age: number; score: number }[];
+};
+export const familyQuery = queryOptions({
+  queryKey: ["family", "state"],
+  retry: false,
+  refetchInterval: 15000,
+  queryFn: async (): Promise<FamilyState> => {
+    const { data, error } = await untyped.rpc("family_state", {});
+    if (error) throw new Error(error.message);
+    return data as FamilyState;
+  },
+});
+export async function familyAction(input: { command: string; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("family_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
