@@ -424,7 +424,7 @@ BEGIN
  -- Départage proposé transparent : MD5(graine UUID || ':' || UUID parti),
  -- ordre hexadécimal croissant, UUID en dernier recours si collision.
  FOR x IN WITH weights AS (SELECT key::uuid oid,value::numeric w FROM jsonb_each_text(approved)),
- quotas AS (SELECT oid,floor(45*w/total)::int base,45*w/total-floor(45*w/total) remainder FROM weights),
+ quotas AS (SELECT oid,((45*w-mod(45*w,total))/total)::int base,mod(45*w,total) remainder FROM weights),
  ordered AS (SELECT *,row_number() OVER(ORDER BY remainder DESC,md5(e.tie_seed::text||':'||oid::text),oid) rn,45-sum(base) OVER() remaining FROM quotas)
  SELECT oid,base+CASE WHEN rn<=remaining THEN 1 ELSE 0 END seats FROM ordered ORDER BY oid LOOP
   SELECT id INTO gid FROM public.national_groups WHERE legislature_id=l.id AND chamber='assembly' AND organization_id=x.oid;
