@@ -1394,6 +1394,30 @@ export async function housingAction(command: "rent" | "move_in", input: Record<s
   return data as { lease_id: string; deposit?: number; move?: number };
 }
 
+// ---- Entreprises de services : garages et déménageurs (joueurs en priorité, sinon entreprise fictive) ----
+export type ServiceKind = "garage" | "demenagement";
+export type ServiceReview = { stars: number; comment: string | null; author: string; at?: string };
+export type ServiceProvider = { id: string; name: string; service: ServiceKind; owner: string; mine: boolean; percent: number; rating: number | null; reviews: number; last_reviews: ServiceReview[] };
+export type ServiceInvoice = { id: string; reference: string; label: string; amount: number; service: ServiceKind; at: string; provider: string; fictive: boolean; reviewed: boolean; can_review: boolean };
+export type ServiceState = {
+  balance: number; city: string;
+  settings: { min_percent: number; max_percent: number; npc_base_clients: number; npc_max_clients: number; garage_npc_ticket: number; moving_npc_ticket: number };
+  providers: ServiceProvider[];
+  vehicles: { catalog_id: string; name: string; brand: string | null; condition: string; next_maintenance: string | null; maintenance: number }[];
+  invoices: ServiceInvoice[];
+  my_business: null | { id: string; name: string; service: ServiceKind; percent: number; rating: number | null; treasury: number;
+    weeks: { week: number; clients: number; revenue: number }[]; orders: { reference: string; label: string; amount: number; at: string; client: string }[]; reviews: ServiceReview[] };
+};
+export const serviceQuery = queryOptions({
+  queryKey: ["services", "state"], retry: false,
+  queryFn: async (): Promise<ServiceState> => { const { data, error } = await untyped.rpc("service_state", {}); if (error) throw new Error(error.message); return data as ServiceState; },
+});
+export async function serviceRpc(fn: "service_garage" | "service_set_price" | "service_review", args: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return data as { amount?: number; already?: boolean } | null;
+}
+
 // ---- Marché : magasins des villes, commerces de joueurs, marché entre joueurs ----
 export type CityStore = { id: string; city_id: string; city: string; name: string; kind: string; district: string; sections: string[]; discount: number; hours: string; here: boolean };
 export type MarketListing = { id: string; catalog_id: string; name: string; brand: string | null; section: string; kind: string; price: number; new_price: number; note: string;

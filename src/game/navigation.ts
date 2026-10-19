@@ -27,6 +27,7 @@ export const SECTIONS: Section[] = [
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "boutique", label: "Boutique", icon: ShoppingBag, description: "Vrais produits : téléphones, maison, mode, loisirs.", available: true },
   { id: "marche", label: "Marché", icon: Store, description: "Magasins des villes, commerces de joueurs et marché entre joueurs.", available: true },
+  { id: "services", label: "Services", icon: Wrench, description: "Garages et déménageurs : entreprises de joueurs en priorité, sinon entreprises fictives.", available: true },
   { id: "logement", label: "Logement", icon: Home, description: "Annonces de location, bail, emménager dans un bien acheté.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
