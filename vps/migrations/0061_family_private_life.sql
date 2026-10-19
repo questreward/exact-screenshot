@@ -346,7 +346,7 @@ DECLARE cid uuid := public.social_actor(); c public.characters; s public.family_
   ELSIF _command IN ('child','adopt') THEN
     SELECT id INTO oid FROM public.children WHERE request_id = rid; IF oid IS NOT NULL THEN RETURN oid; END IF;
     nm := btrim(coalesce(_input->>'first_name', ''));
-    IF char_length(nm) NOT BETWEEN 2 AND 30 OR nm !~ '^[[:alpha:] ''-]+$' THEN RAISE EXCEPTION 'Prénom : 2 à 30 lettres.'; END IF;
+    IF char_length(nm) NOT BETWEEN 2 AND 30 OR nm !~ '^[A-Za-zÀ-ÖØ-öø-ÿ'' -]+$' THEN RAISE EXCEPTION 'Prénom : 2 à 30 lettres.'; END IF;
     IF NOT public.press_clean(nm) THEN RAISE EXCEPTION 'Prénom refusé par le filtre automatique.'; END IF;
     IF (SELECT count(*) FROM public.children WHERE cid IN (parent_a, parent_b) AND status IN ('pending','home')) >= s.child_max THEN
       RAISE EXCEPTION 'Maximum % enfants au foyer.', s.child_max; END IF;
