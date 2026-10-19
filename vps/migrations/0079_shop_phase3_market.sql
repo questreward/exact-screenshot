@@ -384,7 +384,7 @@ END $$;
 
 CREATE FUNCTION public.market_buy(_listing_id uuid, _request_id uuid) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid; s public.market_settings; l public.market_listings; a public.personal_assets; cat public.economy_catalog; price integer; fee integer; ref text; t timestamptz := public.game_now(); BEGIN
+DECLARE cid uuid; s public.market_settings; l public.market_listings; a public.personal_assets; cat public.economy_catalog; amt integer; fee integer; ref text; t timestamptz := public.game_now(); BEGIN
   cid := public.prepare_daily_life();
   PERFORM 1 FROM public.characters WHERE id = cid FOR UPDATE;
   SELECT * INTO l FROM public.market_listings WHERE buyer_id = cid AND request_id = _request_id;
@@ -394,8 +394,8 @@ DECLARE cid uuid; s public.market_settings; l public.market_listings; a public.p
   SELECT * INTO l FROM public.market_listings WHERE id = _listing_id FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'Annonce introuvable'; END IF;
   IF l.seller_id = cid THEN RAISE EXCEPTION 'C''est votre annonce'; END IF;
-  IF l.status = 'open' THEN price := l.price;
-  ELSIF l.status = 'reserved' AND l.reserved_for = cid THEN price := l.reserved_price;
+  IF l.status = 'open' THEN amt := l.price;
+  ELSIF l.status = 'reserved' AND l.reserved_for = cid THEN amt := l.reserved_price;
   ELSE RAISE EXCEPTION 'Annonce indisponible'; END IF;
   SELECT * INTO a FROM public.personal_assets WHERE id = l.asset_id AND character_id = l.seller_id FOR UPDATE;
   IF NOT FOUND THEN
@@ -403,21 +403,21 @@ DECLARE cid uuid; s public.market_settings; l public.market_listings; a public.p
     RAISE EXCEPTION 'Le vendeur ne possède plus ce bien : annonce retirée'; END IF;
   SELECT * INTO cat FROM public.economy_catalog WHERE id = l.catalog_id;
   PERFORM public.market_check_buyer(cid, cat);
-  IF COALESCE((SELECT balance FROM public.accounts WHERE character_id = cid), 0) < price THEN RAISE EXCEPTION 'Solde insuffisant'; END IF;
-  fee := floor(price * s.fee_percent / 100.0)::integer;
+  IF COALESCE((SELECT balance FROM public.accounts WHERE character_id = cid), 0) < amt THEN RAISE EXCEPTION 'Solde insuffisant'; END IF;
+  fee := floor(amt * s.fee_percent / 100.0)::integer;
   ref := 'CIV-' || upper(substr(md5(cid::text || _request_id::text), 1, 8));
   -- La ligne à encaisser passe la protection anti-blocage avant tout paiement
   INSERT INTO public.market_payouts (seller_id, buyer_id, listing_id, amount, fee, label)
-  VALUES (l.seller_id, cid, l.id, price - fee, fee, 'Vente au marché — ' || cat.name);
-  PERFORM public.economy_cash(cid, 'market:' || _request_id, -price, 'Marché — ' || cat.name, 'achat', jsonb_build_object('catalog_id', cat.id, 'reference', ref));
-  UPDATE public.personal_assets SET character_id = cid, purchase_price = price, acquired_at = t WHERE id = a.id;
-  UPDATE public.market_listings SET status = 'sold', buyer_id = cid, request_id = _request_id, sold_price = price, closed_at = t WHERE id = l.id;
+  VALUES (l.seller_id, cid, l.id, amt - fee, fee, 'Vente au marché — ' || cat.name);
+  PERFORM public.economy_cash(cid, 'market:' || _request_id, -amt, 'Marché — ' || cat.name, 'achat', jsonb_build_object('catalog_id', cat.id, 'reference', ref));
+  UPDATE public.personal_assets SET character_id = cid, purchase_price = amt, acquired_at = t WHERE id = a.id;
+  UPDATE public.market_listings SET status = 'sold', buyer_id = cid, request_id = _request_id, sold_price = amt, closed_at = t WHERE id = l.id;
   UPDATE public.market_offers SET status = CASE WHEN buyer_id = cid AND status = 'accepted' THEN 'done' ELSE 'cancelled' END, answered_at = t
     WHERE listing_id = l.id AND status IN ('pending','accepted');
   INSERT INTO public.shop_orders (character_id, catalog_id, name, brand, price, request_id, reference)
-  VALUES (cid, cat.id, cat.name || ' (marché)', COALESCE(cat.config->>'brand', ''), price, _request_id, ref);
-  PERFORM public.economy_notify(l.seller_id, 'market-sold:' || l.id, 'Vendu au marché', cat.name || ' vendu ' || price || ' crédits (frais ' || fee || ').');
-  RETURN jsonb_build_object('already', false, 'price', price, 'reference', ref);
+  VALUES (cid, cat.id, cat.name || ' (marché)', COALESCE(cat.config->>'brand', ''), amt, _request_id, ref);
+  PERFORM public.economy_notify(l.seller_id, 'market-sold:' || l.id, 'Vendu au marché', cat.name || ' vendu ' || amt || ' crédits (frais ' || fee || ').');
+  RETURN jsonb_build_object('already', false, 'price', amt, 'reference', ref);
 END $$;
 
 -- 9. État du marché (une seule lecture pour la page) -----------------------------------------------------
