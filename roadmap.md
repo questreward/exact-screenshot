@@ -159,3 +159,8 @@
 - [x] Roadmap approuvée et préparation documentaire réalisée.
 - [x] Sept décisions initiales et six décisions complémentaires validées ; cahier des charges final v2 livré le 19 octobre 2026.
 - SQL, développement, migration, comptes et tests non autorisés à cette étape ; application future conditionnée à un exécuteur atomique fiable et aux accords requis, dans l’ordre des migrations.
+
+## P2 — Personnages fictifs vivants
+- [x] Décisions : tous les PNJ bougent, peuvent aborder le joueur, voyagent parfois
+- [x] Migration 0046 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
+- [ ] Vérification en jeu par l'utilisateur (Personnes présentes, message spontané)
