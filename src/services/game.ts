@@ -559,3 +559,34 @@ export async function answerTvInterview(input: { interviewId: string; answer: st
   const { error } = await untyped.rpc("answer_tv_interview", { _interview: input.interviewId, _answer: input.answer });
   if (error) throw new Error(error.message);
 }
+
+// P5a — Banque : prêt, découvert, note bancaire
+export type BankInstallment = { id: string; number: number; due_at: string; principal_part: number; interest_part: number; late_fee: number; status: "pending" | "late" | "paid" | "seized" | "cancelled" };
+export type BankState = {
+  settings: { min_loan: number; max_loan: number; income_multiplier: number; minor_max_loan: number; min_months: number; max_months: number; overdraft_limit: number; overdraft_daily_fee: number; score_min: number; seizure_after: number; seizure_percent: number; late_fee_percent: number };
+  age: number; now: string; balance: number; income: number; loan_cap: number; rate: number; overdraft_limit: number;
+  profile: { score: number; overdraft_used: number; consecutive_missed: number; blocked: boolean };
+  loan: null | { id: string; principal: number; months: number; rate: number; monthly: number; installments: BankInstallment[]; remaining_principal: number };
+  history: { kind: string; amount: number; label: string; world_at: string }[];
+  seizures: { asset_name: string | null; asset_value: number; recovered: number; world_at: string }[];
+};
+export const bankLoansQuery = queryOptions({
+  queryKey: ["bank", "loans-state"],
+  queryFn: async (): Promise<BankState> => {
+    const { data, error } = await untyped.rpc("bank_state", {});
+    if (error) throw new Error(error.message);
+    return data as BankState;
+  },
+});
+export async function requestLoan(input: { amount: number; months: number }) {
+  const { error } = await untyped.rpc("request_loan", { _amount: input.amount, _months: input.months, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+}
+export async function repayLoanEarly() {
+  const { error } = await untyped.rpc("repay_loan_early", { _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+}
+export async function useOverdraft(amount: number) {
+  const { error } = await untyped.rpc("use_overdraft", { _amount: amount, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+}
