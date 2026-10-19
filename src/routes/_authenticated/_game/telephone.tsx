@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { BankLoans } from "@/components/game/BankLoans";
+import { InsuranceCard } from "@/components/game/InsuranceCard";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
 import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
@@ -106,6 +107,7 @@ function BankApp() {
       </div>
       <div className="mt-4"><EconomyBankLinks/></div>
       <div className="mt-4"><BankLoans compact /></div>
+      <div className="mt-4"><InsuranceCard compact /></div>
       <h2 className="mt-5 mb-2 text-sm font-semibold text-muted-foreground">Historique</h2>
       <ul className="space-y-2">
         {bank.transactions.map((t) => (
