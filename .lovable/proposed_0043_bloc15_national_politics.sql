@@ -25,6 +25,7 @@ CREATE TABLE public.national_settings (
 REVOKE ALL ON public.national_settings FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_settings TO authenticated;
 GRANT ALL ON public.national_settings TO service_role;
+REVOKE TRUNCATE ON public.national_settings FROM service_role;
 ALTER TABLE public.national_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_settings_read ON public.national_settings FOR SELECT TO authenticated USING(true);
 
@@ -35,6 +36,7 @@ CREATE TABLE public.national_constituencies (
 REVOKE ALL ON public.national_constituencies FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_constituencies TO authenticated;
 GRANT ALL ON public.national_constituencies TO service_role;
+REVOKE TRUNCATE ON public.national_constituencies FROM service_role;
 ALTER TABLE public.national_constituencies ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_constituencies_read ON public.national_constituencies FOR SELECT TO authenticated USING(true);
 
@@ -45,6 +47,7 @@ CREATE TABLE public.national_party_profiles (
 REVOKE ALL ON public.national_party_profiles FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_party_profiles TO authenticated;
 GRANT ALL ON public.national_party_profiles TO service_role;
+REVOKE TRUNCATE ON public.national_party_profiles FROM service_role;
 ALTER TABLE public.national_party_profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_party_profiles_read ON public.national_party_profiles FOR SELECT TO authenticated USING(true);
 
@@ -55,6 +58,7 @@ CREATE TABLE public.national_elections (
 REVOKE ALL ON public.national_elections FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_elections TO authenticated;
 GRANT ALL ON public.national_elections TO service_role;
+REVOKE TRUNCATE ON public.national_elections FROM service_role;
 ALTER TABLE public.national_elections ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_elections_read ON public.national_elections FOR SELECT TO authenticated USING(true);
 -- Chevauchement des phases électorales interdit, mais mandat sortant autorisé.
@@ -70,6 +74,7 @@ CREATE TABLE public.national_candidacies (
 REVOKE ALL ON public.national_candidacies FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_candidacies TO authenticated;
 GRANT ALL ON public.national_candidacies TO service_role;
+REVOKE TRUNCATE ON public.national_candidacies FROM service_role;
 ALTER TABLE public.national_candidacies ENABLE ROW LEVEL SECURITY;
 -- Publication explicite par opérateur ; date/phase et validation du programme
 -- public encore non décidées. Aucun programme privé exposé automatiquement.
@@ -83,6 +88,7 @@ CREATE TABLE public.national_ballots (
 REVOKE ALL ON public.national_ballots FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_ballots TO authenticated;
 GRANT ALL ON public.national_ballots TO service_role;
+REVOKE TRUNCATE ON public.national_ballots FROM service_role;
 ALTER TABLE public.national_ballots ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_ballots_read ON public.national_ballots FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
 
@@ -93,6 +99,7 @@ CREATE TABLE public.national_results (
 REVOKE ALL ON public.national_results FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_results TO authenticated;
 GRANT ALL ON public.national_results TO service_role;
+REVOKE TRUNCATE ON public.national_results FROM service_role;
 ALTER TABLE public.national_results ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_results_read ON public.national_results FOR SELECT TO authenticated USING(true);
 
@@ -102,6 +109,7 @@ CREATE TABLE public.national_legislatures (
 );
 REVOKE ALL ON public.national_legislatures FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.national_legislatures TO service_role;
+REVOKE TRUNCATE ON public.national_legislatures FROM service_role;
 ALTER TABLE public.national_legislatures ENABLE ROW LEVEL SECURITY;
 
 -- national_groups
@@ -111,6 +119,7 @@ CREATE TABLE public.national_groups (
 REVOKE ALL ON public.national_groups FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_groups TO authenticated;
 GRANT ALL ON public.national_groups TO service_role;
+REVOKE TRUNCATE ON public.national_groups FROM service_role;
 ALTER TABLE public.national_groups ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_groups_read ON public.national_groups FOR SELECT TO authenticated USING(true);
 
@@ -121,6 +130,7 @@ CREATE TABLE public.national_seats (
 REVOKE ALL ON public.national_seats FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_seats TO authenticated;
 GRANT ALL ON public.national_seats TO service_role;
+REVOKE TRUNCATE ON public.national_seats FROM service_role;
 ALTER TABLE public.national_seats ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_seats_read ON public.national_seats FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
 
@@ -131,6 +141,7 @@ CREATE TABLE public.national_governments (
 REVOKE ALL ON public.national_governments FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_governments TO authenticated;
 GRANT ALL ON public.national_governments TO service_role;
+REVOKE TRUNCATE ON public.national_governments FROM service_role;
 ALTER TABLE public.national_governments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_governments_read ON public.national_governments FOR SELECT TO authenticated USING(true);
 
@@ -141,6 +152,7 @@ CREATE TABLE public.national_offices (
 REVOKE ALL ON public.national_offices FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_offices TO authenticated;
 GRANT ALL ON public.national_offices TO service_role;
+REVOKE TRUNCATE ON public.national_offices FROM service_role;
 ALTER TABLE public.national_offices ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_offices_read ON public.national_offices FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
 
@@ -151,6 +163,7 @@ CREATE TABLE public.national_law_templates (
 REVOKE ALL ON public.national_law_templates FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_law_templates TO authenticated;
 GRANT ALL ON public.national_law_templates TO service_role;
+REVOKE TRUNCATE ON public.national_law_templates FROM service_role;
 ALTER TABLE public.national_law_templates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_law_templates_read ON public.national_law_templates FOR SELECT TO authenticated USING(true);
 
@@ -161,6 +174,7 @@ CREATE TABLE public.national_laws (
 REVOKE ALL ON public.national_laws FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_laws TO authenticated;
 GRANT ALL ON public.national_laws TO service_role;
+REVOKE TRUNCATE ON public.national_laws FROM service_role;
 ALTER TABLE public.national_laws ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_laws_read ON public.national_laws FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=author_character_id AND c.user_id=auth.uid()));
 
@@ -171,6 +185,7 @@ CREATE TABLE public.national_law_versions (
 REVOKE ALL ON public.national_law_versions FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_law_versions TO authenticated;
 GRANT ALL ON public.national_law_versions TO service_role;
+REVOKE TRUNCATE ON public.national_law_versions FROM service_role;
 ALTER TABLE public.national_law_versions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_law_versions_read ON public.national_law_versions FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.national_laws l JOIN public.characters c ON c.id=l.author_character_id WHERE l.id=law_id AND c.user_id=auth.uid()));
 
@@ -185,6 +200,7 @@ CREATE TABLE public.national_sessions (
 REVOKE ALL ON public.national_sessions FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_sessions TO authenticated;
 GRANT ALL ON public.national_sessions TO service_role;
+REVOKE TRUNCATE ON public.national_sessions FROM service_role;
 ALTER TABLE public.national_sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_sessions_read ON public.national_sessions FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.national_laws l JOIN public.characters c ON c.id=l.author_character_id WHERE l.id=law_id AND c.user_id=auth.uid()));
 
@@ -195,16 +211,18 @@ CREATE TABLE public.national_parliamentary_votes (
 REVOKE ALL ON public.national_parliamentary_votes FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_parliamentary_votes TO authenticated;
 GRANT ALL ON public.national_parliamentary_votes TO service_role;
+REVOKE TRUNCATE ON public.national_parliamentary_votes FROM service_role;
 ALTER TABLE public.national_parliamentary_votes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_parliamentary_votes_read ON public.national_parliamentary_votes FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
 
 -- national_treasury
 CREATE TABLE public.national_treasury (
-  id integer PRIMARY KEY CHECK(id=1), balance bigint NOT NULL CHECK(balance>=0)
+  id integer PRIMARY KEY CHECK(id=1), balance bigint NOT NULL CHECK(balance BETWEEN 0 AND 100000)
 );
 REVOKE ALL ON public.national_treasury FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_treasury TO authenticated;
 GRANT ALL ON public.national_treasury TO service_role;
+REVOKE TRUNCATE ON public.national_treasury FROM service_role;
 ALTER TABLE public.national_treasury ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_treasury_read ON public.national_treasury FOR SELECT TO authenticated USING(true);
 
@@ -216,6 +234,7 @@ REVOKE ALL ON public.national_budgets FROM PUBLIC, anon, authenticated;
 ALTER TABLE public.national_budgets ADD CONSTRAINT national_law_funded_once UNIQUE(law_id);
 GRANT SELECT ON public.national_budgets TO authenticated;
 GRANT ALL ON public.national_budgets TO service_role;
+REVOKE TRUNCATE ON public.national_budgets FROM service_role;
 ALTER TABLE public.national_budgets ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_budgets_read ON public.national_budgets FOR SELECT TO authenticated USING(true);
 
@@ -226,6 +245,7 @@ CREATE TABLE public.national_ledger (
 REVOKE ALL ON public.national_ledger FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_ledger TO authenticated;
 GRANT ALL ON public.national_ledger TO service_role;
+REVOKE TRUNCATE ON public.national_ledger FROM service_role;
 ALTER TABLE public.national_ledger ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_ledger_read ON public.national_ledger FOR SELECT TO authenticated USING(true);
 
@@ -236,6 +256,7 @@ CREATE TABLE public.national_city_effects (
 REVOKE ALL ON public.national_city_effects FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_city_effects TO authenticated;
 GRANT ALL ON public.national_city_effects TO service_role;
+REVOKE TRUNCATE ON public.national_city_effects FROM service_role;
 ALTER TABLE public.national_city_effects ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_city_effects_read ON public.national_city_effects FOR SELECT TO authenticated USING(true);
 
@@ -246,6 +267,7 @@ CREATE TABLE public.national_requests (
 REVOKE ALL ON public.national_requests FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_requests TO authenticated;
 GRANT ALL ON public.national_requests TO service_role;
+REVOKE TRUNCATE ON public.national_requests FROM service_role;
 ALTER TABLE public.national_requests ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_requests_read ON public.national_requests FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
 
@@ -256,6 +278,7 @@ CREATE TABLE public.national_publications (
 REVOKE ALL ON public.national_publications FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.national_publications TO authenticated;
 GRANT ALL ON public.national_publications TO service_role;
+REVOKE TRUNCATE ON public.national_publications FROM service_role;
 ALTER TABLE public.national_publications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY national_publications_read ON public.national_publications FOR SELECT TO authenticated USING(true);
 
@@ -313,14 +336,14 @@ BEGIN
  SELECT * INTO c FROM public.characters WHERE user_id=auth.uid() FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'Personnage introuvable'; END IF;
  PERFORM pg_advisory_xact_lock(151515);
- IF NOT (SELECT enabled FROM public.national_settings WHERE id=1) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  RETURN c;
 END $$;
 
 -- Configuration opérateur UNIQUEMENT ; aucun montant/seuil/calendrier inventé.
 -- Clés attendues : voting_age, candidate_age, civic_min, reputation_min, influence_min,
--- session_minutes, session_energy, office_civic_min, office_reputation_min,
--- office_influence_min, fictional_vote_unit, initial_budget.
+-- session_minutes, session_energy, fictional_vote_unit, initial_budget.
+-- Aucun seuil de nomination joueur : gouvernement PNJ uniquement.
 -- fictional_vote_unit : poids d'électorat par unité simulation_weight d'un parti.
 CREATE FUNCTION public.national_configure(_rules jsonb,_enabled boolean) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
@@ -382,6 +405,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE l public.national_legislatures; e public.national_elections; approved jsonb; x record; total numeric; gid uuid; n integer; seat_index integer:=5;
 BEGIN
  PERFORM pg_advisory_xact_lock(151515);
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
  IF _chamber IS DISTINCT FROM 'assembly' OR _count IS DISTINCT FROM 45 OR _offset IS DISTINCT FROM 5 THEN RAISE EXCEPTION 'Répartition du Sénat non validée ; seule Assemblée 45+5 autorisée'; END IF;
  SELECT * INTO l FROM public.national_legislatures WHERE id=_lid FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'Législature introuvable'; END IF;
@@ -540,7 +564,7 @@ BEGIN
   END LOOP;
  END LOOP;
  UPDATE public.national_laws SET status='applied',applied_at=public.game_now() WHERE id=l.id;
- PERFORM public.national_publish('law-applied:'||l.id||':'||v.version,'Application d’une loi nationale',v.title);
+ PERFORM public.national_publish('law-applied:'||l.id||':'||v.version,'Application d’une loi nationale',(SELECT title FROM public.national_law_templates WHERE id=v.template_id));
  RETURN true;
 END $$;
 
@@ -744,7 +768,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE e record; l record; s record;
 BEGIN
  PERFORM pg_advisory_xact_lock(151515);
- IF NOT (SELECT enabled FROM public.national_settings WHERE id=1) THEN RETURN; END IF;
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RETURN; END IF;
  FOR e IN SELECT id FROM public.national_elections WHERE counted_at IS NULL AND status<>'cancelled' AND vote_end_at<=public.game_now() ORDER BY vote_end_at,id LOOP
   PERFORM public.national_count_election(e.id);
   PERFORM public.national_publish('election-result:'||e.id,'Résultats des élections nationales','Les résultats nationaux et la composition de l’Assemblée sont disponibles.');
@@ -817,7 +841,7 @@ BEGIN
  IF s.id IS NULL OR NEW.start_time<>s.starts_at OR NEW.end_time<>s.ends_at OR NEW.energy_cost IS DISTINCT FROM (SELECT (rules->>'session_energy')::int FROM public.national_settings WHERE id=1) THEN RAISE EXCEPTION 'Séance invalide'; END IF;
  IF (TG_OP='INSERT' OR (TG_OP='UPDATE' AND NEW.status='running' AND OLD.status<>'running')) AND NOT EXISTS(SELECT 1 FROM public.national_seats ns JOIN public.national_legislatures nl ON nl.id=ns.legislature_id WHERE ns.legislature_id=l.legislature_id AND ns.chamber=s.chamber AND ns.character_id=NEW.character_id AND nl.starts_at<=NEW.start_time AND nl.ends_at>=NEW.end_time) THEN RAISE EXCEPTION 'Mandat de séance invalide'; END IF;
  IF TG_OP='INSERT' THEN
-  IF NEW.status<>'planned' OR NOT (SELECT enabled FROM public.national_settings WHERE id=1) OR public.game_now()>=s.starts_at OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version THEN RAISE EXCEPTION 'Réservation nationale invalide'; END IF;
+  IF NEW.status<>'planned' OR NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) OR public.game_now()>=s.starts_at OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version THEN RAISE EXCEPTION 'Réservation nationale invalide'; END IF;
  ELSIF NEW.status IS DISTINCT FROM OLD.status THEN
   IF NEW.status='running' AND NOT EXISTS(SELECT 1 FROM public.national_requests nr WHERE nr.character_id=NEW.character_id AND nr.command='start_session' AND nr.input->>'session_id'=s.id::text AND nr.result->>'activity_id'=NEW.id::text) THEN RAISE EXCEPTION 'Démarrage national explicite requis'; END IF;
   IF NEW.status='running' AND (public.game_now()<s.starts_at OR public.game_now()>=s.ends_at OR s.status<>'open' OR l.status NOT IN('proposed','examining') OR l.current_version<>s.version) THEN RAISE EXCEPTION 'Séance fermée ou ancienne version'; END IF;
