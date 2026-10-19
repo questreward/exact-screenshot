@@ -25,6 +25,7 @@ export const SECTIONS: Section[] = [
   { id: "mon-parcours", label: "Mon parcours", icon: ScrollText, description: "Ton CV citoyen : études, emplois, engagements, mandats.", available: true },
   { id: "carriere", label: "Ma carrière", icon: Briefcase, description: "Entretiens d'embauche, promotions, chômage et salaire.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
+  { id: "boutique", label: "Boutique", icon: ShoppingBag, description: "Vrais produits : téléphones, maison, mode, loisirs.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
   { id: "vie-administrative", label: "Vie administrative", icon: GraduationCap, description: "Apprendre logement, CAF, impôts et documents en missions.", available: true },
