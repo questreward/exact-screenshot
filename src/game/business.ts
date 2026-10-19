@@ -10,3 +10,8 @@ export function estimatedRevenue(sector: SectorHint, workers: number, shifts: nu
 export function weeklyCosts(sector: SectorHint, npcs: number, playerSalaries: number, ownerSalary: number) {
   return sector.weekly_rent + sector.npc_wage * npcs + playerSalaries + ownerSalary;
 }
+
+/** Impôt de la semaine : pourcentage du bénéfice (rien en cas de perte) + taxe locale fixe. */
+export function weeklyTax(profit: number, profitRate: number, localWeekly: number) {
+  return Math.floor(Math.max(0, profit) * profitRate / 100) + localWeekly;
+}

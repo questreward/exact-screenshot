@@ -185,4 +185,5 @@
 - [x] P5b : appliqué sur le VPS
 - [x] P5c : migration 0051 écrite (entreprises, caisse séparée, équipe fictive + joueurs, salaire dirigeant) et écran
 - [x] P5c : appliqué sur le VPS
-- [ ] P5d : après validation de P5c
+- [x] P5d : migration 0052 écrite (impôt bénéfice + taxe locale vers budget de la ville, salaire imposable) et écran
+- [ ] P5d : application sur le VPS (attend la commande de l'utilisateur)
