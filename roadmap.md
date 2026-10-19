@@ -195,3 +195,8 @@
 ## P7 — Multijoueur complet
 - [x] Migration 0054 écrite (blocage + signalement, virements entre contacts, activités à plusieurs, poids des votes joueurs) et écrans ; actualisation automatique toutes les 5–15 s
 - [ ] Application sur le VPS (attend la commande de l'utilisateur)
+
+# Grande extension — Priorité 1 (2 vagues)
+- [x] Vague 1 : conséquences différées (0066), projets citoyens (0067), crises (0068) — préparés et testés, en attente d'installation
+- [ ] Vague 2 : réputations multiples, compétences, journal de vie
+- [ ] Priorités 2 à 4 du document « Grande extension » (après accord)

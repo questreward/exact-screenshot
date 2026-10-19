@@ -37,3 +37,30 @@ export const JUSTICE_CATEGORIES = {
   non_paiement: "Non-paiement",
   autre: "Autre",
 } as const;
+
+export const INDICATOR_LABELS: Record<string, string> = {
+  housing: "Logement", employment: "Emploi", transport: "Transports", environment: "Environnement", safety: "Sécurité",
+  services: "Services publics", commerce: "Commerce", culture: "Culture", satisfaction: "Satisfaction",
+};
+
+/** Points de soutien affichés d'un projet citoyen (indicatif ; le serveur fait foi). */
+export function projectScore(simBase: number, mobilization: number, supporters: number, weight: number, donations: number, step: number): number {
+  return Math.min(100, simBase + mobilization + supporters * weight + Math.min(10, Math.floor(donations / step)));
+}
+
+/** Décision simulée du conseil selon le score. */
+export function projectVerdict(score: number, t: { approve: number; partial: number; postpone: number }): "accepte" | "partiel" | "reporte" | "refuse" {
+  if (score >= t.approve) return "accepte";
+  if (score >= t.partial) return "partiel";
+  if (score >= t.postpone) return "reporte";
+  return "refuse";
+}
+
+/** Points d'indicateur regagnés par une réponse de crise (arrondi au supérieur). */
+export function crisisRecovery(drop: number, pct: number): number {
+  return Math.ceil((Math.abs(drop) * pct) / 100);
+}
+
+export function formatEuros(n: number): string {
+  return `${new Intl.NumberFormat("fr-FR").format(n)} €`;
+}

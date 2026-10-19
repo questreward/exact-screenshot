@@ -23,3 +23,24 @@ describe("syndicats", () => {
     expect(strikePrime(0, 2, 30)).toBe(30);
   });
 });
+
+import { crisisRecovery, projectScore, projectVerdict } from "./society";
+describe("projets citoyens", () => {
+  it("le score additionne habitants, mobilisation, 6 par joueur et dons plafonnés à 10", () => {
+    expect(projectScore(39, 4, 2, 6, 50, 50)).toBe(56);
+    expect(projectScore(30, 0, 0, 6, 5000, 50)).toBe(40);
+  });
+  it("70 accepte, 50 finance à moitié, 35 reporte, en dessous refuse", () => {
+    const t = { approve: 70, partial: 50, postpone: 35 };
+    expect(projectVerdict(70, t)).toBe("accepte");
+    expect(projectVerdict(56, t)).toBe("partiel");
+    expect(projectVerdict(40, t)).toBe("reporte");
+    expect(projectVerdict(20, t)).toBe("refuse");
+  });
+});
+describe("crises", () => {
+  it("le plan d'urgence compense 70 % d'une baisse de 6, arrondi au supérieur", () => {
+    expect(crisisRecovery(-6, 70)).toBe(5);
+    expect(crisisRecovery(-6, 90)).toBe(6);
+  });
+});
