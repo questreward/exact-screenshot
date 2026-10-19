@@ -25,9 +25,10 @@ def invented(code, sex):
     return f"{firsts[h(code+'f') % len(firsts)]} {LAST[h(code+'l') % len(LAST)]}"
 def q(s): return "'" + str(s).replace("'", "''") + "'"
 def rows(f): return list(csv.reader(open(f, encoding="utf-8-sig"), delimiter=";"))[1:]
+OVERSEAS = {"971": "ZA", "972": "ZB", "973": "ZC", "974": "ZD", "975": "ZS", "976": "ZM", "986": "ZW", "987": "ZP", "988": "ZN"}
 def key(dep, circ):
     num = int(circ[len(dep):]) if circ.startswith(dep) else int(circ[-2:])
-    return f"{dep.zfill(2)}{num:02d}", num
+    return f"{OVERSEAS.get(dep, dep.zfill(2))}{num:02d}", num
 
 def parse(f):
     out = {}
@@ -38,7 +39,7 @@ def parse(f):
         for i in range(18, len(r) - 8, 9):
             if not r[i+1]: continue
             cands.append({"nuance": r[i+1], "sex": r[i+4], "votes": int(r[i+5] or 0), "elected": r[i+8].strip().upper() in ("ELU", "QUALIF T2") and r[i+8].strip().upper() == "ELU"})
-        out[code] = {"dep": dep.zfill(2), "depname": depname, "num": num, "label": label, "registered": int(r[4]), "expressed": int(r[9]), "cands": cands}
+        out[code] = {"dep": OVERSEAS.get(dep, dep.zfill(2)), "depname": depname, "num": num, "label": label, "registered": int(r[4]), "expressed": int(r[9]), "cands": cands}
     return out
 
 t1 = parse(DATA / "legislatives2024_t1.csv"); t2 = parse(DATA / "legislatives2024_t2.csv")
