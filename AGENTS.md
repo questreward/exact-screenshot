@@ -36,3 +36,4 @@
 - Overdraft is a separate bank debt (bank_profiles.overdraft_used); account balances never go negative, so economy_cash stays unchanged. Loans settle on read with unique installment keys.
 - Personal incidents are drawn deterministically per character and game week (hashtext), settled on read; unpaid parts become insurance_profiles.debt, never a negative balance.
 - Player businesses keep money in business_treasuries/business_ledger (never negative); weekly results settle on read by owner or employee; salaries to players are reserved as payroll rows and collected by the payee via economy_cash, since economy_cash only acts for the signed-in character.
+- Player network (profiles, contacts, follows, private messages) is separate from NPC relations/messages; other players' data is exposed only through network_card/network_profile RPCs, never by widening characters RLS.

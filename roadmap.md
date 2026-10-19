@@ -187,3 +187,7 @@
 - [x] P5c : appliqué sur le VPS
 - [x] P5d : migration 0052 écrite (impôt bénéfice + taxe locale vers budget de la ville, salaire imposable) et écran
 - [x] P5d : appliqué sur le VPS — P5 terminé
+
+## P6 — Profils visibles et réseau
+- [x] Migration 0053 écrite (profil public + présentation, annuaire de ville, joueurs sur place, contacts, abonnements, messages privés) et écrans (Réseau, téléphone « Joueurs »)
+- [ ] Application sur le VPS (attend la commande de l'utilisateur)
