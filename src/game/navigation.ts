@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, Handshake, SearchCheck, ShoppingBag, Home, Store, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, Handshake, SearchCheck, ShoppingBag, Home, Store, Wrench, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
