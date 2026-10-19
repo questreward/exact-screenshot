@@ -28,7 +28,7 @@ describe("vie administrative", () => {
   });
   it("échéances triées dans le futur", () => {
     const d = upcomingDeadlines(new Date(2026, 4, 20));
-    expect(d[0].label).toBe("Déclarer ses revenus");
+    expect(d[0]?.label).toBe("Déclarer ses revenus");
     expect(d.every(x => x.days >= 0)).toBe(true);
   });
 });

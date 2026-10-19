@@ -149,7 +149,7 @@ function MissionPlayer({ mission, training, onExit }: { mission: Mission; traini
         {!training && knowledgeFor(score, mission.knowledge).map(k => <p key={k} className="text-sm">✨ Nouvelle compétence : « {k} »</p>)}
         {training && <p className="text-xs text-muted-foreground">En entraînement, ta progression n'est pas enregistrée.</p>}
         <Button className="min-h-12 w-full" onClick={() => onExit(score)}>Terminer</Button>
-      </section> : <StepView key={i} step={mission.steps[i]} onDone={next} />}
+      </section> : <StepView key={i} step={mission.steps[i]!} onDone={next} />}
     </div>
   );
 }
