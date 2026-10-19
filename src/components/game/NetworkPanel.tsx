@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { useLifeMutation } from "@/components/game/LifeControls";
 import {
   networkQuery, playerDirectoryQuery, playerThreadQuery, requestContact, respondContact, cancelContact,
-  sendPlayerMessage, setPlayerBio, type PlayerCard,
+  sendPlayerMessage, setPlayerBio, respondTogether, cancelTogether, blockPlayer, formatMoney, type PlayerCard,
 } from "@/services/game";
 import { newsDate } from "@/game/news";
 
@@ -41,7 +41,7 @@ export function NetworkPanel() {
         <div className="min-w-0"><p className="font-semibold">{t.other.name}</p><p className="truncate text-sm text-muted-foreground">{t.last_body}</p></div>
         {t.unread > 0 && <span className="rounded-full bg-primary px-2 text-xs text-primary-foreground">{t.unread}</span>}
       </button>)}</div>)}
-    {tab === "profil" && <MyProfile bio={n.bio.bio} listed={n.bio.listed} max={n.settings.bio_max} followers={n.followers} me={n.me} />}
+    {tab === "profil" && <><MyProfile bio={n.bio.bio} listed={n.bio.listed} max={n.settings.bio_max} followers={n.followers} me={n.me} /><Blocked list={n.blocked} /></>}
   </div>;
 }
 
@@ -69,8 +69,17 @@ function Contacts({ onChat }: { onChat: (id: string) => void }) {
   const { data: n } = useQuery(networkQuery);
   const respond = useLifeMutation(respondContact, "Réponse envoyée");
   const cancel = useLifeMutation(cancelContact, "C'est fait");
+  const together = useLifeMutation(respondTogether, "Réponse envoyée");
+  const untogether = useLifeMutation(cancelTogether, "Invitation annulée");
   if (!n) return null;
   return <div className="space-y-4">
+    {n.invites.length > 0 && <div className="space-y-2"><h3 className="font-semibold">Invitations</h3>{n.invites.map(i => <div key={i.id} className="space-y-2 rounded-md border border-primary/40 p-3">
+      <p className="text-sm">{i.mine ? `Vous invitez ${i.other.name}` : `${i.other.name} vous invite`} : <b>{i.kind}</b> · {i.place}</p>
+      <p className="text-xs text-muted-foreground">Expire le {newsDate(i.expires_at)}{i.mine ? "" : " · rejoignez ce lieu pour accepter"}</p>
+      {i.mine ? <Button variant="ghost" className="h-12" disabled={untogether.isPending} onClick={() => untogether.mutate(i.id)}>Annuler</Button> : <div className="flex gap-2">
+        <Button className="h-12 flex-1" disabled={together.isPending} onClick={() => together.mutate({ id: i.id, accept: true })}><Check /> Accepter</Button>
+        <Button variant="outline" className="h-12" disabled={together.isPending} onClick={() => together.mutate({ id: i.id, accept: false })}>Refuser</Button></div>}
+    </div>)}</div>}
     {n.incoming.length > 0 && <div className="space-y-2"><h3 className="font-semibold">Demandes reçues</h3>{n.incoming.map(p => <PlayerRow key={p.id} p={p}>
       <Button className="h-12" disabled={respond.isPending} onClick={() => respond.mutate({ id: p.contact_id!, accept: true })} aria-label="Accepter"><Check /></Button>
       <Button variant="outline" className="h-12" disabled={respond.isPending} onClick={() => respond.mutate({ id: p.contact_id!, accept: false })} aria-label="Refuser"><X /></Button>
@@ -81,6 +90,8 @@ function Contacts({ onChat }: { onChat: (id: string) => void }) {
       </PlayerRow>)}</div>
     {n.outgoing.length > 0 && <div className="space-y-2"><h3 className="font-semibold">Demandes envoyées</h3>{n.outgoing.map(p => <PlayerRow key={p.id} p={p}>
       <Button variant="ghost" className="h-12" disabled={cancel.isPending} onClick={() => cancel.mutate(p.contact_id!)}>Annuler</Button></PlayerRow>)}</div>}
+    {n.transfers.length > 0 && <div className="space-y-1"><h3 className="font-semibold">Virements</h3>{n.transfers.map(t => <p key={t.id} className="text-sm">
+      {newsDate(t.created_at)} · {t.sent ? `à ${t.other.name}` : `de ${t.other.name}`} : <b className={t.sent ? "" : "text-primary"}>{t.sent ? "−" : "+"}{formatMoney(t.amount)}</b>{t.note ? ` · « ${t.note} »` : ""}</p>)}</div>}
     {n.following.length > 0 && <div className="space-y-2"><h3 className="flex items-center gap-1 font-semibold"><Star className="h-4 w-4" /> Personnalités suivies</h3>{n.following.map(p => <PlayerRow key={p.id} p={p} />)}</div>}
   </div>;
 }
@@ -116,4 +127,11 @@ function MyProfile({ bio, listed, max, followers, me }: { bio: string; listed: b
     <Button className="h-12 w-full" disabled={save.isPending} onClick={() => save.mutate({ bio: text, listed: show })}>Enregistrer</Button>
     <p className="text-sm">{followers} abonné(s) · <Link className="text-primary underline" to="/reseau/$id" params={{ id: me }}>Voir mon profil public</Link></p>
   </div>;
+}
+
+function Blocked({ list }: { list: PlayerCard[] }) {
+  const unblock = useLifeMutation(blockPlayer, "Joueur débloqué");
+  if (list.length === 0) return null;
+  return <div className="space-y-2 border-t border-border pt-4"><h3 className="font-semibold">Joueurs bloqués</h3>{list.map(p => <div key={p.id} className="flex items-center justify-between gap-2 rounded-md border border-border p-3">
+    <p className="text-sm">{p.name}</p><Button variant="outline" className="h-12" disabled={unblock.isPending} onClick={() => unblock.mutate({ id: p.id, on: false })}>Débloquer</Button></div>)}</div>;
 }
