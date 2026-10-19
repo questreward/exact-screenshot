@@ -145,5 +145,6 @@
 - [x] Analyse en lecture seule et plan technique ; SQL proposé 0043 écrit sans application, aucun test lancé.
 - [x] Nouvel accord : paramètres 5+45/25 et 26/13 verrouillés, relecture statique et corrections du SQL proposé, liens indirects explicités et fichier intégral présenté ; aucun SQL appliqué, activation, compte ni test.
 - [x] Cahier comparé et proposition corrigée : confidentialité, instantané, versions, séances ; paramètres non décidés bloqués ; rapport et SQL révisé présentés sans exécution ni test.
-- [ ] Accord explicite sur le SQL exact et les paramètres encore ouverts (calendrier, seuils, simulations, séances, budget, effets) avant toute application ou développement.
+- [ ] Relire et corriger uniquement la proposition SQL selon l’accord de préparation finale du 19 octobre ; présenter écarts, corrections et fichier complet, sans exécution, compte, test ni écran.
+- [ ] Accord séparé sur le SQL exact avant toute application ; règles Sénat, votes simulés et textes/deltas des cinq lois à préciser sans invention.
 - Bloc 16 interdit.
