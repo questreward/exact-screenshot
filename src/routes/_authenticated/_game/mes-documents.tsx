@@ -35,7 +35,7 @@ function DocumentsPage() {
 
   if (open && data) return <Shell><DocView doc={open} vault={data} onBack={() => setOpen(null)} onCorrect={async () => {
     try { await documentAction("correct", { form_id: open.key.slice(5) }); await qc.invalidateQueries({ queryKey: ["documents"] });
-      const t = data.form_types.find(x => x.id === open.data.type_id); setOpen(null); if (t) { setTab("formulaires"); setForm(t); }
+      const t = data.form_types.find(x => x.id === open.data["type_id"]); setOpen(null); if (t) { setTab("formulaires"); setForm(t); }
     } catch (e) { toast.error((e as Error).message); }
   }} /></Shell>;
   if (form && data) return <Shell><FormEditor type={form} vault={data} onBack={() => setForm(null)} /></Shell>;
@@ -104,7 +104,7 @@ function DocList({ vault, onOpen }: { vault: DocumentVault; onOpen: (d: VaultDoc
 
 /** Lignes du document, calculées à partir des données réelles renvoyées par le serveur. */
 function docRows(doc: VaultDoc, vault: DocumentVault): { section: string; rows: [string, string][] }[] {
-  const x = doc.data as Record<string, any>;
+  const x: any = doc.data;
   const id: [string, string][] = [["Nom", vault.owner.full_name], ["Identifiant CIVITAS", vault.owner.civitas_id], ["Ville", vault.owner.city ?? "—"]];
   switch (doc.kind) {
     case "carte": return [{ section: "Identité", rows: [...id, ["N° de carte", x.doc_number], ["Né(e) le", fd(x.birth_date)], ["À", x.birth_city]] }];
@@ -137,7 +137,7 @@ function DocView({ doc, vault, onBack, onCorrect }: { doc: VaultDoc; vault: Docu
   const ref = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const number = (doc.data.doc_number as string | undefined) ?? `CIV-D-${doc.key.replace(/[^a-z0-9]/gi, "").slice(-8).toUpperCase()}`;
+  const number = (doc.data["doc_number"] as string | undefined) ?? `CIV-D-${doc.key.replace(/[^a-z0-9]/gi, "").slice(-8).toUpperCase()}`;
   const signed = ["contrat", "bail", "formulaire", "echeancier", "assurance", "candidature", "etat"].includes(doc.kind);
   const pdf = async () => {
     if (!ref.current) return; setBusy(true);
@@ -183,7 +183,7 @@ function FormList({ vault, onOpen }: { vault: DocumentVault; onOpen: (t: FormTyp
     <p className="text-sm text-muted-foreground">Remplis, sauvegarde, vérifie, corrige puis valide. C'est le serveur qui contrôle et enregistre la version finale.</p>
     {vault.form_types.map(t => {
       const draft = vault.drafts.find(d => d.type_id === t.id);
-      const done = vault.documents.filter(d => d.kind === "formulaire" && d.data.type_id === t.id).length;
+      const done = vault.documents.filter(d => d.kind === "formulaire" && d.data["type_id"] === t.id).length;
       return <button key={t.id} type="button" onClick={() => onOpen(t)} className="w-full rounded-xl border border-border bg-card p-3 text-left">
         <p className="text-xs text-muted-foreground">{categoryLabel(t.category)}</p>
         <p className="font-semibold">{t.title}</p>

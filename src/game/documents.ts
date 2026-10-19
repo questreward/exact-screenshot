@@ -55,7 +55,7 @@ export function adminTimeline(docs: VaultDoc[]): { at: string; title: string }[]
   const seenKinds = new Set<string>();
   const out: { at: string; title: string }[] = [];
   for (const d of sorted) {
-    if (!seenKinds.has(d.kind)) { seenKinds.add(d.kind); if (FIRSTS[d.kind]) out.push({ at: d.at!, title: FIRSTS[d.kind] }); }
+    if (!seenKinds.has(d.kind)) { seenKinds.add(d.kind); const f = FIRSTS[d.kind]; if (f) out.push({ at: d.at!, title: f }); }
     else if (d.kind === "contrat") out.push({ at: d.at!, title: "Changement d'emploi" });
   }
   return out;
