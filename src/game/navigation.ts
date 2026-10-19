@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -23,6 +23,7 @@ export const SECTIONS: Section[] = [
   { id: "evenements", label: "Événements", icon: Sparkles, description: "Ce qui se passe dans votre ville et pour vous.", available: true },
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, description: "Institutions et participation citoyenne.", available: true },
   { id: "politique", label: "Politique", icon: Vote, description: "Mouvements, partis et engagement politique.", available: true },
+  { id: "lois", label: "Lois", icon: BookOpen, description: "100 vraies lois françaises et réformes débattues.", available: true },
   { id: "mandat", label: "Mandat", icon: Landmark, description: "Conseil et projets municipaux.", available: true },
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Le journal du monde et de votre ville.", available: true },
