@@ -437,3 +437,20 @@ export async function readThread(threadId: string) { const { error } = await sup
 export async function replyMessage(input: { messageId: string; replyId: string }) { const { error } = await supabase.rpc('reply_message', { _message: input.messageId, _reply: input.replyId }); if (error) throw new Error(error.message); }
 export async function civiPost(input: { templateId: string; requestId: string }) { const { error } = await supabase.rpc('civi_post', { _template: input.templateId, _request_id: input.requestId }); if (error) throw new Error(error.message); }
 export async function civiReact(input: { postId: string; kind: 'like' | 'share'; on: boolean }) { const { error } = await supabase.rpc('civi_react', { _post: input.postId, _kind: input.kind, _on: input.on }); if (error) throw new Error(error.message); }
+
+export type IntercityRoute = { id: string; from_city_id: string; to_city_id: string; mode: "train" | "car"; duration_minutes: number; money_cost: number; energy_cost: number; departure_kind: string };
+// Table et fonction installées sur le serveur autonome (absentes des types générés).
+const untyped = supabase as unknown as { from: (t: string) => any; rpc: (f: string, a: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }> };
+export const intercityRoutesQuery = (cityId: string) => queryOptions({
+  queryKey: ["intercity-routes", cityId],
+  queryFn: async (): Promise<IntercityRoute[]> => {
+    const { data, error } = await untyped.from("intercity_routes").select("*").eq("from_city_id", cityId).order("duration_minutes");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as IntercityRoute[];
+  },
+});
+export async function travelIntercity(input: { toCity: string; mode: "train" | "car" }) {
+  const { data, error } = await untyped.rpc("travel_intercity", { _to_city: input.toCity, _mode: input.mode });
+  if (error) throw new Error(error.message);
+  return data;
+}
