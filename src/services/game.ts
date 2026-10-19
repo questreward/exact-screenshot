@@ -1135,3 +1135,53 @@ export async function identityUpdate(command: "appearance" | "signature" | "phot
   const { error } = await untyped.rpc("identity_update", { _command: command, _input: input });
   if (error) throw new Error(error.message);
 }
+
+// ---- Orientation politique (partis réels = positionnement, jamais adhésion) et profil citoyen public ----
+export type RealParty = { code: string; label: string; short: string; family: string };
+export type OrientationAxis = { id: string; label: string; low_label: string; high_label: string };
+export type PublicPrefs = { show_photo: boolean; show_party: boolean; show_job: boolean; show_orgs: boolean; show_mandates: boolean; show_projects: boolean; show_skills: boolean };
+export type OrientationState = {
+  me: string; party_code: string | null; axes: Record<string, number>; drift: Record<string, number>; prefs: PublicPrefs;
+  parties: RealParty[]; axis_defs: OrientationAxis[]; history: { at: string; label: string; party_code: string | null }[];
+  civitas_orgs: { id: string; name: string; kind: string }[];
+};
+export const orientationQuery = queryOptions({
+  queryKey: ["orientation", "state"],
+  retry: false,
+  queryFn: async (): Promise<OrientationState> => {
+    const { data, error } = await untyped.rpc("orientation_state", {});
+    if (error) throw new Error(error.message);
+    return data as OrientationState;
+  },
+});
+export async function orientationAction(command: "party" | "axes" | "prefs", input: Record<string, unknown>) {
+  const { error } = await untyped.rpc("orientation_action", { _command: command, _input: input });
+  if (error) throw new Error(error.message);
+}
+export type PublicProfile = {
+  name: string; age: number; city: string | null; appearance: unknown; has_photo: boolean; party: string | null; job: string | null;
+  organizations: { name: string; kind: string }[] | null;
+  mandates: { function: string; city: string; starts_at: string; ends_at: string; active: boolean }[] | null;
+  projects: { proposed: number; done: number; petitions: number } | null;
+  skills: { dimension: string; value: number }[] | null;
+  engagement: { reputation: number; political_reputation: number; followers: number };
+};
+export const publicProfileQuery = (id: string) => queryOptions({
+  queryKey: ["orientation", "public-profile", id],
+  retry: false,
+  queryFn: async (): Promise<PublicProfile> => {
+    const { data, error } = await untyped.rpc("public_profile", { _cid: id });
+    if (error) throw new Error(error.message);
+    return data as PublicProfile;
+  },
+});
+export const publicPhotoQuery = (id: string) => queryOptions({
+  queryKey: ["orientation", "public-photo", id],
+  retry: false,
+  staleTime: 5 * 60_000,
+  queryFn: async (): Promise<string | null> => {
+    const { data, error } = await untyped.rpc("public_photo", { _cid: id });
+    if (error) throw new Error(error.message);
+    return (data as string | null) ?? null;
+  },
+});

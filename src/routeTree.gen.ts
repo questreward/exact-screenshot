@@ -38,6 +38,7 @@ import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameMonProfilRouteImport } from './routes/_authenticated/_game/mon-profil'
 import { Route as AuthenticatedGameMondeRouteImport } from './routes/_authenticated/_game/monde'
 import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_authenticated/_game/organisations'
+import { Route as AuthenticatedGameOrientationRouteImport } from './routes/_authenticated/_game/orientation'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePatrimoineRouteImport } from './routes/_authenticated/_game/patrimoine'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
@@ -213,6 +214,12 @@ const AuthenticatedGameOrganisationsRoute =
     path: '/organisations',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameOrientationRoute =
+  AuthenticatedGameOrientationRouteImport.update({
+    id: '/orientation',
+    path: '/orientation',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameParametresRoute =
   AuthenticatedGameParametresRouteImport.update({
     id: '/parametres',
@@ -364,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
+  '/orientation': typeof AuthenticatedGameOrientationRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -414,6 +422,7 @@ export interface FileRoutesByTo {
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/monde': typeof AuthenticatedGameMondeRoute
   '/organisations': typeof AuthenticatedGameOrganisationsRoute
+  '/orientation': typeof AuthenticatedGameOrientationRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -467,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/mon-profil': typeof AuthenticatedGameMonProfilRoute
   '/_authenticated/_game/monde': typeof AuthenticatedGameMondeRoute
   '/_authenticated/_game/organisations': typeof AuthenticatedGameOrganisationsRoute
+  '/_authenticated/_game/orientation': typeof AuthenticatedGameOrientationRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/mon-profil'
     | '/monde'
     | '/organisations'
+    | '/orientation'
     | '/parametres'
     | '/patrimoine'
     | '/personnage'
@@ -569,6 +580,7 @@ export interface FileRouteTypes {
     | '/mon-profil'
     | '/monde'
     | '/organisations'
+    | '/orientation'
     | '/parametres'
     | '/patrimoine'
     | '/personnage'
@@ -621,6 +633,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/mon-profil'
     | '/_authenticated/_game/monde'
     | '/_authenticated/_game/organisations'
+    | '/_authenticated/_game/orientation'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/patrimoine'
     | '/_authenticated/_game/personnage'
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameOrganisationsRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/orientation': {
+      id: '/_authenticated/_game/orientation'
+      path: '/orientation'
+      fullPath: '/orientation'
+      preLoaderRoute: typeof AuthenticatedGameOrientationRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/parametres': {
       id: '/_authenticated/_game/parametres'
       path: '/parametres'
@@ -1030,6 +1050,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameMonProfilRoute: typeof AuthenticatedGameMonProfilRoute
   AuthenticatedGameMondeRoute: typeof AuthenticatedGameMondeRoute
   AuthenticatedGameOrganisationsRoute: typeof AuthenticatedGameOrganisationsRoute
+  AuthenticatedGameOrientationRoute: typeof AuthenticatedGameOrientationRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePatrimoineRoute: typeof AuthenticatedGamePatrimoineRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
@@ -1075,6 +1096,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameMonProfilRoute: AuthenticatedGameMonProfilRoute,
     AuthenticatedGameMondeRoute: AuthenticatedGameMondeRoute,
     AuthenticatedGameOrganisationsRoute: AuthenticatedGameOrganisationsRoute,
+    AuthenticatedGameOrientationRoute: AuthenticatedGameOrientationRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePatrimoineRoute: AuthenticatedGamePatrimoineRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,

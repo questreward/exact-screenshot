@@ -1,13 +1,17 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Camera, IdCard, LoaderCircle, Trash2 } from "lucide-react";
+import { Camera, Download, IdCard, LoaderCircle, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { buildCardPdf, downloadBlob } from "@/lib/card-pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLifeMutation } from "@/components/game/LifeControls";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { FictionalSignature, IdentityCard, SIGNATURE_LABELS } from "@/components/game/IdentityDocs";
-import { identityQuery, identityUpdate, lifeProfileQuery, type IdentityCardData } from "@/services/game";
+import { identityQuery, identityUpdate, lifeProfileQuery, orientationAction, orientationQuery, type IdentityCardData, type PublicPrefs } from "@/services/game";
+import { CivicProfileCard } from "@/components/game/CivicProfileCard";
+import { Switch } from "@/components/ui/switch";
 import { APPEARANCE_OPTIONS, normalizeAppearance, type Appearance, type Option } from "@/game/appearance";
 import { REPUTATION_LABELS, SKILL_LABELS } from "@/game/life-profile";
 import { gameMeta } from "@/game/metadata";
@@ -17,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/_game/mon-profil")({
   component: ProfilePage,
 });
 
-type Tab = "carte" | "apparence" | "signature" | "resume";
+type Tab = "carte" | "apparence" | "signature" | "public" | "resume";
 const GROUPS: { key: keyof Appearance; label: string }[] = [
   { key: "skin", label: "Couleur de peau" }, { key: "hair", label: "Cheveux" }, { key: "hairColor", label: "Couleur des cheveux" },
   { key: "outfit", label: "Vêtements" }, { key: "style", label: "Style" }, { key: "accessory", label: "Accessoire" }, { key: "silhouette", label: "Silhouette" },
@@ -103,9 +107,47 @@ function SummaryTab() {
       <Button asChild variant="outline" className="h-12"><Link to="/personnage">Vie et relations</Link></Button>
       <Button asChild variant="outline" className="h-12"><Link to="/ma-vie">Ma vie</Link></Button>
       <Button asChild variant="outline" className="h-12"><Link to="/patrimoine">Patrimoine</Link></Button>
-      <Button asChild variant="outline" className="h-12"><Link to="/politique">Politique</Link></Button>
+      <Button asChild variant="outline" className="h-12"><Link to="/orientation">Mon orientation</Link></Button>
     </div>
-    <p className="text-xs text-muted-foreground">Orientation politique et profil public : Disponible dans une prochaine étape. Coffre-fort « Mes documents » : Disponible dans une prochaine étape.</p>
+    <p className="text-xs text-muted-foreground">Coffre-fort « Mes documents » : Disponible dans une prochaine étape.</p>
+  </div>;
+}
+
+function CardTab({ card }: { card: IdentityCardData }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pdf, setPdf] = useState<Blob | null>(null);
+  const [busy, setBusy] = useState(false);
+  const prepare = async () => {
+    if (!ref.current) return;
+    setBusy(true);
+    try { setPdf(await buildCardPdf(ref.current)); } catch { toast.error("Impossible de créer le PDF."); } finally { setBusy(false); }
+  };
+  return <div className="space-y-3">
+    <div ref={ref}><IdentityCard card={card} /></div>
+    <p className="text-center text-xs text-muted-foreground">DOCUMENT FICTIF — CIVITAS. Numéro et dates attribués par le jeu ; aucune valeur réelle.</p>
+    {pdf ? <Button className="h-14 w-full text-base" onClick={() => downloadBlob(pdf, `carte-civitas-${card.last_name.toLowerCase()}.pdf`)}><Download />Télécharger le PDF</Button>
+      : <Button variant="outline" className="h-14 w-full text-base" disabled={busy} onClick={prepare}>{busy ? <LoaderCircle className="animate-spin" /> : <Download />}Préparer le PDF à imprimer</Button>}
+  </div>;
+}
+
+const PREFS: { key: keyof PublicPrefs; label: string }[] = [
+  { key: "show_photo", label: "Ma photo" }, { key: "show_party", label: "Mon parti ou « Indépendant »" }, { key: "show_job", label: "Mon métier" },
+  { key: "show_orgs", label: "Mes organisations" }, { key: "show_mandates", label: "Mes mandats" }, { key: "show_projects", label: "Mes projets et pétitions" },
+  { key: "show_skills", label: "Mes meilleures compétences" },
+];
+function PublicTab() {
+  const { data: st } = useQuery(orientationQuery);
+  const act = useLifeMutation((i: Partial<PublicPrefs>) => orientationAction("prefs", i), "Profil public mis à jour");
+  if (!st) return <LoaderCircle className="mx-auto animate-spin text-primary" />;
+  return <div className="space-y-3">
+    <section className="space-y-1 rounded-xl border border-border bg-card p-4">
+      <h2 className="font-heading text-lg font-bold">Ce que les autres joueurs voient</h2>
+      {PREFS.map(p => <label key={p.key} className="flex min-h-12 items-center justify-between gap-3 border-b border-border last:border-0">
+        <span>{p.label}</span><Switch checked={st.prefs[p.key]} disabled={act.isPending} onCheckedChange={v => act.mutate({ [p.key]: v })} /></label>)}
+      <p className="pt-2 text-xs text-muted-foreground">Ne sont jamais publics : adresse, banque, documents, identifiants et numéro de carte.</p>
+    </section>
+    <p className="text-sm font-semibold">Aperçu de votre profil citoyen</p>
+    <CivicProfileCard id={st.me} />
   </div>;
 }
 
@@ -115,18 +157,16 @@ function ProfilePage() {
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><IdCard className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Mon profil</h1><p className="text-sm text-muted-foreground">Votre identité dans CIVITAS.</p></div></header>
-    <div className="grid grid-cols-4 gap-1.5">
-      {([["carte", "Carte"], ["apparence", "Photo"], ["signature", "Signature"], ["resume", "Résumé"]] as const).map(([id, l]) =>
-        <Button key={id} variant={tab === id ? "default" : "outline"} className="h-12 px-1 text-sm" onClick={() => setTab(id)}>{l}</Button>)}
+    <div className="grid grid-cols-5 gap-1">
+      {([["carte", "Carte"], ["apparence", "Photo"], ["signature", "Signer"], ["public", "Public"], ["resume", "Résumé"]] as const).map(([id, l]) =>
+        <Button key={id} variant={tab === id ? "default" : "outline"} className="h-12 px-0.5 text-xs" onClick={() => setTab(id)}>{l}</Button>)}
     </div>
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Mon profil : Disponible dans une prochaine étape.</p>}
-    {card && tab === "carte" && <div className="space-y-3">
-      <IdentityCard card={card} />
-      <p className="text-center text-xs text-muted-foreground">DOCUMENT FICTIF — CIVITAS. Numéro et dates attribués par le jeu ; aucune valeur réelle.</p>
-    </div>}
+    {card && tab === "carte" && <CardTab card={card} />}
     {card && tab === "apparence" && <AppearanceTab card={card} />}
     {card && tab === "signature" && <SignatureTab card={card} />}
+    {card && tab === "public" && <PublicTab />}
     {card && tab === "resume" && <SummaryTab />}
   </div>;
 }
