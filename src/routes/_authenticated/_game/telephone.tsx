@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
+import { BankLoans } from "@/components/game/BankLoans";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
 import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
@@ -104,6 +105,7 @@ function BankApp() {
         <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
       </div>
       <div className="mt-4"><EconomyBankLinks/></div>
+      <div className="mt-4"><BankLoans compact /></div>
       <h2 className="mt-5 mb-2 text-sm font-semibold text-muted-foreground">Historique</h2>
       <ul className="space-y-2">
         {bank.transactions.map((t) => (

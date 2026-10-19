@@ -176,3 +176,9 @@
 - [x] Migration 0048 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
 - [x] Validé en jeu par l'utilisateur
 - Plus tard : vrai JT télévisé (présentateur, chaînes fictives, mise en scène)
+
+## P5 — Économie avancée (P5a banque → P5b assurances → P5c entreprises → P5d impôts entreprises)
+- [x] Exclusion levée, décisions et plan approuvés
+- [x] P5a : migration 0049 écrite (prêt, découvert, note, impayés, saisie) et écrans (Patrimoine, Banque)
+- [ ] P5a : application sur le VPS (attend la commande de l'utilisateur)
+- [ ] P5b, P5c, P5d : après validation de P5a
