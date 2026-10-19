@@ -179,6 +179,7 @@ BEGIN
   ELSIF _command = 'interview_answer' THEN
     SELECT * INTO iv FROM public.job_interviews WHERE id = (_input->>'interview_id')::uuid AND character_id = cid AND status = 'ouvert' FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'Entretien introuvable ou terminé'; END IF;
+    IF jsonb_typeof(_input->'answers') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'Répondez aux 3 questions'; END IF;
     SELECT array_agg(x::integer) INTO ans FROM jsonb_array_elements_text(_input->'answers') x;
     IF array_length(ans, 1) IS DISTINCT FROM 3 THEN RAISE EXCEPTION 'Répondez aux 3 questions'; END IF;
     FOR i IN 1..3 LOOP
