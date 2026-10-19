@@ -216,3 +216,7 @@
 - [x] Vague 2 : orientation politique + profil public (installée)
 - [x] Vague 3 : coffre-fort documents, formulaires, documents automatiques (installée)
 - [x] Photo de profil autorisée sur Civi, messages et listes d'élections (selon visibilité)
+
+# Relations internationales (document reçu)
+- [ ] Phase 1 : carte du monde, fiches pays, relations, diplomatie, traités, commerce, sanctions, embargos, énergie, conséquences économiques
+- [ ] Phases suivantes (après accord)
