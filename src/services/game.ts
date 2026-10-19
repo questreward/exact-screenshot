@@ -1360,6 +1360,16 @@ export async function secondhandBuy(listingId: string, requestId: string) {
   if (error) throw new Error(error.message);
   return data as { reference?: string; already: boolean };
 }
+export type ShopExtras = { promos: { id: string; percent: number }[]; promo_ends: string | null; wishlist: { id: string; goal: boolean }[] };
+export const shopExtrasQuery = queryOptions({
+  queryKey: ["shop", "extras"], retry: false,
+  queryFn: async (): Promise<ShopExtras> => { const { data, error } = await untyped.rpc("shop_extras", {}); if (error) throw new Error(error.message); return data as ShopExtras; },
+});
+export async function shopWish(command: "wish" | "goal", catalogId: string) {
+  const { data, error } = await untyped.rpc("shop_wish", { _command: command, _catalog_id: catalogId });
+  if (error) throw new Error(error.message);
+  return data as { wished?: boolean; goal?: boolean };
+}
 export async function maintainAsset(catalogId: string) {
   const { error } = await untyped.rpc("personal_economy_action", { _command: "maintain", _request_id: crypto.randomUUID(), _input: { catalog_id: catalogId } });
   if (error) throw new Error(error.message);

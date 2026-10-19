@@ -53,3 +53,10 @@ export function storePrice(price: number, discountPercent: number): number {
 export function marketNet(price: number, feePercent: number): number {
   return price - Math.floor(price * feePercent / 100);
 }
+
+/** Avancement d'un objectif d'achat (0 à 100) et somme qui manque, d'après le solde. */
+export function goalProgress(balance: number, price: number): { percent: number; missing: number } {
+  if (price <= 0) return { percent: 100, missing: 0 };
+  const have = Math.max(0, balance);
+  return { percent: Math.min(100, Math.floor(have * 100 / price)), missing: Math.max(0, price - have) };
+}

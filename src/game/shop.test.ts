@@ -38,3 +38,17 @@ describe("boutique", () => {
     expect(marketNet(700, 5)).toBe(665);
   });
 });
+
+import { goalProgress } from "./shop";
+describe("promotions et objectifs", () => {
+  it("une promo de 30 % sur 969 € donne 679 € (même arrondi que le serveur)", () => {
+    expect(storePrice(969, 30)).toBe(679);
+  });
+  it("objectif : 500 € sur 969 € = 51 %, il manque 469 €", () => {
+    expect(goalProgress(500, 969)).toEqual({ percent: 51, missing: 469 });
+  });
+  it("objectif atteint plafonné à 100 %, solde négatif compté à 0", () => {
+    expect(goalProgress(2000, 969)).toEqual({ percent: 100, missing: 0 });
+    expect(goalProgress(-50, 100)).toEqual({ percent: 0, missing: 100 });
+  });
+});
