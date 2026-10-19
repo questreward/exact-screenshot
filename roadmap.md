@@ -180,5 +180,5 @@
 ## P5 — Économie avancée (P5a banque → P5b assurances → P5c entreprises → P5d impôts entreprises)
 - [x] Exclusion levée, décisions et plan approuvés
 - [x] P5a : migration 0049 écrite (prêt, découvert, note, impayés, saisie) et écrans (Patrimoine, Banque)
-- [ ] P5a : application sur le VPS (attend la commande de l'utilisateur)
+- [x] P5a : migration 0049 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
 - [ ] P5b, P5c, P5d : après validation de P5a
