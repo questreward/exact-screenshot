@@ -37,3 +37,8 @@ describe("agence immobilière", () => {
     expect(rentBounds(450, 70, 150)).toEqual([315, 675]);
   });
 });
+
+describe("concession", () => {
+  it("une voiture à 10 000 € coûte 8 000 € en stock", () => { expect(dealerWholesale(10000)).toBe(8000); });
+  it("une voiture valant 9 600 € est reprise 5 760 €", () => { expect(dealerTradeOffer(9600)).toBe(5760); });
+});
