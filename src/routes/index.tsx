@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/game/Logo";
 import { SiteFooter } from "@/components/game/SiteFooter";
+import { LearnShowcase } from "@/components/game/LearnShowcase";
 import cityHero from "@/assets/city-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -66,6 +67,17 @@ function Home() {
               <Button asChild variant="glass" size="lg"><Link to="/decouvrir">Découvrir</Link></Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:py-24">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-primary">Jouer pour comprendre</p>
+        <h2 className="mx-auto mt-3 max-w-2xl text-center font-display text-3xl font-bold sm:text-4xl">Ce que tu vis et apprends dans CIVITAS</h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">Une France vivante où chaque choix compte : études, argent, démarches, élections. Tout est fictif, mais tout s'inspire du vrai fonctionnement du pays.</p>
+        <div className="mt-14"><LearnShowcase /></div>
+        <div className="mt-16 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <Button asChild variant="hero" size="lg" className="w-full sm:w-auto"><Link to="/auth" search={{ mode: "signup" }}>Créer mon personnage</Link></Button>
+          <Button asChild variant="glass" size="lg" className="w-full sm:w-auto"><Link to="/decouvrir">En savoir plus</Link></Button>
         </div>
       </section>
       <SiteFooter />
