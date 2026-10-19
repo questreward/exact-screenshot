@@ -616,3 +616,45 @@ export async function cancelInsurance(contractId: string) {
   const { error } = await untyped.rpc("cancel_insurance", { _contract: contractId });
   if (error) throw new Error(error.message);
 }
+
+// P5c — Entreprises des joueurs
+export type BusinessSector = { id: string; label: string; description: string; min_capital: number; base_revenue: number; per_worker: number; per_shift: number; weekly_rent: number; npc_wage: number; max_npc: number };
+export type BusinessState = {
+  now: string; age: number; balance: number;
+  settings: { min_age: number; founding_fee: number; max_owner_salary: number; min_player_salary: number; max_player_salary: number; shift_minutes: number; shift_energy: number; fail_strikes: number };
+  sectors: BusinessSector[];
+  business: null | {
+    id: string; name: string; owner_salary: number; strikes: number; sector: BusinessSector; city_name: string; location_name: string; treasury: number; shifts_this_week: number;
+    npc_staff: { id: string; name: string; profession: string }[];
+    employees: { id: string; name: string; title: string; weekly_salary: number }[];
+    offers: { id: string; title: string; weekly_salary: number }[];
+    weeks: { week: number; revenue: number; costs: number; workers: number; shifts: number }[];
+  };
+  last_closed: null | { name: string; status: "closed" | "failed"; closed_at: string | null };
+  job: null | { id: string; business_id: string; business_name: string; title: string; weekly_salary: number; shifts_this_week: number };
+  offers: { id: string; title: string; weekly_salary: number; business_name: string; sector: string }[];
+  pay_history: { label: string; amount: number; paid_at: string }[];
+};
+export const businessQuery = queryOptions({
+  queryKey: ["bank", "business-state"],
+  queryFn: async (): Promise<BusinessState> => {
+    const { data, error } = await untyped.rpc("business_state", {});
+    if (error) throw new Error(error.message);
+    return data as BusinessState;
+  },
+});
+async function bizRpc(fn: string, args: Record<string, unknown>) {
+  const { error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+}
+export const foundBusiness = (i: { name: string; sector: string; capital: number }) => bizRpc("found_business", { _name: i.name, _sector: i.sector, _capital: i.capital, _request_id: crypto.randomUUID() });
+export const businessDeposit = (i: { biz: string; amount: number }) => bizRpc("business_deposit", { _biz: i.biz, _amount: i.amount, _request_id: crypto.randomUUID() });
+export const businessSetOwnerSalary = (i: { biz: string; amount: number }) => bizRpc("business_set_owner_salary", { _biz: i.biz, _amount: i.amount });
+export const businessHireNpc = (biz: string) => bizRpc("business_hire_npc", { _biz: biz });
+export const businessFireNpc = (i: { biz: string; npc: string }) => bizRpc("business_fire_npc", { _biz: i.biz, _npc: i.npc });
+export const businessOpenOffer = (i: { biz: string; title: string; salary: number }) => bizRpc("business_open_offer", { _biz: i.biz, _title: i.title, _salary: i.salary });
+export const businessCloseOffer = (offer: string) => bizRpc("business_close_offer", { _offer: offer });
+export const businessJoin = (offer: string) => bizRpc("business_join", { _offer: offer });
+export const businessLeave = (employee: string) => bizRpc("business_leave", { _employee: employee });
+export const businessWork = (biz: string) => bizRpc("business_work", { _biz: biz });
+export const businessClose = (biz: string) => bizRpc("business_close", { _biz: biz });
