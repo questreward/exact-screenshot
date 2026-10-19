@@ -206,7 +206,8 @@
 - [ ] Priorité 4 (après accord)
 
 # Boutique, voitures, immobilier (document reçu)
-- [ ] Phase 1 : boutique, catalogue, achats, historique, patrimoine, voitures, locations, achat immobilier
+- [x] Phase 1 vague 1 : boutique, catalogue, achats, historique, patrimoine (0076 préparée)
+- [ ] Phase 1 vague 2 : voitures, locations, achat immobilier (+ immobilier priorité 3)
 - [ ] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main
 - [ ] Phase 3 : commerces, boutiques de joueurs, marché, promotions, wishlist, objectifs
 
@@ -222,4 +223,4 @@
 - [ ] Phases suivantes (après accord)
 
 # Entreprises de services et agences (document reçu)
-- [ ] Phase 1 (après Carrière, Boutique, International — ordre à confirmer)
+- [ ] Phase 1 + médias des joueurs (après la Boutique, avant l'International)

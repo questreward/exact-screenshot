@@ -30,7 +30,7 @@ export function EconomyPage() {
   const totals = monthlyTotals(state.month_transactions);
   const busy = life.activities.some(a => a.status === 'running');
   function run(command: string, input: Record<string, unknown> = {}) { action.mutate({ command, input, requestId: crypto.randomUUID() }); }
-  function catalog(kind: string) { return state.catalog.filter(c => c.kind === kind); }
+  function catalog(kind: string) { return state.catalog.filter(c => c.kind === kind && String(c.config?.['shop'] ?? '') !== 'true'); }
   const goals = state.goals.filter(g => g.kind === (tab === 'projects' ? 'project' : 'saving'));
   function itemCard(item: CatalogEntry) {
     const owned = state.assets.find(a => a.catalog_id === item.id);
