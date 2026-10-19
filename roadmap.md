@@ -173,4 +173,4 @@
 ## P4 — Manifestations et JT
 - [x] Décisions validées et plan approuvé
 - [x] Migration 0048 écrite (manifestations, pression, JT local/national, interviews) et écrans (Ma Ville, page JT)
-- [ ] Application sur le VPS : attend la commande de l'utilisateur
+- [x] Migration 0048 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
