@@ -164,3 +164,8 @@
 - [x] Décisions : tous les PNJ bougent, peuvent aborder le joueur, voyagent parfois
 - [x] Migration 0046 appliquée sur le VPS (COMMIT, contrôles OK) et site mis à jour
 - [x] Vérifié en jeu par l'utilisateur ; P2 validé
+
+## P3 — Organisations avancées
+- [x] Décisions validées et plan approuvé
+- [x] Migration 0047 écrite et écrans (fonder, caisse, dons, rôles, événements)
+- [ ] Application sur le VPS : attend l'accord et la commande de l'utilisateur
