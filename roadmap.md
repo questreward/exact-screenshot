@@ -200,3 +200,9 @@
 - [x] Vague 1 : conséquences différées (0066), projets citoyens (0067), crises (0068) — préparés et testés, en attente d'installation
 - [ ] Vague 2 : réputations multiples, compétences, journal de vie
 - [ ] Priorités 2 à 4 du document « Grande extension » (après accord)
+
+# Documents administratifs
+- [x] Vague 1 : profil, carte, photo, signature (installée)
+- [ ] Bouton PDF de la carte
+- [ ] Vague 2 : orientation politique (partis réels, axes, historique) + profil public
+- [ ] Vague 3 : coffre-fort documents, formulaires, documents automatiques
