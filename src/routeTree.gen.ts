@@ -26,6 +26,7 @@ import { Route as AuthenticatedGameCarriereRouteImport } from './routes/_authent
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameConcessionRouteImport } from './routes/_authenticated/_game/concession'
+import { Route as AuthenticatedGameConstructionRouteImport } from './routes/_authenticated/_game/construction'
 import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
 import { Route as AuthenticatedGameDebatsPublicsRouteImport } from './routes/_authenticated/_game/debats-publics'
@@ -160,6 +161,12 @@ const AuthenticatedGameConcessionRoute =
   AuthenticatedGameConcessionRouteImport.update({
     id: '/concession',
     path: '/concession',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameConstructionRoute =
+  AuthenticatedGameConstructionRouteImport.update({
+    id: '/construction',
+    path: '/construction',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameCrisesRoute = AuthenticatedGameCrisesRouteImport.update({
@@ -448,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
+  '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
@@ -512,6 +520,7 @@ export interface FileRoutesByTo {
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
+  '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
@@ -579,6 +588,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/concession': typeof AuthenticatedGameConcessionRoute
+  '/_authenticated/_game/construction': typeof AuthenticatedGameConstructionRoute
   '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
   '/_authenticated/_game/debats-publics': typeof AuthenticatedGameDebatsPublicsRoute
@@ -645,6 +655,7 @@ export interface FileRouteTypes {
     | '/carte'
     | '/classements'
     | '/concession'
+    | '/construction'
     | '/crises'
     | '/debats'
     | '/debats-publics'
@@ -709,6 +720,7 @@ export interface FileRouteTypes {
     | '/carte'
     | '/classements'
     | '/concession'
+    | '/construction'
     | '/crises'
     | '/debats'
     | '/debats-publics'
@@ -775,6 +787,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/concession'
+    | '/_authenticated/_game/construction'
     | '/_authenticated/_game/crises'
     | '/_authenticated/_game/debats'
     | '/_authenticated/_game/debats-publics'
@@ -953,6 +966,13 @@ declare module '@tanstack/react-router' {
       path: '/concession'
       fullPath: '/concession'
       preLoaderRoute: typeof AuthenticatedGameConcessionRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/construction': {
+      id: '/_authenticated/_game/construction'
+      path: '/construction'
+      fullPath: '/construction'
+      preLoaderRoute: typeof AuthenticatedGameConstructionRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/crises': {
@@ -1296,6 +1316,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameConcessionRoute: typeof AuthenticatedGameConcessionRoute
+  AuthenticatedGameConstructionRoute: typeof AuthenticatedGameConstructionRoute
   AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
   AuthenticatedGameDebatsPublicsRoute: typeof AuthenticatedGameDebatsPublicsRoute
@@ -1355,6 +1376,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameConcessionRoute: AuthenticatedGameConcessionRoute,
+    AuthenticatedGameConstructionRoute: AuthenticatedGameConstructionRoute,
     AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,
     AuthenticatedGameDebatsPublicsRoute: AuthenticatedGameDebatsPublicsRoute,
