@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { LoaderCircle, ShoppingBag, Search, Check, Wrench } from "lucide-react";
+import { LoaderCircle, ShoppingBag, Search, Check, Wrench, Heart, Target, BadgePercent } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopQuery, shopSell, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
+import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, shopQuery, shopSell, shopWish, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
-import { SECTIONS, creditCost, creditMonthly, filterProducts, notaryFees, type ShopSort } from "@/game/shop";
+import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
   head: () => ({ meta: gameMeta("Boutique", "Achetez de vrais produits comptant ou à crédit, revendez vos biens et trouvez des occasions de seconde main.") }),
@@ -40,11 +40,20 @@ function ShopPage() {
     onSuccess: (_r, l) => { toast.success(`${l.name} d'occasion acheté.`); setUsed(null); refresh(); }, onError });
   const maintain = useMutation({ mutationFn: (a: ShopAsset) => maintainAsset(a.catalog_id),
     onSuccess: () => { toast.success("Entretien payé, véhicule de nouveau disponible."); refresh(); }, onError });
+  const extras = useQuery(shopExtrasQuery);
+  const wish = useMutation({ mutationFn: (v: { cmd: "wish" | "goal"; p: ShopProduct }) => shopWish(v.cmd, v.p.id),
+    onSuccess: (r, v) => { toast.success(v.cmd === "goal" ? (r.goal ? `${v.p.name} devient ton objectif d'achat.` : "Objectif retiré.") : (r.wished ? "Ajouté à tes envies." : "Retiré de tes envies.")); qc.invalidateQueries({ queryKey: ["shop"] }); }, onError });
+  const promo = useMemo(() => new Map((extras.data?.promos ?? []).map(p => [p.id, p.percent])), [extras.data]);
+  const wished = useMemo(() => new Map((extras.data?.wishlist ?? []).map(w => [w.id, w.goal])), [extras.data]);
+  const cashPrice = (p: ShopProduct) => storePrice(p.price, promo.get(p.id) ?? 0);
 
   const brands = useMemo(() => [...new Set((s?.products ?? []).map(p => p.brand))].sort((a, b) => a.localeCompare(b, "fr")), [s]);
-  const list = useMemo(() => filterProducts(s?.products ?? [], { search, section, brand, maxPrice: max ? Number(max) : null }, sort), [s, search, section, brand, max, sort]);
+  const list = useMemo(() => filterProducts((s?.products ?? []).map(p => ({ ...p, price: storePrice(p.price, promo.get(p.id) ?? 0), base: p })), { search, section, brand, maxPrice: max ? Number(max) : null }, sort).map(x => x.base), [s, search, section, brand, max, sort, promo]);
   const total = (s?.assets ?? []).reduce((n, a) => n + a.value, 0);
   const activeCredits = (s?.credit.list ?? []).filter(c => c.status === "active");
+  const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
+  const wishList = (s?.products ?? []).filter(p => wished.has(p.id));
+  const goal = wishList.find(p => wished.get(p.id));
 
   return <div className="mx-auto max-w-3xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
@@ -54,11 +63,18 @@ function ShopPage() {
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Boutique : Disponible dans une prochaine étape.</p>}
     {s && <Tabs defaultValue="catalogue">
       <TabsList className="flex h-12 w-full justify-start overflow-x-auto">
-        <TabsTrigger value="catalogue">Catalogue</TabsTrigger><TabsTrigger value="occasions">Occasions</TabsTrigger>
+        <TabsTrigger value="catalogue">Catalogue</TabsTrigger><TabsTrigger value="envies">Envies{wishList.length ? ` (${wishList.length})` : ""}</TabsTrigger>
+        <TabsTrigger value="occasions">Occasions</TabsTrigger>
         <TabsTrigger value="credits">Crédits{activeCredits.length ? ` (${activeCredits.length})` : ""}</TabsTrigger>
         <TabsTrigger value="patrimoine">Mes biens</TabsTrigger><TabsTrigger value="achats">Historique</TabsTrigger></TabsList>
 
       <TabsContent value="catalogue" className="mt-4 space-y-3">
+        {promoList.length > 0 && <section className="rounded-xl border border-primary/40 bg-primary/10 p-4">
+          <p className="flex items-center gap-2 font-heading font-bold"><BadgePercent className="h-5 w-5 text-primary" />Promos de la semaine</p>
+          <p className="text-xs text-muted-foreground">{promoList.length} produits remisés, au comptant{extras.data?.promo_ends ? `, jusqu'au ${day(extras.data.promo_ends)}` : ""}. Nouvelles promos chaque semaine de jeu.</p>
+          <div className="mt-2 flex flex-wrap gap-2">{promoList.map(p => <button key={p.id} type="button" onClick={() => setSearch(p.name)}
+            className="min-h-11 rounded-full bg-card px-3 py-2 text-sm font-semibold">{p.name} <span className="text-primary">−{promo.get(p.id)} %</span></button>)}</div>
+        </section>}
         <label className="relative block"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
           <input className="h-12 w-full rounded-lg border border-input bg-background pl-10 pr-3" placeholder="Rechercher une marque, un produit…" value={search} onChange={e => setSearch(e.target.value)} /></label>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -68,22 +84,22 @@ function ShopPage() {
           <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
         </div>
         <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
-        <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => {
-          const creditable = p.kind === "vehicle" || !!p.details.realestate;
-          const cash = p.price + (p.details.realestate ? notaryFees(p.price) : 0);
-          const blocked = p.kind === "vehicle" && !s.license;
-          return <li key={p.id} className="flex flex-col rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
-            <p className="font-heading text-lg font-bold">{p.name}</p>
-            <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
-            {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
-            {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
-            <div className="mt-3 flex items-center justify-between gap-2"><div><p className="font-heading text-xl font-bold">{eur(p.price)}</p>
-              {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
-              {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
-                : <Button className="h-11" disabled={blocked || (!creditable && cash > s.balance)} onClick={() => setConfirm(p)}>
-                  {blocked ? "Permis requis" : !creditable && cash > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
-          </li>; })}</ul>
+        <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
+          busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+      </TabsContent>
+
+      <TabsContent value="envies" className="mt-4 space-y-3">
+        {goal ? (() => { const g = goalProgress(s.balance, cashPrice(goal) + (goal.details.realestate ? notaryFees(goal.price) : 0)); return <div className="rounded-xl bg-secondary p-4 text-secondary-foreground">
+          <p className="flex items-center gap-2 text-sm opacity-80"><Target className="h-4 w-4" />Mon objectif d'achat</p>
+          <p className="font-heading text-xl font-bold">{goal.brand} {goal.name}</p>
+          <div className="mt-2 h-3 overflow-hidden rounded-full bg-background/30"><div className="h-full bg-primary" style={{ width: `${g.percent}%` }} /></div>
+          <p className="mt-1 text-sm">{g.missing === 0 ? "Objectif atteint : tu peux l'acheter !" : `${g.percent} % · il te manque ${eur(g.missing)}`}</p>
+          <p className="text-xs opacity-80">Calculé sur ton solde : l'argent reste sur ton compte.</p></div>; })()
+          : <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Pas d'objectif. Touche la cible sur un produit pour suivre ton épargne.</p>}
+        {wishList.length === 0 ? <p className="text-sm text-muted-foreground">Ta liste d'envies est vide. Touche le cœur sur un produit pour l'ajouter.</p> :
+          <ul className="grid gap-3 sm:grid-cols-2">{wishList.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished isGoal={!!wished.get(p.id)}
+            busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
+        <p className="text-xs text-muted-foreground">Ta liste est privée. Un produit acheté en sort automatiquement.</p>
       </TabsContent>
 
       <TabsContent value="occasions" className="mt-4 space-y-3">
@@ -151,7 +167,7 @@ function ShopPage() {
       </TabsContent>
     </Tabs>}
 
-    {confirm && s && <BuyDialog p={confirm} s={s} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
+    {confirm && s && <BuyDialog p={confirm} s={s} pct={promo.get(confirm.id) ?? 0} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
       onCash={() => buy.mutate(confirm)} onCredit={(down, months) => buyCredit.mutate({ p: confirm, down, months })} />}
 
     {sell && <Dialog title="Revendre à la boutique" onClose={() => setSell(null)}>
@@ -180,13 +196,14 @@ function Dialog({ title, onClose, children }: { title: string; onClose: () => vo
       <p className="font-heading text-lg font-bold">{title}</p>{children}</div></div>;
 }
 
-function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduct; s: ShopState; pending: boolean; onClose: () => void; onCash: () => void; onCredit: (down: number, months: number) => void }) {
+function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopProduct; s: ShopState; pct: number; pending: boolean; onClose: () => void; onCash: () => void; onCredit: (down: number, months: number) => void }) {
   const immo = !!p.details.realestate; const creditable = immo || p.kind === "vehicle";
   const cfg = s.credit.settings;
   const fees = immo ? notaryFees(p.price) : 0;
   const minDown = Math.ceil(p.price * cfg.min_down_percent / 100);
   const durations = (immo ? [60, 120, 180, 240, 300] : [12, 24, 36, 48, 60, 72, 84]).filter(m => m >= (immo ? cfg.immo_min_months : cfg.auto_min_months) && m <= (immo ? cfg.immo_max_months : cfg.auto_max_months));
-  const [mode, setMode] = useState<"cash" | "credit">(creditable && p.price + fees > s.balance ? "credit" : "cash");
+  const cash = storePrice(p.price, pct);
+  const [mode, setMode] = useState<"cash" | "credit">(creditable && cash + fees > s.balance ? "credit" : "cash");
   const [down, setDown] = useState(String(Math.max(minDown, Math.min(Math.max(0, s.balance - fees), Math.round(p.price * 0.2)))));
   const [months, setMonths] = useState(immo ? 240 : 48);
   const rate = immo ? cfg.immo_rate : cfg.auto_rate;
@@ -202,15 +219,16 @@ function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduc
       <Button variant={mode === "cash" ? "default" : "outline"} className="h-11" onClick={() => setMode("cash")}>Comptant</Button>
       <Button variant={mode === "credit" ? "default" : "outline"} className="h-11" onClick={() => setMode("credit")}>À crédit</Button></div>}
     {mode === "cash" ? <>
-      <ul className="my-3 space-y-1 text-sm">{row("Prix", eur(p.price))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - p.price - fees))}</ul>
-      {p.price + fees > s.balance && <p className="mb-3 text-sm text-destructive">Solde insuffisant.</p>}
+      <ul className="my-3 space-y-1 text-sm">{pct > 0 && row("Prix normal", eur(p.price))}{row(pct > 0 ? `Prix promo (−${pct} %)` : "Prix", eur(cash))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - cash - fees))}</ul>
+      {cash + fees > s.balance && <p className="mb-3 text-sm text-destructive">Solde insuffisant.</p>}
       <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="h-12" onClick={onClose}>Annuler</Button>
-        <Button className="h-12" disabled={pending || p.price + fees > s.balance} onClick={onCash}>Payer</Button></div>
+        <Button className="h-12" disabled={pending || cash + fees > s.balance} onClick={onCash}>Payer</Button></div>
     </> : <>
       <div className="my-3 space-y-2">
         <label className="block text-sm">Apport (min. {eur(minDown)})<input type="number" inputMode="numeric" className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={down} onChange={e => setDown(e.target.value)} /></label>
         <label className="block text-sm">Durée<select className={`${select} mt-1`} value={months} onChange={e => setMonths(Number(e.target.value))}>
           {durations.map(m => <option key={m} value={m}>{immo ? `${m / 12} ans` : `${m} mois`}</option>)}</select></label></div>
+      {pct > 0 && <p className="mb-2 text-xs text-muted-foreground">La promo s'applique seulement au comptant.</p>}
       <ul className="mb-3 space-y-1 text-sm">{row("Montant emprunté", eur(principal))}{row("Taux", `${rate} %`)}{row("Mensualité", `${eur(monthly)} / mois`)}
         {row("Coût des intérêts", eur(creditCost(principal, rate, months)))}{immo && row("Frais de notaire (comptant)", eur(fees))}{row("Payé aujourd'hui", eur(d + fees))}</ul>
       {creditProblem && <p className="mb-3 text-sm text-destructive">{creditProblem}</p>}
@@ -219,4 +237,32 @@ function BuyDialog({ p, s, pending, onClose, onCash, onCredit }: { p: ShopProduc
         <Button className="h-12" disabled={pending || !!creditProblem} onClick={() => onCredit(d, months)}>Signer le crédit</Button></div>
     </>}
   </Dialog>;
+}
+
+function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onWish }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; onBuy: () => void; onWish: (cmd: "wish" | "goal") => void }) {
+  const creditable = p.kind === "vehicle" || !!p.details.realestate;
+  const price = storePrice(p.price, pct);
+  const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
+  const blocked = p.kind === "vehicle" && !s.license;
+  return <li className="flex flex-col rounded-xl border border-border bg-card p-4">
+    <div className="flex items-start justify-between gap-2">
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
+      {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}</div>
+    <p className="font-heading text-lg font-bold">{p.name}</p>
+    <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
+    {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
+    {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
+    <div className="mt-3 flex items-center justify-between gap-2"><div>
+      {pct > 0 && <p className="text-xs text-muted-foreground line-through">{eur(p.price)}</p>}
+      <p className="font-heading text-xl font-bold">{eur(price)}</p>
+      {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
+      {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
+        : <Button className="h-11" disabled={blocked || (!creditable && cash > s.balance)} onClick={onBuy}>
+          {blocked ? "Permis requis" : !creditable && cash > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
+    {!p.owned && <div className="mt-2 grid grid-cols-2 gap-2">
+      <Button variant="outline" className="h-11" disabled={busy} aria-pressed={wished} onClick={() => onWish("wish")}>
+        <Heart className={`h-4 w-4 ${wished ? "fill-primary text-primary" : ""}`} />{wished ? "Dans mes envies" : "Envie"}</Button>
+      <Button variant={isGoal ? "default" : "outline"} className="h-11" disabled={busy} aria-pressed={isGoal} onClick={() => onWish("goal")}>
+        <Target className="h-4 w-4" />{isGoal ? "Mon objectif" : "Objectif"}</Button></div>}
+  </li>;
 }
