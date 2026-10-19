@@ -213,7 +213,7 @@ DECLARE cid uuid := public.social_actor(); city text; BEGIN
 END $$;
 
 CREATE FUNCTION public.forum_action(_command text, _input jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid := public.social_actor(); s public.forum_settings; f public.public_forums; par public.forum_posts; k text; id uuid; BEGIN
+DECLARE cid uuid := public.social_actor(); s public.forum_settings; f public.public_forums; par public.forum_posts; k text; new_id uuid; BEGIN
   PERFORM 1 FROM public.characters WHERE id = cid FOR UPDATE;
   SELECT * INTO s FROM public.forum_settings WHERE id = 1;
   IF _command = 'create' THEN
@@ -222,8 +222,8 @@ DECLARE cid uuid := public.social_actor(); s public.forum_settings; f public.pub
       RAISE EXCEPTION 'Un nouveau débat par jour au maximum'; END IF;
     INSERT INTO public.public_forums (city_id, author_id, topic_kind, title, context, closes_at)
       SELECT c.city_id, cid, _input->>'topic_kind', btrim(_input->>'title'), NULLIF(btrim(COALESCE(_input->>'context', '')), ''),
-        public.game_now() + make_interval(hours => s.duration_hours) FROM public.characters c WHERE c.id = cid RETURNING public_forums.id INTO id;
-    RETURN jsonb_build_object('id', id);
+        public.game_now() + make_interval(hours => s.duration_hours) FROM public.characters c WHERE c.id = cid RETURNING public_forums.id INTO new_id;
+    RETURN jsonb_build_object('id', new_id);
   ELSIF _command = 'post' THEN
     SELECT * INTO f FROM public.public_forums WHERE public_forums.id = (_input->>'forum_id')::uuid;
     IF NOT FOUND OR f.city_id <> (SELECT city_id FROM public.characters WHERE characters.id = cid) THEN RAISE EXCEPTION 'Débat introuvable'; END IF;
@@ -238,8 +238,8 @@ DECLARE cid uuid := public.social_actor(); s public.forum_settings; f public.pub
     IF (SELECT count(*) FROM public.forum_posts WHERE author_id = cid AND created_at > public.game_now() - interval '1 day') >= s.posts_per_day THEN
       RAISE EXCEPTION 'Limite d''interventions atteinte pour aujourd''hui'; END IF;
     INSERT INTO public.forum_posts (forum_id, author_id, kind, parent_id, body)
-      VALUES (f.id, cid, k, CASE WHEN k = 'reponse' THEN par.id END, btrim(_input->>'body')) RETURNING forum_posts.id INTO id;
-    RETURN jsonb_build_object('id', id);
+      VALUES (f.id, cid, k, CASE WHEN k = 'reponse' THEN par.id END, btrim(_input->>'body')) RETURNING forum_posts.id INTO new_id;
+    RETURN jsonb_build_object('id', new_id);
   ELSIF _command = 'react' THEN
     SELECT * INTO par FROM public.forum_posts WHERE forum_posts.id = (_input->>'post_id')::uuid;
     IF NOT FOUND OR par.author_id = cid OR public.network_blocked(cid, par.author_id) THEN RAISE EXCEPTION 'Action impossible'; END IF;
