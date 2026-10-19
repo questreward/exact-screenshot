@@ -236,3 +236,6 @@
 - [x] Menu par rubriques + accueil personnel (affichage seulement)
 - [ ] CIVITAS Services (annuaire + parcours)
 - [ ] Monde mis en scène
+
+- [x] Agence immobilière (0082) prête, à installer sur le VPS
+- [ ] Entreprises : autres services, médias des joueurs
