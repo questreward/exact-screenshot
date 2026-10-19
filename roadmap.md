@@ -224,10 +224,11 @@
 - [ ] Phases suivantes (après accord)
 
 # Entreprises de services et agences (document reçu)
-- [ ] Phase 1 + médias des joueurs (après la Boutique, avant l'International)
+- [x] Phase 1 vague A (0081 préparée) : garages + déménageurs, entreprise fictive de secours, factures, avis joueurs + habitants fictifs
+- [ ] Phase 1 suite : agence immobilière, autres services, médias des joueurs (découpage à choisir)
 - [x] Corriger les pages du menu qui ouvrent /section/... en 404
 
-# Documents reçus (à lire après la Boutique phase 3)
+# Documents reçus (lus : plan en 4 vagues proposé, arbitrages à faire)
 - [ ] Système de mise en scène réaliste (document reçu)
 - [ ] Refonte complète de l'accueil (document reçu)
 - [ ] Écosystème complet d'interfaces (document reçu)
