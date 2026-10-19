@@ -32,7 +32,7 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
     const bg = cssColor("--background"), card = cssColor("--card"), fg = cssColor("--foreground"), primary = cssColor("--primary"), muted = cssColor("--muted-foreground"), sec = cssColor("--accent");
     const m = new maplibregl.Map({
       container: box.current,
-      style: { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": bg } }], glyphs: undefined },
+      style: { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": bg } }]},
       center: [2.4, 46.6], zoom: 4.6, minZoom: 4, maxZoom: 13, attributionControl: false, dragRotate: false, pitchWithRotate: false,
     });
     m.touchZoomRotate.disableRotation();
