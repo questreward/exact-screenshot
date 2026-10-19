@@ -148,6 +148,7 @@
 - [x] Relecture statique et correction du SQL proposé selon l’accord du 19 octobre ; version v3 complète préparée, sans exécution, compte, test ni écran. Activation/dépouillement/Sénat/votes simulés/contenus non décidés restent bloqués.
 - [x] Accord explicite reçu le 19 octobre à 07:40 UTC pour appliquer exclusivement la v3 après empreintes ; aucun compte, test ou activation.
 - [x] Écart 65 → 79 expliqué par génération normale ; 79 conservés comme référence actuelle, aucun nettoyage.
-- [ ] Préparer la forme compatible de la v3, sa comparaison et l’inventaire des objets ; application bloquée dans l’attente d’un nouvel accord explicite.
+- [x] Forme compatible v3 proposée : structure inchangée, initialisation atomique séparée, contrôles en lecture seule ; comparaison et inventaire exact présentés, perte de transaction globale explicitée.
+- [ ] Application de la forme compatible bloquée dans l’attente d’un nouvel accord explicite incluant la séparation des transactions.
 - [ ] Vérifications après application bloquées par l’absence d’application ; paramètres Sénat/votes simulés/textes/deltas à préciser avant activation.
 - Bloc 16 interdit.
