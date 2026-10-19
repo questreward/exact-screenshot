@@ -8,6 +8,7 @@ import { gameDate } from "@/game/life";
 import { LocationLink, useLifeMutation } from "./LifeControls";
 import { cn } from "@/lib/utils";
 import { GovernanceLink } from './GovernancePage';
+import { LawAnalysisCard } from './LawAnalysisCard';
 
 export const POLITICS_TABS = [
   { id: "decouvrir", label: "Découvrir", icon: Vote },
@@ -43,6 +44,7 @@ export function PoliticsPage({ search }: { search: PoliticsSearch }) {
     {tab === "comparer" && <Compare s={s} a={search.a} b={search.b} />}
     {tab === "personnalites" && <Personalities s={s} />}
     {tab === "profil" && <Profile s={s} />}
+    {tab === "profil" && <LawAnalysisCard />}
   </div>;
 }
 
