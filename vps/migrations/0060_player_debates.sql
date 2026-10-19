@@ -100,7 +100,7 @@ DECLARE s public.debate_settings; cand uuid; BEGIN
   PERFORM public.award_political(_d.winner_id, 'debate-win:' || _d.id, 'debate', s.win_reputation, s.win_influence, 1, 1, 'Débat gagné : ' || _d.topic);
   SELECT k.id INTO cand FROM public.candidacies k JOIN public.elections e ON e.id = k.election_id
     WHERE k.character_id = _d.winner_id AND k.status = 'validated' AND e.status IN ('candidacies','campaign','vote')
-    ORDER BY e.created_at DESC LIMIT 1;
+    ORDER BY e.starts_at DESC LIMIT 1;
   INSERT INTO public.debate_rewards (debate_id, character_id, candidacy_id) VALUES (_d.id, _d.winner_id, cand) ON CONFLICT DO NOTHING;
   IF FOUND AND cand IS NOT NULL THEN
     UPDATE public.candidacies SET support = LEAST(100, support + s.campaign_support),
