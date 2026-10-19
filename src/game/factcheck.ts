@@ -1,8 +1,8 @@
 // Libellés de la vérification des faits et de la vie des partis (le calcul est fait par le serveur).
 export const VERDICTS: Record<string, { label: string; tone: string }> = {
-  vrai: { label: "Vrai", tone: "bg-success text-success-foreground" },
+  vrai: { label: "Vrai", tone: "bg-success text-primary-foreground" },
   plutot_vrai: { label: "Plutôt vrai", tone: "bg-primary/20 text-foreground" },
-  trompeur: { label: "Trompeur", tone: "bg-warning text-warning-foreground" },
+  trompeur: { label: "Trompeur", tone: "bg-accent text-accent-foreground" },
   faux: { label: "Faux", tone: "bg-destructive text-destructive-foreground" },
   "invérifiable": { label: "Impossible à vérifier", tone: "bg-muted text-foreground" },
 };
