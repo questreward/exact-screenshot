@@ -15,6 +15,7 @@ export type Section = {
 export const SECTIONS: Section[] = [
   { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
+  { id: "france", label: "France", icon: Map, description: "La vraie carte de France, communes et circonscriptions.", available: true },
   { id: "telephone", label: "Téléphone", icon: Smartphone, description: "Votre outil principal au quotidien.", available: true },
   { id: "personnage", label: "Personnage", icon: User, description: "Votre identité et votre apparence.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },

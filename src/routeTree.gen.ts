@@ -24,6 +24,7 @@ import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedGameDemarchesRouteImport } from './routes/_authenticated/_game/demarches'
 import { Route as AuthenticatedGameElectionsRouteImport } from './routes/_authenticated/_game/elections'
 import { Route as AuthenticatedGameEvenementsRouteImport } from './routes/_authenticated/_game/evenements'
+import { Route as AuthenticatedGameFranceRouteImport } from './routes/_authenticated/_game/france'
 import { Route as AuthenticatedGameJtRouteImport } from './routes/_authenticated/_game/jt'
 import { Route as AuthenticatedGameLoisRouteImport } from './routes/_authenticated/_game/lois'
 import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
@@ -122,6 +123,11 @@ const AuthenticatedGameEvenementsRoute =
     path: '/evenements',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameFranceRoute = AuthenticatedGameFranceRouteImport.update({
+  id: '/france',
+  path: '/france',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameJtRoute = AuthenticatedGameJtRouteImport.update({
   id: '/jt',
   path: '/jt',
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
   '/evenements': typeof AuthenticatedGameEvenementsRoute
+  '/france': typeof AuthenticatedGameFranceRoute
   '/jt': typeof AuthenticatedGameJtRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
   '/evenements': typeof AuthenticatedGameEvenementsRoute
+  '/france': typeof AuthenticatedGameFranceRoute
   '/jt': typeof AuthenticatedGameJtRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/demarches': typeof AuthenticatedGameDemarchesRoute
   '/_authenticated/_game/elections': typeof AuthenticatedGameElectionsRoute
   '/_authenticated/_game/evenements': typeof AuthenticatedGameEvenementsRoute
+  '/_authenticated/_game/france': typeof AuthenticatedGameFranceRoute
   '/_authenticated/_game/jt': typeof AuthenticatedGameJtRoute
   '/_authenticated/_game/lois': typeof AuthenticatedGameLoisRoute
   '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/demarches'
     | '/elections'
     | '/evenements'
+    | '/france'
     | '/jt'
     | '/lois'
     | '/ma-ville'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/demarches'
     | '/elections'
     | '/evenements'
+    | '/france'
     | '/jt'
     | '/lois'
     | '/ma-ville'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/demarches'
     | '/_authenticated/_game/elections'
     | '/_authenticated/_game/evenements'
+    | '/_authenticated/_game/france'
     | '/_authenticated/_game/jt'
     | '/_authenticated/_game/lois'
     | '/_authenticated/_game/ma-ville'
@@ -570,6 +582,13 @@ declare module '@tanstack/react-router' {
       path: '/evenements'
       fullPath: '/evenements'
       preLoaderRoute: typeof AuthenticatedGameEvenementsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/france': {
+      id: '/_authenticated/_game/france'
+      path: '/france'
+      fullPath: '/france'
+      preLoaderRoute: typeof AuthenticatedGameFranceRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/jt': {
@@ -722,6 +741,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameDemarchesRoute: typeof AuthenticatedGameDemarchesRoute
   AuthenticatedGameElectionsRoute: typeof AuthenticatedGameElectionsRoute
   AuthenticatedGameEvenementsRoute: typeof AuthenticatedGameEvenementsRoute
+  AuthenticatedGameFranceRoute: typeof AuthenticatedGameFranceRoute
   AuthenticatedGameJtRoute: typeof AuthenticatedGameJtRoute
   AuthenticatedGameLoisRoute: typeof AuthenticatedGameLoisRoute
   AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
@@ -752,6 +772,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameDemarchesRoute: AuthenticatedGameDemarchesRoute,
     AuthenticatedGameElectionsRoute: AuthenticatedGameElectionsRoute,
     AuthenticatedGameEvenementsRoute: AuthenticatedGameEvenementsRoute,
+    AuthenticatedGameFranceRoute: AuthenticatedGameFranceRoute,
     AuthenticatedGameJtRoute: AuthenticatedGameJtRoute,
     AuthenticatedGameLoisRoute: AuthenticatedGameLoisRoute,
     AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,

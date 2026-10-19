@@ -25,11 +25,10 @@
 - Parties/movements are organization kinds extended 1:1 (political_profiles/branches); political stats are separate from social stats; affinity in src/game/politics.ts is a hint only.
 - Elections: character-first RPCs, row locks, private immutable ballots; fictional electorates simulated separately; candidacies own campaign budget without new accounts.
 - Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts; one calendar successor per city election.
-- Rent retries keep failures under a distinct key; UI checks successful operations only.
 - World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
-- National installation requires one atomic transaction covering schema, seeds and integrity assertions; current schema/data tools cannot share it, so installation stays blocked until a supported unified executor exists, rather than leaving partial state or using compensating cleanup.
+- Non-atomic installs are forbidden: schema, seeds and integrity checks run in one transaction (VPS psql file with BEGIN/COMMIT), never partial state or compensating cleanup.
 - Fictional NPC schedules are computed deterministically from game_now (npc_location_at), never stored or ticked; greetings reuse comm_push with per-day unique keys and no rewards.
 - Player-founded organizations keep money in org_treasuries/org_ledger (unique operation keys, never negative); personal money moves only via economy_cash; no withdrawal to personal accounts.
 - Protests are social activities (source_key 'protest:<id>') settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news, never by a scheduled job.
@@ -38,3 +37,5 @@
 - Player businesses keep money in business_treasuries/business_ledger (never negative); weekly results settle on read by owner or employee; salaries to players are reserved as payroll rows and collected by the payee via economy_cash, since economy_cash only acts for the signed-in character.
 - Player network (profiles, contacts, follows, private messages) is separate from NPC relations/messages; other players' data is exposed only through network_card/network_profile RPCs, never by widening characters RLS.
 - Player-to-player interactions share one block guard trigger (guard_player_block); transfers are debited at send and credited on recipient read (transfer_collect), like payroll; 'live' updates use query polling because the VPS runs no realtime server.
+- France map: open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles (independence; v6 breaks in Vite).
+- Rent retries log failures under a distinct key; UI counts successes.
