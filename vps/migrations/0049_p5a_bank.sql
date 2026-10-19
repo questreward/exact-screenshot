@@ -148,14 +148,14 @@ END $$;
 CREATE FUNCTION public.bank_settle(_cid uuid)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.bank_settings; bp public.bank_profiles; t timestamptz := public.game_now(); today date := (public.game_now() AT TIME ZONE 'UTC')::date;
-  d date; i record; ln public.loans; due integer; bal integer; repay integer; asset record; value integer; remaining integer; rec integer; BEGIN
+  d date; i record; ln public.loans; due integer; bal integer; repay integer; asset record; value integer; remaining integer; rec integer; new_day boolean; BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.characters WHERE id = _cid AND user_id = auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
   SELECT * INTO s FROM public.bank_settings WHERE id = 1;
   INSERT INTO public.bank_profiles (character_id, score, fees_settled_date) VALUES (_cid, s.score_start, today) ON CONFLICT DO NOTHING;
   SELECT * INTO bp FROM public.bank_profiles WHERE character_id = _cid FOR UPDATE;
 
   -- Frais de découvert : 1 par jour de jeu passé à découvert, −1 de note par semaine
-  d := COALESCE(bp.fees_settled_date, today);
+  d := COALESCE(bp.fees_settled_date, today); new_day := d < today;
   WHILE d < today LOOP
     IF bp.overdraft_used > 0 THEN
       INSERT INTO public.bank_ledger (character_id, operation_key, kind, amount, label) VALUES (_cid, 'odfee:' || d, 'overdraft_fee', s.overdraft_daily_fee, 'Frais de découvert — ' || to_char(d, 'DD/MM'))
@@ -234,7 +234,8 @@ DECLARE s public.bank_settings; bp public.bank_profiles; t timestamptz := public
   -- Remboursement automatique du découvert dès que le compte le permet
   SELECT * INTO bp FROM public.bank_profiles WHERE character_id = _cid FOR UPDATE;
   SELECT balance INTO bal FROM public.accounts WHERE character_id = _cid;
-  IF bp.overdraft_used > 0 AND bal > 0 THEN
+  -- Une fois par jour de jeu, pour laisser utiliser une avance tirée aujourd'hui
+  IF new_day AND bp.overdraft_used > 0 AND bal > 0 THEN
     repay := LEAST(bal, bp.overdraft_used);
     PERFORM public.economy_cash(_cid, 'odrepay:' || gen_random_uuid(), -repay, 'Remboursement du découvert', 'banque');
     INSERT INTO public.bank_ledger (character_id, operation_key, kind, amount, label) VALUES (_cid, 'odrepay:' || gen_random_uuid(), 'overdraft_repay', repay, 'Remboursement automatique du découvert');
