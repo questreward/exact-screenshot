@@ -1,53 +1,51 @@
-# CIVITAS — Roadmap complète des prochains blocs (analyse seule)
+# CIVITAS — Roadmap complète jusqu'à la finalisation (analyse seule)
 
 ## Ce qui sera livré
-Un seul document de lecture, `CIVITAS_Roadmap_complete.md`, dans vos Fichiers, structuré exactement en A → K, plus la liste courte « À décider par le propriétaire ».
-Aucun SQL, aucune migration, aucune donnée, aucun compte, aucun test, aucune modification du jeu ni du Bloc 15.
+Un seul document de lecture, `CIVITAS_Roadmap_complete.md`, dans vos Fichiers. Il suit le format de votre dernier document (A à G + liste numérotée finale) et reprend aussi les rubriques demandées dans le précédent (dépendances, décisions du propriétaire, risques globaux).
+Aucun SQL, aucune migration, aucune donnée, aucun compte, aucun test, aucun écran, aucune modification du jeu ni du Bloc 15.
 
 ## Méthode
-1. Relire l'existant réel : 43 migrations appliquées (0000 → 0042), 14 sections et 15 applis Téléphone toutes actives, rapports de validation des Blocs 3 à 10, mémoire du projet, cahiers des charges reçus, SQL v3 du Bloc 15 (gelé).
-2. Classer chacune des 31 fonctionnalités citées en 5 états : prévue / reportée explicitement / déjà réalisée / seulement évoquée / décision requise. Une fonctionnalité sans source écrite sera marquée « évoquée », jamais inventée.
-3. Pour chacune : dépendances, données, fonctions serveur, écrans, confidentialité, doublons/reconnexion, horloge, régressions Blocs 1–15.
+1. Relire l'existant réel : 43 migrations appliquées (0000 → 0042), 14 sections et 15 applis Téléphone actives, rapports de validation, mémoire du projet, cahiers des charges reçus, SQL v3 du Bloc 15 (gelé).
+2. Pour chaque élément : origine notée « déjà validé / explicitement prévu / explicitement différé / simplement suggéré / non spécifié », avec la source. Rien d'évoqué ne devient obligatoire.
+3. Pour chaque fonctionnalité restante : dépendances, complexité, données, écrans, fonctions serveur, confidentialité, doublons/reconnexion, horloge, risques, tests.
 4. Ordonner selon les dépendances techniques, pas l'intérêt.
 
-## Constats déjà établis (à détailler dans le document)
-- Déjà réalisé, à retirer de la liste : messages entre personnages et Civi (Bloc 13, limités, sans récompense), carte et marqueurs (14), perturbations des transports publics (14), fiscalité pédagogique simple (11), logement/loyers/épargne (10), événements vivants (12).
-- Explicitement reportés dans les documents : multijoueur complet, romance et discussion libre, économie avancée, entreprises complexes, investissements/trading, véhicules personnels dynamiques, diplomatie, monde procédural.
-- Seulement évoqués, sans cahier des charges : crypto, actions, marchés, boutique, anglais, double authentification, autres parcours, nouvelles règles d'âge, espaces intérieurs, voyages entre villes, JT, manifestations, PNJ autonomes.
+## Constats déjà établis
+- Déjà validé : Blocs 1 à 14 (dont messages et Civi limités, carte et marqueurs, retards des transports publics, fiscalité pédagogique simple, logement/loyers/épargne, événements vivants).
+- Explicitement différé dans les documents : multijoueur complet, romance et discussion libre, économie avancée, entreprises complexes, investissements/trading, véhicules personnels dynamiques, diplomatie, monde procédural.
+- Simplement suggéré ou non spécifié : crypto, actions, marchés, boutique, anglais, double authentification, autres parcours, nouvelles règles d'âge, espaces intérieurs, voyages entre villes, JT, manifestations, PNJ autonomes.
 
-## Proposition d'ordre (à justifier dans le document, numérotation à partir de 16)
+## Proposition de regroupement (numéros provisoires)
+Le « Bloc 16 » n'étant pas défini, les blocs proposés seront nommés P1, P2… ; leur numéro officiel ne sera attribué qu'après votre validation.
 ```text
-16 Déplacements entre villes et espaces intérieurs   (indépendant du Bloc 15)
-17 PNJ avancés : emploi du temps autonome            (base de 18 et 19)
-18 Organisations vivantes : création libre,
-   évolution collective, budget d'organisation       (budget séparé de l'argent perso et municipal)
-19 Mobilisation et médias : manifestations, JT       (volet national dépend du Bloc 15)
-20 Économie avancée niveau 1 : entreprises jouables,
-   crédit immobilier, assurance, fiscalité avancée   (décision requise, levée d'exclusion)
-21 Couche joueurs visibles : profils publics,
-   réseau social entre joueurs                       (prérequis du multijoueur)
-22 Multijoueur complet                                (en dernier)
+Bloc 15  Politique nationale          (spécifié, gelé : exécuteur atomique)
+P1 Déplacements entre villes et espaces intérieurs   (indépendant du Bloc 15)
+P2 PNJ avancés : emploi du temps autonome            (base de P3 et P4)
+P3 Organisations avancées : création libre,
+   évolution collective, budget d'organisation       (séparé des argents perso/municipal)
+P4 Mobilisation et médias : manifestations, JT       (volet national dépend du Bloc 15)
+P5 Économie avancée niveau 1 : entreprises, crédit
+   immobilier, assurance, fiscalité avancée          (levée d'exclusion requise)
+P6 Joueurs visibles : profils publics, réseau social  (prérequis du multijoueur)
+P7 Multijoueur complet                                (uniquement avec cahier des charges)
 Plus tard / hors roadmap : actions, trading, crypto, marchés, plusieurs pays,
 diplomatie, monde procédural, boutique, romance.
-Transverses à placer quand vous le décidez : anglais, double authentification.
+Transverses à placer sur décision : anglais, double authentification, parcours/âges.
 ```
-Chaque bloc aura ses 12 rubriques demandées (objectif → hors périmètre), avec plan de tests sur comptes temporaires isolés et régressions.
+Chaque bloc : objectif, inclus/exclus, dépendances, données, fonctions, écrans, sécurité, tests (comptes temporaires isolés + régressions), critères de validation.
 
-## Point particulier Bloc 15
-- Blocs 16, 17, 18 et 20 ne lisent aucune table nationale : préparables et applicables sans le Bloc 15.
-- Le volet national de 19 (manifestations nationales, JT politique) dépend du Bloc 15 ; son volet municipal non.
-- Risque d'ordre : la règle « migrations appliquées dans l'ordre » entre en conflit si le Bloc 16 doit passer avant le 0043 gelé. Décision nécessaire (attendre, ou autoriser des blocs indépendants avant 0043 sans dépendance croisée).
-- Aucune modification de la v3 n'est proposée.
+## Plan de migration futur (F)
+Par bloc : objets à créer, objets existants touchés (objectif : aucun), risques, stratégie (une migration atomique par bloc), retour arrière, dépendances. Aucun SQL produit.
 
-## Risques globaux à couvrir (J)
-Horloge commune et rattrapages, doubles gains à la reconnexion, mélange argent personnel / municipal / organisation / national, fuite de données privées quand des profils deviennent visibles, montée en charge des PNJ autonomes, exécuteur atomique manquant (déjà bloquant pour le Bloc 15).
+## Bloc 15 séparément (G)
+Repris tel quel : spécifié et validé (v3, empreinte inchangée), points encore ouverts, blocage d'exécution atomique, capacité demandée au support, et éléments préparables sans base (écrans maquettés hors projet, textes des lois, tests rédigés). Aucune modification de la v3.
 
-## À décider par le propriétaire (liste courte prévue)
-- Ordre migrations : attendre le Bloc 15 ou avancer les blocs indépendants avant lui.
-- Levée ou maintien des exclusions : économie avancée, entreprises, crédit, multijoueur, romance.
-- Le Bloc 16 ex-« exclu » devient-il le bloc « Déplacements entre villes » ?
-- Anglais et double authentification : dans la roadmap ou non.
-- Crypto, trading, plusieurs pays, monde procédural : définitivement écartés ?
+## Points de vigilance
+- Ordre des migrations : P1, P2, P3 et P5 ne lisent aucune table nationale, mais votre règle « dans l'ordre » impose de décider s'ils peuvent passer avant le 0043 gelé.
+- Risques globaux : horloge commune, doubles gains à la reconnexion, mélange des argents personnel/municipal/organisation/national, fuite de données privées avec profils visibles, charge des PNJ autonomes, exécuteur atomique manquant.
+
+## Liste finale prévue
+1 prochain bloc à préparer · 2 blocs suivants · 3 dépendances critiques · 4 éléments préparables sur votre terminal sans Lovable · 5 éléments exigeant une migration de la base, plus « À décider par le propriétaire ».
 
 ## Détails techniques
-Lecture seule : fichiers du dépôt, `drizzle/migrations/*`, `src/game/navigation.ts`, rapports `BLOC_*.md`, mémoire projet. Seule écriture : le document final dans les Fichiers (hors projet).
+Lecture seule : dépôt, migrations, navigation, rapports de validation, mémoire projet, historique de discussion. Seule écriture : le document final dans les Fichiers (hors projet).
