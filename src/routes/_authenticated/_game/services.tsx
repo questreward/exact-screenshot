@@ -83,7 +83,7 @@ function GarageTab({ s, busy, onService }: { s: ServiceState; busy: boolean; onS
   const due = s.vehicles.filter(v => v.condition === "Entretien nécessaire");
   return <>
     {s.vehicles.length === 0 ? <p className="text-sm text-muted-foreground">Tu n'as pas de voiture. Elles s'achètent dans la Boutique.</p>
-      : due.length === 0 ? <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Tes véhicules sont en bon état. {s.vehicles[0].next_maintenance ? `Prochain entretien le ${day(s.vehicles[0].next_maintenance)}.` : ""}</p>
+      : due.length === 0 ? <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Tes véhicules sont en bon état. {s.vehicles[0]?.next_maintenance ? `Prochain entretien le ${day(s.vehicles[0].next_maintenance)}.` : ""}</p>
       : due.map(v => <section key={v.catalog_id} className="space-y-2 rounded-xl border border-primary/40 bg-primary/10 p-4">
         <p className="font-heading font-bold"><Truck className="mr-1 inline h-5 w-5 text-primary" />{v.brand} {v.name} : entretien nécessaire</p>
         <p className="text-xs text-muted-foreground">Choisis ton garage. Prix normal : {eur(v.maintenance)}.</p>
