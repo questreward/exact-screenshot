@@ -1185,3 +1185,42 @@ export const publicPhotoQuery = (id: string) => queryOptions({
     return (data as string | null) ?? null;
   },
 });
+
+// ---- Coffre-fort « Mes documents » (documents recalculés par le serveur, formulaires validés par le serveur) ----
+export type VaultDoc = { key: string; category: string; kind: string; title: string; at: string | null; status: string; expires_at: string | null; data: Record<string, unknown> };
+export type FormField = { key: string; label: string; type: "text" | "number" | "date" | "select" | "radio" | "checkbox"; required?: boolean; options?: [string, string][]; min?: number; max?: number; prefill?: string; help?: string };
+export type FormType = { id: string; category: string; title: string; intro: string; simple_intro: string; fields: FormField[] };
+export type DocumentVault = {
+  now: string;
+  owner: { full_name: string; age: number; city: string | null; civitas_id: string; signature_style: string | null; signature_text: string | null };
+  documents: VaultDoc[]; seen: string[];
+  deadlines: { title: string; due_at: string; status: string }[];
+  prefill: Record<string, string | number | null>;
+  form_types: FormType[];
+  drafts: { id: string; type_id: string; data: Record<string, unknown>; updated_at: string; version: number }[];
+  history: { type_id: string; action: string; version: number; at: string }[];
+};
+export const documentVaultQuery = queryOptions({
+  queryKey: ["documents", "vault"],
+  retry: false,
+  queryFn: async (): Promise<DocumentVault> => {
+    const { data, error } = await untyped.rpc("document_vault", {});
+    if (error) throw new Error(error.message);
+    return data as DocumentVault;
+  },
+});
+export async function documentAction(command: "seen" | "save" | "submit" | "correct" | "delete_draft", input: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc("document_action", { _command: command, _input: input });
+  if (error) throw new Error(error.message);
+  return data as { id?: string; data?: Record<string, unknown> };
+}
+export const candidacyPhotoQuery = (id: string) => queryOptions({
+  queryKey: ["orientation", "candidacy-photo", id],
+  retry: false,
+  staleTime: 5 * 60_000,
+  queryFn: async (): Promise<string | null> => {
+    const { data, error } = await untyped.rpc("candidacy_photo", { _candidacy: id });
+    if (error) return null; // fonction pas encore installée ou candidat fictif : on garde l'initiale
+    return (data as string | null) ?? null;
+  },
+});

@@ -1,3 +1,4 @@
+import { PlayerFace } from '@/components/game/CivicProfileCard';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
@@ -121,7 +122,7 @@ export function CiviApp() {
       <ul className="space-y-3">
         {feed.posts.map((p) => (
           <li key={p.id} className="rounded-xl border border-border bg-card p-3">
-            <p className="text-sm font-semibold">{p.character_id ? 'Vous' : p.author_label}</p>
+            <div className="flex items-center gap-2"><PlayerFace id={p.character_id} name={p.character_id ? 'Vous' : p.author_label} size="h-9 w-9" /><p className="text-sm font-semibold">{p.character_id ? 'Vous' : p.author_label}</p></div>
             <p className="mt-1 text-sm">{p.body}</p>
             <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
               <span className="flex-1">{time(p.posted_at)}</span>

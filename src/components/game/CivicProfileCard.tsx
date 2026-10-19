@@ -3,7 +3,7 @@ import { Landmark, LoaderCircle } from "lucide-react";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
 import { SKILL_LABELS } from "@/game/life-profile";
-import { publicPhotoQuery, publicProfileQuery } from "@/services/game";
+import { candidacyPhotoQuery, publicPhotoQuery, publicProfileQuery } from "@/services/game";
 
 /** Photo publique d'un joueur si elle est autorisée, sinon son avatar. */
 export function PlayerPortrait({ id, appearance, hasPhoto, className }: { id: string; appearance: unknown; hasPhoto: boolean; className?: string }) {
@@ -35,4 +35,13 @@ export function CivicProfileCard({ id }: { id: string }) {
       {p.skills && p.skills.length > 0 && <div className="flex flex-wrap gap-1.5">{p.skills.map(s => <span key={s.dimension} className="rounded-full bg-muted px-2 py-0.5 text-xs">{SKILL_LABELS[s.dimension]} {s.value}</span>)}</div>}
     </div>
   </section>;
+}
+
+/** Petite pastille : photo autorisée par le joueur (réglage + blocages vérifiés par le serveur), sinon initiale. */
+export function PlayerFace({ id, name, candidacy, size = "h-10 w-10" }: { id?: string | null; name: string; candidacy?: boolean; size?: string }) {
+  const q = candidacy ? candidacyPhotoQuery(id ?? "") : publicPhotoQuery(id ?? "");
+  const { data: photo } = useQuery({ ...q, enabled: !!id });
+  return <span className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-heading text-sm font-bold text-accent-foreground ${size}`}>
+    {photo ? <img src={photo} alt={`Photo de ${name}`} className="h-full w-full object-cover" /> : (name.trim()[0] ?? "?").toUpperCase()}
+  </span>;
 }
