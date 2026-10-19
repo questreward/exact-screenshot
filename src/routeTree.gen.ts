@@ -22,6 +22,7 @@ import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authe
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
+import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
 import { Route as AuthenticatedGameDemarchesRouteImport } from './routes/_authenticated/_game/demarches'
 import { Route as AuthenticatedGameElectionsRouteImport } from './routes/_authenticated/_game/elections'
@@ -41,6 +42,7 @@ import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authe
 import { Route as AuthenticatedGamePetitionsRouteImport } from './routes/_authenticated/_game/petitions'
 import { Route as AuthenticatedGamePolitiqueRouteImport } from './routes/_authenticated/_game/politique'
 import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authenticated/_game/presse'
+import { Route as AuthenticatedGameProjetsRouteImport } from './routes/_authenticated/_game/projets'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
 import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authenticated/_game/sante'
 import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
@@ -121,6 +123,11 @@ const AuthenticatedGameClassementsRoute =
     path: '/classements',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameCrisesRoute = AuthenticatedGameCrisesRouteImport.update({
+  id: '/crises',
+  path: '/crises',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameDebatsRoute = AuthenticatedGameDebatsRouteImport.update({
   id: '/debats',
   path: '/debats',
@@ -228,6 +235,12 @@ const AuthenticatedGamePresseRoute = AuthenticatedGamePresseRouteImport.update({
   path: '/presse',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameProjetsRoute =
+  AuthenticatedGameProjetsRouteImport.update({
+    id: '/projets',
+    path: '/projets',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameReseauRoute = AuthenticatedGameReseauRouteImport.update({
   id: '/reseau',
   path: '/reseau',
@@ -322,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
+  '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
@@ -341,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/petitions': typeof AuthenticatedGamePetitionsRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/presse': typeof AuthenticatedGamePresseRoute
+  '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
@@ -368,6 +383,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
+  '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
   '/demarches': typeof AuthenticatedGameDemarchesRoute
   '/elections': typeof AuthenticatedGameElectionsRoute
@@ -387,6 +403,7 @@ export interface FileRoutesByTo {
   '/petitions': typeof AuthenticatedGamePetitionsRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
   '/presse': typeof AuthenticatedGamePresseRoute
+  '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
@@ -417,6 +434,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
+  '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
   '/_authenticated/_game/demarches': typeof AuthenticatedGameDemarchesRoute
   '/_authenticated/_game/elections': typeof AuthenticatedGameElectionsRoute
@@ -436,6 +454,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/petitions': typeof AuthenticatedGamePetitionsRoute
   '/_authenticated/_game/politique': typeof AuthenticatedGamePolitiqueRoute
   '/_authenticated/_game/presse': typeof AuthenticatedGamePresseRoute
+  '/_authenticated/_game/projets': typeof AuthenticatedGameProjetsRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
   '/_authenticated/_game/sante': typeof AuthenticatedGameSanteRoute
   '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
@@ -465,6 +484,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/carte'
     | '/classements'
+    | '/crises'
     | '/debats'
     | '/demarches'
     | '/elections'
@@ -484,6 +504,7 @@ export interface FileRouteTypes {
     | '/petitions'
     | '/politique'
     | '/presse'
+    | '/projets'
     | '/reseau'
     | '/sante'
     | '/syndicats'
@@ -511,6 +532,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/carte'
     | '/classements'
+    | '/crises'
     | '/debats'
     | '/demarches'
     | '/elections'
@@ -530,6 +552,7 @@ export interface FileRouteTypes {
     | '/petitions'
     | '/politique'
     | '/presse'
+    | '/projets'
     | '/reseau'
     | '/sante'
     | '/syndicats'
@@ -559,6 +582,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/classements'
+    | '/_authenticated/_game/crises'
     | '/_authenticated/_game/debats'
     | '/_authenticated/_game/demarches'
     | '/_authenticated/_game/elections'
@@ -578,6 +602,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/petitions'
     | '/_authenticated/_game/politique'
     | '/_authenticated/_game/presse'
+    | '/_authenticated/_game/projets'
     | '/_authenticated/_game/reseau'
     | '/_authenticated/_game/sante'
     | '/_authenticated/_game/syndicats'
@@ -695,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/classements'
       fullPath: '/classements'
       preLoaderRoute: typeof AuthenticatedGameClassementsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/crises': {
+      id: '/_authenticated/_game/crises'
+      path: '/crises'
+      fullPath: '/crises'
+      preLoaderRoute: typeof AuthenticatedGameCrisesRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/debats': {
@@ -830,6 +862,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGamePresseRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/projets': {
+      id: '/_authenticated/_game/projets'
+      path: '/projets'
+      fullPath: '/projets'
+      preLoaderRoute: typeof AuthenticatedGameProjetsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/reseau': {
       id: '/_authenticated/_game/reseau'
       path: '/reseau'
@@ -936,6 +975,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
+  AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
   AuthenticatedGameDemarchesRoute: typeof AuthenticatedGameDemarchesRoute
   AuthenticatedGameElectionsRoute: typeof AuthenticatedGameElectionsRoute
@@ -955,6 +995,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGamePetitionsRoute: typeof AuthenticatedGamePetitionsRoute
   AuthenticatedGamePolitiqueRoute: typeof AuthenticatedGamePolitiqueRoute
   AuthenticatedGamePresseRoute: typeof AuthenticatedGamePresseRoute
+  AuthenticatedGameProjetsRoute: typeof AuthenticatedGameProjetsRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
   AuthenticatedGameSanteRoute: typeof AuthenticatedGameSanteRoute
   AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
@@ -977,6 +1018,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
+    AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,
     AuthenticatedGameDemarchesRoute: AuthenticatedGameDemarchesRoute,
     AuthenticatedGameElectionsRoute: AuthenticatedGameElectionsRoute,
@@ -996,6 +1038,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGamePetitionsRoute: AuthenticatedGamePetitionsRoute,
     AuthenticatedGamePolitiqueRoute: AuthenticatedGamePolitiqueRoute,
     AuthenticatedGamePresseRoute: AuthenticatedGamePresseRoute,
+    AuthenticatedGameProjetsRoute: AuthenticatedGameProjetsRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
     AuthenticatedGameSanteRoute: AuthenticatedGameSanteRoute,
     AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,

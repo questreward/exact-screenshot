@@ -39,3 +39,5 @@
 - Player-to-player interactions share one block guard trigger (guard_player_block); transfers are debited at send and credited on recipient read (transfer_collect), like payroll; 'live' updates use query polling because the VPS runs no realtime server.
 - France map: open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles (independence; v6 breaks in Vite).
 - Rent retries log failures under a distinct key; UI counts successes.
+- Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects): unique keys, applied once on read; projects and crises never write indicators, budget or reputation directly.
+- Citizen projects and crisis donations stay in their own kitty tables; municipal costs are paid only through treasury effects, so personal money and municipal budget never mix.

@@ -1027,3 +1027,76 @@ export async function rankingsSetWealth(show: boolean) {
   const { error } = await untyped.rpc("rankings_set_wealth", { _show: show });
   if (error) throw new Error(error.message);
 }
+
+// ---- Conséquences différées, projets citoyens, crises ----
+export type CityEffect = { label: string; kind: "indicator" | "treasury"; indicator: string | null; delta: number; amount: number; due_at: string; applied: boolean; value?: number | null };
+export type ProjectType = { id: string; label: string; indicator: string; min_cost: number; max_cost: number; work_days: number; effect: number; followup: number };
+export type CitizenProject = {
+  id: string; title: string; problem: string; goal: string; type_id: string; district: string | null; cost: number;
+  status: "soutiens" | "examen" | "reporte" | "travaux" | "termine" | "refuse" | "echoue"; decision: string | null; decided_by: "maire" | "simulation" | null;
+  funding_pct: number; score: number; version: number; author: PlayerCard; mine: boolean; stage_at: string; works_end: string | null; created_at: string;
+  supporters: number; donations: number; i_support: boolean; mobilized_today: boolean;
+  log: { at: string; step: string; message: string }[]; effects: CityEffect[] | null;
+};
+export type ProjectsState = {
+  me: string; now: string; city: string; my_city: string; age: number; is_mayor: boolean; treasury: number | null;
+  settings: { min_age: number; max_active: number; support_days: number; review_days: number; postpone_days: number; player_weight: number; mobilize_points: number; mobilize_energy: number; donation_step: number; approve_score: number; partial_score: number; postpone_score: number; author_reputation: number; supporter_reputation: number; refusal_political: number; followup_days: number };
+  types: ProjectType[]; districts: { id: string; name: string }[]; projects: CitizenProject[];
+};
+export const projectsQuery = queryOptions({
+  queryKey: ["projects", "state"],
+  retry: false,
+  refetchInterval: 20000,
+  queryFn: async (): Promise<ProjectsState> => {
+    const { data, error } = await untyped.rpc("cproject_state", { _city: null });
+    if (error) throw new Error(error.message);
+    return data as ProjectsState;
+  },
+});
+export async function projectAction(input: { command: "create" | "support" | "mobilize" | "donate" | "amend" | "decide"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("cproject_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
+
+export type CrisisOption = { id: "A" | "B" | "C"; label: string; description: string; cost: number; immediate_pct: number; later_pct: number; later_days: number; satisfaction_now: number; satisfaction_later: number; side_delta: number; pros: string; cons: string; favorable: string; unfavorable: string };
+export type Crisis = {
+  id: string; title: string; description: string; national: boolean; district: string | null; status: "urgence" | "gestion" | "terminee";
+  option_id: "A" | "B" | "C" | null; decided_by: "maire" | "conseil" | null; starts_at: string; decide_by: string; ends_at: string;
+  impact: Record<string, number>; main_indicator: string; side_indicator: string; helpers: number; protests: number; donations: number;
+  my_actions: ("aide" | "protestation")[]; effects: CityEffect[] | null;
+};
+export type CrisesState = {
+  me: string; now: string; city: string; my_city: string; energy: number; is_mayor: boolean;
+  settings: { weekly_chance_pct: number; national_chance_pct: number; decide_hours: number; help_energy: number; help_reputation: number; helpers_cap: number; protest_threshold: number; protest_political: number };
+  cities: { id: string; name: string }[]; options: CrisisOption[]; crises: Crisis[];
+};
+export const crisesQuery = (city: string | null) => queryOptions({
+  queryKey: ["crises", "state", city ?? "mine"],
+  retry: false,
+  refetchInterval: 20000,
+  queryFn: async (): Promise<CrisesState> => {
+    const { data, error } = await untyped.rpc("crisis_state", { _city: city });
+    if (error) throw new Error(error.message);
+    return data as CrisesState;
+  },
+});
+export async function crisisAction(input: { command: "decide" | "help" | "protest" | "donate"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("crisis_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
+export type CityEffectsState = {
+  now: string; treasury: number | null; indicators: Record<string, number>;
+  upcoming: (CityEffect & { id: string; source_kind: string })[];
+  recent: (CityEffect & { id: string; source_kind: string; applied_at: string })[];
+};
+export const cityEffectsQuery = (city: string) => queryOptions({
+  queryKey: ["effects", "city", city],
+  retry: false,
+  queryFn: async (): Promise<CityEffectsState> => {
+    const { data, error } = await untyped.rpc("city_effects", { _city: city });
+    if (error) throw new Error(error.message);
+    return data as CityEffectsState;
+  },
+});

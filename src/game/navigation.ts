@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -35,6 +35,8 @@ export const SECTIONS: Section[] = [
   { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
   { id: "famille", label: "Famille", icon: Heart, description: "Couple, enfants, logement partagé et amis proches.", available: true },
+  { id: "projets", label: "Projets citoyens", icon: Hammer, description: "Proposez et portez des projets pour votre ville.", available: true },
+  { id: "crises", label: "Crises", icon: Siren, description: "Crises en cours, réponses et conséquences à venir.", available: true },
   { id: "sante", label: "Santé", icon: HeartPulse, description: "Santé, moral, sport et médecin.", available: true },
   { id: "justice", label: "Justice", icon: Scale, description: "Porter plainte, se défendre, jugements.", available: true },
   { id: "syndicats", label: "Syndicats", icon: Megaphone, description: "Se syndiquer, revendiquer, faire grève.", available: true },
