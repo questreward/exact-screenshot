@@ -113,7 +113,7 @@ END $$;
 
 -- Avancement des pétitions (réglé à la lecture, une seule fois grâce aux verrous de ligne)
 CREATE FUNCTION public.petition_refresh() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE s public.petition_settings; p public.petitions; nowt timestamptz := public.game_now(); sig integer; yes numeric;
+DECLARE s public.petition_settings; p public.petitions; nowt timestamptz := public.game_now(); sig integer; share numeric;
         votes_yes integer; votes_no integer; mayor uuid; BEGIN
   SELECT * INTO s FROM public.petition_settings WHERE id = 1;
   FOR p IN SELECT * FROM public.petitions WHERE status IN ('open','referendum','council') ORDER BY created_at FOR UPDATE SKIP LOCKED LOOP
@@ -135,23 +135,23 @@ DECLARE s public.petition_settings; p public.petitions; nowt timestamptz := publ
     ELSIF p.status = 'referendum' AND nowt >= p.referendum_ends_at THEN
       SELECT count(*) FILTER (WHERE yes), count(*) FILTER (WHERE NOT yes) INTO votes_yes, votes_no FROM public.referendum_ballots WHERE petition_id = p.id;
       -- Habitants simulés : entre 35 % et 65 % de oui ; chaque vote joueur pèse player_weight_pct points (plafonné)
-      yes := 35 + public.petition_hash(p.id::text || ':yes') * 30 + LEAST(30, s.player_weight_pct * (votes_yes - votes_no));
-      yes := GREATEST(0, LEAST(100, round(yes, 1)));
-      IF yes > 50 THEN
+      share := 35 + public.petition_hash(p.id::text || ':yes') * 30 + LEAST(30, s.player_weight_pct * (votes_yes - votes_no));
+      share := GREATEST(0, LEAST(100, round(share, 1)));
+      IF share > 50 THEN
         mayor := public.petition_mayor(p.city_id);
         IF mayor IS NULL THEN
           -- Maire simulé : il accepte une fois sur deux, de façon déterministe
-          UPDATE public.petitions SET yes_pct = yes, decided_at = nowt,
+          UPDATE public.petitions SET yes_pct = share, decided_at = nowt,
             status = CASE WHEN public.petition_hash(p.id::text || ':mayor') < 0.5 THEN 'accepted' ELSE 'refused' END,
             council_note = 'Réponse du maire (personnage simulé).' WHERE id = p.id;
         ELSE
-          UPDATE public.petitions SET yes_pct = yes, status = 'council', council_ends_at = nowt + make_interval(days => s.council_days) WHERE id = p.id;
+          UPDATE public.petitions SET yes_pct = share, status = 'council', council_ends_at = nowt + make_interval(days => s.council_days) WHERE id = p.id;
           PERFORM public.petition_notify(mayor, 'Référendum gagné : à vous de répondre', 'Les habitants ont voté oui à « ' || p.title || ' ». Le conseil doit trancher.');
         END IF;
-        PERFORM public.petition_notify(p.author_id, 'Le oui l''emporte', '« ' || p.title || ' » : ' || yes || ' % de oui.');
+        PERFORM public.petition_notify(p.author_id, 'Le oui l''emporte', '« ' || p.title || ' » : ' || share || ' % de oui.');
       ELSE
-        UPDATE public.petitions SET yes_pct = yes, status = 'rejected', decided_at = nowt WHERE id = p.id;
-        PERFORM public.petition_notify(p.author_id, 'Le non l''emporte', '« ' || p.title || ' » : ' || yes || ' % de oui seulement.');
+        UPDATE public.petitions SET yes_pct = share, status = 'rejected', decided_at = nowt WHERE id = p.id;
+        PERFORM public.petition_notify(p.author_id, 'Le non l''emporte', '« ' || p.title || ' » : ' || share || ' % de oui seulement.');
       END IF;
     ELSIF p.status = 'council' AND nowt >= p.council_ends_at THEN
       -- Silence de la mairie = refus, avec la même perte de réputation pour le maire
