@@ -2,7 +2,8 @@ import { type Appearance, optionValue } from "@/game/appearance";
 import { cn } from "@/lib/utils";
 
 // Simple layered SVG avatar. New appearance options plug in by id.
-export function CharacterAvatar({ appearance, className }: { appearance: Appearance; className?: string }) {
+export function CharacterAvatar({ appearance, className, photo }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined }) {
+  if (photo) return <img src={photo} alt="" className={cn("h-full w-full object-cover", className)} />;
   const skin = optionValue("skin", appearance.skin);
   const hair = optionValue("hairColor", appearance.hairColor);
   const outfit = optionValue("outfit", appearance.outfit);
@@ -43,6 +44,15 @@ export function CharacterAvatar({ appearance, className }: { appearance: Appeara
       <circle cx="52" cy="60" r="2.2" fill="var(--background)" />
       <circle cx="68" cy="60" r="2.2" fill="var(--background)" />
       <path d="M54 71 Q60 75 66 71" stroke="var(--background)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      {/* accessory */}
+      {(appearance.accessory === "glasses" || appearance.accessory === "sunglasses") && (
+        <g stroke="var(--foreground)" strokeWidth="1.8" fill={appearance.accessory === "sunglasses" ? "var(--foreground)" : "none"}>
+          <circle cx="52" cy="60" r="6" /><circle cx="68" cy="60" r="6" /><path d="M58 60 H62" fill="none" />
+        </g>
+      )}
+      {appearance.accessory === "earrings" && <g fill="var(--primary)"><circle cx="37" cy="68" r="2.5" /><circle cx="83" cy="68" r="2.5" /></g>}
+      {appearance.accessory === "cap" && <path d="M36 46 Q36 26 60 26 Q84 26 84 46 Z M80 44 H98 Q96 50 84 48 Z" fill="var(--primary)" />}
+      {appearance.accessory === "scarf" && <path d="M44 92 Q60 102 76 92 L78 100 Q60 110 42 100 Z" fill="var(--primary)" />}
     </svg>
   );
 }
