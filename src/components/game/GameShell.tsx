@@ -25,6 +25,7 @@ function sectionLink(s: Section) {
   if (s.id === "parametres") return { to: "/parametres" as const };
   if (s.id === "france") return { to: "/france" as const };
   if (s.id === "reseau") return { to: "/reseau" as const };
+  if (s.id === "presse") return { to: "/presse" as const };
   if (s.id === "lois") return { to: "/lois" as const };
   if (s.id === "vie-administrative") return { to: "/vie-administrative" as const };
   return { to: "/section/$id" as const, params: { id: s.id } };
