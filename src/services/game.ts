@@ -1265,3 +1265,31 @@ export const citizenCvQuery = queryOptions({
   queryKey: ["cv", "state"], retry: false,
   queryFn: async (): Promise<CitizenCv> => { const { data, error } = await untyped.rpc("citizen_cv", {}); if (error) throw new Error(error.message); return data as CitizenCv; },
 });
+
+// ---- Coalitions, vie interne des partis, vérification des faits (calculs côté serveur) ----
+export type OrgVote = { id: string; kind: string; title: string; body: string | null; closes_at: string; status: string; result: { tally: Record<string, number>; total: number; winner?: string } | null;
+  coalition_id: string | null; candidates: { id: string; name: string }[] | null; voted: boolean; ballots: number };
+export type Coalition = { id: string; status: string; concessions: string; responsibilities: string; budget_support: boolean; created_at: string; decided_at: string | null; ended_at: string | null;
+  proposer: { id: string; name: string }; partner: { id: string; name: string }; broken_by: string | null };
+export type PartyLifeState = {
+  now: string; settings: { respect_days: number; break_penalty: number; respect_bonus: number; vote_hours: number }; led: string[];
+  council: { name: string; seats: number; majority: boolean; organization_id: string | null }[];
+  parties: { id: string; name: string; kind: string; reputation: number; seats: number }[];
+  coalitions: Coalition[];
+  my_orgs: { id: string; name: string; role: string; president: string | null; program: string | null; members: { id: string; name: string }[] | null; votes: OrgVote[] | null }[];
+};
+export const partyLifeQuery = queryOptions({
+  queryKey: ["party-life", "state"], retry: false,
+  queryFn: async (): Promise<PartyLifeState> => { const { data, error } = await untyped.rpc("party_life_state", {}); if (error) throw new Error(error.message); return data as PartyLifeState; },
+});
+export async function partyLifeAction(command: "propose" | "accept" | "refuse" | "break" | "open_vote" | "ballot", input: Record<string, unknown>) {
+  const { error } = await untyped.rpc("party_life_action", { _command: command, _input: input }); if (error) throw new Error(error.message);
+}
+export type FactCheck = { id: string; claim: string; data: Record<string, number>; calculation: string; verdict: string; created_at?: string; mine?: boolean; author?: string };
+export const factCheckQuery = queryOptions({
+  queryKey: ["fact-checks", "state"], retry: false,
+  queryFn: async (): Promise<{ indicators: string[]; checks: FactCheck[] }> => { const { data, error } = await untyped.rpc("fact_check_state", {}); if (error) throw new Error(error.message); return data as { indicators: string[]; checks: FactCheck[] }; },
+});
+export async function runFactCheck(input: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc("fact_check", { _input: input }); if (error) throw new Error(error.message); return data as FactCheck;
+}

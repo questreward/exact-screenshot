@@ -56,8 +56,10 @@ import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authen
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
 import { Route as AuthenticatedGameTropheesRouteImport } from './routes/_authenticated/_game/trophees'
+import { Route as AuthenticatedGameVerificationRouteImport } from './routes/_authenticated/_game/verification'
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
 import { Route as AuthenticatedGameVieAdministrativeRouteImport } from './routes/_authenticated/_game/vie-administrative'
+import { Route as AuthenticatedGameVieDesPartisRouteImport } from './routes/_authenticated/_game/vie-des-partis'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameElectionsIdRouteImport } from './routes/_authenticated/_game/elections_.$id'
 import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
@@ -323,6 +325,12 @@ const AuthenticatedGameTropheesRoute =
     path: '/trophees',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVerificationRoute =
+  AuthenticatedGameVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameVieRoute = AuthenticatedGameVieRouteImport.update({
   id: '/vie',
   path: '/vie',
@@ -332,6 +340,12 @@ const AuthenticatedGameVieAdministrativeRoute =
   AuthenticatedGameVieAdministrativeRouteImport.update({
     id: '/vie-administrative',
     path: '/vie-administrative',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameVieDesPartisRoute =
+  AuthenticatedGameVieDesPartisRouteImport.update({
+    id: '/vie-des-partis',
+    path: '/vie-des-partis',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameActualitesIdRoute =
@@ -417,8 +431,10 @@ export interface FileRoutesByFullPath {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
+  '/verification': typeof AuthenticatedGameVerificationRoute
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
+  '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -472,8 +488,10 @@ export interface FileRoutesByTo {
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
+  '/verification': typeof AuthenticatedGameVerificationRoute
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
+  '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -530,8 +548,10 @@ export interface FileRoutesById {
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
   '/_authenticated/_game/trophees': typeof AuthenticatedGameTropheesRoute
+  '/_authenticated/_game/verification': typeof AuthenticatedGameVerificationRoute
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
   '/_authenticated/_game/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
+  '/_authenticated/_game/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/elections_/$id': typeof AuthenticatedGameElectionsIdRoute
   '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -587,8 +607,10 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/trophees'
+    | '/verification'
     | '/vie'
     | '/vie-administrative'
+    | '/vie-des-partis'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -642,8 +664,10 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/telephone'
     | '/trophees'
+    | '/verification'
     | '/vie'
     | '/vie-administrative'
+    | '/vie-des-partis'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -699,8 +723,10 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
     | '/_authenticated/_game/trophees'
+    | '/_authenticated/_game/verification'
     | '/_authenticated/_game/vie'
     | '/_authenticated/_game/vie-administrative'
+    | '/_authenticated/_game/vie-des-partis'
     | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/elections_/$id'
     | '/_authenticated/_game/organisations_/$id'
@@ -1050,6 +1076,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameTropheesRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/verification': {
+      id: '/_authenticated/_game/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof AuthenticatedGameVerificationRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/vie': {
       id: '/_authenticated/_game/vie'
       path: '/vie'
@@ -1062,6 +1095,13 @@ declare module '@tanstack/react-router' {
       path: '/vie-administrative'
       fullPath: '/vie-administrative'
       preLoaderRoute: typeof AuthenticatedGameVieAdministrativeRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/vie-des-partis': {
+      id: '/_authenticated/_game/vie-des-partis'
+      path: '/vie-des-partis'
+      fullPath: '/vie-des-partis'
+      preLoaderRoute: typeof AuthenticatedGameVieDesPartisRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/actualites_/$id': {
@@ -1148,8 +1188,10 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
   AuthenticatedGameTropheesRoute: typeof AuthenticatedGameTropheesRoute
+  AuthenticatedGameVerificationRoute: typeof AuthenticatedGameVerificationRoute
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
   AuthenticatedGameVieAdministrativeRoute: typeof AuthenticatedGameVieAdministrativeRoute
+  AuthenticatedGameVieDesPartisRoute: typeof AuthenticatedGameVieDesPartisRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameElectionsIdRoute: typeof AuthenticatedGameElectionsIdRoute
   AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
@@ -1198,9 +1240,11 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
     AuthenticatedGameTropheesRoute: AuthenticatedGameTropheesRoute,
+    AuthenticatedGameVerificationRoute: AuthenticatedGameVerificationRoute,
     AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,
     AuthenticatedGameVieAdministrativeRoute:
       AuthenticatedGameVieAdministrativeRoute,
+    AuthenticatedGameVieDesPartisRoute: AuthenticatedGameVieDesPartisRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameElectionsIdRoute: AuthenticatedGameElectionsIdRoute,
     AuthenticatedGameOrganisationsIdRoute:
