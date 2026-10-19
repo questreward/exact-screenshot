@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useLifeMutation } from "@/components/game/LifeControls";
 import { cancelContact, followPlayer, playerProfileQuery, requestContact, respondContact } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
+import { PlayerActions } from "@/components/game/PlayerActions";
 
 export const Route = createFileRoute("/_authenticated/_game/reseau_/$id")({
   head: () => ({ meta: gameMeta("Profil d'un joueur", "Profil public d'un citoyen de CIVITAS : parcours, engagements et réputation.") }),
@@ -30,7 +31,7 @@ function ProfilePage() {
       <p className="text-muted-foreground">{p.age} ans · {p.city}{p.situation ? ` · ${p.situation}` : ""}</p>
       {p.bio && <p className="whitespace-pre-wrap">{p.bio}</p>}
       <p className="text-sm text-muted-foreground">{p.followers} abonné(s) · {p.contacts_count} contact(s)</p>
-      {!p.is_me && <div className="flex flex-wrap gap-2 pt-2">
+      {!p.is_me && !p.blocked_by_me && <div className="flex flex-wrap gap-2 pt-2">
         {!p.contact && <Button className="h-12" disabled={add.isPending} onClick={() => add.mutate(p.id)}><UserPlus /> Ajouter en contact</Button>}
         {p.contact?.status === "pending" && p.contact.incoming && <Button className="h-12" disabled={respond.isPending} onClick={() => respond.mutate({ id: p.contact!.id, accept: true })}>Accepter sa demande</Button>}
         {p.contact?.status === "pending" && !p.contact.incoming && <Button variant="outline" className="h-12" disabled={cancel.isPending} onClick={() => cancel.mutate(p.contact!.id)}>Demande envoyée · annuler</Button>}
@@ -38,6 +39,7 @@ function ProfilePage() {
         <Button variant={p.following ? "secondary" : "outline"} className="h-12" disabled={follow.isPending} onClick={() => follow.mutate({ id: p.id, on: !p.following })}><Star /> {p.following ? "Suivi" : "Suivre"}</Button>
       </div>}
     </section>
+    <PlayerActions p={p} />
     <div className="grid grid-cols-3 gap-2"><Stat label="Réputation" value={p.reputation} /><Stat label="Influence" value={p.influence} /><Stat label="Réputation politique" value={p.political_reputation} /></div>
     <section className="space-y-3 rounded-lg border border-border bg-card p-5">
       {p.mandate && <p className="flex items-center gap-2"><Landmark className="h-5 w-5 text-primary" /> {p.mandate.function} de {p.mandate.city}</p>}

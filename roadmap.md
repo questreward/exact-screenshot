@@ -191,3 +191,7 @@
 ## P6 — Profils visibles et réseau
 - [x] Migration 0053 écrite (profil public + présentation, annuaire de ville, joueurs sur place, contacts, abonnements, messages privés) et écrans (Réseau, téléphone « Joueurs »)
 - [x] Appliqué sur le VPS
+
+## P7 — Multijoueur complet
+- [x] Migration 0054 écrite (blocage + signalement, virements entre contacts, activités à plusieurs, poids des votes joueurs) et écrans ; actualisation automatique toutes les 5–15 s
+- [ ] Application sur le VPS (attend la commande de l'utilisateur)

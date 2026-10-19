@@ -63,6 +63,7 @@ export const bankQuery = queryOptions({
 
 export const notificationsQuery = queryOptions({
   queryKey: ["notifications"],
+  refetchInterval: 15000,
   queryFn: async () => {
     const { data, error } = await supabase
       .from("notifications")
@@ -680,7 +681,7 @@ export type PlayerProfile = PlayerCard & {
   bio: string; influence: number; political_reputation: number; job: string | null;
   organizations: { id: string; name: string; kind: string; role: string }[];
   mandate: null | { function: string; city: string }; business: null | { name: string; sector: string };
-  followers: number; contacts_count: number; is_me: boolean; following: boolean;
+  followers: number; contacts_count: number; is_me: boolean; following: boolean; blocked_by_me: boolean;
   contact: null | { id: string; status: "pending" | "accepted"; incoming: boolean };
 };
 export type NetworkState = {
@@ -688,9 +689,15 @@ export type NetworkState = {
   bio: { bio: string; listed: boolean };
   contacts: PlayerCard[]; incoming: PlayerCard[]; outgoing: PlayerCard[]; following: PlayerCard[]; followers: number;
   threads: { id: string; last_at: string; other: PlayerCard; last_body: string | null; unread: number }[];
+  multiplayer: { transfer_daily_max: number; together_minutes: number; together_energy: number; together_reputation: number; invite_hours: number };
+  together_kinds: { id: string; label: string; location_kinds: string[] }[];
+  balance: number; sent_today: number; blocked: PlayerCard[];
+  invites: { id: string; mine: boolean; kind: string; place: string; expires_at: string; other: PlayerCard }[];
+  transfers: { id: string; amount: number; note: string; created_at: string; sent: boolean; other: PlayerCard }[];
 };
 export const networkQuery = queryOptions({
   queryKey: ["network", "state"],
+  refetchInterval: 10000,
   queryFn: async (): Promise<NetworkState> => {
     const { data, error } = await untyped.rpc("network_state", {});
     if (error) throw new Error(error.message);
@@ -699,6 +706,7 @@ export const networkQuery = queryOptions({
 });
 export const playerDirectoryQuery = (q: string) => queryOptions({
   queryKey: ["network", "directory", q],
+  refetchInterval: 15000,
   queryFn: async (): Promise<{ city: string; players: PlayerCard[]; here: PlayerCard[] }> => {
     const { data, error } = await untyped.rpc("player_directory", { _query: q });
     if (error) throw new Error(error.message);
@@ -715,6 +723,7 @@ export const playerProfileQuery = (id: string) => queryOptions({
 });
 export const playerThreadQuery = (id: string) => queryOptions({
   queryKey: ["network", "thread", id],
+  refetchInterval: 5000,
   queryFn: async (): Promise<{ other: PlayerCard; can_write: boolean; messages: { id: string; mine: boolean; body: string; sent_at: string }[] }> => {
     const { data, error } = await untyped.rpc("read_player_thread", { _other: id });
     if (error) throw new Error(error.message);
@@ -731,3 +740,11 @@ export const respondContact = (i: { id: string; accept: boolean }) => netRpc("re
 export const cancelContact = (id: string) => netRpc("cancel_contact", { _contact: id });
 export const followPlayer = (i: { id: string; on: boolean }) => netRpc("follow_player", { _target: i.id, _on: i.on });
 export const sendPlayerMessage = (i: { id: string; body: string }) => netRpc("send_player_message", { _target: i.id, _body: i.body, _request_id: crypto.randomUUID() });
+
+// P7 — Multijoueur : blocage, signalement, virements, activités à plusieurs
+export const blockPlayer = (i: { id: string; on: boolean }) => netRpc("block_player", { _target: i.id, _on: i.on });
+export const reportPlayer = (i: { id: string; reason: string; details: string }) => netRpc("report_player", { _target: i.id, _reason: i.reason, _details: i.details });
+export const sendMoney = (i: { id: string; amount: number; note: string }) => netRpc("send_money", { _target: i.id, _amount: i.amount, _note: i.note, _request_id: crypto.randomUUID() });
+export const inviteTogether = (i: { id: string; kind: string }) => netRpc("invite_together", { _target: i.id, _kind: i.kind });
+export const respondTogether = (i: { id: string; accept: boolean }) => netRpc("respond_together", { _invite: i.id, _accept: i.accept });
+export const cancelTogether = (id: string) => netRpc("cancel_together", { _invite: id });
