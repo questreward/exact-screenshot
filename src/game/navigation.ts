@@ -41,7 +41,7 @@ export const SECTIONS: Section[] = [
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Le journal du monde et de votre ville.", available: true },
   { id: "jt", label: "JT", icon: Tv, description: "Journal télévisé local et national, interviews.", available: true },
-  { id: "presse", label: "Presse", icon: Newspaper, description: "Devenez journaliste : vos articles, votre photo, vos lecteurs.", available: true },
+  { id: "presse", label: "Médias", icon: Newspaper, description: "Ton journal et ta chaîne : articles, émissions, abonnés.", available: true },
   { id: "reseau", label: "Réseau", icon: Network, description: "Profils des joueurs, contacts, abonnements et messages.", available: true },
   { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
