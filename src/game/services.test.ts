@@ -17,3 +17,23 @@ describe("entreprises de services", () => {
     expect(expectedNpcClients(1, 150, 3, 8)).toBe(0);
   });
 });
+
+import { agencyRentFee, agencyBuyFee, manageCut, refRent, rentBounds } from "./services";
+describe("agence immobilière", () => {
+  it("location : frais = 1 mois de loyer au tarif de l'agence", () => {
+    expect(agencyRentFee(450, 1, 100)).toBe(450);
+    expect(agencyRentFee(450, 1, 150)).toBe(675);
+    expect(agencyRentFee(450, 1, 70)).toBe(315);
+  });
+  it("achat : frais = 4 % du prix", () => {
+    expect(agencyBuyFee(150000, 4, 100)).toBe(6000);
+  });
+  it("gestion : 7 % du loyer, rien pour l'agence fictive", () => {
+    expect(manageCut(450, 7, 100)).toBe(31);
+    expect(manageCut(450, 7, null)).toBe(0);
+  });
+  it("loyer d'un bien de 100 000 € : référence 450 €, bornes 315–675 €", () => {
+    expect(refRent(100000, 4.5)).toBe(450);
+    expect(rentBounds(450, 70, 150)).toEqual([315, 675]);
+  });
+});
