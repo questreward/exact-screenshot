@@ -39,6 +39,7 @@ import { Route as AuthenticatedGameLoisRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedGameMaVieRouteImport } from './routes/_authenticated/_game/ma-vie'
 import { Route as AuthenticatedGameMaVilleRouteImport } from './routes/_authenticated/_game/ma-ville'
 import { Route as AuthenticatedGameMandatRouteImport } from './routes/_authenticated/_game/mandat'
+import { Route as AuthenticatedGameMarcheRouteImport } from './routes/_authenticated/_game/marche'
 import { Route as AuthenticatedGameMesDocumentsRouteImport } from './routes/_authenticated/_game/mes-documents'
 import { Route as AuthenticatedGameMonParcoursRouteImport } from './routes/_authenticated/_game/mon-parcours'
 import { Route as AuthenticatedGameMonProfilRouteImport } from './routes/_authenticated/_game/mon-profil'
@@ -228,6 +229,11 @@ const AuthenticatedGameMaVilleRoute =
 const AuthenticatedGameMandatRoute = AuthenticatedGameMandatRouteImport.update({
   id: '/mandat',
   path: '/mandat',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
+const AuthenticatedGameMarcheRoute = AuthenticatedGameMarcheRouteImport.update({
+  id: '/marche',
+  path: '/marche',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
 const AuthenticatedGameMesDocumentsRoute =
@@ -435,6 +441,7 @@ export interface FileRoutesByFullPath {
   '/ma-vie': typeof AuthenticatedGameMaVieRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
+  '/marche': typeof AuthenticatedGameMarcheRoute
   '/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
   '/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
@@ -495,6 +502,7 @@ export interface FileRoutesByTo {
   '/ma-vie': typeof AuthenticatedGameMaVieRoute
   '/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/mandat': typeof AuthenticatedGameMandatRoute
+  '/marche': typeof AuthenticatedGameMarcheRoute
   '/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
   '/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/mon-profil': typeof AuthenticatedGameMonProfilRoute
@@ -558,6 +566,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/ma-vie': typeof AuthenticatedGameMaVieRoute
   '/_authenticated/_game/ma-ville': typeof AuthenticatedGameMaVilleRoute
   '/_authenticated/_game/mandat': typeof AuthenticatedGameMandatRoute
+  '/_authenticated/_game/marche': typeof AuthenticatedGameMarcheRoute
   '/_authenticated/_game/mes-documents': typeof AuthenticatedGameMesDocumentsRoute
   '/_authenticated/_game/mon-parcours': typeof AuthenticatedGameMonParcoursRoute
   '/_authenticated/_game/mon-profil': typeof AuthenticatedGameMonProfilRoute
@@ -620,6 +629,7 @@ export interface FileRouteTypes {
     | '/ma-vie'
     | '/ma-ville'
     | '/mandat'
+    | '/marche'
     | '/mes-documents'
     | '/mon-parcours'
     | '/mon-profil'
@@ -680,6 +690,7 @@ export interface FileRouteTypes {
     | '/ma-vie'
     | '/ma-ville'
     | '/mandat'
+    | '/marche'
     | '/mes-documents'
     | '/mon-parcours'
     | '/mon-profil'
@@ -742,6 +753,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/ma-vie'
     | '/_authenticated/_game/ma-ville'
     | '/_authenticated/_game/mandat'
+    | '/_authenticated/_game/marche'
     | '/_authenticated/_game/mes-documents'
     | '/_authenticated/_game/mon-parcours'
     | '/_authenticated/_game/mon-profil'
@@ -996,6 +1008,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameMandatRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/marche': {
+      id: '/_authenticated/_game/marche'
+      path: '/marche'
+      fullPath: '/marche'
+      preLoaderRoute: typeof AuthenticatedGameMarcheRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/mes-documents': {
       id: '/_authenticated/_game/mes-documents'
       path: '/mes-documents'
@@ -1231,6 +1250,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameMaVieRoute: typeof AuthenticatedGameMaVieRoute
   AuthenticatedGameMaVilleRoute: typeof AuthenticatedGameMaVilleRoute
   AuthenticatedGameMandatRoute: typeof AuthenticatedGameMandatRoute
+  AuthenticatedGameMarcheRoute: typeof AuthenticatedGameMarcheRoute
   AuthenticatedGameMesDocumentsRoute: typeof AuthenticatedGameMesDocumentsRoute
   AuthenticatedGameMonParcoursRoute: typeof AuthenticatedGameMonParcoursRoute
   AuthenticatedGameMonProfilRoute: typeof AuthenticatedGameMonProfilRoute
@@ -1286,6 +1306,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameMaVieRoute: AuthenticatedGameMaVieRoute,
     AuthenticatedGameMaVilleRoute: AuthenticatedGameMaVilleRoute,
     AuthenticatedGameMandatRoute: AuthenticatedGameMandatRoute,
+    AuthenticatedGameMarcheRoute: AuthenticatedGameMarcheRoute,
     AuthenticatedGameMesDocumentsRoute: AuthenticatedGameMesDocumentsRoute,
     AuthenticatedGameMonParcoursRoute: AuthenticatedGameMonParcoursRoute,
     AuthenticatedGameMonProfilRoute: AuthenticatedGameMonProfilRoute,
