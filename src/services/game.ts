@@ -930,3 +930,100 @@ export async function familyAction(input: { command: string; [k: string]: unknow
   const { error } = await untyped.rpc("family_action", { _command: command, _input: rest });
   if (error) throw new Error(error.message);
 }
+
+// ---- Santé et bien-être ----
+export type HealthState = {
+  now: string; health: number; morale: number; illness: string | null; ill_until: string | null; energy: number; balance: number | null;
+  settings: { illness_chance_pct: number; illness_days: number; illness_loss: number; daily_recovery: number; morale_target: number; doctor_cost: number; doctor_health: number; sport_energy: number; sport_health: number; sport_morale: number; relax_morale: number };
+  done_today: ("sport" | "detente" | "medecin")[];
+};
+export const healthQuery = queryOptions({
+  queryKey: ["health", "state"],
+  retry: false,
+  queryFn: async (): Promise<HealthState> => {
+    const { data, error } = await untyped.rpc("health_state", {});
+    if (error) throw new Error(error.message);
+    return data as HealthState;
+  },
+});
+export async function healthAction(command: "sport" | "detente" | "medecin") {
+  const { error } = await untyped.rpc("health_action", { _command: command });
+  if (error) throw new Error(error.message);
+}
+
+// ---- Justice et tribunaux ----
+export type JusticeCategory = "diffamation" | "harcelement" | "escroquerie" | "non_paiement" | "autre";
+export type JusticeCase = {
+  id: string; role: "plaignant" | "accuse"; other: PlayerCard; category: JusticeCategory; facts: string; defense: string | null;
+  status: "instruction" | "jugee"; verdict: "coupable" | "relaxe" | null; judge: string; fine: number; fine_paid: boolean;
+  filed_at: string; judged_at: string | null; deadline: string;
+};
+export type JusticeState = {
+  me: string; now: string;
+  settings: { min_age: number; filing_fee: number; defense_hours: number; after_defense_hours: number; max_open: number; guilty_pct_no_defense: number; guilty_pct_defense: number; fine: number; reputation_loss: number };
+  cases: JusticeCase[];
+};
+export const justiceQuery = queryOptions({
+  queryKey: ["justice", "state"],
+  retry: false,
+  refetchInterval: 20000,
+  queryFn: async (): Promise<JusticeState> => {
+    const { data, error } = await untyped.rpc("justice_state", {});
+    if (error) throw new Error(error.message);
+    return data as JusticeState;
+  },
+});
+export async function justiceAction(input: { command: "file" | "defend"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("justice_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
+
+// ---- Syndicats et grèves ----
+export type UnionCampaign = {
+  id: string; demand: string; status: "collecte" | "greve" | "gagnee" | "perdue" | "abandonnee"; author: PlayerCard;
+  created_at: string; collect_ends: string; strike_from: string | null; ends_at: string | null;
+  support: number; pressure: number; supporters: number; strikers: number; i_support: boolean; struck_today: boolean; my_days: number; my_prime: number | null;
+};
+export type UnionState = {
+  me: string; now: string; employed: boolean; daily_wage: number; my_union: string | null;
+  settings: { join_fee: number; collect_days: number; strike_days: number; support_threshold: number; player_support: number; success_threshold: number; strike_pressure: number; strike_energy: number; workdays_month: number; prime_multiplier: number; prime_min: number; win_reputation: number };
+  unions: { id: string; name: string; motto: string; members: number; campaigns: UnionCampaign[] }[];
+};
+export const unionQuery = queryOptions({
+  queryKey: ["unions", "state"],
+  retry: false,
+  refetchInterval: 20000,
+  queryFn: async (): Promise<UnionState> => {
+    const { data, error } = await untyped.rpc("union_state", {});
+    if (error) throw new Error(error.message);
+    return data as UnionState;
+  },
+});
+export async function unionAction(input: { command: "join" | "leave" | "propose" | "support" | "strike"; [k: string]: unknown }) {
+  const { command, ...rest } = input;
+  const { error } = await untyped.rpc("union_action", { _command: command, _input: rest });
+  if (error) throw new Error(error.message);
+}
+
+// ---- Classements publics ----
+export type RankingKind = "reputation" | "influence" | "popularite" | "fortune";
+export type RankingsState = {
+  kind: RankingKind; city: string | null; me: string; my_city: string; show_wealth: boolean;
+  cities: { id: string; name: string }[];
+  top: { rank: number; id: string; score: number; name: string; city: string }[];
+  mine: { rank: number; score: number; total: number } | null;
+};
+export const rankingsQuery = (kind: RankingKind, city: string | null) => queryOptions({
+  queryKey: ["rankings", "state", kind, city ?? "all"],
+  retry: false,
+  queryFn: async (): Promise<RankingsState> => {
+    const { data, error } = await untyped.rpc("rankings_state", { _kind: kind, _city: city });
+    if (error) throw new Error(error.message);
+    return data as RankingsState;
+  },
+});
+export async function rankingsSetWealth(show: boolean) {
+  const { error } = await untyped.rpc("rankings_set_wealth", { _show: show });
+  if (error) throw new Error(error.message);
+}
