@@ -9,7 +9,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5">
         <Link to="/"><Logo size={32} /></Link>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-16">{children}</main>
+      <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-16">{children}</main>
       <SiteFooter />
     </div>
   );
