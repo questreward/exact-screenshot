@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Bell, CalendarClock, Wallet, Zap, Briefcase, Lock } from "lucide-react";
-import { CharacterCard } from "@/components/game/CharacterCard";
 import { SectionLink } from "@/components/game/GameShell";
-import { SECTIONS, COMING_SOON } from "@/game/navigation";
+import { SECTIONS, COMING_SOON, HOME_SHORTCUTS } from "@/game/navigation";
 import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery, worldQuery } from "@/services/game";
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
@@ -11,16 +10,12 @@ import { WorldClock } from "@/components/game/WorldClock";
 import { gameMeta } from "@/game/metadata";
 import { lifeQuery } from "@/services/game";
 import { LifeSummary } from "@/components/game/LifeSummary";
-import { SocialSummary } from "@/components/game/SocialSummary";
-import { socialQuery, newsQuery, civicQuery } from "@/services/game";
-import { CivicSummary } from '@/components/game/CivicSummary';
-import { NewsSummary } from "@/components/game/NewsFeed";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
   loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
     q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),
+    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
   ]); },
   component: Dashboard,
 });
@@ -39,15 +34,7 @@ function Dashboard() {
         <h1 className="text-3xl font-bold sm:text-4xl">Bonjour, {character.first_name}</h1>
       </div>
 
-      <PositionBlock />
-      <LifeSummary />
-      <SocialSummary />
-      <NewsSummary />
-      <CivicSummary />
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2"><CharacterCard character={character} /></div>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
+      <div className="grid grid-cols-2 gap-4">
           <Link to="/telephone" search={{ app: "banque" }} className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card transition-colors hover:border-primary/40">
             <p className="flex items-center gap-2 text-sm text-muted-foreground"><Wallet className="h-4 w-4 text-primary" /> Argent</p>
             <p className="mt-2 font-display text-2xl font-bold">{formatMoney(bank?.balance ?? 0)}</p>
@@ -57,13 +44,31 @@ function Dashboard() {
             <p className="mt-2 font-display text-2xl font-bold">{character.energy} / 100</p>
             <div className="mt-2 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${character.energy}%` }} /></div>
           </div>
-        </div>
       </div>
 
       <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
         <p className="flex items-center gap-2 text-sm text-muted-foreground"><Briefcase className="h-4 w-4 text-primary" /> Situation actuelle</p>
         <p className="mt-1 text-lg font-semibold">{character.situation}</p>
       </div>
+
+      <LifeSummary />
+
+      <div>
+        <h2 className="mb-3 text-lg font-semibold">Raccourcis</h2>
+        <p className="-mt-2 mb-3 text-sm text-muted-foreground">Tout le reste est dans le menu.</p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {HOME_SHORTCUTS.map((id) => SECTIONS.find((x) => x.id === id)!).filter(Boolean).map((s) => (
+            <SectionLink key={s.id} section={s}
+              className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
+              <s.icon className="h-6 w-6 text-primary" />
+              <span className="font-semibold">{s.label}</span>
+              {!s.available && <Lock className="absolute top-4 right-4 h-3.5 w-3.5 text-muted-foreground" />}
+            </SectionLink>
+          ))}
+        </div>
+      </div>
+
+      <PositionBlock />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
@@ -91,19 +96,6 @@ function Dashboard() {
         </div>
       </div>
 
-      <div>
-        <h2 className="mb-3 text-lg font-semibold">Raccourcis</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {SECTIONS.filter((s) => s.id !== "parametres").map((s) => (
-            <SectionLink key={s.id} section={s}
-              className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
-              <s.icon className="h-6 w-6 text-primary" />
-              <span className="font-semibold">{s.label}</span>
-              {!s.available && <Lock className="absolute top-4 right-4 h-3.5 w-3.5 text-muted-foreground" />}
-            </SectionLink>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
