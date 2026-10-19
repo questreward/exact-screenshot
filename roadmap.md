@@ -229,3 +229,4 @@
 # Documents reçus (à lire après la Boutique phase 3)
 - [ ] Système de mise en scène réaliste (document reçu)
 - [ ] Refonte complète de l'accueil (document reçu)
+- [ ] Écosystème complet d'interfaces (document reçu)
