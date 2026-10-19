@@ -30,6 +30,7 @@ export const SECTIONS: Section[] = [
   { id: "services", label: "Services", icon: Wrench, description: "Garages et déménageurs : entreprises de joueurs en priorité, sinon entreprises fictives.", available: true },
   { id: "agence", label: "Agence immobilière", icon: Building2, description: "Louer chez un joueur, confier son bien, acheter avec une agence.", available: true },
   { id: "concession", label: "Concessionnaire", icon: Car, description: "Voitures neuves, reprises et occasions chez les concessions des joueurs.", available: true },
+  { id: "construction", label: "Construction", icon: Hammer, description: "Rénover ou agrandir ton logement avec une entreprise de joueur ou fictive.", available: true },
   { id: "logement", label: "Logement", icon: Home, description: "Annonces de location, bail, emménager dans un bien acheté.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
@@ -90,7 +91,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
   { id: "quotidien", label: "Quotidien", ids: ["vie", "carriere", "logement", "telephone", "demarches", "vie-administrative"] },
-  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence", "concession"] },
+  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence", "concession", "construction"] },
   { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
   { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },

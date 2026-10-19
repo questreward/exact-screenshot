@@ -239,6 +239,7 @@
 
 - [x] Agence immobilière (0082) prête, à installer sur le VPS
 - [x] Médias des joueurs (0083) : journal + chaîne, abonnés, caisse, signalements, influence plafonnée — installé
-- [x] Concessionnaire (0084) prêt, à installer
-- [ ] Construction (0085), Recrutement (0086), Assurance joueur (0087)
+- [x] Concessionnaire (0084) installé
+- [x] Construction (0085) prête, à installer
+- [ ] Recrutement (0086), Assurance joueur (0087)
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
