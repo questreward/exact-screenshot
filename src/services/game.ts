@@ -803,3 +803,42 @@ export async function legislativeAction(input: { command: "candidacy" | "withdra
   const { error } = await untyped.rpc("legislative_action", { _command: command, _input: rest });
   if (error) throw new Error(error.message);
 }
+
+// ---- Trophées : décompte de ce que le joueur a fait (lectures seules) ----
+export const trophyFactsQuery = queryOptions({
+  queryKey: ["trophies", "facts"],
+  staleTime: 30000,
+  queryFn: async (): Promise<import("@/game/trophies").Facts> => {
+    const { data: ch } = await supabase.from("characters").select("id").maybeSingle();
+    const id = ch?.id ?? "00000000-0000-0000-0000-000000000000";
+    const count = async (q: PromiseLike<{ count: number | null; error: unknown }>) => { try { const r = await q; return r.error ? 0 : r.count ?? 0; } catch { return 0; } };
+    const safe = async <T,>(p: PromiseLike<T>): Promise<T | null> => { try { return await p; } catch { return null; } };
+    const head = { count: "exact" as const, head: true };
+    const [activities, studies, jobs, interactions, memberships, newsRead, reports, consultations, opinions, votes, candidacies, articles, bank, biz, net, pol, leg] = await Promise.all([
+      count(supabase.from("activities").select("id", head).eq("character_id", id).in("status", ["completed", "done"])),
+      count(supabase.from("study_enrollments").select("character_id", head).eq("character_id", id)),
+      count(supabase.from("employments").select("character_id", head).eq("character_id", id)),
+      count(supabase.from("social_interactions").select("id", head).eq("character_id", id)),
+      count(supabase.from("memberships").select("id", head).eq("character_id", id)),
+      count(supabase.from("news_reads").select("news_id", head)),
+      count(supabase.from("citizen_reports").select("id", head).eq("character_id", id)),
+      count(supabase.from("consultation_participations").select("character_id", head).eq("character_id", id)),
+      count(supabase.from("political_opinions").select("character_id", head).eq("character_id", id)),
+      count(supabase.from("election_votes").select("character_id", head).eq("character_id", id)),
+      count(supabase.from("candidacies").select("id", head).eq("character_id", id)),
+      count(untyped.from("press_articles").select("id", head).eq("author_id", id)),
+      safe(supabase.from("accounts").select("balance").maybeSingle().then(r => r.data)),
+      safe(untyped.rpc("business_state", {}).then((r: { data: unknown }) => r.data as BusinessState | null)),
+      safe(untyped.rpc("network_state", {}).then((r: { data: unknown }) => r.data as NetworkState | null)),
+      safe(supabase.rpc("political_state").then(r => r.data as unknown as import("@/game/politics").PoliticalState | null)),
+      safe(untyped.rpc("legislative_state", { _code: null }).then((r: { data: unknown }) => r.data as LegislativeState | null)),
+    ]);
+    return {
+      activities, studies, jobs, interactions, memberships, newsRead, reports, consultations, opinions, votes, candidacies, articles,
+      balance: Number(bank?.balance ?? 0), business: !!biz?.business,
+      contacts: net?.contacts?.length ?? 0, followers: net?.followers ?? 0,
+      politicalMember: (pol?.memberships?.length ?? 0) > 0, reputation: pol?.stats?.reputation ?? 0, influence: pol?.stats?.influence ?? 0,
+      legislativeCandidate: !!leg?.my_candidacy,
+    };
+  },
+});
