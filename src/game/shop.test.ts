@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { creditCost, creditMonthly, estimatedValue, filterProducts, notaryFees } from "./shop";
+import { creditCost, creditMonthly, marketNet, storePrice, estimatedValue, filterProducts, notaryFees } from "./shop";
 
 const items = [
   { id: "a", name: "iPhone 15", brand: "Apple", section: "tech", price: 969, sales: 2 },
@@ -30,5 +30,11 @@ describe("boutique", () => {
   });
   it("chiffre le coût des intérêts", () => {
     expect(creditCost(17990, 5.2, 48)).toBe(416 * 48 - 17990);
+  });
+  it("applique la remise du magasin (iPhone 969 € à −3 %)", () => {
+    expect(storePrice(969, 3)).toBe(940);
+  });
+  it("retire 5 % de frais au vendeur du marché", () => {
+    expect(marketNet(700, 5)).toBe(665);
   });
 });

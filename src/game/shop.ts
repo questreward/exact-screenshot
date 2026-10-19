@@ -43,3 +43,13 @@ export function creditMonthly(principal: number, ratePercent: number, months: nu
 export function creditCost(principal: number, ratePercent: number, months: number): number {
   return Math.max(0, creditMonthly(principal, ratePercent, months) * months - principal);
 }
+
+/** Prix en magasin après la remise de l'enseigne (même arrondi que le serveur). */
+export function storePrice(price: number, discountPercent: number): number {
+  return price - Math.floor(price * discountPercent / 100);
+}
+
+/** Ce que le vendeur reçoit au marché après les frais. */
+export function marketNet(price: number, feePercent: number): number {
+  return price - Math.floor(price * feePercent / 100);
+}

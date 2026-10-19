@@ -1,0 +1,21 @@
+ALTER TABLE cities ADD COLUMN name text, ADD COLUMN sort_order int default 0; UPDATE cities SET name=initcap(id);
+CREATE TABLE public.purchase_credits(character_id uuid, catalog_id text, status text);
+CREATE TABLE public.businesses(id uuid primary key default gen_random_uuid(), owner_id uuid, name text, sector_id text, city_id text, status text default 'active');
+CREATE TABLE public.business_treasuries(business_id uuid primary key, balance int);
+CREATE TABLE public.business_ledger(id uuid primary key default gen_random_uuid(), business_id uuid, operation_key text, kind text CONSTRAINT business_ledger_kind_check CHECK(kind in ('capital')), amount int, label text, UNIQUE(business_id,operation_key));
+CREATE FUNCTION public.business_move(_biz uuid, _key text, _amount integer, _kind text, _label text) RETURNS boolean LANGUAGE plpgsql AS $$ DECLARE bal int; BEGIN
+  IF EXISTS (SELECT 1 FROM business_ledger WHERE business_id=_biz AND operation_key=_key) THEN RETURN false; END IF;
+  SELECT balance INTO bal FROM business_treasuries WHERE business_id=_biz FOR UPDATE; IF bal+_amount<0 THEN RETURN false; END IF;
+  INSERT INTO business_ledger(business_id,operation_key,kind,amount,label) VALUES(_biz,_key,_kind,_amount,_label);
+  UPDATE business_treasuries SET balance=balance+_amount WHERE business_id=_biz; RETURN true; END $$;
+CREATE FUNCTION public.business_owned(_cid uuid,_biz uuid) RETURNS businesses LANGUAGE plpgsql AS $$ DECLARE b businesses; BEGIN SELECT * INTO b FROM businesses WHERE id=_biz AND owner_id=_cid; IF NOT FOUND THEN RAISE EXCEPTION 'Non autorisé'; END IF; RETURN b; END $$;
+CREATE FUNCTION public.business_settle(uuid) RETURNS void LANGUAGE sql AS $$ SELECT $$;
+CREATE FUNCTION public.social_actor() RETURNS uuid LANGUAGE sql AS $$ SELECT id FROM characters WHERE user_id=auth.uid() $$;
+CREATE TABLE public.player_blocks(blocker_id uuid, blocked_id uuid);
+CREATE FUNCTION public.network_blocked(a uuid,b uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT EXISTS(SELECT 1 FROM player_blocks WHERE (blocker_id=a AND blocked_id=b) OR (blocker_id=b AND blocked_id=a)) $$;
+ALTER TABLE characters ADD COLUMN first_name text default 'Alex';
+INSERT INTO characters(id,user_id,path_id,age,city_id,progression,first_name) VALUES('33333333-3333-3333-3333-333333333333','44444444-4444-4444-4444-444444444444','x',25,'paris','{}','Bea'),('55555555-5555-5555-5555-555555555555','66666666-6666-6666-6666-666666666666','x',25,'paris','{}','Cyr');
+INSERT INTO accounts(character_id,balance) VALUES('33333333-3333-3333-3333-333333333333',5000),('55555555-5555-5555-5555-555555555555',5000);
+INSERT INTO economy_catalog VALUES ('shop-iphone','iPhone 15','item','boutique',969,60,0,'commerce','{"shop":true,"brand":"Apple","section":"tech","dep":20}',3),('shop-ps5','PS5','item','boutique',549,60,0,'commerce','{"shop":true,"brand":"Sony","section":"loisirs","dep":20}',4);
+INSERT INTO businesses(id,owner_id,name,sector_id,city_id) VALUES('bbbbbbbb-0000-0000-0000-000000000001','33333333-3333-3333-3333-333333333333','Chez Bea','commerce','paris');
+INSERT INTO business_treasuries VALUES('bbbbbbbb-0000-0000-0000-000000000001',2000);
