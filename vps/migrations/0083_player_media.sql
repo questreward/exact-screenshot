@@ -330,7 +330,7 @@ DO $$ BEGIN
   IF (SELECT count(*) FROM public.media_settings) <> 1 THEN RAISE EXCEPTION 'media_settings incomplet'; END IF;
   IF EXISTS (SELECT 1 FROM public.press_articles WHERE format <> 'article' OR tone <> 'neutre' OR reports <> 0) THEN
     RAISE EXCEPTION 'articles existants modifiés'; END IF;
-  IF (SELECT count(*) FROM pg_proc WHERE proname LIKE 'media\_%' AND pronamespace = 'public'::regnamespace) <> 9 THEN
+  IF (SELECT count(*) FROM pg_proc WHERE proname LIKE 'media\_%' AND pronamespace = 'public'::regnamespace) <> 10 THEN
     RAISE EXCEPTION 'fonctions media incomplètes'; END IF;
 END $$;
 
