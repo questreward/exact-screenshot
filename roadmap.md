@@ -241,6 +241,7 @@
 - [x] Médias des joueurs (0083) : journal + chaîne, abonnés, caisse, signalements, influence plafonnée — installé
 - [x] Concessionnaire (0084) installé
 - [x] Construction (0085) : installation déclarée par l'utilisateur
-- [ ] Recrutement (0086) : préparation du prochain service ; SQL proposé, installation soumise à validation
+- [x] Recrutement (0086) : page + SQL proposés, tests sur copie isolée avec embauches existantes ; primes, consentement, blocages et double clic contrôlés
+- [ ] Recrutement (0086) : règles chiffrées et installation VPS à valider ; parcours réel dans le site VPS non vérifié avant installation
 - [ ] Assurance joueur (0087) : après le recrutement
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)

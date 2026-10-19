@@ -22,6 +22,7 @@ INSERT INTO businesses(id,owner_id,name,city_id,sector_id,status) VALUES
  ('86000000-0000-0000-0000-000000000011','86000000-0000-0000-0000-000000000001','Employeur test','paris','garage','active'),
  ('86000000-0000-0000-0000-000000000012','86000000-0000-0000-0000-000000000002','Agence test','paris','recrutement','active');
 INSERT INTO business_treasuries VALUES('86000000-0000-0000-0000-000000000011',1000),('86000000-0000-0000-0000-000000000012',1000);
+INSERT INTO accounts(character_id,balance) VALUES('86000000-0000-0000-0000-000000000003',1000);
 INSERT INTO service_prices(business_id,percent) VALUES('86000000-0000-0000-0000-000000000012',100);
 INSERT INTO business_offers(id,business_id,title,weekly_salary) SELECT ('86000000-0000-0000-0000-00000000002'||i)::uuid,'86000000-0000-0000-0000-000000000011','Offre '||i,150 FROM generate_series(1,5) i;
 INSERT INTO social_npcs(id,city_id,first_name) VALUES('86000000-0000-0000-0000-000000000031','paris','PNJ test');
@@ -48,6 +49,7 @@ SELECT recruit_accept('86000000-0000-0000-0000-000000000021');
 SELECT pg_temp.check((recruit_accept('86000000-0000-0000-0000-000000000021')->>'already')::boolean,'double clic sans double prime');
 SELECT pg_temp.check((SELECT balance=800 FROM business_treasuries WHERE business_id='86000000-0000-0000-0000-000000000011'),'prime employeur 200');
 SELECT pg_temp.check((SELECT balance=1200 FROM business_treasuries WHERE business_id='86000000-0000-0000-0000-000000000012'),'prime agence 200');
+SELECT pg_temp.check((SELECT balance=1000 FROM accounts WHERE character_id='86000000-0000-0000-0000-000000000003'),'le candidat ne paie rien');
 SELECT pg_temp.check((SELECT count(*)=1 FROM recruit_placements WHERE offer_id='86000000-0000-0000-0000-000000000021'),'placement unique');
 SELECT pg_temp.check((recruit_state()->'placements'->0->>'candidate')='Candidat','relecture du placement côté candidat');
 SELECT pg_temp.check((recruit_state()->>'seeking')::boolean=false,'recherche retirée après embauche');
