@@ -25,15 +25,15 @@ INSERT INTO business_treasuries VALUES('86000000-0000-0000-0000-000000000011',10
 INSERT INTO service_prices(business_id,percent) VALUES('86000000-0000-0000-0000-000000000012',100);
 INSERT INTO business_offers(id,business_id,title,weekly_salary) SELECT ('86000000-0000-0000-0000-00000000002'||i)::uuid,'86000000-0000-0000-0000-000000000011','Offre '||i,150 FROM generate_series(1,5) i;
 INSERT INTO social_npcs(id,city_id,first_name) VALUES('86000000-0000-0000-0000-000000000031','paris','PNJ test');
-SET LOCAL test.user='86000000-0000-0000-0000-000000000003';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000003';
 SELECT recruit_seek(true);
-SET LOCAL test.user='86000000-0000-0000-0000-000000000001';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000001';
 SELECT recruit_mandate('86000000-0000-0000-0000-000000000021','86000000-0000-0000-0000-000000000012');
 SELECT pg_temp.check((SELECT balance=1000 FROM business_treasuries WHERE business_id='86000000-0000-0000-0000-000000000011'),'pas de prime avant embauche');
-SET LOCAL test.user='86000000-0000-0000-0000-000000000002';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000002';
 SELECT recruit_propose('86000000-0000-0000-0000-000000000021','86000000-0000-0000-0000-000000000003');
 SELECT pg_temp.denied($q$SELECT recruit_propose('86000000-0000-0000-0000-000000000021','86000000-0000-0000-0000-000000000004')$q$,'Candidat indisponible');
-SET LOCAL test.user='86000000-0000-0000-0000-000000000003';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000003';
 SELECT recruit_seek(false);
 SELECT pg_temp.denied($q$SELECT recruit_accept('86000000-0000-0000-0000-000000000021')$q$,'Recherche d’emploi inactive');
 SELECT recruit_seek(true);
@@ -51,13 +51,13 @@ SELECT pg_temp.check((SELECT balance=1200 FROM business_treasuries WHERE busines
 SELECT pg_temp.check((SELECT count(*)=1 FROM recruit_placements WHERE offer_id='86000000-0000-0000-0000-000000000021'),'placement unique');
 SELECT pg_temp.check((recruit_state()->'placements'->0->>'candidate')='Candidat','relecture du placement côté candidat');
 SELECT pg_temp.check((recruit_state()->>'seeking')::boolean=false,'recherche retirée après embauche');
-SET LOCAL test.user='86000000-0000-0000-0000-000000000004';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000004';
 SELECT pg_temp.check(jsonb_array_length(recruit_state()->'placements')=0,'historique privé');
 SELECT pg_temp.denied($q$SELECT recruit_hire_npc('86000000-0000-0000-0000-000000000021')$q$,'Entreprise introuvable');
 -- Embauche directe inchangée : pas de frais ni placement d’agence.
 SELECT business_join('86000000-0000-0000-0000-000000000022');
 SELECT pg_temp.check((SELECT balance=800 FROM business_treasuries WHERE business_id='86000000-0000-0000-0000-000000000011'),'embauche directe inchangée');
-SET LOCAL test.user='86000000-0000-0000-0000-000000000001';
+SET LOCAL "test.user"='86000000-0000-0000-0000-000000000001';
 SELECT recruit_mandate('86000000-0000-0000-0000-000000000023',NULL);
 SELECT recruit_hire_npc('86000000-0000-0000-0000-000000000023');
 SELECT pg_temp.check((recruit_hire_npc('86000000-0000-0000-0000-000000000023')->>'already')::boolean,'double embauche PNJ neutralisée');
