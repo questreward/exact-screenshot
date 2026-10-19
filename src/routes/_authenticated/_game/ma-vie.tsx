@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/_game/ma-vie")({
 
 type Tab = "journal" | "reputations" | "competences";
 
-function Bar({ d, label, hint }: { d: LifeDimension; label: string; hint?: string }) {
+function Bar({ d, label, hint }: { d: LifeDimension; label: string; hint?: string | undefined }) {
   const [open, setOpen] = useState(false);
   const parts = d.parts ?? [];
   return <button type="button" onClick={() => setOpen(o => !o)} className="w-full rounded-xl border border-border bg-card p-3 text-left">
