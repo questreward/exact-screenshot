@@ -22,9 +22,9 @@ ALTER TABLE public.national_groups ADD COLUMN party_code text REFERENCES public.
 ALTER TABLE public.national_seats ADD COLUMN constituency_code text REFERENCES public.legislative_constituencies(code);
 CREATE UNIQUE INDEX national_seats_constituency_unique ON public.national_seats (legislature_id, constituency_code) WHERE constituency_code IS NOT NULL;
 
-ALTER TABLE public.national_seats DROP CONSTRAINT national_seats_check1;
+ALTER TABLE public.national_seats DROP CONSTRAINT IF EXISTS national_seats_check1;
 ALTER TABLE public.national_seats ADD CONSTRAINT national_seats_check1 CHECK ((chamber='assembly' AND seat_no<=577) OR (chamber='senate' AND seat_no<=25)) NOT VALID;
-ALTER TABLE public.national_seats DROP CONSTRAINT national_assembly_5_plus_45;
+ALTER TABLE public.national_seats DROP CONSTRAINT IF EXISTS national_assembly_5_plus_45;
 ALTER TABLE public.national_seats ADD CONSTRAINT national_assembly_5_plus_45 CHECK (
   chamber<>'assembly'
   OR (constituency_code IS NULL AND (
@@ -32,9 +32,9 @@ ALTER TABLE public.national_seats ADD CONSTRAINT national_assembly_5_plus_45 CHE
     OR ((seat_no BETWEEN 6 AND 50) AND simulated AND city_id IS NULL AND character_id IS NULL AND npc_id IS NULL)))
   OR (constituency_code IS NOT NULL AND (seat_no BETWEEN 1 AND 577) AND city_id IS NULL AND npc_id IS NULL AND simulated=(character_id IS NULL))) NOT VALID;
 
-ALTER TABLE public.national_sessions DROP CONSTRAINT national_sessions_eligible_seats_check;
+ALTER TABLE public.national_sessions DROP CONSTRAINT IF EXISTS national_sessions_eligible_seats_check;
 ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_eligible_seats_check CHECK (eligible_seats = ANY (ARRAY[50,25,577])) NOT VALID;
-ALTER TABLE public.national_sessions DROP CONSTRAINT national_sessions_check;
+ALTER TABLE public.national_sessions DROP CONSTRAINT IF EXISTS national_sessions_check;
 ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_check CHECK (
   (chamber='assembly' AND eligible_seats=50 AND majority_required=26)
   OR (chamber='assembly' AND eligible_seats=577 AND majority_required=289)
