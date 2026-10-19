@@ -324,4 +324,15 @@ REVOKE ALL ON FUNCTION public.document_prefill(uuid), public.document_auto(uuid)
 REVOKE ALL ON FUNCTION public.document_vault(), public.document_action(text, jsonb) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.document_vault(), public.document_action(text, jsonb) TO authenticated;
 
+-- Photo autorisée d'un candidat joueur (listes d'élections) : mêmes règles que public_photo (réglage « photo visible », blocages).
+-- L'identifiant du personnage du candidat n'est jamais renvoyé ; un candidat fictif n'a pas de photo.
+CREATE FUNCTION public.candidacy_photo(_candidacy uuid) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE me uuid := public.social_actor(); cid uuid; BEGIN
+  SELECT character_id INTO cid FROM public.candidacies WHERE id = _candidacy AND (status IN ('validated','completed') OR character_id = me);
+  IF cid IS NULL THEN RETURN NULL; END IF;
+  RETURN public.public_photo(cid);
+END $$;
+REVOKE ALL ON FUNCTION public.candidacy_photo(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.candidacy_photo(uuid) TO authenticated;
+
 COMMIT;
