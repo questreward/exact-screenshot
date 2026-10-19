@@ -1395,7 +1395,7 @@ export async function housingAction(command: "rent" | "move_in", input: Record<s
 }
 
 // ---- Entreprises de services : garages et déménageurs (joueurs en priorité, sinon entreprise fictive) ----
-export type ServiceKind = "garage" | "demenagement";
+export type ServiceKind = "garage" | "demenagement" | "immobilier";
 export type ServiceReview = { stars: number; comment: string | null; author: string; at?: string };
 export type ServiceProvider = { id: string; name: string; service: ServiceKind; owner: string; mine: boolean; percent: number; rating: number | null; reviews: number; last_reviews: ServiceReview[] };
 export type ServiceInvoice = { id: string; reference: string; label: string; amount: number; service: ServiceKind; at: string; provider: string; fictive: boolean; reviewed: boolean; can_review: boolean };
@@ -1444,4 +1444,32 @@ export async function marketRpc<T = unknown>(fn: "store_buy" | "business_restock
   const { data, error } = await untyped.rpc(fn, args);
   if (error) throw new Error(error.message);
   return data as T;
+}
+
+// ---- Agence immobilière : propriétaire ↔ agence ↔ locataire (agence fictive CIVITAS en secours) ----
+export type Agency = { id: string; name: string; city_id: string; owner: string; mine: boolean; percent: number; rating: number | null; reviews: number };
+export type AgencyListing = { id: string; name: string; rent: number; surface: string | null; rooms: string | null; dpe: string | null; district: string | null; owner: string; agency: string; agency_id: string | null; fee: number };
+export type AgencyState = {
+  balance: number; city_id: string; city: string;
+  settings: { rent_months: number; buy_percent: number; manage_percent: number; min_percent: number; max_percent: number; ref_permille: number; period_days: number; max_unpaid: number };
+  agencies: Agency[];
+  listings: AgencyListing[];
+  my_properties: { catalog_id: string; name: string; city_id: string; price: number; ref_rent: number; living: boolean;
+    mandate: null | { id: string; status: "libre" | "loue"; rent: number; agency: string; tenant: string | null; cut: number } }[];
+  my_lease: null | { id: string; title: string; rent: number; deposit: number; started_at: string; owner: string; agency: string; next_due: string; unpaid: number;
+    rents: { period: number; amount: number; status: "paye" | "impaye" }[] };
+  payouts: { label: string; amount: number; at: string }[];
+  my_agency: null | { id: string; name: string; city_id: string; percent: number; rating: number | null; treasury: number;
+    mandates: { name: string; status: string; rent: number; owner: string; tenant: string | null; cut: number }[];
+    weeks: { week: number; clients: number; revenue: number }[]; orders: { reference: string; label: string; amount: number; at: string; client: string }[] };
+};
+export const agencyQuery = queryOptions({
+  queryKey: ["agency", "state"], retry: false,
+  queryFn: async (): Promise<AgencyState> => { const { data, error } = await untyped.rpc("agency_state", {}); if (error) throw new Error(error.message); return data as AgencyState; },
+});
+export async function agencyRpc(fn: "agency_mandate" | "agency_mandate_end" | "agency_rent" | "agency_rent_listing" | "agency_buy", args: Record<string, unknown>) {
+  const needsReq = fn === "agency_rent" || fn === "agency_rent_listing" || fn === "agency_buy";
+  const { data, error } = await untyped.rpc(fn, needsReq ? { ...args, _request_id: crypto.randomUUID() } : args);
+  if (error) throw new Error(error.message);
+  return data as { fee?: number; agency_fee?: number; deposit?: number; already?: boolean } | null;
 }
