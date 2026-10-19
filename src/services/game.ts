@@ -1523,3 +1523,24 @@ export async function dealerRpc(fn: "dealer_restock" | "dealer_buy" | "dealer_tr
   if (error) throw new Error(error.message);
   return data as { already?: boolean; amount?: number; cost?: number } | null;
 }
+
+// ---- Construction (0085) ----
+export type BuildProperty = { catalog_id: string; name: string; price: number; surface: number; extension_m2: number; value: number; renovated_at: string | null;
+  can_renovate: boolean; can_extend: boolean; renov_ref: number; renov_gain: number; ext_ref: number; ext_gain: number };
+export type ConstructionState = {
+  settings: { renov_percent: number; renov_gain: number; renov_days: number; ext_percent: number; ext_gain: number; ext_m2: number; ext_max: number };
+  builders: { id: string; name: string; percent: number; rating: number | null; mine: boolean }[];
+  properties: BuildProperty[];
+  history: { kind: string; name: string; amount: number; gain: number; at: string; builder: string }[];
+  mine: null | { id: string; name: string; balance: number; percent: number; works: { kind: string; name: string; amount: number; at: string; client: string }[];
+    npc_weeks: { week: number; clients: number; revenue: number }[] };
+};
+export const constructionQuery = queryOptions({
+  queryKey: ["construction", "state"], retry: false,
+  queryFn: async (): Promise<ConstructionState> => { const { data, error } = await untyped.rpc("construction_state", {}); if (error) throw new Error(error.message); return data as ConstructionState; },
+});
+export async function orderWorks(businessId: string | null, propertyId: string, kind: "renovation" | "extension") {
+  const { data, error } = await untyped.rpc("construction_order", { _business_id: businessId, _property_id: propertyId, _kind: kind, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data as { already?: boolean; amount?: number; gain?: number } | null;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { expectedNpcClients, serviceAmount, dealerWholesale, dealerTradeOffer } from "./services";
+import { expectedNpcClients, serviceAmount, dealerWholesale, dealerTradeOffer, worksRef, worksGain } from "./services";
 
 describe("entreprises de services", () => {
   it("un entretien à 200 € dans un garage à 80 % coûte 160 €", () => {
@@ -41,4 +41,13 @@ describe("agence immobilière", () => {
 describe("concession", () => {
   it("une voiture à 10 000 € coûte 8 000 € en stock", () => { expect(dealerWholesale(10000)).toBe(8000); });
   it("une voiture valant 9 600 € est reprise 5 760 €", () => { expect(dealerTradeOffer(9600)).toBe(5760); });
+});
+
+describe("construction", () => {
+  it("bien de 100 000 € : rénovation 3 000 € pour +5 000 € de valeur", () => {
+    expect(worksRef(100000, 3)).toBe(3000); expect(worksGain(100000, 5)).toBe(5000);
+  });
+  it("bien de 100 000 € : agrandissement 15 000 € pour +12 000 € de valeur", () => {
+    expect(worksRef(100000, 15)).toBe(15000); expect(worksGain(100000, 12)).toBe(12000);
+  });
 });
