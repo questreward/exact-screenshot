@@ -201,7 +201,7 @@
 - [ ] Vague 2 : réputations multiples, compétences, journal de vie
 - [x] Priorité 2 vague A : sondages, débats publics, CV citoyen (installée)
 - [x] Priorité 2 vague B : coalitions, vie interne des partis, vérification des faits (0074 installée)
-- [ ] Priorité 3 vague A : évolution professionnelle + entretiens d'embauche
+- [x] Priorité 3 vague A : évolution professionnelle + entretiens d'embauche (0075 préparée, à installer)
 - [ ] Priorité 3 vague B : marché immobilier + médias des joueurs
 - [ ] Priorité 4 (après accord)
 
@@ -220,3 +220,6 @@
 # Relations internationales (document reçu)
 - [ ] Phase 1 : carte du monde, fiches pays, relations, diplomatie, traités, commerce, sanctions, embargos, énergie, conséquences économiques
 - [ ] Phases suivantes (après accord)
+
+# Entreprises de services et agences (document reçu)
+- [ ] Phase 1 (après Carrière, Boutique, International — ordre à confirmer)

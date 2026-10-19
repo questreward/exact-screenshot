@@ -1293,3 +1293,27 @@ export const factCheckQuery = queryOptions({
 export async function runFactCheck(input: Record<string, unknown>) {
   const { data, error } = await untyped.rpc("fact_check", { _input: input }); if (error) throw new Error(error.message); return data as FactCheck;
 }
+
+// ---- Carrière : entretiens, promotions, chômage (règles côté serveur) ----
+export type CareerProfile = { competence: number; experience: number; etudes: number; situation: number; total: number; reponses?: number };
+export type CareerOffer = { id: string; title: string; salary: number; description: string; skill: string | null; skill_min: number; blocked: string | null; profile: CareerProfile; current: boolean };
+export type CareerState = {
+  eligible_path: boolean; pass_score: number; housing_monthly: number;
+  job: null | { title: string; salary: number; base: number; level: number; progress: number; started_at: string; max_level: number; last_shift: string | null; layoff_days: number;
+    next: null | { progress: number; skill: string; skill_level: number; current_skill: number; raise: number; first: boolean } };
+  unemployment: null | { since: string; previous: string; weekly: number; paid_weeks: number; max_weeks: number };
+  offers: CareerOffer[];
+  open_interview: null | { id: string; job_id: string; job: string; questions: { id: string; question: string; answers: string[] }[] };
+  interviews: { job: string; score: number; status: string; at: string; details: CareerProfile & { motif?: string } }[];
+  history: { kind: string; label: string; at: string }[];
+  salary_months: { month: string; total: number }[];
+};
+export const careerQuery = queryOptions({
+  queryKey: ["career", "state"], retry: false,
+  queryFn: async (): Promise<CareerState> => { const { data, error } = await untyped.rpc("career_state", {}); if (error) throw new Error(error.message); return data as CareerState; },
+});
+export async function careerAction(command: "interview_start" | "interview_answer" | "promote", input: Record<string, unknown> = {}) {
+  const { data, error } = await untyped.rpc("career_action", { _command: command, _input: input });
+  if (error) throw new Error(error.message);
+  return data as { status?: string; score?: number; details?: CareerProfile; motif?: string; changement?: boolean; level?: number; salary?: number; interview_id?: string };
+}

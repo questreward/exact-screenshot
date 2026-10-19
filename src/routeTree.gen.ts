@@ -20,6 +20,7 @@ import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
 import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authenticated/_game/actualites'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
+import { Route as AuthenticatedGameCarriereRouteImport } from './routes/_authenticated/_game/carriere'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
@@ -121,6 +122,12 @@ const AuthenticatedGameAgendaRoute = AuthenticatedGameAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameCarriereRoute =
+  AuthenticatedGameCarriereRouteImport.update({
+    id: '/carriere',
+    path: '/carriere',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameCarteRoute = AuthenticatedGameCarteRouteImport.update({
   id: '/carte',
   path: '/carte',
@@ -395,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/creation': typeof AuthenticatedCreationRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
+  '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
@@ -452,6 +460,7 @@ export interface FileRoutesByTo {
   '/creation': typeof AuthenticatedCreationRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
+  '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
@@ -512,6 +521,7 @@ export interface FileRoutesById {
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
   '/_authenticated/_game/actualites': typeof AuthenticatedGameActualitesRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
+  '/_authenticated/_game/carriere': typeof AuthenticatedGameCarriereRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
     | '/creation'
     | '/actualites'
     | '/agenda'
+    | '/carriere'
     | '/carte'
     | '/classements'
     | '/crises'
@@ -628,6 +639,7 @@ export interface FileRouteTypes {
     | '/creation'
     | '/actualites'
     | '/agenda'
+    | '/carriere'
     | '/carte'
     | '/classements'
     | '/crises'
@@ -687,6 +699,7 @@ export interface FileRouteTypes {
     | '/_authenticated/creation'
     | '/_authenticated/_game/actualites'
     | '/_authenticated/_game/agenda'
+    | '/_authenticated/_game/carriere'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/crises'
@@ -822,6 +835,13 @@ declare module '@tanstack/react-router' {
       path: '/agenda'
       fullPath: '/agenda'
       preLoaderRoute: typeof AuthenticatedGameAgendaRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/carriere': {
+      id: '/_authenticated/_game/carriere'
+      path: '/carriere'
+      fullPath: '/carriere'
+      preLoaderRoute: typeof AuthenticatedGameCarriereRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/carte': {
@@ -1152,6 +1172,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameActualitesRoute: typeof AuthenticatedGameActualitesRoute
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
+  AuthenticatedGameCarriereRoute: typeof AuthenticatedGameCarriereRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
@@ -1204,6 +1225,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
   {
     AuthenticatedGameActualitesRoute: AuthenticatedGameActualitesRoute,
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
+    AuthenticatedGameCarriereRoute: AuthenticatedGameCarriereRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
