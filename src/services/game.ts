@@ -1503,3 +1503,23 @@ export async function agencyRpc(fn: "agency_mandate" | "agency_mandate_end" | "a
   if (error) throw new Error(error.message);
   return data as { fee?: number; agency_fee?: number; deposit?: number; already?: boolean } | null;
 }
+
+// ---- Concessionnaire automobile (0084) ----
+export type DealerCar = { catalog_id: string; name: string; brand: string | null; quantity: number; catalog_price: number; price: number };
+export type DealerUsed = { id: string; catalog_id: string; name: string; condition: string; price: number };
+export type DealerState = {
+  settings: { wholesale_percent: number; trade_percent: number; used_markup: number; max_stock: number; min_percent: number; max_percent: number };
+  dealers: { id: string; name: string; percent: number; rating: number | null; mine: boolean; stock: DealerCar[]; used: DealerUsed[] }[];
+  my_cars: { asset_id: string; catalog_id: string; name: string; condition: string; value: number; offer: number; credit: number | null }[];
+  catalog: { id: string; name: string; brand: string | null; price: number; wholesale: number }[];
+  mine: null | { id: string; name: string; balance: number; stock_count: number; ops: { kind: string; name: string; quantity: number; amount: number; at: string; client: string }[] };
+};
+export const dealerQuery = queryOptions({
+  queryKey: ["dealer", "state"], retry: false,
+  queryFn: async (): Promise<DealerState> => { const { data, error } = await untyped.rpc("dealer_state", {}); if (error) throw new Error(error.message); return data as DealerState; },
+});
+export async function dealerRpc(fn: "dealer_restock" | "dealer_buy" | "dealer_trade_in" | "dealer_used_buy" | "dealer_set_price", args: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc(fn, fn === "dealer_set_price" ? args : { ...args, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data as { already?: boolean; amount?: number; cost?: number } | null;
+}

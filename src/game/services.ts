@@ -37,3 +37,7 @@ export function manageCut(rent: number, managePercent: number, percent: number |
   if (percent == null) return 0;
   return Math.min(rent, Math.floor(rent * managePercent / 100 * percent / 100));
 }
+
+// Concession (indications ; la base calcule les vrais montants)
+export const dealerWholesale = (price: number, percent = 80) => Math.ceil((price * percent) / 100);
+export const dealerTradeOffer = (value: number, percent = 60) => Math.floor((value * percent) / 100);
