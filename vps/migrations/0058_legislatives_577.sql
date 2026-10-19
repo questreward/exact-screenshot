@@ -3,7 +3,8 @@
 --   docker exec -i civitas-db psql -v ON_ERROR_STOP=1 -U postgres -d civitas < vps/migrations/0058_legislatives_577.sql
 --
 -- CE QUI CHANGE DANS LE PARLEMENT EXISTANT (Bloc 15)
---  * national_groups : +1 colonne party_code (étiquette réelle du groupe), vide pour les groupes existants.
+--  * national_groups : +1 colonne party_code (étiquette réelle du groupe), vide pour les groupes existants ;
+--                      la règle « un seul groupe Divers par chambre » ne s'applique plus aux étiquettes réelles.
 --  * national_seats  : +1 colonne constituency_code ; contraintes élargies pour accepter 577 sièges
 --                      liés à une circonscription. Correction : un siège territorial gagné par un PNJ
 --                      (marqué « simulé ») était refusé, ce qui bloquait le dépouillement de l'ancien modèle.
@@ -22,6 +23,10 @@ BEGIN;
 -- 1. Colonnes et contraintes (NOT VALID : les lignes déjà enregistrées ne sont pas re-vérifiées, seules les nouvelles le sont) -------------------------------------------------------------
 ALTER TABLE public.national_groups ADD COLUMN party_code text REFERENCES public.legislative_parties(code);
 ALTER TABLE public.national_seats ADD COLUMN constituency_code text REFERENCES public.legislative_constituencies(code);
+-- Un seul groupe « sans parti du jeu » par chambre, sauf pour les étiquettes réelles
+DROP INDEX public.national_group_independent_once;
+CREATE UNIQUE INDEX national_group_independent_once ON public.national_groups(legislature_id,chamber) WHERE organization_id IS NULL AND party_code IS NULL;
+CREATE UNIQUE INDEX national_groups_party_code_once ON public.national_groups(legislature_id,chamber,party_code) WHERE party_code IS NOT NULL;
 CREATE UNIQUE INDEX national_seats_constituency_unique ON public.national_seats (legislature_id, constituency_code) WHERE constituency_code IS NOT NULL;
 
 ALTER TABLE public.national_seats DROP CONSTRAINT IF EXISTS national_seats_check1;
