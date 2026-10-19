@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Home, LoaderCircle, KeyRound, FileSignature } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { housingAction, housingQuery } from "@/services/game";
+import { housingAction, housingQuery, serviceQuery } from "@/services/game";
+import { serviceAmount } from "@/game/services";
 import { gameMeta } from "@/game/metadata";
 import { housingShare } from "@/game/career";
 
@@ -21,11 +22,15 @@ function HousingPage() {
   const qc = useQueryClient();
   const { data: s, isLoading, isError } = useQuery(housingQuery);
   const [type, setType] = useState("");
+  const services = useQuery(serviceQuery);
+  const movers = (services.data?.providers ?? []).filter(p => p.service === "demenagement" && !p.mine);
+  const [mover, setMover] = useState("");
+  const moverPct = movers.find(m => m.id === mover)?.percent ?? 100;
   const act = useMutation({
     mutationFn: (v: { cmd: "rent" | "move_in"; input: Record<string, unknown> }) => housingAction(v.cmd, v.input),
     onSuccess: (r, v) => {
-      toast.success(v.cmd === "rent" ? `Bail signé. Dépôt ${eur(r.deposit ?? 0)} (rendu à ton départ), déménagement ${eur(r.move ?? 0)}.` : "Tu habites maintenant chez toi !");
-      ["housing", "economy", "life", "character", "shop"].forEach(k => qc.invalidateQueries({ queryKey: [k] }));
+      toast.success(v.cmd === "rent" ? `Bail signé. Dépôt ${eur(r.deposit ?? 0)} (rendu à ton départ), déménageur payé.` : "Tu habites maintenant chez toi !");
+      ["housing", "economy", "life", "character", "shop", "services"].forEach(k => qc.invalidateQueries({ queryKey: [k] }));
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -65,13 +70,17 @@ function HousingPage() {
         <h2 className="mb-2 font-heading font-bold">Annonces de location</h2>
         <div className="mb-3 flex gap-2 overflow-x-auto">{Object.entries(TYPES).map(([k, v]) =>
           <button key={k} type="button" onClick={() => setType(k)} className={`h-10 shrink-0 rounded-full px-4 text-sm ${type === k ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{v}</button>)}</div>
-        <ul className="space-y-2">{rentals.map(r => { const cost = r.deposit + r.move; const mine = s.lease?.title === r.title && s.lease.kind === "location";
+        {movers.length > 0 && <label className="mb-3 block text-sm">Déménageur
+          <select className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={mover} onChange={e => setMover(e.target.value)}>
+            <option value="">Déménageurs fictifs CIVITAS (prix normal)</option>
+            {movers.map(m => <option key={m.id} value={m.id}>{m.name} — {m.percent} %{m.rating != null ? ` · ${m.rating}/5` : ""}</option>)}</select></label>}
+        <ul className="space-y-2">{rentals.map(r => { const moveCost = serviceAmount(r.move, moverPct); const cost = r.deposit + moveCost; const mine = s.lease?.title === r.title && s.lease.kind === "location";
           return <li key={r.id} className="rounded-lg border border-border p-3">
             <p className="font-semibold">{r.title}</p>
             <p className="text-xs text-muted-foreground">{r.type} · {r.surface} m² · étage {r.floor} · DPE {r.dpe}</p>
-            <p className="mt-1 text-sm"><b>{eur(r.monthly)}</b> / mois · à l'entrée : dépôt {eur(r.deposit)} + déménagement {eur(r.move)}</p>
+            <p className="mt-1 text-sm"><b>{eur(r.monthly)}</b> / mois · à l'entrée : dépôt {eur(r.deposit)} + déménagement {eur(moveCost)}</p>
             {mine ? <p className="mt-1 text-xs text-primary">Ton logement actuel</p>
-              : <Button variant="outline" className="mt-2 h-11 w-full" disabled={act.isPending || cost > s.balance} onClick={() => act.mutate({ cmd: "rent", input: { listing_id: r.id } })}>{cost > s.balance ? "Solde insuffisant" : `Louer (${eur(cost)} à l'entrée)`}</Button>}
+              : <Button variant="outline" className="mt-2 h-11 w-full" disabled={act.isPending || cost > s.balance} onClick={() => act.mutate({ cmd: "rent", input: { listing_id: r.id, ...(mover ? { mover_id: mover } : {}) } })}>{cost > s.balance ? "Solde insuffisant" : `Louer (${eur(cost)} à l'entrée)`}</Button>}
           </li>; })}</ul>
       </section>
 
