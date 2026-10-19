@@ -1544,3 +1544,29 @@ export async function orderWorks(businessId: string | null, propertyId: string, 
   if (error) throw new Error(error.message);
   return data as { already?: boolean; amount?: number; gain?: number } | null;
 }
+
+// ---- Recrutement (0086) : candidats volontaires, prime payée par l'employeur ----
+export type RecruitOffer = { id: string; title: string; salary: number; business: string; agency: string; mine: boolean; delegated: boolean; fee: number | null; proposed: boolean };
+export type RecruitState = {
+  seeking: boolean; fee: number;
+  agencies: { id: string; name: string; percent: number }[];
+  offers: RecruitOffer[];
+  mine: null | { id: string; name: string; percent: number; balance: number;
+    candidates: { id: string; name: string }[];
+    mandates: { id: string; title: string; business: string; fee: number }[];
+    weeks: { week: number; clients: number; revenue: number }[] };
+  placements: { title: string; business: string; candidate: string; amount: number; at: string }[];
+};
+export const recruitQuery = queryOptions({
+  queryKey: ["recruitment", "state"], retry: false,
+  queryFn: async (): Promise<RecruitState> => {
+    const { data, error } = await untyped.rpc("recruit_state", {});
+    if (error) throw new Error(error.message);
+    return data as RecruitState;
+  },
+});
+export async function recruitAction(fn: "recruit_seek" | "recruit_mandate" | "recruit_propose" | "recruit_accept" | "recruit_hire_npc", args: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return data as { already?: boolean; amount?: number } | null;
+}

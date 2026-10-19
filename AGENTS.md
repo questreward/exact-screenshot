@@ -37,4 +37,4 @@
 - France map: open data in public/geo, maplibre-gl v4, no external tiles (v6 breaks in Vite).
 - Rent retries log failures under a distinct key; UI counts successes.
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
-- Service businesses (garage, moving, real-estate agency) are business sectors using service_pay (economy_cash → business_move), with a fictive CIVITAS fallback at reference price and weekly NPC clients settled once per (business, week). Agency rentals chain owner ↔ agency ↔ tenant: rent settles on the tenant's read, owner share is collected on read; agency_buy/agency_rent_listing wrap existing RPCs.
+- Service sectors reuse secured payments and weekly NPC ledgers; agency rentals settle on tenant reads, owner shares on owner reads. Recruitment wraps existing hires with opt-in candidates and unique placements; fees move atomically between business treasuries, never candidate accounts.
