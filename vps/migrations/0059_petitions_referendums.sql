@@ -103,6 +103,14 @@ CREATE FUNCTION public.petition_mayor(_city text) RETURNS uuid LANGUAGE sql STAB
   ORDER BY m.starts_at DESC LIMIT 1
 $$;
 
+-- Perte de réputation du maire, sans jamais passer sous zéro, une seule fois par pétition
+CREATE FUNCTION public.petition_penalize(_cid uuid, _petition uuid, _label text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE loss integer; BEGIN
+  SELECT LEAST(abs(s.refusal_reputation), COALESCE((SELECT reputation FROM public.political_stats WHERE character_id = _cid), 0))
+    INTO loss FROM public.petition_settings s WHERE s.id = 1;
+  PERFORM public.award_political(_cid, 'petition-refuse:' || _petition, 'petition', -loss, 0, 0, 0, _label);
+END $$;
+
 -- Avancement des pétitions (réglé à la lecture, une seule fois grâce aux verrous de ligne)
 CREATE FUNCTION public.petition_refresh() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.petition_settings; p public.petitions; nowt timestamptz := public.game_now(); sig integer; yes numeric;
@@ -150,7 +158,7 @@ DECLARE s public.petition_settings; p public.petitions; nowt timestamptz := publ
       mayor := public.petition_mayor(p.city_id);
       UPDATE public.petitions SET status = 'refused', decided_at = nowt, council_note = 'Aucune réponse de la mairie dans le délai.' WHERE id = p.id;
       IF mayor IS NOT NULL THEN
-        PERFORM public.award_political(mayor, 'petition-refuse:' || p.id, 'petition', s.refusal_reputation, 0, 0, 0, 'Référendum ignoré : ' || p.title);
+        PERFORM public.petition_penalize(mayor, p.id, 'Référendum ignoré : ' || p.title);
       END IF;
     END IF;
   END LOOP;
@@ -233,7 +241,7 @@ DECLARE cid uuid := public.social_actor(); c public.characters; s public.petitio
     UPDATE public.petitions SET status = CASE WHEN (_input->>'accept')::boolean THEN 'accepted' ELSE 'refused' END,
       decided_at = public.game_now(), council_note = NULLIF(btrim(coalesce(_input->>'note', '')), '') WHERE id = p.id;
     IF NOT (_input->>'accept')::boolean THEN
-      PERFORM public.award_political(cid, 'petition-refuse:' || p.id, 'petition', s.refusal_reputation, 0, 0, 0, 'Référendum refusé : ' || p.title);
+      PERFORM public.petition_penalize(cid, p.id, 'Référendum refusé : ' || p.title);
     END IF;
     PERFORM public.petition_notify(p.author_id, 'Réponse de la mairie',
       '« ' || p.title || ' » : ' || CASE WHEN (_input->>'accept')::boolean THEN 'acceptée.' ELSE 'refusée.' END);
@@ -244,10 +252,8 @@ DECLARE cid uuid := public.social_actor(); c public.characters; s public.petitio
 END $$;
 
 REVOKE ALL ON FUNCTION public.petition_hash(text), public.petition_signatures_at(public.petitions, timestamptz), public.petition_notify(uuid, text, text),
-  public.petition_mayor(text), public.petition_refresh(), public.petition_card(public.petitions, uuid) FROM PUBLIC, anon, authenticated;
+  public.petition_mayor(text), public.petition_refresh(), public.petition_penalize(uuid, uuid, text), public.petition_card(public.petitions, uuid) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.petition_state(), public.petition_action(text, jsonb) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.petition_state(), public.petition_action(text, jsonb) TO authenticated;
--- La fonction de seuil reste lisible par le moteur de recherche des signatures
-GRANT EXECUTE ON FUNCTION public.petition_hash(text) TO authenticated;
 
 COMMIT;
