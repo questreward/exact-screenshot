@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -32,6 +32,7 @@ export const SECTIONS: Section[] = [
   { id: "jt", label: "JT", icon: Tv, description: "Journal télévisé local et national, interviews.", available: true },
   { id: "presse", label: "Presse", icon: Newspaper, description: "Devenez journaliste : vos articles, votre photo, vos lecteurs.", available: true },
   { id: "reseau", label: "Réseau", icon: Network, description: "Profils des joueurs, contacts, abonnements et messages.", available: true },
+  { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "trophees", label: "Trophées", icon: Trophy, description: "Vos succès et vos prochains objectifs.", available: true },
   { id: "parametres", label: "Paramètres", icon: Settings, description: "Langue, notifications, confidentialité.", available: true },
 ];
