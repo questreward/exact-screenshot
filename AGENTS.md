@@ -28,7 +28,7 @@
 - World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
-- National installation requires one atomic transaction covering schema, seeds and integrity assertions; current schema/data tools cannot share it, so installation stays blocked until a supported unified executor exists, rather than leaving partial state or using compensating cleanup.
+- Non-atomic installs are forbidden: schema, seeds and integrity checks run in one transaction (VPS psql file with BEGIN/COMMIT), never partial state or compensating cleanup.
 - Fictional NPC schedules are computed deterministically from game_now (npc_location_at), never stored or ticked; greetings reuse comm_push with per-day unique keys and no rewards.
 - Player-founded organizations keep money in org_treasuries/org_ledger (unique operation keys, never negative); personal money moves only via economy_cash; no withdrawal to personal accounts.
 - Protests are social activities (source_key 'protest:<id>') settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news, never by a scheduled job.
