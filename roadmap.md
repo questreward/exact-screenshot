@@ -224,3 +224,4 @@
 
 # Entreprises de services et agences (document reçu)
 - [ ] Phase 1 + médias des joueurs (après la Boutique, avant l'International)
+- [ ] Corriger les pages du menu qui ouvrent /section/... en 404
