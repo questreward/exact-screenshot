@@ -149,6 +149,7 @@
 - [x] Accord explicite reçu le 19 octobre à 07:40 UTC pour appliquer exclusivement la v3 après empreintes ; aucun compte, test ou activation.
 - [x] Écart 65 → 79 expliqué par génération normale ; 79 conservés comme référence actuelle, aucun nettoyage.
 - [x] Forme compatible v3 proposée : structure inchangée, initialisation atomique séparée, contrôles en lecture seule ; comparaison et inventaire exact présentés, perte de transaction globale explicitée.
-- [ ] Application de la forme compatible bloquée dans l’attente d’un nouvel accord explicite incluant la séparation des transactions.
+- [x] Découpage refusé le 19 octobre à 08:04 UTC ; contrats des outils vérifiés sans exécution : migration transactionnelle mais initialisation littérale interdite, outil de données sans modifications de structure ; aucune transaction partagée exposée.
+- [ ] Application v3 bloquée : exécuteur officiellement pris en charge réunissant structure, initialisation et assertions dans une transaction unique nécessaire, puis nouvel accord explicite. Aucun rollback compensatoire ni installation partielle autorisé.
 - [ ] Vérifications après application bloquées par l’absence d’application ; paramètres Sénat/votes simulés/textes/deltas à préciser avant activation.
 - Bloc 16 interdit.
