@@ -1,6 +1,6 @@
 // Chargé uniquement dans le navigateur (import dynamique depuis la page France).
 import { useEffect, useRef } from "react";
-import * as maplibregl from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 type GeoJSONSource = maplibregl.GeoJSONSource; type MLMap = maplibregl.Map;
 import "maplibre-gl/dist/maplibre-gl.css";
 import { PLAYABLE_INSEE, type CommuneRow } from "@/game/france";
