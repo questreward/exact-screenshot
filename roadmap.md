@@ -238,4 +238,5 @@
 - [ ] Monde mis en scène
 
 - [x] Agence immobilière (0082) prête, à installer sur le VPS
-- [ ] Entreprises : autres services, médias des joueurs
+- [x] Médias des joueurs (0083) : journal + chaîne, abonnés, caisse, signalements, influence plafonnée — à installer sur le VPS
+- [ ] Entreprises : autres services (construction, concessionnaire, assurance, recrutement)
