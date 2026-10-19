@@ -792,7 +792,7 @@ export const mediaQuery = queryOptions({
   queryKey: ["press", "media-state"],
   refetchInterval: 30000,
   queryFn: async (): Promise<MediaState> => {
-    const { data, error } = await untyped.rpc("media_state");
+    const { data, error } = await untyped.rpc("media_state", {});
     if (error) throw new Error(error.message);
     return data as MediaState;
   },
