@@ -1,51 +1,36 @@
-# CIVITAS — Roadmap complète jusqu'à la finalisation (analyse seule)
+# P1 — Déplacements entre villes et espaces intérieurs : préparation (analyse seule)
 
 ## Ce qui sera livré
-Un seul document de lecture, `CIVITAS_Roadmap_complete.md`, dans vos Fichiers. Il suit le format de votre dernier document (A à G + liste numérotée finale) et reprend aussi les rubriques demandées dans le précédent (dépendances, décisions du propriétaire, risques globaux).
-Aucun SQL, aucune migration, aucune donnée, aucun compte, aucun test, aucun écran, aucune modification du jeu ni du Bloc 15.
+Un document `CIVITAS_P1_preparation.md` dans vos Fichiers : analyse de l'existant, cahier des charges proposé, et décisions « À valider ». Aucun développement, aucun SQL, aucune migration, aucun compte, aucun test. La roadmap approuvée sera aussi livrée comme document de référence.
 
-## Méthode
-1. Relire l'existant réel : 43 migrations appliquées (0000 → 0042), 14 sections et 15 applis Téléphone actives, rapports de validation, mémoire du projet, cahiers des charges reçus, SQL v3 du Bloc 15 (gelé).
-2. Pour chaque élément : origine notée « déjà validé / explicitement prévu / explicitement différé / simplement suggéré / non spécifié », avec la source. Rien d'évoqué ne devient obligatoire.
-3. Pour chaque fonctionnalité restante : dépendances, complexité, données, écrans, fonctions serveur, confidentialité, doublons/reconnexion, horloge, risques, tests.
-4. Ordonner selon les dépendances techniques, pas l'intérêt.
+## Existant déjà vérifié
+- Les déplacements sont aujourd'hui limités à la ville du personnage : règle d'affichage `movementAllowed` (test « interdit le voyage vers une autre ville ») et contrôle serveur dans `move_character`.
+- Cinq villes, 20 quartiers, 60 lieux ; position privée persistante (`character_positions`).
+- Espaces intérieurs : table `location_spaces` déjà prévue (lieu parent, sous-espace, accessible), avec quelques espaces créés (amphithéâtres, salles du conseil) mais tous marqués non accessibles.
+- Transport public local (activité + énergie + durée) et retards des travaux figés au départ (Bloc 14).
+- Le personnage possède une ville de résidence, liée à logement, emploi, études, élections, Ma Ville et démarches.
 
-## Constats déjà établis
-- Déjà validé : Blocs 1 à 14 (dont messages et Civi limités, carte et marqueurs, retards des transports publics, fiscalité pédagogique simple, logement/loyers/épargne, événements vivants).
-- Explicitement différé dans les documents : multijoueur complet, romance et discussion libre, économie avancée, entreprises complexes, investissements/trading, véhicules personnels dynamiques, diplomatie, monde procédural.
-- Simplement suggéré ou non spécifié : crypto, actions, marchés, boutique, anglais, double authentification, autres parcours, nouvelles règles d'âge, espaces intérieurs, voyages entre villes, JT, manifestations, PNJ autonomes.
+## Contenu du document
+1. Existant détaillé, avec source pour chaque point.
+2. Fonctionnalités proposées, chacune marquée « À valider » :
+   - trajet vers une autre ville comme activité de l'Agenda (départ, durée, coût, énergie) réutilisant le transport public existant ;
+   - distinction stricte entre ville de résidence (inchangée) et ville où l'on se trouve ;
+   - entrée et sortie des espaces intérieurs d'un lieu, sans nouvel espace inventé au-delà de ceux existants sauf décision.
+3. Ce qui ne bouge pas : horloge, véhicules personnels, élections (vote seulement dans sa ville de résidence), loyers, salaires, Bloc 15.
+4. Données, fonctions serveur et écrans concernés (Carte, Agenda, Téléphone, fiche de lieu), sans SQL.
+5. Confidentialité : position et trajets restent privés ; jamais visibles des autres joueurs.
+6. Doublons et reconnexion : un seul trajet en cours, arrivée réglée une seule fois à la lecture, refus pendant une autre activité.
+7. Impact sur les Blocs 1–14 et cas limites (travail ou cours dans sa ville pendant qu'on est ailleurs, loyer, événements locaux, retards travaux).
+8. Plan de tests (comptes temporaires isolés) et régressions prévus.
+9. Plan de migration futur : objets nécessaires, aucune modification destructive, stratégie de retour arrière ; indépendance vis-à-vis du Bloc 15 et question de l'ordre des migrations.
 
-## Proposition de regroupement (numéros provisoires)
-Le « Bloc 16 » n'étant pas défini, les blocs proposés seront nommés P1, P2… ; leur numéro officiel ne sera attribué qu'après votre validation.
-```text
-Bloc 15  Politique nationale          (spécifié, gelé : exécuteur atomique)
-P1 Déplacements entre villes et espaces intérieurs   (indépendant du Bloc 15)
-P2 PNJ avancés : emploi du temps autonome            (base de P3 et P4)
-P3 Organisations avancées : création libre,
-   évolution collective, budget d'organisation       (séparé des argents perso/municipal)
-P4 Mobilisation et médias : manifestations, JT       (volet national dépend du Bloc 15)
-P5 Économie avancée niveau 1 : entreprises, crédit
-   immobilier, assurance, fiscalité avancée          (levée d'exclusion requise)
-P6 Joueurs visibles : profils publics, réseau social  (prérequis du multijoueur)
-P7 Multijoueur complet                                (uniquement avec cahier des charges)
-Plus tard / hors roadmap : actions, trading, crypto, marchés, plusieurs pays,
-diplomatie, monde procédural, boutique, romance.
-Transverses à placer sur décision : anglais, double authentification, parcours/âges.
-```
-Chaque bloc : objectif, inclus/exclus, dépendances, données, fonctions, écrans, sécurité, tests (comptes temporaires isolés + régressions), critères de validation.
-
-## Plan de migration futur (F)
-Par bloc : objets à créer, objets existants touchés (objectif : aucun), risques, stratégie (une migration atomique par bloc), retour arrière, dépendances. Aucun SQL produit.
-
-## Bloc 15 séparément (G)
-Repris tel quel : spécifié et validé (v3, empreinte inchangée), points encore ouverts, blocage d'exécution atomique, capacité demandée au support, et éléments préparables sans base (écrans maquettés hors projet, textes des lois, tests rédigés). Aucune modification de la v3.
-
-## Points de vigilance
-- Ordre des migrations : P1, P2, P3 et P5 ne lisent aucune table nationale, mais votre règle « dans l'ordre » impose de décider s'ils peuvent passer avant le 0043 gelé.
-- Risques globaux : horloge commune, doubles gains à la reconnexion, mélange des argents personnel/municipal/organisation/national, fuite de données privées avec profils visibles, charge des PNJ autonomes, exécuteur atomique manquant.
-
-## Liste finale prévue
-1 prochain bloc à préparer · 2 blocs suivants · 3 dépendances critiques · 4 éléments préparables sur votre terminal sans Lovable · 5 éléments exigeant une migration de la base, plus « À décider par le propriétaire ».
+## Décisions à vous soumettre dans le document
+- Durée, prix et énergie d'un trajet entre villes (ou par paire de villes).
+- Moyens disponibles : train seul, ou train et car.
+- Peut-on travailler, étudier ou voter depuis une autre ville ? (proposition : non, retour obligatoire).
+- Déménagement définitif (changer de ville de résidence) : inclus ou exclu du P1.
+- Espaces intérieurs : rendre accessibles seulement ceux existants, ou en ajouter (lesquels).
+- Les événements et Actualités d'une ville visitée s'affichent-ils pendant la visite.
 
 ## Détails techniques
-Lecture seule : dépôt, migrations, navigation, rapports de validation, mémoire projet, historique de discussion. Seule écriture : le document final dans les Fichiers (hors projet).
+Lecture seule : `src/game/world.ts`, migrations 0001–0003 et 0042, `move_character`, `character_positions`, `location_spaces`, transport public et Agenda. Seule écriture prévue : les documents dans les Fichiers.
