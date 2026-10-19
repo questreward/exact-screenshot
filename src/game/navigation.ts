@@ -81,3 +81,26 @@ export const PHONE_APPS: PhoneApp[] = [
 ];
 
 export const COMING_SOON = "Disponible dans une prochaine étape";
+
+export type SectionGroup = { id: string; label: string; ids: string[] };
+
+// Big menu headings: every section belongs to exactly one group.
+export const SECTION_GROUPS: SectionGroup[] = [
+  { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
+  { id: "quotidien", label: "Quotidien", ids: ["vie", "carriere", "logement", "telephone", "demarches", "vie-administrative"] },
+  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services"] },
+  { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "actualites", "jt", "presse"] },
+  { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
+  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
+  { id: "reglages", label: "Réglages", ids: ["parametres"] },
+];
+
+export function groupedSections() {
+  return SECTION_GROUPS.map((g) => ({
+    ...g,
+    sections: g.ids.map((id) => SECTIONS.find((s) => s.id === id)).filter((s): s is Section => !!s),
+  }));
+}
+
+// Personal home shortcuts (kept short on purpose).
+export const HOME_SHORTCUTS = ["vie", "carriere", "telephone", "carte", "ma-ville", "boutique"];
