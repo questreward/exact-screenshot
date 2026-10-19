@@ -203,6 +203,6 @@
 
 # Documents administratifs
 - [x] Vague 1 : profil, carte, photo, signature (installée)
-- [ ] Bouton PDF de la carte
+- [x] Bouton PDF de la carte
 - [ ] Vague 2 : orientation politique (partis réels, axes, historique) + profil public
 - [ ] Vague 3 : coffre-fort documents, formulaires, documents automatiques
