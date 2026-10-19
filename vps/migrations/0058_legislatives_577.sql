@@ -10,7 +10,8 @@
 --  * national_law_positions : +2 200 positions (100 lois × 22 étiquettes réelles), anciennes conservées.
 --  * Fonctions remplacées : national_count_election (redirige les scrutins « 577 »), national_open_session
 --    (compte 577/289 si l'Assemblée est réelle), national_close_session (position par étiquette réelle),
---    national_tick (programme et dépouille les législatives).
+--    national_tick (programme et dépouille les législatives), national_form_government (lecture sans ambiguïté
+--    de l'alias « x », sinon le gouvernement de la nouvelle Assemblée ne peut pas être formé).
 --  * L'Assemblée actuelle (50 sièges) N'EST PAS modifiée : elle finit son mandat, puis la première
 --    Assemblée de 577 députés lui succède. Rien n'est effacé.
 -- Les deux tours se jouent dans les 2 jours de vote existants (calendrier national inchangé) :
@@ -2632,7 +2633,7 @@ BEGIN
   IF st.character_id IS NOT NULL THEN
    SELECT pv.vote INTO vote FROM public.national_parliamentary_votes pv WHERE pv.session_id=s.id AND pv.seat_id=st.id;
   ELSE
-   SELECT p.vote INTO vote FROM public.national_law_positions p WHERE p.template_id=v.template_id AND p.party_key=COALESCE(st.party_code, st.organization_id::text,'divers') -- 577;
+   SELECT p.vote INTO vote FROM public.national_law_positions p WHERE p.template_id=v.template_id AND p.party_key=COALESCE(st.party_code, st.organization_id::text,'divers') /* 577 */;
   END IF;
   IF vote='yes' THEN y:=y+1; ELSIF vote='no' THEN nn:=nn+1; ELSE a:=a+1; END IF;
   vote:=NULL;
@@ -2691,6 +2692,43 @@ BEGIN
    AND NOT EXISTS(SELECT 1 FROM public.national_sessions s WHERE s.law_id=l.id AND s.version=l.current_version AND s.chamber='senate') LOOP
   PERFORM public.national_open_session(lw.id,'senate',date_trunc('minute',t)+interval '2 hours');
  END LOOP;
+END $function$
+;
+CREATE OR REPLACE FUNCTION public.national_form_government(_lid uuid, _president uuid, _pm uuid, _ministers jsonb)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+#variable_conflict use_column
+DECLARE l public.national_legislatures; gid uuid; x record; requested jsonb; stored jsonb;
+BEGIN
+ PERFORM pg_advisory_xact_lock(151515);
+ IF NOT COALESCE((SELECT enabled FROM public.national_settings WHERE id=1),false) THEN RAISE EXCEPTION 'Politique nationale désactivée'; END IF;
+ SELECT * INTO l FROM public.national_legislatures WHERE id=_lid FOR UPDATE;
+ IF NOT FOUND OR public.game_now()<l.starts_at OR public.game_now()>=l.ends_at THEN RAISE EXCEPTION 'Législature inactive'; END IF;
+ IF _president IS NULL OR _pm IS NULL OR jsonb_typeof(_ministers) IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'Six PNJ explicitement désignés requis'; END IF;
+ IF jsonb_array_length(_ministers)<>4 OR EXISTS(SELECT 1 FROM jsonb_array_elements(_ministers) x WHERE jsonb_typeof(x) IS DISTINCT FROM 'object' OR COALESCE(length(btrim(x->>'ministry')),0)=0 OR x->>'npc_id' IS NULL) THEN RAISE EXCEPTION 'Quatre ministres nommés explicitement requis'; END IF;
+ requested:=jsonb_build_array(jsonb_build_object('npc_id',_president,'role','president','ministry',''),jsonb_build_object('npc_id',_pm,'role','prime_minister','ministry',''))||
+ (SELECT jsonb_agg(jsonb_build_object('npc_id',(x->>'npc_id')::uuid,'role','minister','ministry',btrim(x->>'ministry'))) FROM jsonb_array_elements(_ministers) x);
+ IF (SELECT count(DISTINCT x->>'npc_id') FROM jsonb_array_elements(requested) x)<>6 OR (SELECT count(DISTINCT x->>'ministry') FROM jsonb_array_elements(requested) x WHERE x->>'role'='minister')<>4 THEN RAISE EXCEPTION 'PNJ et ministères distincts requis dans cette proposition'; END IF;
+ IF EXISTS(SELECT 1 FROM jsonb_array_elements(requested) x WHERE NOT EXISTS(SELECT 1 FROM public.social_npcs n WHERE n.id=(x->>'npc_id')::uuid)) THEN RAISE EXCEPTION 'PNJ existant introuvable'; END IF;
+ SELECT id INTO gid FROM public.national_governments WHERE legislature_id=l.id;
+ IF gid IS NOT NULL THEN
+  SELECT jsonb_agg(jsonb_build_object('npc_id',npc_id,'role',role,'ministry',ministry) ORDER BY role,ministry,npc_id) INTO stored FROM public.national_offices WHERE government_id=gid;
+  IF stored IS DISTINCT FROM (SELECT jsonb_agg(x ORDER BY x->>'role',x->>'ministry',x->>'npc_id') FROM jsonb_array_elements(requested) x) THEN RAISE EXCEPTION 'Gouvernement déjà constitué avec d’autres nominations'; END IF;
+  RETURN gid;
+ END IF;
+ INSERT INTO public.national_governments(legislature_id,government_no,majority_group_id,starts_at,ends_at) VALUES(l.id,1,NULL,public.game_now(),l.ends_at) RETURNING id INTO gid;
+ FOR x IN SELECT value FROM jsonb_array_elements(requested) LOOP
+  INSERT INTO public.national_offices(government_id,role,ministry,npc_id,display_name,starts_at,ends_at)
+  SELECT gid,x.value->>'role',x.value->>'ministry',n.id,n.first_name||' '||n.last_name,public.game_now(),l.ends_at FROM public.social_npcs n WHERE n.id=(x.value->>'npc_id')::uuid;
+  PERFORM public.national_publish('nomination:'||gid||':'||(x.value->>'role')||':'||(x.value->>'ministry'),'Nomination nationale',
+  (SELECT first_name||' '||last_name FROM public.social_npcs WHERE id=(x.value->>'npc_id')::uuid)||' — '||(x.value->>'role'));
+ END LOOP;
+ -- Proposition technique explicite : six personnes distinctes, mandat exécutif
+ -- limité à cette législature ; remplacements non décidés donc interdits.
+ RETURN gid;
 END $function$
 ;
 

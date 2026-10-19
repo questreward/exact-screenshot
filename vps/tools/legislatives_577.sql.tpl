@@ -10,7 +10,8 @@
 --  * national_law_positions : +2 200 positions (100 lois × 22 étiquettes réelles), anciennes conservées.
 --  * Fonctions remplacées : national_count_election (redirige les scrutins « 577 »), national_open_session
 --    (compte 577/289 si l'Assemblée est réelle), national_close_session (position par étiquette réelle),
---    national_tick (programme et dépouille les législatives).
+--    national_tick (programme et dépouille les législatives), national_form_government (lecture sans ambiguïté
+--    de l'alias « x », sinon le gouvernement de la nouvelle Assemblée ne peut pas être formé).
 --  * L'Assemblée actuelle (50 sièges) N'EST PAS modifiée : elle finit son mandat, puis la première
 --    Assemblée de 577 députés lui succède. Rien n'est effacé.
 -- Les deux tours se jouent dans les 2 jours de vote existants (calendrier national inchangé) :
