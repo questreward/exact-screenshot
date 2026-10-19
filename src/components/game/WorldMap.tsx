@@ -4,7 +4,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery, enterLocationSpace, leaveLocationSpace } from "@/services/game";
+import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery, enterLocationSpace, leaveLocationSpace, locationPresenceQuery } from "@/services/game";
 import { locationType, movementAllowed } from "@/game/world";
 import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
@@ -175,9 +175,24 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
       {spaces.map(s => <SpaceRow key={s.id} space={s} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />)}
       <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
+      <PresentPeople locationId={l.id} here={here} />
       {here && <Suspense fallback={<p className="text-xs text-muted-foreground">Rencontres…</p>}><SocialContacts locationId={l.id}/></Suspense>}
     </div>
   </article>;
+}
+
+function PresentPeople({ locationId, here }: { locationId: string; here: boolean }) {
+  const { data, isError } = useQuery(locationPresenceQuery(locationId));
+  if (isError || !data) return null;
+  return <section className="space-y-2 border-t border-border pt-3">
+    <h4 className="text-sm font-semibold">Personnes présentes</h4>
+    {data.length === 0 ? <p className="text-xs text-muted-foreground">Personne pour le moment.</p> :
+      <ul className="space-y-2">{data.map(n => <li key={n.id} className="flex min-h-12 items-center justify-between gap-3 rounded-md bg-surface px-3 py-2 text-sm">
+        <span><span className="font-medium">{n.first_name} {n.last_name}</span>{n.profession && <span className="block text-xs text-muted-foreground">{n.profession}</span>}</span>
+        {n.known && <span className="text-xs text-primary">Connu(e)</span>}
+      </li>)}</ul>}
+    {!here && data.length > 0 && <p className="text-xs text-muted-foreground">Rendez-vous sur place pour leur parler.</p>}
+  </section>;
 }
 function SpaceRow({ space: s, here, currentSpace }: { space: Tables<"location_spaces">; here: boolean; currentSpace: string | null }) {
   const q = useQueryClient();

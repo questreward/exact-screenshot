@@ -449,6 +449,17 @@ export const intercityRoutesQuery = (cityId: string) => queryOptions({
     return (data ?? []) as IntercityRoute[];
   },
 });
+export type PresentNpc = { id: string; first_name: string; last_name: string; profession: string | null; known: boolean };
+export const locationPresenceQuery = (locationId: string) => queryOptions({
+  queryKey: ["location-presence", locationId],
+  queryFn: async (): Promise<PresentNpc[]> => {
+    const { data, error } = await untyped.rpc("location_presence", { _location_id: locationId });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as PresentNpc[];
+  },
+  refetchInterval: 60_000,
+  retry: false,
+});
 export async function travelIntercity(input: { toCity: string; mode: "train" | "car" }) {
   const { data, error } = await untyped.rpc("travel_intercity", { _to_city: input.toCity, _mode: input.mode });
   if (error) throw new Error(error.message);
