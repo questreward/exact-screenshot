@@ -26,7 +26,7 @@ function RecruitmentPage() {
   const [percent, setPercent] = useState(s.mine?.percent ?? 100);
   const act = useMutation({
     mutationFn: (v: { fn: Parameters<typeof recruitAction>[0]; args: Record<string, unknown>; ok: string }) => recruitAction(v.fn, v.args),
-    onSuccess: (r, v) => { toast.success(r?.already ? "Déjà enregistré." : v.ok); ["recruitment", "business", "economy", "services", "life", "character"].forEach(k => qc.invalidateQueries({ queryKey: [k] })); },
+    onSuccess: (r, v) => { toast.success(r?.already ? "Déjà enregistré." : v.ok); ["recruitment", "bank", "economy", "services", "life", "character"].forEach(k => qc.invalidateQueries({ queryKey: [k] })); },
     onError: (e: Error) => toast.error(e.message),
   });
   const price = useMutation({
@@ -44,7 +44,7 @@ function RecruitmentPage() {
       <TabsContent value="emploi" className="space-y-4">
         <div className="flex items-center justify-between gap-4 border-b border-border py-4"><label htmlFor="seeking" className="font-semibold">Je cherche un emploi</label><Switch id="seeking" checked={s.seeking} disabled={act.isPending} onCheckedChange={v => run("recruit_seek", { _active: v }, v ? "Recherche ouverte." : "Recherche retirée.")} /></div>
         {!offers.length && <p className="text-muted-foreground">Aucune proposition pour le moment.</p>}
-        {offers.map(o => <article key={o.id} className="space-y-3 rounded-lg border border-border bg-card p-4"><div><h2 className="font-heading font-bold">{o.title}</h2><p className="text-sm text-muted-foreground">{o.business} · {eur(o.salary)} / semaine</p><p className="text-sm">{o.agency}</p></div><Button className="min-h-12 w-full" disabled={act.isPending} onClick={() => run("recruit_accept", { _offer: o.id }, "Embauche confirmée, sans frais pour toi.")}><UserPlus />Accepter l’emploi</Button></article>)}
+        {offers.map(o => <article key={o.id} className="space-y-3 rounded-lg border border-border bg-card p-4"><div><h2 className="font-heading font-bold">{o.title}</h2><p className="text-sm text-muted-foreground">{o.business} · {eur(o.salary)} / semaine</p><p className="text-sm">{o.agency}</p></div><Button className="min-h-12 w-full" disabled={act.isPending || !s.seeking} onClick={() => run("recruit_accept", { _offer: o.id }, "Embauche confirmée, sans frais pour toi.")}><UserPlus />Accepter l’emploi</Button></article>)}
         <Button asChild variant="outline" className="min-h-12"><Link to="/carriere">Ma carrière</Link></Button>
       </TabsContent>
       <TabsContent value="employeur" className="space-y-4">

@@ -150,6 +150,8 @@ DECLARE cid uuid; m public.recruit_mandates; p public.recruit_placements; b publ
     RAISE EXCEPTION 'Offre déjà pourvue';
   END IF;
   SELECT * INTO b FROM public.businesses WHERE id=m.employer_id;
+  IF NOT EXISTS(SELECT 1 FROM public.recruit_seekers WHERE character_id=cid AND active FOR UPDATE)
+    THEN RAISE EXCEPTION 'Recherche d’emploi inactive'; END IF;
   IF m.agency_id IS NOT NULL THEN
     SELECT * INTO a FROM public.businesses WHERE id=m.agency_id;
     IF NOT EXISTS(SELECT 1 FROM public.recruit_proposals WHERE offer_id=_offer AND character_id=cid)
@@ -199,7 +201,8 @@ DECLARE cid uuid; c public.characters; mine public.businesses; BEGIN
         AND b.owner_id<>cid AND NOT public.network_blocked(cid,b.owner_id)),'[]'::jsonb),
     'offers',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',o.id,'title',o.title,'salary',o.weekly_salary,'business',b.name,
       'agency',COALESCE(a.name,'Agence fictive CIVITAS'),'mine',b.owner_id=cid,'delegated',m.offer_id IS NOT NULL,
-      'fee',m.fee,'proposed',EXISTS(SELECT 1 FROM public.recruit_proposals p WHERE p.offer_id=o.id AND p.character_id=cid)))
+      'fee',m.fee,'proposed',EXISTS(SELECT 1 FROM public.recruit_proposals p JOIN public.recruit_seekers s ON s.character_id=p.character_id
+        WHERE p.offer_id=o.id AND p.character_id=cid AND s.active)))
       FROM public.business_offers o JOIN public.businesses b ON b.id=o.business_id
       LEFT JOIN public.recruit_mandates m ON m.offer_id=o.id LEFT JOIN public.businesses a ON a.id=m.agency_id
       WHERE o.open AND b.status='active' AND b.city_id=c.city_id AND NOT public.network_blocked(cid,b.owner_id)
