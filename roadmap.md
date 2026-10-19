@@ -168,4 +168,9 @@
 ## P3 — Organisations avancées
 - [x] Décisions validées et plan approuvé
 - [x] Migration 0047 écrite et écrans (fonder, caisse, dons, rôles, événements)
-- [ ] Application sur le VPS : attend l'accord et la commande de l'utilisateur
+- [x] Migration 0047 appliquée sur le VPS (COMMIT) et site mis à jour
+
+## P4 — Manifestations et JT
+- [x] Décisions validées et plan approuvé
+- [x] Migration 0048 écrite (manifestations, pression, JT local/national, interviews) et écrans (Ma Ville, page JT)
+- [ ] Application sur le VPS : attend la commande de l'utilisateur
