@@ -38,4 +38,4 @@
 - Player network (profiles, contacts, follows, private messages) is separate from NPC relations/messages; other players' data is exposed only through network_card/network_profile RPCs, never by widening characters RLS.
 - Player-to-player interactions share one block guard trigger (guard_player_block); transfers are debited at send and credited on recipient read (transfer_collect), like payroll; 'live' updates use query polling because the VPS runs no realtime server.
 - France map: open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles (independence; v6 breaks in Vite).
-- Rent retries log failures under a distinct key; UI counts successes only.
+- Rent retries log failures under a distinct key; UI counts successes.
