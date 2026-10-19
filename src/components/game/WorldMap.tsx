@@ -4,7 +4,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery } from "@/services/game";
+import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery, enterLocationSpace, leaveLocationSpace } from "@/services/game";
 import { locationType, movementAllowed } from "@/game/world";
 import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
@@ -172,10 +172,17 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
-      {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Voyage disponible dans une prochaine étape</p>}
-      {spaces.map(s => <div key={s.id} className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>)}
+      {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
+      {spaces.map(s => <SpaceRow key={s.id} space={s} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />)}
       <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
       {here && <Suspense fallback={<p className="text-xs text-muted-foreground">Rencontres…</p>}><SocialContacts locationId={l.id}/></Suspense>}
     </div>
   </article>;
+}
+function SpaceRow({ space: s, here, currentSpace }: { space: Tables<"location_spaces">; here: boolean; currentSpace: string | null }) {
+  const q = useQueryClient();
+  const inside = currentSpace === s.id;
+  const act = useMutation({ mutationFn: () => inside ? leaveLocationSpace() : enterLocationSpace(s.id), onSuccess: async () => { await q.invalidateQueries({ queryKey: ["position"] }); toast.success(inside ? `Vous êtes sorti : ${s.name}` : `Vous êtes entré : ${s.name}`); }, onError: (e: Error) => toast.error(e.message) });
+  if (!s.accessible) return <div className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>;
+  return <div className="flex items-center justify-between gap-3 border-t border-border pt-3"><span className="text-sm">{s.name}{inside && <span className="block text-xs text-primary">Vous êtes à l’intérieur</span>}</span><Button variant={inside ? "secondary" : "outline"} className="h-11 shrink-0" disabled={!here || act.isPending} onClick={() => act.mutate()}>{inside ? "Sortir" : "Entrer"}</Button></div>;
 }
