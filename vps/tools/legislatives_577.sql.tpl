@@ -42,7 +42,7 @@ ALTER TABLE public.national_sessions ADD CONSTRAINT national_sessions_check CHEC
 
 -- Villes jouables : 1re circonscription de chaque ville (lieu de vote des joueurs)
 UPDATE public.legislative_constituencies SET city_id=v.city FROM (VALUES ('7501','paris'),('6901','lyon'),('1301','marseille'),('5901','lille'),('3301','bordeaux')) v(code,city)
- WHERE code=v.code AND EXISTS (SELECT 1 FROM public.cities WHERE id=v.city);
+ WHERE legislative_constituencies.code=v.code AND EXISTS (SELECT 1 FROM public.cities ci WHERE ci.id=v.city);
 
 -- 2. Tables des législatives --------------------------------------------------------------
 CREATE TABLE public.legislative_settings (
