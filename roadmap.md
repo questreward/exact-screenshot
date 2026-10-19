@@ -146,5 +146,7 @@
 - [x] Nouvel accord : paramètres 5+45/25 et 26/13 verrouillés, relecture statique et corrections du SQL proposé, liens indirects explicités et fichier intégral présenté ; aucun SQL appliqué, activation, compte ni test.
 - [x] Cahier comparé et proposition corrigée : confidentialité, instantané, versions, séances ; paramètres non décidés bloqués ; rapport et SQL révisé présentés sans exécution ni test.
 - [x] Relecture statique et correction du SQL proposé selon l’accord du 19 octobre ; version v3 complète préparée, sans exécution, compte, test ni écran. Activation/dépouillement/Sénat/votes simulés/contenus non décidés restent bloqués.
-- [ ] Accord séparé sur le SQL exact avant toute application ; règles Sénat, votes simulés et textes/deltas des cinq lois à préciser sans invention.
+- [x] Accord explicite reçu le 19 octobre à 07:40 UTC pour appliquer exclusivement la v3 après empreintes ; aucun compte, test ou activation.
+- [ ] Application v3 arrêtée avant migration : 79 événements actuellement contre référence 65 ; outil de migration incompatible avec fichier exact (BEGIN/COMMIT et INSERT initiaux). Aucune adaptation automatique autorisée ; clarification requise.
+- [ ] Vérifications après application bloquées par l’absence d’application ; paramètres Sénat/votes simulés/textes/deltas à préciser avant activation.
 - Bloc 16 interdit.
