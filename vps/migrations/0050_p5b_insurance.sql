@@ -112,7 +112,7 @@ CREATE POLICY incidents_own ON public.incidents FOR SELECT TO authenticated USIN
 CREATE FUNCTION public.insurance_settle(_cid uuid)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.insurance_settings; t timestamptz := public.game_now(); cur integer; w integer; ip public.insurance_profiles;
-  ct record; it record; cov public.insurance_coverage; roll integer; chance integer; cost integer; at timestamptz; lbl text;
+  ct record; it record; cov public.insurance_coverage; roll integer; chance integer; cost integer; occ timestamptz; lbl text;
   ins integer; mine integer; bal integer; paid integer; iid uuid; cid_contract uuid; has_vehicle boolean; repay integer; BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.characters WHERE id = _cid AND user_id = auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
   SELECT * INTO s FROM public.insurance_settings WHERE id = 1;
@@ -146,18 +146,18 @@ DECLARE s public.insurance_settings; t timestamptz := public.game_now(); cur int
       chance := CASE WHEN has_vehicle AND it.chance_with_vehicle IS NOT NULL THEN it.chance_with_vehicle ELSE it.chance END;
       roll := abs(hashtext(_cid::text || ':' || w || ':' || it.id)) % 100;
       CONTINUE WHEN roll >= chance;
-      at := to_timestamp(w * 604800::bigint) + (abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':d')) % 7) * interval '1 day' + interval '10 hours';
-      CONTINUE WHEN at > t;
+      occ := to_timestamp(w * 604800::bigint) + (abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':d')) % 7) * interval '1 day' + interval '10 hours';
+      CONTINUE WHEN occ > t;
       CONTINUE WHEN EXISTS (SELECT 1 FROM public.incidents WHERE character_id = _cid AND incident_key = w || ':' || it.id);
       cost := it.min_cost + abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':c')) % (it.max_cost - it.min_cost + 1);
       lbl := it.examples[1 + abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':l')) % array_length(it.examples, 1)];
       SELECT * INTO cov FROM public.insurance_coverage WHERE incident_type = it.id;
       SELECT c.id INTO cid_contract FROM public.insurance_contracts c JOIN public.insurance_products p ON p.id = c.product_id
-        WHERE c.character_id = _cid AND c.status = 'active' AND c.covered_from <= at AND it.id = ANY(p.covers) LIMIT 1;
+        WHERE c.character_id = _cid AND c.status = 'active' AND c.covered_from <= occ AND it.id = ANY(p.covers) LIMIT 1;
       ins := CASE WHEN cid_contract IS NULL THEN 0 ELSE LEAST(GREATEST(cost - cov.deductible, 0), cov.cap) END;
       mine := cost - ins;
       INSERT INTO public.incidents (character_id, incident_key, type_id, label, occurred_at, cost, insurer_paid, contract_id)
-      VALUES (_cid, w || ':' || it.id, it.id, lbl, at, cost, ins, cid_contract) RETURNING id INTO iid;
+      VALUES (_cid, w || ':' || it.id, it.id, lbl, occ, cost, ins, cid_contract) RETURNING id INTO iid;
       paid := 0;
       IF mine > 0 THEN
         IF public.bank_pay(_cid, 'incident:' || iid, mine, it.label || ' — ' || lbl) THEN paid := mine;

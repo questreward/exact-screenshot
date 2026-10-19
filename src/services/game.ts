@@ -590,3 +590,29 @@ export async function drawOverdraft(amount: number) {
   const { error } = await untyped.rpc("use_overdraft", { _amount: amount, _request_id: crypto.randomUUID() });
   if (error) throw new Error(error.message);
 }
+
+// P5b — Assurances et imprévus
+export type InsuranceState = {
+  now: string; age: number; debt: number | null;
+  settings: { min_age: number; waiting_days: number; month_days: number };
+  products: { id: string; name: string; covers: string[]; monthly_price: number }[];
+  coverage: { type: string; label: string; deductible: number; cap: number; examples: string[] }[];
+  contracts: { id: string; product_id: string; name: string; covers: string[]; status: "active" | "suspended"; monthly_price: number; covered_from: string; next_due_at: string }[];
+  incidents: { id: string; type_label: string; label: string; occurred_at: string; cost: number; insurer_paid: number; player_paid: number; unpaid: number }[];
+};
+export const insuranceQuery = queryOptions({
+  queryKey: ["bank", "insurance-state"],
+  queryFn: async (): Promise<InsuranceState> => {
+    const { data, error } = await untyped.rpc("insurance_state", {});
+    if (error) throw new Error(error.message);
+    return data as InsuranceState;
+  },
+});
+export async function subscribeInsurance(productId: string) {
+  const { error } = await untyped.rpc("subscribe_insurance", { _product: productId, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+}
+export async function cancelInsurance(contractId: string) {
+  const { error } = await untyped.rpc("cancel_insurance", { _contract: contractId });
+  if (error) throw new Error(error.message);
+}
