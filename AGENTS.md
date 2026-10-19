@@ -30,14 +30,10 @@
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
 - Non-atomic installs are forbidden: schema, seeds and integrity checks run in one transaction (VPS psql file with BEGIN/COMMIT), never partial state or compensating cleanup.
 - Fictional NPC schedules are computed deterministically from game_now (npc_location_at), never stored or ticked; greetings reuse comm_push with per-day unique keys and no rewards.
-- Player-founded organizations keep money in org_treasuries/org_ledger (unique operation keys, never negative); personal money moves only via economy_cash; no withdrawal to personal accounts.
-- Protests are social activities (source_key 'protest:<id>') settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news, never by a scheduled job.
-- Overdraft is a separate bank debt (bank_profiles.overdraft_used); account balances never go negative, so economy_cash stays unchanged. Loans settle on read with unique installment keys.
-- Personal incidents are drawn deterministically per character and game week (hashtext), settled on read; unpaid parts become insurance_profiles.debt, never a negative balance.
-- Player businesses keep money in business_treasuries/business_ledger (never negative); weekly results settle on read by owner or employee; salaries to players are reserved as payroll rows and collected by the payee via economy_cash, since economy_cash only acts for the signed-in character.
-- Player network (profiles, contacts, follows, private messages) is separate from NPC relations/messages; other players' data is exposed only through network_card/network_profile RPCs, never by widening characters RLS.
-- Player-to-player interactions share one block guard trigger (guard_player_block); transfers are debited at send and credited on recipient read (transfer_collect), like payroll; 'live' updates use query polling because the VPS runs no realtime server.
-- France map: open data in public/geo (vps/tools/build_france_map.py), maplibre-gl v4, no external tiles (independence; v6 breaks in Vite).
+- Separate pots (org_treasuries, business_treasuries, project/crisis kitties) have own ledgers with unique keys, never negative, no withdrawal to personal accounts; personal money moves only via economy_cash, which acts only for the signed-in character, so payments to other players are rows the payee collects on read (payroll, transfers).
+- Protests are social activities settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news.
+- Overdraft and insurance debt are separate debts (bank_profiles.overdraft_used, insurance_profiles.debt); balances never go negative. Loans and incidents (hashtext per character/week) settle on read with unique keys.
+- Player network data is exposed only through network_card/network_profile RPCs, never by widening characters RLS; one block guard (guard_player_block); 'live' updates use polling (no realtime server on VPS).
+- France map: open data in public/geo, maplibre-gl v4, no external tiles (v6 breaks in Vite).
 - Rent retries log failures under a distinct key; UI counts successes.
-- Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects): unique keys, applied once on read; projects and crises never write indicators, budget or reputation directly.
-- Citizen projects and crisis donations stay in their own kitty tables; municipal costs are paid only through treasury effects, so personal money and municipal budget never mix.
+- Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
