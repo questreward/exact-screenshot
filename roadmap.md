@@ -206,3 +206,4 @@
 - [x] Bouton PDF de la carte
 - [x] Vague 2 : orientation politique + profil public (0071 préparée, à installer)
 - [ ] Vague 3 : coffre-fort documents, formulaires, documents automatiques
+- [ ] Photo de profil autorisée sur Civi, messages et listes d'élections (selon visibilité)
