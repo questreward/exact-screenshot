@@ -55,6 +55,7 @@ import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameProjetsRouteImport } from './routes/_authenticated/_game/projets'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
 import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authenticated/_game/sante'
+import { Route as AuthenticatedGameServicesRouteImport } from './routes/_authenticated/_game/services'
 import { Route as AuthenticatedGameSondagesRouteImport } from './routes/_authenticated/_game/sondages'
 import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
@@ -322,6 +323,12 @@ const AuthenticatedGameSanteRoute = AuthenticatedGameSanteRouteImport.update({
   path: '/sante',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameServicesRoute =
+  AuthenticatedGameServicesRouteImport.update({
+    id: '/services',
+    path: '/services',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameSondagesRoute =
   AuthenticatedGameSondagesRouteImport.update({
     id: '/sondages',
@@ -457,6 +464,7 @@ export interface FileRoutesByFullPath {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
+  '/services': typeof AuthenticatedGameServicesRoute
   '/sondages': typeof AuthenticatedGameSondagesRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -518,6 +526,7 @@ export interface FileRoutesByTo {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/sante': typeof AuthenticatedGameSanteRoute
+  '/services': typeof AuthenticatedGameServicesRoute
   '/sondages': typeof AuthenticatedGameSondagesRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -582,6 +591,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/projets': typeof AuthenticatedGameProjetsRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
   '/_authenticated/_game/sante': typeof AuthenticatedGameSanteRoute
+  '/_authenticated/_game/services': typeof AuthenticatedGameServicesRoute
   '/_authenticated/_game/sondages': typeof AuthenticatedGameSondagesRoute
   '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
@@ -645,6 +655,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/reseau'
     | '/sante'
+    | '/services'
     | '/sondages'
     | '/syndicats'
     | '/tableau-de-bord'
@@ -706,6 +717,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/reseau'
     | '/sante'
+    | '/services'
     | '/sondages'
     | '/syndicats'
     | '/tableau-de-bord'
@@ -769,6 +781,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/projets'
     | '/_authenticated/_game/reseau'
     | '/_authenticated/_game/sante'
+    | '/_authenticated/_game/services'
     | '/_authenticated/_game/sondages'
     | '/_authenticated/_game/syndicats'
     | '/_authenticated/_game/tableau-de-bord'
@@ -1120,6 +1133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameSanteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/services': {
+      id: '/_authenticated/_game/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof AuthenticatedGameServicesRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/sondages': {
       id: '/_authenticated/_game/sondages'
       path: '/sondages'
@@ -1266,6 +1286,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameProjetsRoute: typeof AuthenticatedGameProjetsRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
   AuthenticatedGameSanteRoute: typeof AuthenticatedGameSanteRoute
+  AuthenticatedGameServicesRoute: typeof AuthenticatedGameServicesRoute
   AuthenticatedGameSondagesRoute: typeof AuthenticatedGameSondagesRoute
   AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
@@ -1322,6 +1343,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameProjetsRoute: AuthenticatedGameProjetsRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
     AuthenticatedGameSanteRoute: AuthenticatedGameSanteRoute,
+    AuthenticatedGameServicesRoute: AuthenticatedGameServicesRoute,
     AuthenticatedGameSondagesRoute: AuthenticatedGameSondagesRoute,
     AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
