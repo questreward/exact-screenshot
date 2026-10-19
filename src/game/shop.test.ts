@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimatedValue, filterProducts } from "./shop";
+import { estimatedValue, filterProducts, notaryFees } from "./shop";
 
 const items = [
   { id: "a", name: "iPhone 15", brand: "Apple", section: "tech", price: 969, sales: 2 },
@@ -20,5 +20,8 @@ describe("boutique", () => {
   it("perd 20 % de valeur par an pour une décote de 20", () => {
     expect(estimatedValue(969, 20, 1)).toBe(775);
     expect(estimatedValue(969, 20, 0)).toBe(969);
+  });
+  it("ajoute 7,5 % de frais de notaire", () => {
+    expect(notaryFees(262000)).toBe(19650);
   });
 });

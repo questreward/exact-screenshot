@@ -202,12 +202,12 @@
 - [x] Priorité 2 vague A : sondages, débats publics, CV citoyen (installée)
 - [x] Priorité 2 vague B : coalitions, vie interne des partis, vérification des faits (0074 installée)
 - [x] Priorité 3 vague A : évolution professionnelle + entretiens d'embauche (0075 préparée, à installer)
-- [ ] Priorité 3 vague B : marché immobilier + médias des joueurs
+- [x] Priorité 3 vague B : marché immobilier (fusionné dans 0077) ; médias des joueurs avec Entreprises de services
 - [ ] Priorité 4 (après accord)
 
 # Boutique, voitures, immobilier (document reçu)
 - [x] Phase 1 vague 1 : boutique, catalogue, achats, historique, patrimoine (0076 préparée)
-- [ ] Phase 1 vague 2 : voitures, locations, achat immobilier (+ immobilier priorité 3)
+- [x] Phase 1 vague 2 : voitures, locations, achat immobilier (0077 préparée)
 - [ ] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main
 - [ ] Phase 3 : commerces, boutiques de joueurs, marché, promotions, wishlist, objectifs
 
@@ -224,3 +224,4 @@
 
 # Entreprises de services et agences (document reçu)
 - [ ] Phase 1 + médias des joueurs (après la Boutique, avant l'International)
+- [x] Corriger les pages du menu qui ouvrent /section/... en 404

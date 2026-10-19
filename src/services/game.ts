@@ -1319,9 +1319,10 @@ export async function careerAction(command: "interview_start" | "interview_answe
 }
 
 // ---- Boutique : catalogue réel, achats via le compte courant, patrimoine existant ----
-export type ShopProduct = { id: string; name: string; price: number; brand: string; section: string; desc: string; dep: number; owned: boolean; sales: number };
+export type ShopProduct = { id: string; name: string; price: number; kind: string; brand: string; section: string; desc: string; dep: number; owned: boolean; sales: number;
+  details: { condition?: string; year?: number; km?: number; fuel?: string; conso?: number; maintenance?: number; city?: string; district?: string; surface?: number; rooms?: number; dpe?: string; charges_monthly?: number; tax_yearly?: number; realestate?: boolean } };
 export type ShopState = {
-  balance: number; products: ShopProduct[];
+  balance: number; license: boolean; age: number; city: string; products: ShopProduct[];
   orders: { reference: string; name: string; brand: string; price: number; at: string }[];
   assets: { name: string; kind: string; brand: string | null; price: number; acquired_at: string; value: number }[];
 };
@@ -1333,4 +1334,23 @@ export async function shopBuy(catalogId: string, requestId: string) {
   const { data, error } = await untyped.rpc("shop_buy", { _catalog_id: catalogId, _request_id: requestId });
   if (error) throw new Error(error.message);
   return data as { reference: string; already: boolean };
+}
+
+// ---- Logement : locations et emménagement dans un bien acheté (système de logement existant) ----
+export type Lease = { id: string; kind: "location" | "propriete"; title: string; monthly: number; deposit: number; started_at: string; ended_at: string | null };
+export type HousingState = {
+  city: string; balance: number; salary: number;
+  current: null | { type: string; type_id: string; monthly: number };
+  lease: Lease | null; past_leases: Lease[];
+  rentals: { id: string; title: string; district: string; type: string; type_id: string; surface: number; dpe: string; floor: number; monthly: number; deposit: number; move: number }[];
+  owned: { id: string; name: string; city: string; price: number }[];
+};
+export const housingQuery = queryOptions({
+  queryKey: ["housing", "state"], retry: false,
+  queryFn: async (): Promise<HousingState> => { const { data, error } = await untyped.rpc("housing_state", {}); if (error) throw new Error(error.message); return data as HousingState; },
+});
+export async function housingAction(command: "rent" | "move_in", input: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc("housing_action", { _command: command, _input: input, _request_id: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data as { lease_id: string; deposit?: number; move?: number };
 }
