@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CHANNELS, popularityBarometer, weatherFor } from "./tv";
+import { CHANNELS, popularityBarometer, weatherFor, anchorFor, reporterFor, topicFor, JOURNALISTS } from "./tv";
 
 describe("JT", () => {
   it("propose 3 chaînes", () => expect(CHANNELS).toHaveLength(3));
@@ -18,7 +18,6 @@ describe("JT", () => {
   });
 });
 
-import { anchorFor, reporterFor, topicFor, JOURNALISTS } from "./tv";
 describe("casting JT", () => {
   it("20 journalistes différents", () => { expect(new Set(JOURNALISTS.map(j => j.id)).size).toBe(20); });
   it("reconnaît le thème d'un sujet", () => {
