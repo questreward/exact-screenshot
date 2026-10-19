@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, Handshake, SearchCheck, ShoppingBag, Home, Store, Wrench, Building2, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, BookOpen, GraduationCap, Trophy, FileSignature, Swords, Heart, HeartPulse, Scale, Megaphone, BarChart3, Hammer, Siren, BookOpenText, IdCard, Compass, FolderLock, PieChart, MessagesSquare, ScrollText, Handshake, SearchCheck, ShoppingBag, Home, Store, Wrench, Building2, Car, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -29,6 +29,7 @@ export const SECTIONS: Section[] = [
   { id: "marche", label: "Marché", icon: Store, description: "Magasins des villes, commerces de joueurs et marché entre joueurs.", available: true },
   { id: "services", label: "Services", icon: Wrench, description: "Garages et déménageurs : entreprises de joueurs en priorité, sinon entreprises fictives.", available: true },
   { id: "agence", label: "Agence immobilière", icon: Building2, description: "Louer chez un joueur, confier son bien, acheter avec une agence.", available: true },
+  { id: "concession", label: "Concessionnaire", icon: Car, description: "Voitures neuves, reprises et occasions chez les concessions des joueurs.", available: true },
   { id: "logement", label: "Logement", icon: Home, description: "Annonces de location, bail, emménager dans un bien acheté.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
@@ -89,7 +90,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
   { id: "quotidien", label: "Quotidien", ids: ["vie", "carriere", "logement", "telephone", "demarches", "vie-administrative"] },
-  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence"] },
+  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence", "concession"] },
   { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
   { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
