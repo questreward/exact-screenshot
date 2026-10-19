@@ -1,7 +1,9 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Camera, IdCard, LoaderCircle, Trash2 } from "lucide-react";
+import { Camera, Download, IdCard, LoaderCircle, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { buildCardPdf, downloadBlob } from "@/lib/card-pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLifeMutation } from "@/components/game/LifeControls";
@@ -109,6 +111,23 @@ function SummaryTab() {
   </div>;
 }
 
+function CardTab({ card }: { card: IdentityCardData }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pdf, setPdf] = useState<Blob | null>(null);
+  const [busy, setBusy] = useState(false);
+  const prepare = async () => {
+    if (!ref.current) return;
+    setBusy(true);
+    try { setPdf(await buildCardPdf(ref.current)); } catch { toast.error("Impossible de créer le PDF."); } finally { setBusy(false); }
+  };
+  return <div className="space-y-3">
+    <div ref={ref}><IdentityCard card={card} /></div>
+    <p className="text-center text-xs text-muted-foreground">DOCUMENT FICTIF — CIVITAS. Numéro et dates attribués par le jeu ; aucune valeur réelle.</p>
+    {pdf ? <Button className="h-14 w-full text-base" onClick={() => downloadBlob(pdf, `carte-civitas-${card.last_name.toLowerCase()}.pdf`)}><Download />Télécharger le PDF</Button>
+      : <Button variant="outline" className="h-14 w-full text-base" disabled={busy} onClick={prepare}>{busy ? <LoaderCircle className="animate-spin" /> : <Download />}Préparer le PDF à imprimer</Button>}
+  </div>;
+}
+
 function ProfilePage() {
   const { data: card, isLoading, isError } = useQuery(identityQuery);
   const [tab, setTab] = useState<Tab>("carte");
@@ -121,8 +140,8 @@ function ProfilePage() {
     </div>
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Mon profil : Disponible dans une prochaine étape.</p>}
-    {card && tab === "carte" && <div className="space-y-3">
-      <IdentityCard card={card} />
+    {card && tab === "carte" && <CardTab card={card} />}
+    {false && <div className="space-y-3">
       <p className="text-center text-xs text-muted-foreground">DOCUMENT FICTIF — CIVITAS. Numéro et dates attribués par le jeu ; aucune valeur réelle.</p>
     </div>}
     {card && tab === "apparence" && <AppearanceTab card={card} />}
