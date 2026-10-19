@@ -56,7 +56,7 @@ export function PlayerOrgPanel({ orgId }: { orgId: string }) {
   if (!st) return null;
   const leader = st.my_role === "founder" || st.my_role === "manager";
   return <section className="space-y-5 rounded-lg border border-primary/40 bg-card p-5">
-    <div className="flex flex-wrap items-center gap-3"><Crown className="h-6 w-6 text-primary" /><h2 className="text-xl font-semibold">Organisation fondée par un joueur</h2><span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">{st.level}</span></div>
+    <div className="flex flex-wrap items-center gap-3"><Crown className="h-6 w-6 text-primary" /><h2 className="text-xl font-semibold break-words">{st.organization.symbol ? `${st.organization.symbol} ` : ""}{st.organization.name}</h2><span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">{st.level}</span></div>
     {st.my_role && <p className="text-sm">Votre rôle : <strong>{ROLE_LABEL[st.my_role]}</strong> · Cotisation : {st.settings.player_weekly_dues} crédits par semaine si vous en avez les moyens</p>}
     {st.balance !== undefined && <div className="space-y-3 border-y border-border py-4">
       <p className="text-sm text-muted-foreground">Caisse de l'organisation</p><p className="text-3xl font-bold">{st.balance} crédits</p>
