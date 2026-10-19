@@ -30,3 +30,16 @@ export function filterProducts<T extends ShopItem>(items: T[], f: ShopFilter, so
 export function estimatedValue(price: number, depPercent: number, years: number): number {
   return Math.floor(price * Math.pow(1 - depPercent / 100, Math.max(0, years)));
 }
+
+/** Mensualité indicative d'un crédit amortissable (même formule que le serveur). */
+export function creditMonthly(principal: number, ratePercent: number, months: number): number {
+  if (principal <= 0 || months <= 0) return 0;
+  const m = ratePercent / 1200;
+  if (m === 0) return Math.ceil(principal / months);
+  return Math.ceil(principal * m / (1 - Math.pow(1 + m, -months)));
+}
+
+/** Coût total des intérêts d'un crédit, à titre indicatif. */
+export function creditCost(principal: number, ratePercent: number, months: number): number {
+  return Math.max(0, creditMonthly(principal, ratePercent, months) * months - principal);
+}

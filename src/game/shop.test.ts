@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimatedValue, filterProducts, notaryFees } from "./shop";
+import { creditCost, creditMonthly, estimatedValue, filterProducts, notaryFees } from "./shop";
 
 const items = [
   { id: "a", name: "iPhone 15", brand: "Apple", section: "tech", price: 969, sales: 2 },
@@ -23,5 +23,12 @@ describe("boutique", () => {
   });
   it("ajoute 7,5 % de frais de notaire", () => {
     expect(notaryFees(262000)).toBe(19650);
+  });
+  it("calcule la mensualité d'un crédit auto (17 990 € à 5,2 % sur 48 mois)", () => {
+    expect(creditMonthly(17990, 5.2, 48)).toBe(416);
+    expect(creditMonthly(1200, 0, 12)).toBe(100);
+  });
+  it("chiffre le coût des intérêts", () => {
+    expect(creditCost(17990, 5.2, 48)).toBe(416 * 48 - 17990);
   });
 });
