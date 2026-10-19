@@ -232,3 +232,7 @@
 - [ ] Système de mise en scène réaliste (document reçu)
 - [ ] Refonte complète de l'accueil (document reçu)
 - [ ] Écosystème complet d'interfaces (document reçu)
+
+- [x] Menu par rubriques + accueil personnel (affichage seulement)
+- [ ] CIVITAS Services (annuaire + parcours)
+- [ ] Monde mis en scène
