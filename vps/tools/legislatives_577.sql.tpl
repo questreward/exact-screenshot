@@ -137,6 +137,17 @@ CREATE FUNCTION public.legislative_noise(_seed text, _pct integer) RETURNS numer
   SELECT 1 + ((abs(hashtext(_seed)) % (2*_pct+1)) - _pct)::numeric / 100
 $$;
 
+-- Part des électeurs d'un bloc qui se reportent sur un finaliste d'un autre bloc (le reste s'abstient)
+CREATE FUNCTION public.legislative_affinity(_from text, _to text) RETURNS numeric LANGUAGE sql IMMUTABLE AS $$
+  SELECT CASE
+    WHEN _from=_to THEN 0.9
+    WHEN _from='gauche' THEN CASE _to WHEN 'centre' THEN 0.55 WHEN 'droite' THEN 0.2 WHEN 'extreme-droite' THEN 0.05 ELSE 0.3 END
+    WHEN _from='centre' THEN CASE _to WHEN 'droite' THEN 0.6 WHEN 'gauche' THEN 0.45 WHEN 'extreme-droite' THEN 0.1 ELSE 0.3 END
+    WHEN _from='droite' THEN CASE _to WHEN 'centre' THEN 0.6 WHEN 'extreme-droite' THEN 0.35 WHEN 'gauche' THEN 0.1 ELSE 0.3 END
+    WHEN _from='extreme-droite' THEN CASE _to WHEN 'droite' THEN 0.5 WHEN 'centre' THEN 0.1 WHEN 'gauche' THEN 0.05 ELSE 0.2 END
+    ELSE 0.3 END
+$$;
+
 -- Programme la prochaine législative (une seule à la fois), calendrier national 7+1+2 jours, mandat 28 jours.
 CREATE FUNCTION public.legislative_schedule() RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE prev public.national_elections; t timestamptz:=public.game_now(); start_at timestamptz; neid uuid; leid uuid; v_rules jsonb;
@@ -159,7 +170,7 @@ END $$;
 
 -- Dépouille un tour dans toutes les circonscriptions (idempotent : ne refait jamais un tour déjà compté)
 CREATE FUNCTION public.legislative_count_round(_leid uuid, _round integer) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE s public.legislative_settings; c record; top record; second_votes integer; total integer; weight integer;
+DECLARE s public.legislative_settings; c record; top record; total integer; weight integer; runners text[]; withdrawn text; el record; best record;
 BEGIN
   PERFORM pg_advisory_xact_lock(151515);
   IF EXISTS (SELECT 1 FROM public.legislative_results WHERE election_id=_leid AND round=_round) THEN RETURN; END IF;
@@ -190,24 +201,30 @@ BEGIN
       END IF;
     ELSE
       CONTINUE WHEN NOT EXISTS (SELECT 1 FROM public.legislative_results WHERE election_id=_leid AND constituency_code=c.code AND round=1 AND qualified);
-      -- Reports : chaque éliminé donne ses voix au qualifié du même bloc le plus fort, sinon 50 % répartis à parts égales.
+      SELECT array_agg(r.party_code ORDER BY r.simulated_votes+r.player_votes DESC, r.party_code) INTO runners
+        FROM public.legislative_results r WHERE r.election_id=_leid AND r.constituency_code=c.code AND r.round=1 AND r.qualified;
+      -- Désistement (comme en 2024) : face à l'extrême droite, le moins bien placé de la gauche ou du centre se retire
+      IF array_length(runners,1) >= 3 AND EXISTS (SELECT 1 FROM unnest(runners) u JOIN public.legislative_parties p ON p.code=u WHERE p.bloc='extreme-droite')
+         AND (SELECT count(*) FROM unnest(runners) u JOIN public.legislative_parties p ON p.code=u WHERE p.bloc IN ('gauche','centre')) >= 2 THEN
+        SELECT t.u INTO withdrawn FROM unnest(runners) WITH ORDINALITY t(u, o) JOIN public.legislative_parties p ON p.code=t.u
+          WHERE p.bloc IN ('gauche','centre') AND NOT EXISTS (SELECT 1 FROM public.legislative_candidacies k WHERE k.election_id=_leid AND k.constituency_code=c.code AND k.party_code=t.u)
+          ORDER BY t.o DESC LIMIT 1;
+        IF withdrawn IS NOT NULL THEN runners := array_remove(runners, withdrawn); END IF;
+      END IF;
       INSERT INTO public.legislative_results (election_id, constituency_code, round, party_code, candidacy_id, display_name, simulated_votes, player_votes)
-      SELECT _leid, c.code, 2, q.party_code, q.candidacy_id, q.display_name,
-        round((q.simulated_votes + q.player_votes + COALESCE((
-          SELECT sum(CASE
-            WHEN e_bloc.bloc = qp.bloc AND q.party_code = (SELECT q2.party_code FROM public.legislative_results q2 JOIN public.legislative_parties p2 ON p2.code=q2.party_code
-                 WHERE q2.election_id=_leid AND q2.constituency_code=c.code AND q2.round=1 AND q2.qualified AND p2.bloc=e_bloc.bloc
-                 ORDER BY q2.simulated_votes+q2.player_votes DESC, q2.party_code LIMIT 1) THEN e.simulated_votes
-            WHEN NOT EXISTS (SELECT 1 FROM public.legislative_results q3 JOIN public.legislative_parties p3 ON p3.code=q3.party_code
-                 WHERE q3.election_id=_leid AND q3.constituency_code=c.code AND q3.round=1 AND q3.qualified AND p3.bloc=e_bloc.bloc)
-              THEN e.simulated_votes * 0.5 / (SELECT count(*) FROM public.legislative_results q4 WHERE q4.election_id=_leid AND q4.constituency_code=c.code AND q4.round=1 AND q4.qualified)
-            ELSE 0 END)
-          FROM public.legislative_results e JOIN public.legislative_parties e_bloc ON e_bloc.code=e.party_code
-          WHERE e.election_id=_leid AND e.constituency_code=c.code AND e.round=1 AND NOT e.qualified), 0))
-          * public.legislative_noise(_leid::text||':2:'||c.code||q.party_code, s.noise_pct))::int,
-        weight * (SELECT count(*) FROM public.legislative_ballots lb WHERE lb.election_id=_leid AND lb.round=2 AND lb.constituency_code=c.code AND lb.party_code=q.party_code)::int
-      FROM public.legislative_results q JOIN public.legislative_parties qp ON qp.code=q.party_code
-      WHERE q.election_id=_leid AND q.constituency_code=c.code AND q.round=1 AND q.qualified;
+      SELECT _leid, c.code, 2, r.party_code, r.candidacy_id, r.display_name, r.simulated_votes,
+             weight * (SELECT count(*) FROM public.legislative_ballots lb WHERE lb.election_id=_leid AND lb.round=2 AND lb.constituency_code=c.code AND lb.party_code=r.party_code)::int
+      FROM public.legislative_results r WHERE r.election_id=_leid AND r.constituency_code=c.code AND r.round=1 AND r.party_code = ANY(runners);
+      -- Reports : les électeurs des candidats absents du 2e tour vont vers le finaliste le plus proche, en partie seulement.
+      FOR el IN SELECT r.party_code, r.simulated_votes, p.bloc FROM public.legislative_results r JOIN public.legislative_parties p ON p.code=r.party_code
+                WHERE r.election_id=_leid AND r.constituency_code=c.code AND r.round=1 AND NOT (r.party_code = ANY(runners)) LOOP
+        SELECT q.u AS party_code, public.legislative_affinity(el.bloc, p.bloc) AS aff INTO best
+          FROM unnest(runners) q(u) JOIN public.legislative_parties p ON p.code=q.u ORDER BY 2 DESC, array_position(runners, q.u) LIMIT 1;
+        UPDATE public.legislative_results SET simulated_votes = simulated_votes + round(el.simulated_votes * best.aff)::int
+          WHERE election_id=_leid AND constituency_code=c.code AND round=2 AND party_code=best.party_code;
+      END LOOP;
+      UPDATE public.legislative_results SET simulated_votes = round(simulated_votes * public.legislative_noise(_leid::text||':2:'||c.code||party_code, s.noise_pct))::int
+        WHERE election_id=_leid AND constituency_code=c.code AND round=2;
       UPDATE public.legislative_results SET elected=true WHERE election_id=_leid AND constituency_code=c.code AND round=2 AND party_code=(
         SELECT party_code FROM public.legislative_results WHERE election_id=_leid AND constituency_code=c.code AND round=2
         ORDER BY simulated_votes+player_votes DESC, md5(_leid::text||c.code||party_code) LIMIT 1);
