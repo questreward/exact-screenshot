@@ -132,7 +132,7 @@ $$;
 
 -- Programme la prochaine législative (une seule à la fois), calendrier national 7+1+2 jours, mandat 28 jours.
 CREATE FUNCTION public.legislative_schedule() RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE prev public.national_elections; t timestamptz:=public.game_now(); start_at timestamptz; neid uuid; leid uuid; rules jsonb;
+DECLARE prev public.national_elections; t timestamptz:=public.game_now(); start_at timestamptz; neid uuid; leid uuid; v_rules jsonb;
 BEGIN
   PERFORM pg_advisory_xact_lock(151515);
   IF EXISTS (SELECT 1 FROM public.legislative_elections le JOIN public.national_elections e ON e.id=le.national_election_id WHERE e.counted_at IS NULL AND e.status<>'cancelled') THEN RETURN NULL; END IF;
@@ -140,10 +140,10 @@ BEGIN
   IF prev.id IS NOT NULL AND prev.counted_at IS NULL THEN RETURN NULL; END IF;     -- un scrutin est déjà en cours
   IF prev.id IS NOT NULL AND t < prev.term_end_at - interval '10 days' THEN RETURN NULL; END IF;  -- trop tôt
   start_at := date_trunc('minute', greatest(COALESCE(prev.term_end_at - interval '10 days', t), t) + interval '1 minute');
-  SELECT s.rules INTO rules FROM public.national_settings s WHERE id=1;
-  rules := rules || jsonb_build_object('model','real577','party_snapshot',COALESCE(prev.rules->'party_snapshot','{}'::jsonb));
+  SELECT s.rules INTO v_rules FROM public.national_settings s WHERE s.id=1;
+  v_rules := v_rules || jsonb_build_object('model','real577','party_snapshot',COALESCE(prev.rules->'party_snapshot','{}'::jsonb));
   INSERT INTO public.national_elections(name,candidacies_at,candidacies_end_at,vote_at,vote_end_at,term_end_at,rules,predecessor_id)
-  VALUES ('Élections législatives', start_at, start_at+interval '7 days', start_at+interval '8 days', start_at+interval '10 days', start_at+interval '38 days', rules, prev.id)
+  VALUES ('Élections législatives', start_at, start_at+interval '7 days', start_at+interval '8 days', start_at+interval '10 days', start_at+interval '38 days', v_rules, prev.id)
   RETURNING id INTO neid;
   INSERT INTO public.legislative_elections(national_election_id) VALUES (neid) RETURNING id INTO leid;
   PERFORM public.national_publish('legislatives-open:'||neid,'Élections législatives','Les candidatures sont ouvertes dans les 577 circonscriptions pendant 7 jours. 1er tour le 1er jour du vote, 2e tour le lendemain.');
@@ -251,7 +251,7 @@ END $$;
 
 -- 5. Actions et lecture des joueurs ------------------------------------------------------
 CREATE FUNCTION public.legislative_action(_command text, _input jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE c public.characters; le public.legislative_elections; e public.national_elections; t timestamptz; rnd integer; code text; party text; my_code text;
+DECLARE c public.characters; le public.legislative_elections; e public.national_elections; t timestamptz; rnd integer; v_code text; v_party text; my_code text;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Non connecté'; END IF;
   SELECT * INTO c FROM public.characters WHERE user_id=auth.uid() FOR UPDATE;
@@ -263,16 +263,16 @@ BEGIN
     WHERE ne.counted_at IS NULL AND ne.status<>'cancelled' ORDER BY ne.candidacies_at DESC LIMIT 1;
   IF le.id IS NULL THEN RAISE EXCEPTION 'Aucune élection législative en cours'; END IF;
   SELECT * INTO e FROM public.national_elections WHERE id=le.national_election_id;
-  party := _input->>'party_code';
+  v_party := _input->>'party_code';
   IF _command = 'candidacy' THEN
-    code := _input->>'constituency_code';
+    v_code := _input->>'constituency_code';
     IF t < e.candidacies_at OR t >= e.candidacies_end_at THEN RAISE EXCEPTION 'Candidatures fermées'; END IF;
     IF NOT public.national_eligible(c.id, e.rules) THEN RAISE EXCEPTION 'Conditions non remplies : 18 ans, engagement 20, réputation politique 15, influence 10.'; END IF;
-    IF NOT EXISTS (SELECT 1 FROM public.legislative_constituencies WHERE legislative_constituencies.code=code) THEN RAISE EXCEPTION 'Circonscription inconnue'; END IF;
-    IF NOT EXISTS (SELECT 1 FROM public.legislative_parties WHERE legislative_parties.code=party) THEN RAISE EXCEPTION 'Étiquette inconnue'; END IF;
-    IF EXISTS (SELECT 1 FROM public.legislative_candidacies k WHERE k.election_id=le.id AND k.constituency_code=code AND k.party_code=party) THEN RAISE EXCEPTION 'Cette étiquette a déjà un candidat joueur dans cette circonscription'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.legislative_constituencies WHERE legislative_constituencies.code=v_code) THEN RAISE EXCEPTION 'Circonscription inconnue'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.legislative_parties WHERE legislative_parties.code=v_party) THEN RAISE EXCEPTION 'Étiquette inconnue'; END IF;
+    IF EXISTS (SELECT 1 FROM public.legislative_candidacies k WHERE k.election_id=le.id AND k.constituency_code=v_code AND k.party_code=v_party) THEN RAISE EXCEPTION 'Cette étiquette a déjà un candidat joueur dans cette circonscription'; END IF;
     INSERT INTO public.legislative_candidacies (election_id, constituency_code, character_id, party_code, display_name)
-    VALUES (le.id, code, c.id, party, c.first_name||' '||c.last_name)
+    VALUES (le.id, v_code, c.id, v_party, c.first_name||' '||c.last_name)
     ON CONFLICT (election_id, character_id) DO UPDATE SET constituency_code=EXCLUDED.constituency_code, party_code=EXCLUDED.party_code;
     RETURN jsonb_build_object('ok', true);
   ELSIF _command = 'withdraw' THEN
@@ -286,12 +286,12 @@ BEGIN
     IF t >= e.vote_at AND t < e.vote_at + interval '1 day' THEN rnd := 1;
     ELSIF t >= e.vote_at + interval '1 day' AND t < e.vote_end_at THEN rnd := 2;
     ELSE RAISE EXCEPTION 'Bureaux de vote fermés'; END IF;
-    IF rnd = 1 AND NOT (EXISTS (SELECT 1 FROM public.legislative_baseline_2024 WHERE constituency_code=my_code AND round=1 AND party_code=party)
-                     OR EXISTS (SELECT 1 FROM public.legislative_candidacies WHERE election_id=le.id AND constituency_code=my_code AND party_code=party)) THEN
+    IF rnd = 1 AND NOT (EXISTS (SELECT 1 FROM public.legislative_baseline_2024 WHERE constituency_code=my_code AND round=1 AND party_code=v_party)
+                     OR EXISTS (SELECT 1 FROM public.legislative_candidacies WHERE election_id=le.id AND constituency_code=my_code AND party_code=v_party)) THEN
       RAISE EXCEPTION 'Candidat absent de votre circonscription'; END IF;
-    IF rnd = 2 AND NOT EXISTS (SELECT 1 FROM public.legislative_results WHERE election_id=le.id AND constituency_code=my_code AND round=1 AND qualified AND party_code=party) THEN
+    IF rnd = 2 AND NOT EXISTS (SELECT 1 FROM public.legislative_results WHERE election_id=le.id AND constituency_code=my_code AND round=1 AND qualified AND party_code=v_party) THEN
       RAISE EXCEPTION 'Ce candidat n''est pas qualifié pour le 2e tour'; END IF;
-    INSERT INTO public.legislative_ballots (election_id, round, character_id, constituency_code, party_code) VALUES (le.id, rnd, c.id, my_code, party)
+    INSERT INTO public.legislative_ballots (election_id, round, character_id, constituency_code, party_code) VALUES (le.id, rnd, c.id, my_code, v_party)
     ON CONFLICT (election_id, round, character_id) DO NOTHING;
     IF NOT FOUND THEN RAISE EXCEPTION 'Vous avez déjà voté à ce tour'; END IF;
     RETURN jsonb_build_object('ok', true, 'round', rnd);
