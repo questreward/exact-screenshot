@@ -33,7 +33,7 @@ function HousingPage() {
   const months = agencyData.data?.settings.rent_months ?? 1;
   const act = useMutation({
     mutationFn: (v: { cmd: "rent" | "move_in"; input: Record<string, unknown> }) => v.cmd === "rent"
-      ? agencyRpc("agency_rent_listing", { _listing_id: v.input.listing_id, _mover_id: v.input.mover_id ?? null, _agency_id: agency || null }) as Promise<{ deposit?: number }>
+      ? agencyRpc("agency_rent_listing", { _listing_id: v.input['listing_id'], _mover_id: v.input['mover_id'] ?? null, _agency_id: agency || null }) as Promise<{ deposit?: number }>
       : housingAction(v.cmd, v.input),
     onSuccess: (r, v) => {
       toast.success(v.cmd === "rent" ? `Bail signé. Dépôt ${eur(r.deposit ?? 0)} (rendu à ton départ), déménageur payé.` : "Tu habites maintenant chez toi !");
