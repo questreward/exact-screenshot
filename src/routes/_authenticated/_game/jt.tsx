@@ -133,7 +133,7 @@ function TvPage() {
   const poll = popularityBarometer(politics.organizations.filter(o => o.kind === "party")).slice(0, 6);
 
   return <div className="space-y-6 animate-rise">
-    <style>{"@keyframes tvticker{from{transform:translateX(0)}to{transform:translateX(-100%)}}"}</style>
+    <style>{"@keyframes tvticker{from{transform:translateX(0)}to{transform:translateX(-100%)}}@keyframes tvzoom{from{transform:scale(1)}to{transform:scale(1.12)}}"}</style>
     <div className="flex items-center gap-3"><Tv className="h-8 w-8 text-primary" /><div><h1 className="text-3xl font-bold">Journal télévisé</h1><p className="text-sm capitalize text-muted-foreground">{date}</p></div></div>
 
     <div className="grid grid-cols-3 gap-2">{CHANNELS.map(c => <Button key={c.id} className="h-14 flex-col gap-0 px-1" variant={channel === c.id ? "default" : "outline"} onClick={() => setChannel(c.id)}>
