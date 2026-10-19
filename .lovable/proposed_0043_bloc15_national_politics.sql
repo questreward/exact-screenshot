@@ -295,6 +295,14 @@ CREATE UNIQUE INDEX national_group_party_once ON public.national_groups(legislat
 CREATE UNIQUE INDEX national_group_independent_once ON public.national_groups(legislature_id,chamber) WHERE organization_id IS NULL;
 -- Le Sénat reste entièrement simulé : aucune attribution de siège joueur.
 ALTER TABLE public.national_seats ADD CONSTRAINT national_senate_simulated_only CHECK(chamber<>'senate' OR (simulated AND character_id IS NULL));
+ALTER TABLE public.national_seats ADD CONSTRAINT national_assembly_5_plus_45
+ CHECK(chamber<>'assembly' OR
+ (seat_no BETWEEN 1 AND 5 AND NOT simulated AND city_id IS NOT NULL AND num_nonnulls(character_id,npc_id)=1) OR
+ (seat_no BETWEEN 6 AND 50 AND simulated AND city_id IS NULL AND character_id IS NULL AND npc_id IS NULL));
+CREATE UNIQUE INDEX national_one_territorial_city ON public.national_seats(legislature_id,city_id)
+ WHERE chamber='assembly' AND seat_no<=5;
+ALTER TABLE public.national_city_effects ADD CONSTRAINT national_effect_once_per_law
+ UNIQUE(law_id,city_id,indicator);
 
 -- Authentification sans civic_actor/prepare_daily_life : pas de règlement de salaire/loyer.
 CREATE FUNCTION public.national_actor() RETURNS public.characters
@@ -353,7 +361,9 @@ BEGIN
  OR _term_end IS DISTINCT FROM _vote_end+interval '28 days' THEN RAISE EXCEPTION 'Calendrier national requis : 7+1+2 jours, mandat 28 jours après clôture'; END IF;
  SELECT * INTO prev FROM public.national_elections WHERE status<>'cancelled' ORDER BY candidacies_at DESC LIMIT 1 FOR UPDATE;
  IF FOUND THEN
-  IF prev.status<>'completed' OR _candidacies_at IS DISTINCT FROM prev.term_end_at-interval '10 days' THEN RAISE EXCEPTION 'Un successeur seulement, ouverture dans les dix derniers jours du mandat'; END IF;
+  IF prev.status<>'completed' OR at_time<prev.term_end_at-interval '10 days' OR at_time>=prev.term_end_at
+  OR _candidacies_at<prev.term_end_at-interval '10 days' OR _candidacies_at>=prev.term_end_at
+  THEN RAISE EXCEPTION 'Un successeur seulement, préparation et ouverture dans les dix derniers jours du mandat'; END IF;
  END IF;
  SELECT jsonb_object_agg(p.organization_id::text,jsonb_build_object('weight',p.simulation_weight,'fictional_votes',p.simulation_weight::bigint*100)) INTO snapshot
  FROM public.national_party_profiles p JOIN public.organizations o ON o.id=p.organization_id JOIN public.political_profiles pp ON pp.organization_id=o.id
@@ -366,7 +376,7 @@ BEGIN
  RETURN eid;
 END $$;
 
--- Répartition 45/25 : méthode et égalités À DÉCIDER, fonction bloquante.
+-- Répartition Assemblée : plus forts restes ; Sénat toujours bloqué.
 CREATE FUNCTION public.national_allocate_simulated(_lid uuid,_chamber text,_weights jsonb,_count integer,_offset integer) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE l public.national_legislatures; e public.national_elections; approved jsonb; x record; total numeric; gid uuid; n integer; seat_index integer:=5;
@@ -378,7 +388,8 @@ BEGIN
  SELECT * INTO e FROM public.national_elections WHERE id=l.election_id;
  IF NOT FOUND THEN RAISE EXCEPTION 'Scrutin introuvable'; END IF;
  SELECT jsonb_object_agg(key,(value->>'weight')::numeric) INTO approved FROM jsonb_each(e.rules->'party_snapshot');
- IF _weights IS DISTINCT FROM approved THEN RAISE EXCEPTION 'Poids différents de l’instantané électoral'; END IF;
+ IF approved IS NULL OR _weights IS DISTINCT FROM approved THEN RAISE EXCEPTION 'Poids différents de l’instantané électoral'; END IF;
+ IF (SELECT count(*) FROM public.national_seats WHERE legislature_id=l.id AND chamber='assembly' AND seat_no<=5)<>5 THEN RAISE EXCEPTION 'Cinq gagnants territoriaux réels requis avant le complément simulé'; END IF;
  IF EXISTS(SELECT 1 FROM public.national_seats WHERE legislature_id=l.id AND chamber='assembly' AND seat_no>5) THEN
   IF (SELECT count(*) FROM public.national_seats WHERE legislature_id=l.id AND chamber='assembly' AND seat_no>5)=45 THEN RETURN; END IF;
   RAISE EXCEPTION 'Répartition partielle incohérente';
@@ -433,10 +444,7 @@ BEGIN
  IF EXISTS(SELECT 1 FROM jsonb_array_elements(source) x WHERE (x->>'seats')::int>0 AND (x->>'organization_id' IS NULL OR NOT EXISTS(SELECT 1 FROM public.national_party_profiles p WHERE p.organization_id=(x->>'organization_id')::uuid))) THEN RAISE EXCEPTION 'Composition du Sénat en attente : traitement des groupes indépendants/non configurés À DÉCIDER'; END IF;
  IF weights IS NULL THEN RETURN false; END IF;
  RAISE EXCEPTION 'Sénat en attente : admissibilité de l’instantané et méthode des 25 sièges non validées';
- -- Ne pas appliquer au Sénat par analogie les plus forts restes de l’Assemblée.
- PERFORM public.national_allocate_simulated(l.id,'senate',weights,25,0);
- UPDATE public.national_legislatures SET senate_source=source,senate_composed_at=at_time WHERE id=l.id;
- RETURN true;
+ -- Aucune écriture ni méthode étendue au Sénat par simple analogie.
 END $$;
 
 CREATE FUNCTION public.national_count_election(_eid uuid) RETURNS uuid
@@ -510,7 +518,7 @@ BEGIN
  IF l.adopted_at IS DISTINCT FROM (SELECT max(ends_at) FROM public.national_sessions WHERE law_id=l.id AND version=l.current_version AND status='approved') THEN RAISE EXCEPTION 'Date d’adoption incohérente avec les séances'; END IF;
  SELECT balance INTO funds FROM public.national_treasury WHERE id=1 FOR UPDATE;
  IF funds IS NULL OR funds<v.cost THEN RETURN false; END IF;
- IF EXISTS(SELECT 1 FROM public.national_budgets WHERE law_id=l.id AND version=v.version) OR EXISTS(SELECT 1 FROM public.national_ledger WHERE law_id=l.id AND version=v.version) OR EXISTS(SELECT 1 FROM public.national_city_effects WHERE law_id=l.id AND version=v.version) THEN RAISE EXCEPTION 'Registre partiel incohérent : application refusée'; END IF;
+ IF EXISTS(SELECT 1 FROM public.national_budgets WHERE law_id=l.id) OR EXISTS(SELECT 1 FROM public.national_ledger WHERE law_id=l.id) OR EXISTS(SELECT 1 FROM public.national_city_effects WHERE law_id=l.id) THEN RAISE EXCEPTION 'Registre partiel incohérent : application refusée'; END IF;
  -- Tout ou rien : prévalidation de la présence de tous les indicateurs, ordre stable.
  IF EXISTS(SELECT 1 FROM public.national_constituencies c CROSS JOIN jsonb_each_text(v.effects) d WHERE NOT EXISTS(SELECT 1 FROM public.city_indicators i WHERE i.city_id=c.city_id AND i.indicator=d.key)) THEN RAISE EXCEPTION 'Indicateur de ville manquant'; END IF;
  INSERT INTO public.national_budgets(law_id,version,allocations,total,funded_at) VALUES(l.id,v.version,v.budget_allocations,v.cost,public.game_now());
@@ -765,10 +773,10 @@ BEGIN
  'candidates',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',k.id,'election_id',k.election_id,'city_id',k.city_id,'organization_id',k.organization_id,'display_name',k.display_name,'program',CASE WHEN k.character_id=cid THEN k.program ELSE NULL END,'mine',COALESCE(k.character_id=cid,false))) FROM public.national_candidacies k WHERE k.character_id=cid OR (k.status='accepted' AND k.published_at<=public.game_now())),'[]'::jsonb),
  'legislatures',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'election_id',election_id,'starts_at',starts_at,'ends_at',ends_at,'senate_composed',senate_composed_at IS NOT NULL)) FROM public.national_legislatures),'[]'::jsonb),
  'groups',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',g.id,'legislature_id',g.legislature_id,'chamber',g.chamber,'organization_id',g.organization_id,'name',g.name,'seats',(SELECT count(*) FROM public.national_seats s WHERE s.group_id=g.id))) FROM public.national_groups g),'[]'::jsonb),
- 'seats',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'legislature_id',legislature_id,'chamber',chamber,'seat_no',seat_no,'group_id',group_id,'city_id',city_id,'display_name',display_name,'simulated',simulated,'mine',character_id=cid)) FROM public.national_seats),'[]'::jsonb),
+ 'seats',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'legislature_id',legislature_id,'chamber',chamber,'seat_no',seat_no,'group_id',group_id,'city_id',city_id,'display_name',CASE WHEN character_id IS NULL OR character_id=cid THEN display_name ELSE 'Siège territorial' END,'simulated',simulated,'mine',COALESCE(character_id=cid,false))) FROM public.national_seats),'[]'::jsonb),
  'government',COALESCE((SELECT jsonb_agg(to_jsonb(g)) FROM public.national_governments g),'[]'::jsonb),
  'offices',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'government_id',government_id,'role',role,'ministry',ministry,'display_name',display_name,'starts_at',starts_at,'ends_at',ends_at,'mine',character_id=cid)) FROM public.national_offices),'[]'::jsonb),
- 'laws',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',l.id,'legislature_id',l.legislature_id,'author_label',l.author_label,'version',l.current_version,'status',l.status,'proposed_at',l.proposed_at,'adopted_at',l.adopted_at,'applied_at',l.applied_at,'mine',l.author_character_id=cid,'versions',(SELECT jsonb_agg(to_jsonb(v)) FROM public.national_law_versions v WHERE v.law_id=l.id),'sessions',(SELECT jsonb_agg(jsonb_build_object('id',s.id,'version',s.version,'chamber',s.chamber,'starts_at',s.starts_at,'ends_at',s.ends_at,'status',s.status,'yes_votes',s.yes_votes,'no_votes',s.no_votes,'abstentions',s.abstentions)) FROM public.national_sessions s WHERE s.law_id=l.id))) FROM public.national_laws l WHERE l.status<>'draft' OR l.author_character_id=cid),'[]'::jsonb),
+ 'laws',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',l.id,'legislature_id',l.legislature_id,'author_label',CASE WHEN l.author_character_id IS NULL OR l.author_character_id=cid THEN l.author_label ELSE 'Parlementaire' END,'version',l.current_version,'status',l.status,'proposed_at',l.proposed_at,'adopted_at',l.adopted_at,'applied_at',l.applied_at,'mine',COALESCE(l.author_character_id=cid,false),'versions',(SELECT jsonb_agg(jsonb_build_object('version',v.version,'template_id',v.template_id,'title',CASE WHEN l.author_character_id IS NULL OR l.author_character_id=cid THEN v.title ELSE t.title END,'description',CASE WHEN l.author_character_id IS NULL OR l.author_character_id=cid THEN v.description ELSE NULL END,'category',v.category,'effects',v.effects,'cost',v.cost,'delay_minutes',v.delay_minutes)) FROM public.national_law_versions v JOIN public.national_law_templates t ON t.id=v.template_id WHERE v.law_id=l.id),'sessions',(SELECT jsonb_agg(jsonb_build_object('id',s.id,'version',s.version,'chamber',s.chamber,'starts_at',s.starts_at,'ends_at',s.ends_at,'status',s.status,'yes_votes',s.yes_votes,'no_votes',s.no_votes,'abstentions',s.abstentions)) FROM public.national_sessions s WHERE s.law_id=l.id))) FROM public.national_laws l WHERE l.status<>'draft' OR l.author_character_id=cid),'[]'::jsonb),
  'treasury',(SELECT balance FROM public.national_treasury WHERE id=1),
  'budgets',COALESCE((SELECT jsonb_agg(to_jsonb(b)) FROM public.national_budgets b),'[]'::jsonb),
  'effects',COALESCE((SELECT jsonb_agg(to_jsonb(f)) FROM public.national_city_effects f),'[]'::jsonb)
@@ -852,6 +860,7 @@ BEGIN
  IF (to_jsonb(NEW)-'status'-'counted_at') IS DISTINCT FROM (to_jsonb(OLD)-'status'-'counted_at') THEN RAISE EXCEPTION 'Dates, règles, poids et graine du scrutin figés'; END IF;
  IF OLD.counted_at IS NOT NULL AND NEW.counted_at IS DISTINCT FROM OLD.counted_at THEN RAISE EXCEPTION 'Dépouillement immuable'; END IF;
  IF OLD.status IN('completed','cancelled') AND NEW.status IS DISTINCT FROM OLD.status THEN RAISE EXCEPTION 'Scrutin clôturé'; END IF;
+ IF NEW.status='completed' AND NEW.counted_at IS NULL THEN RAISE EXCEPTION 'Dépouillement daté requis'; END IF;
  RETURN NEW;
 END $$;
 CREATE TRIGGER national_election_freeze BEFORE UPDATE OR DELETE ON public.national_elections FOR EACH ROW EXECUTE FUNCTION public.national_election_immutable();
