@@ -6,7 +6,7 @@ import { CATEGORY_LABEL, computeTrophies, nextObjectives, rankTitle, type Catego
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/trophees")({
-  head: () => gameMeta("Trophées et objectifs", "Vos succès dans CIVITAS et vos prochains objectifs."),
+  head: () => ({ meta: gameMeta("Trophées et objectifs", "Vos succès dans CIVITAS et vos prochains objectifs.") }),
   loader: ({ context }) => context.queryClient.ensureQueryData(trophyFactsQuery),
   component: TrophiesPage,
 });

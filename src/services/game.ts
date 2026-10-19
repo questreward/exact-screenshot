@@ -812,7 +812,7 @@ export const trophyFactsQuery = queryOptions({
     const { data: ch } = await supabase.from("characters").select("id").maybeSingle();
     const id = ch?.id ?? "00000000-0000-0000-0000-000000000000";
     const count = async (q: PromiseLike<{ count: number | null; error: unknown }>) => { try { const r = await q; return r.error ? 0 : r.count ?? 0; } catch { return 0; } };
-    const safe = async <T,>(p: Promise<T>): Promise<T | null> => { try { return await p; } catch { return null; } };
+    const safe = async <T,>(p: PromiseLike<T>): Promise<T | null> => { try { return await p; } catch { return null; } };
     const head = { count: "exact" as const, head: true };
     const [activities, studies, jobs, interactions, memberships, newsRead, reports, consultations, opinions, votes, candidacies, articles, bank, biz, net, pol, leg] = await Promise.all([
       count(supabase.from("activities").select("id", head).eq("character_id", id).in("status", ["completed", "done"])),
