@@ -112,7 +112,148 @@ CREATE POLICY incidents_own ON public.incidents FOR SELECT TO authenticated USIN
 CREATE FUNCTION public.insurance_settle(_cid uuid)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.insurance_settings; t timestamptz := public.game_now(); cur integer; w integer; ip public.insurance_profiles;
-  k public.contracts_dummy; ct record; it record; cov public.insurance_coverage; contract uuid; roll integer; chance integer;
-  cost integer; at timestamptz; label text; ins integer; mine integer; bal integer; paid integer; iid uuid; has_vehicle boolean; repay integer; BEGIN
-  RAISE EXCEPTION 'placeholder';
+  ct record; it record; cov public.insurance_coverage; roll integer; chance integer; cost integer; at timestamptz; lbl text;
+  ins integer; mine integer; bal integer; paid integer; iid uuid; cid_contract uuid; has_vehicle boolean; repay integer; BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.characters WHERE id = _cid AND user_id = auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
+  SELECT * INTO s FROM public.insurance_settings WHERE id = 1;
+  IF NOT s.enabled THEN RETURN; END IF;
+  PERFORM public.bank_settle(_cid);
+  cur := floor(extract(epoch FROM t) / 604800)::integer;
+  INSERT INTO public.insurance_profiles (character_id, settled_week) VALUES (_cid, GREATEST(s.started_week, cur - 1)) ON CONFLICT DO NOTHING;
+  SELECT * INTO ip FROM public.insurance_profiles WHERE character_id = _cid FOR UPDATE;
+
+  -- Cotisations mensuelles
+  FOR ct IN SELECT * FROM public.insurance_contracts WHERE character_id = _cid AND status IN ('active','suspended') AND next_due_at <= t FOR UPDATE LOOP
+    WHILE ct.next_due_at <= t LOOP
+      IF ct.next_try_at IS NOT NULL AND ct.next_try_at > t THEN EXIT; END IF;
+      IF public.bank_pay(_cid, 'premium:' || ct.id || ':' || (ct.months_paid + 1), ct.monthly_price, 'Cotisation assurance') THEN
+        ct.months_paid := ct.months_paid + 1;
+        ct.next_due_at := ct.next_due_at + s.month_days * interval '1 day';
+        UPDATE public.insurance_contracts SET status = 'active', months_paid = ct.months_paid, next_due_at = ct.next_due_at, next_try_at = NULL WHERE id = ct.id;
+      ELSE
+        UPDATE public.insurance_contracts SET status = 'suspended', next_try_at = t + interval '1 day' WHERE id = ct.id;
+        PERFORM public.economy_notify(_cid, 'premium-miss:' || ct.id || ':' || (ct.months_paid + 1), 'Assurance suspendue', 'Cotisation impayée : vous n''êtes plus couvert jusqu''au prochain paiement réussi.');
+        EXIT;
+      END IF;
+    END LOOP;
+  END LOOP;
+
+  -- Imprévus de chaque semaine écoulée (tirage fixe)
+  has_vehicle := EXISTS (SELECT 1 FROM public.personal_assets a JOIN public.economy_catalog ec ON ec.id = a.catalog_id WHERE a.character_id = _cid AND ec.kind = 'vehicle');
+  w := GREATEST(ip.settled_week + 1, cur - s.max_weeks_back);
+  WHILE w <= cur LOOP
+    FOR it IN SELECT * FROM public.incident_types ORDER BY id LOOP
+      chance := CASE WHEN has_vehicle AND it.chance_with_vehicle IS NOT NULL THEN it.chance_with_vehicle ELSE it.chance END;
+      roll := abs(hashtext(_cid::text || ':' || w || ':' || it.id)) % 100;
+      CONTINUE WHEN roll >= chance;
+      at := to_timestamp(w * 604800::bigint) + (abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':d')) % 7) * interval '1 day' + interval '10 hours';
+      CONTINUE WHEN at > t;
+      CONTINUE WHEN EXISTS (SELECT 1 FROM public.incidents WHERE character_id = _cid AND incident_key = w || ':' || it.id);
+      cost := it.min_cost + abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':c')) % (it.max_cost - it.min_cost + 1);
+      lbl := it.examples[1 + abs(hashtext(_cid::text || ':' || w || ':' || it.id || ':l')) % array_length(it.examples, 1)];
+      SELECT * INTO cov FROM public.insurance_coverage WHERE incident_type = it.id;
+      SELECT c.id INTO cid_contract FROM public.insurance_contracts c JOIN public.insurance_products p ON p.id = c.product_id
+        WHERE c.character_id = _cid AND c.status = 'active' AND c.covered_from <= at AND it.id = ANY(p.covers) LIMIT 1;
+      ins := CASE WHEN cid_contract IS NULL THEN 0 ELSE LEAST(GREATEST(cost - cov.deductible, 0), cov.cap) END;
+      mine := cost - ins;
+      INSERT INTO public.incidents (character_id, incident_key, type_id, label, occurred_at, cost, insurer_paid, contract_id)
+      VALUES (_cid, w || ':' || it.id, it.id, lbl, at, cost, ins, cid_contract) RETURNING id INTO iid;
+      paid := 0;
+      IF mine > 0 THEN
+        IF public.bank_pay(_cid, 'incident:' || iid, mine, it.label || ' — ' || lbl) THEN paid := mine;
+        ELSE
+          SELECT balance INTO bal FROM public.accounts WHERE character_id = _cid;
+          paid := LEAST(GREATEST(bal, 0), mine);
+          IF paid > 0 THEN PERFORM public.economy_cash(_cid, 'incident-part:' || iid, -paid, it.label || ' — ' || lbl, 'imprevu'); END IF;
+          UPDATE public.insurance_profiles SET debt = debt + (mine - paid) WHERE character_id = _cid;
+          PERFORM public.bank_score(_cid, 'incident-unpaid:' || iid, -s.unpaid_score_penalty, 'Imprévu non payé');
+        END IF;
+      END IF;
+      UPDATE public.incidents SET player_paid = paid, unpaid = mine - paid WHERE id = iid;
+      IF it.id = 'health' THEN UPDATE public.characters SET energy = GREATEST(0, energy - s.health_energy_loss) WHERE id = _cid; END IF;
+      PERFORM public.economy_notify(_cid, 'incident:' || iid, 'Imprévu : ' || lbl,
+        'Coût ' || cost || ' crédits. ' || CASE WHEN ins > 0 THEN 'Votre assurance a payé ' || ins || '. ' ELSE '' END ||
+        'Payé par vous : ' || paid || CASE WHEN mine - paid > 0 THEN '. Reste dû : ' || (mine - paid) ELSE '' END || '.');
+    END LOOP;
+    w := w + 1;
+  END LOOP;
+  UPDATE public.insurance_profiles SET settled_week = cur WHERE character_id = _cid;
+
+  -- Remboursement automatique de la dette d'imprévus
+  SELECT * INTO ip FROM public.insurance_profiles WHERE character_id = _cid FOR UPDATE;
+  SELECT balance INTO bal FROM public.accounts WHERE character_id = _cid;
+  IF ip.debt > 0 AND bal > 0 THEN
+    repay := LEAST(bal, ip.debt);
+    PERFORM public.economy_cash(_cid, 'incident-debt:' || gen_random_uuid(), -repay, 'Remboursement des imprévus', 'imprevu');
+    UPDATE public.insurance_profiles SET debt = debt - repay WHERE character_id = _cid;
+  END IF;
 END $$;
+
+-- 4. Actions du joueur ------------------------------------------------------------------
+CREATE FUNCTION public.subscribe_insurance(_product text, _request_id uuid)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE cid uuid; c public.characters; s public.insurance_settings; p public.insurance_products; ctid uuid; t timestamptz := public.game_now(); BEGIN
+  cid := public.social_actor(); SELECT * INTO c FROM public.characters WHERE id = cid;
+  PERFORM public.insurance_settle(cid);
+  SELECT * INTO s FROM public.insurance_settings WHERE id = 1;
+  SELECT id INTO ctid FROM public.insurance_contracts WHERE character_id = cid AND request_key = _request_id::text;
+  IF ctid IS NOT NULL THEN RETURN ctid; END IF;
+  IF c.age < s.min_age THEN RAISE EXCEPTION 'Assurance possible dès % ans', s.min_age; END IF;
+  SELECT * INTO p FROM public.insurance_products WHERE id = _product;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Contrat inconnu'; END IF;
+  IF EXISTS (SELECT 1 FROM public.insurance_contracts c2 JOIN public.insurance_products p2 ON p2.id = c2.product_id
+             WHERE c2.character_id = cid AND c2.status IN ('active','suspended') AND p2.covers && p.covers) THEN
+    RAISE EXCEPTION 'Vous êtes déjà assuré pour ce risque'; END IF;
+  INSERT INTO public.insurance_contracts (character_id, product_id, request_key, monthly_price, covered_from, next_due_at)
+  VALUES (cid, p.id, _request_id::text, p.monthly_price, t + s.waiting_days * interval '1 day', t + s.month_days * interval '1 day')
+  RETURNING id INTO ctid;
+  IF NOT public.bank_pay(cid, 'premium:' || ctid || ':1', p.monthly_price, 'Cotisation — ' || p.name) THEN
+    RAISE EXCEPTION 'Solde insuffisant pour la première cotisation'; END IF;
+  PERFORM public.economy_notify(cid, 'insurance-start:' || ctid, p.name || ' souscrite', 'Vous êtes couvert dans ' || s.waiting_days || ' jours de jeu.');
+  RETURN ctid;
+END $$;
+
+CREATE FUNCTION public.cancel_insurance(_contract uuid)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE cid uuid; BEGIN
+  cid := public.social_actor();
+  UPDATE public.insurance_contracts SET status = 'cancelled', cancelled_at = public.game_now()
+  WHERE id = _contract AND character_id = cid AND status IN ('active','suspended');
+  IF NOT FOUND THEN RAISE EXCEPTION 'Contrat introuvable'; END IF;
+END $$;
+
+CREATE FUNCTION public.insurance_state()
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE cid uuid; c public.characters; BEGIN
+  cid := public.social_actor(); SELECT * INTO c FROM public.characters WHERE id = cid;
+  PERFORM public.insurance_settle(cid);
+  RETURN jsonb_build_object(
+    'now', public.game_now(), 'age', c.age,
+    'settings', (SELECT to_jsonb(s) FROM public.insurance_settings s WHERE id = 1),
+    'debt', (SELECT debt FROM public.insurance_profiles WHERE character_id = cid),
+    'products', (SELECT jsonb_agg(to_jsonb(p) ORDER BY p.sort_order) FROM public.insurance_products p),
+    'coverage', (SELECT jsonb_agg(jsonb_build_object('type', it.id, 'label', it.label, 'deductible', cv.deductible, 'cap', cv.cap, 'examples', it.examples))
+                 FROM public.incident_types it JOIN public.insurance_coverage cv ON cv.incident_type = it.id),
+    'contracts', COALESCE((SELECT jsonb_agg(to_jsonb(ct) || jsonb_build_object('name', p.name, 'covers', p.covers) ORDER BY ct.created_at)
+                 FROM public.insurance_contracts ct JOIN public.insurance_products p ON p.id = ct.product_id
+                 WHERE ct.character_id = cid AND ct.status IN ('active','suspended')), '[]'::jsonb),
+    'incidents', COALESCE((SELECT jsonb_agg(to_jsonb(x) ORDER BY x.occurred_at DESC)
+                 FROM (SELECT i.*, it.label AS type_label FROM public.incidents i JOIN public.incident_types it ON it.id = i.type_id
+                       WHERE i.character_id = cid ORDER BY i.occurred_at DESC LIMIT 20) x), '[]'::jsonb)
+  );
+END $$;
+
+REVOKE ALL ON FUNCTION public.insurance_settle(uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.subscribe_insurance(text, uuid), public.cancel_insurance(uuid), public.insurance_state() TO authenticated;
+
+-- 5. Contrôles ---------------------------------------------------------------------------
+DO $$ BEGIN
+  IF to_regprocedure('public.bank_pay(uuid,text,integer,text)') IS NULL THEN RAISE EXCEPTION 'P5a (banque) doit être installé avant P5b'; END IF;
+  IF (SELECT count(*) FROM public.insurance_products) <> 4 THEN RAISE EXCEPTION 'Catalogue incomplet'; END IF;
+  IF (SELECT count(*) FROM public.incident_types) <> 3 THEN RAISE EXCEPTION 'Types d''imprévus incomplets'; END IF;
+  IF (SELECT count(*) FROM public.insurance_contracts) <> 0 THEN RAISE EXCEPTION 'Aucun contrat attendu'; END IF;
+  IF (SELECT count(*) FROM public.events) < 81 THEN RAISE EXCEPTION 'Événements existants perdus'; END IF;
+  RAISE NOTICE 'P5b installé : assurances et imprévus prêts';
+END $$;
+
+COMMIT;
