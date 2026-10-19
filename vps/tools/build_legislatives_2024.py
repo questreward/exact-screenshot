@@ -61,7 +61,13 @@ for code in sorted(t1):
         agg = collections.Counter()
         for c in data["cands"]: agg[c["nuance"]] += c["votes"]
         for n, v in agg.items(): baseline.append((code, rnd, n, v))
-    mapjson[code] = {"n": winner["nuance"], "d": name}
+    def shares(d):
+        if not d: return []
+        agg = collections.Counter()
+        for c in d["cands"]: agg[c["nuance"]] += c["votes"]
+        tot = sum(agg.values()) or 1
+        return [[n, round(v * 100 / tot, 1)] for n, v in agg.most_common()]
+    mapjson[code] = {"n": winner["nuance"], "d": name, "l": c1["label"], "dn": c1["depname"], "i": c1["registered"], "r1": shares(c1), "r2": shares(c2)}
 
 assert len(seats) == 577
 (ROOT / "public/geo/legislatives-2024.json").write_text(json.dumps({"parties": {p[0]: {"label": p[1], "color": p[2], "bloc": p[3]} for p in PARTIES}, "seats": mapjson}, ensure_ascii=False, separators=(",", ":")))
