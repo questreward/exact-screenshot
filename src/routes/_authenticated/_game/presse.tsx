@@ -101,7 +101,7 @@ export function ArticleCard({ a, compact = false }: { a: PressArticle; compact?:
         <div className="min-w-0 text-xs"><p className="truncate font-semibold">{a.author} · {a.outlet}</p><p className="text-muted-foreground">{a.city ? `${a.city} · ` : ""}{date}</p></div>
       </div>
       <h3 className="font-heading text-lg font-bold leading-tight">{a.title}</h3>
-      <p className={`whitespace-pre-line text-sm text-muted-foreground ${open || !compact ? "" : "line-clamp-3"}`}>{open || !compact ? a.body : a.body}</p>
+      <p className={`whitespace-pre-line text-sm text-muted-foreground ${open || !compact ? "" : "line-clamp-3"}`}>{a.body}</p>
       <div className="flex gap-2">
         {compact && <Button variant="link" className="h-10 px-0" onClick={() => setOpen(o => !o)}>{open ? "Réduire" : "Lire la suite"}</Button>}
         {a.mine && !compact && <Button variant="outline" className="h-10" disabled={hide.isPending} onClick={() => hide.mutate({ id: a.id })}><Trash2 />Retirer</Button>}

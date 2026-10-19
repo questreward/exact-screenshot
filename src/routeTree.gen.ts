@@ -35,6 +35,7 @@ import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authe
 import { Route as AuthenticatedGamePatrimoineRouteImport } from './routes/_authenticated/_game/patrimoine'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGamePolitiqueRouteImport } from './routes/_authenticated/_game/politique'
+import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authenticated/_game/presse'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
@@ -185,6 +186,11 @@ const AuthenticatedGamePolitiqueRoute =
     path: '/politique',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGamePresseRoute = AuthenticatedGamePresseRouteImport.update({
+  id: '/presse',
+  path: '/presse',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameReseauRoute = AuthenticatedGameReseauRouteImport.update({
   id: '/reseau',
   path: '/reseau',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
+  '/presse': typeof AuthenticatedGamePresseRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
+  '/presse': typeof AuthenticatedGamePresseRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/patrimoine': typeof AuthenticatedGamePatrimoineRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/politique': typeof AuthenticatedGamePolitiqueRoute
+  '/_authenticated/_game/presse': typeof AuthenticatedGamePresseRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/patrimoine'
     | '/personnage'
     | '/politique'
+    | '/presse'
     | '/reseau'
     | '/tableau-de-bord'
     | '/telephone'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/patrimoine'
     | '/personnage'
     | '/politique'
+    | '/presse'
     | '/reseau'
     | '/tableau-de-bord'
     | '/telephone'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/patrimoine'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/politique'
+    | '/_authenticated/_game/presse'
     | '/_authenticated/_game/reseau'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
@@ -674,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGamePolitiqueRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/presse': {
+      id: '/_authenticated/_game/presse'
+      path: '/presse'
+      fullPath: '/presse'
+      preLoaderRoute: typeof AuthenticatedGamePresseRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/reseau': {
       id: '/_authenticated/_game/reseau'
       path: '/reseau'
@@ -772,6 +791,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGamePatrimoineRoute: typeof AuthenticatedGamePatrimoineRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGamePolitiqueRoute: typeof AuthenticatedGamePolitiqueRoute
+  AuthenticatedGamePresseRoute: typeof AuthenticatedGamePresseRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
@@ -804,6 +824,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGamePatrimoineRoute: AuthenticatedGamePatrimoineRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGamePolitiqueRoute: AuthenticatedGamePolitiqueRoute,
+    AuthenticatedGamePresseRoute: AuthenticatedGamePresseRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
