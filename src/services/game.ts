@@ -748,3 +748,32 @@ export const sendMoney = (i: { id: string; amount: number; note: string }) => ne
 export const inviteTogether = (i: { id: string; kind: string }) => netRpc("invite_together", { _target: i.id, _kind: i.kind });
 export const respondTogether = (i: { id: string; accept: boolean }) => netRpc("respond_together", { _invite: i.id, _accept: i.accept });
 export const cancelTogether = (id: string) => netRpc("cancel_together", { _invite: id });
+
+// ---- Presse des joueurs ----
+export type PressArticle = { id: string; title: string; body: string; photo: string | null; published_at: string; city: string | null; author_id: string; author: string; outlet: string; portrait: string | null; mine: boolean };
+export type PressState = { card: { outlet: string; portrait: string | null } | null; feed: PressArticle[] };
+export const pressQuery = queryOptions({
+  queryKey: ["press", "state"],
+  refetchInterval: 30000,
+  queryFn: async (): Promise<PressState> => {
+    const { data: ch } = await untyped.from("characters").select("id").maybeSingle();
+    const [{ data: card }, feed] = await Promise.all([
+      ch ? untyped.from("press_cards").select("outlet, portrait").eq("character_id", ch.id).maybeSingle() : Promise.resolve({ data: null }),
+      untyped.rpc("press_feed", { _limit: 30 }),
+    ]);
+    if (feed.error) throw new Error(feed.error.message);
+    return { card: card ?? null, feed: (feed.data ?? []) as PressArticle[] };
+  },
+});
+export async function registerPress(input: { outlet: string; portrait: string | null }) {
+  const { error } = await untyped.rpc("press_register", { _outlet: input.outlet, _portrait: input.portrait });
+  if (error) throw new Error(error.message);
+}
+export async function publishArticle(input: { requestId: string; title: string; body: string; photo: string | null }) {
+  const { error } = await untyped.rpc("press_publish", { _request_id: input.requestId, _title: input.title, _body: input.body, _photo: input.photo });
+  if (error) throw new Error(error.message);
+}
+export async function hideArticle(input: { id: string }) {
+  const { error } = await untyped.rpc("press_hide", { _article: input.id });
+  if (error) throw new Error(error.message);
+}

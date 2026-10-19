@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Tv, Mic, LoaderCircle, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, CloudSun, BarChart3, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLifeMutation } from "@/components/game/LifeControls";
-import { answerTvInterview, citiesQuery, politicsQuery, tvQuery, type TvSegment } from "@/services/game";
+import { answerTvInterview, citiesQuery, politicsQuery, pressQuery, tvQuery, type TvSegment } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { CHANNELS, popularityBarometer, speechFor, weatherFor, anchorFor, reporterFor, topicFor, TOPIC_VIDEO, type ChannelId } from "@/game/tv";
 import anchorNational from "@/assets/tv-anchor-national.jpg";
@@ -142,6 +142,7 @@ function TvPage() {
     {channel === "local" && <nav className="flex flex-wrap gap-2">{cities.map(c => <Button key={c.id} size="sm" className="h-10" variant={tv.city_id === c.id ? "secondary" : "ghost"} asChild><Link to="/jt" search={{ city: c.id }}>{c.name}</Link></Button>)}</nav>}
 
     <Studio channel={channel} segments={segments} ticker={ticker} cityName={cityName} />
+    <PlayerPress />
 
     {tv.invitations.length > 0 && <section className="space-y-4 rounded-lg border border-primary bg-card p-5">
       <h2 className="flex items-center gap-2 text-lg font-semibold"><Mic className="h-5 w-5 text-primary" />Vous êtes invité au JT</h2>
@@ -167,4 +168,16 @@ function TvPage() {
       </section>
     </div>
   </div>;
+}
+
+function PlayerPress() {
+  const { data } = useQuery({ ...pressQuery, retry: false });
+  const items = data?.feed.slice(0, 3) ?? [];
+  return <section className="space-y-3">
+    <div className="flex items-center justify-between"><h2 className="font-heading text-xl font-bold">Presse des joueurs</h2><Button asChild variant="link" className="h-10"><Link to="/presse">Tout voir</Link></Button></div>
+    {items.length ? <div className="grid gap-3 md:grid-cols-3">{items.map(a => <Link key={a.id} to="/presse" className="flex gap-3 rounded-xl border border-border bg-card p-3">
+      {a.photo || a.portrait ? <img src={(a.photo ?? a.portrait)!} alt={a.title} loading="lazy" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : null}
+      <div className="min-w-0"><p className="line-clamp-2 text-sm font-semibold">{a.title}</p><p className="truncate text-xs text-muted-foreground">{a.author} · {a.outlet}</p></div>
+    </Link>)}</div> : <p className="text-sm text-muted-foreground">Aucun article de joueur pour l'instant. Devenez journaliste depuis la page Presse.</p>}
+  </section>;
 }
