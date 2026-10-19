@@ -117,19 +117,19 @@ DECLARE cid uuid := public.social_actor(); o public.character_orientation; pr pu
 END $$;
 
 CREATE FUNCTION public.orientation_action(_command text, _input jsonb) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid := public.social_actor(); o public.character_orientation; code text; k text; v integer; ax jsonb := '{}'::jsonb; BEGIN
+DECLARE cid uuid := public.social_actor(); o public.character_orientation; v_code text; k text; v integer; ax jsonb := '{}'::jsonb; BEGIN
   INSERT INTO public.character_orientation (character_id) VALUES (cid) ON CONFLICT DO NOTHING;
   INSERT INTO public.public_profile_prefs (character_id) VALUES (cid) ON CONFLICT DO NOTHING;
   SELECT * INTO o FROM public.character_orientation WHERE character_id = cid FOR UPDATE;
 
   IF _command = 'party' THEN                      -- choisir un parti réel, ou NULL = indépendant
-    code := NULLIF(_input->>'party_code', '');
-    IF code IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.real_parties WHERE real_parties.code = orientation_action.code) THEN
+    v_code := NULLIF(_input->>'party_code', '');
+    IF v_code IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.real_parties WHERE real_parties.code = v_code) THEN
       RAISE EXCEPTION 'Parti inconnu.'; END IF;
-    IF code IS NOT DISTINCT FROM o.party_code THEN RETURN; END IF;
-    UPDATE public.character_orientation SET party_code = code, updated_at = public.game_now() WHERE character_id = cid;
+    IF v_code IS NOT DISTINCT FROM o.party_code THEN RETURN; END IF;
+    UPDATE public.character_orientation SET party_code = v_code, updated_at = public.game_now() WHERE character_id = cid;
     INSERT INTO public.orientation_history (character_id, party_code, label)
-    VALUES (cid, code, CASE WHEN code IS NULL THEN 'Indépendant' ELSE 'Soutien à ' || (SELECT label FROM public.real_parties WHERE real_parties.code = orientation_action.code) END);
+    VALUES (cid, v_code, CASE WHEN v_code IS NULL THEN 'Indépendant' ELSE 'Soutien à ' || (SELECT label FROM public.real_parties WHERE real_parties.code = v_code) END);
 
   ELSIF _command = 'axes' THEN
     IF jsonb_typeof(_input->'axes') <> 'object' THEN RAISE EXCEPTION 'Positionnement invalide.'; END IF;
