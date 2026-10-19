@@ -5,7 +5,8 @@
 -- CE QUI CHANGE DANS LE PARLEMENT EXISTANT (Bloc 15)
 --  * national_groups : +1 colonne party_code (étiquette réelle du groupe), vide pour les groupes existants.
 --  * national_seats  : +1 colonne constituency_code ; contraintes élargies pour accepter 577 sièges
---                      liés à une circonscription (les anciens sièges 5+45 restent valides tels quels).
+--                      liés à une circonscription. Correction : un siège territorial gagné par un PNJ
+--                      (marqué « simulé ») était refusé, ce qui bloquait le dépouillement de l'ancien modèle.
 --  * national_sessions : contraintes élargies pour accepter une Assemblée 577 / majorité 289.
 --  * national_law_positions : +2 200 positions (100 lois × 22 étiquettes réelles), anciennes conservées.
 --  * Fonctions remplacées : national_count_election (redirige les scrutins « 577 »), national_open_session
@@ -29,7 +30,7 @@ ALTER TABLE public.national_seats DROP CONSTRAINT IF EXISTS national_assembly_5_
 ALTER TABLE public.national_seats ADD CONSTRAINT national_assembly_5_plus_45 CHECK (
   chamber<>'assembly'
   OR (constituency_code IS NULL AND (
-       ((seat_no BETWEEN 1 AND 5) AND NOT simulated AND city_id IS NOT NULL AND num_nonnulls(character_id,npc_id)=1)
+       ((seat_no BETWEEN 1 AND 5) AND (NOT simulated OR character_id IS NULL) AND city_id IS NOT NULL AND num_nonnulls(character_id,npc_id)=1)
     OR ((seat_no BETWEEN 6 AND 50) AND simulated AND city_id IS NULL AND character_id IS NULL AND npc_id IS NULL)))
   OR (constituency_code IS NOT NULL AND (seat_no BETWEEN 1 AND 577) AND city_id IS NULL AND npc_id IS NULL AND simulated=(character_id IS NULL))) NOT VALID;
 
