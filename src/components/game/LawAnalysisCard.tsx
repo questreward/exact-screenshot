@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { FileText, Loader2, TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { analyzeLawDraft } from "@/server/law-analysis.functions";
+import { analyzeLawDraft } from "@/lib/law-analysis.functions";
 import { LAW_TEXT_MAX, LAW_TEXT_MIN } from "@/game/law-analysis";
 
 export function LawAnalysisCard() {
