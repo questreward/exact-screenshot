@@ -209,7 +209,8 @@
 - [x] Phase 1 vague 1 : boutique, catalogue, achats, historique, patrimoine (0076 préparée)
 - [x] Phase 1 vague 2 : voitures, locations, achat immobilier (0077 préparée)
 - [x] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main (0078 préparée)
-- [x] Phase 3 (0079 préparée) : magasins des villes, commerces et boutiques de joueurs, marché avec offres — reste : promotions, wishlist, objectifs. Phase 3 : commerces, boutiques de joueurs, marché, promotions, wishlist, objectifs
+- [x] Phase 3 (0079 installée) : magasins des villes, commerces et boutiques de joueurs, marché avec offres
+- [x] Fin de phase 3 (0080 préparée) : promotions de la semaine, liste d'envies, objectif d'achat
 
 # Documents administratifs
 - [x] Vague 1 : profil, carte, photo, signature (installée)
