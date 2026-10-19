@@ -1100,3 +1100,17 @@ export const cityEffectsQuery = (city: string) => queryOptions({
     return data as CityEffectsState;
   },
 });
+
+// ---- Ma vie dans CIVITAS : réputations multiples, compétences, journal (calculés côté serveur) ----
+export type LifeDimension = { axis: "reputation" | "skill"; dimension: string; value: number; parts: { source: string; points: number }[] | null };
+export type LifeJournalEntry = { at: string; kind: string; title: string; age: number };
+export type LifeProfile = { sources: Record<string, number>; journal: LifeJournalEntry[]; dimensions: LifeDimension[] };
+export const lifeProfileQuery = queryOptions({
+  queryKey: ["life-profile", "state"],
+  retry: false,
+  queryFn: async (): Promise<LifeProfile> => {
+    const { data, error } = await untyped.rpc("life_profile", {});
+    if (error) throw new Error(error.message);
+    return data as LifeProfile;
+  },
+});
