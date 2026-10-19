@@ -1,6 +1,6 @@
 import {
   Globe2, Map, Smartphone, User, Briefcase, Landmark, Users, Newspaper, Settings,
-  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, type LucideIcon,
+  MessageCircle, Contact, Share2, Wallet, CalendarDays, UserCircle, Vote, FileText, Sparkles, Tv, Network, type LucideIcon,
 } from "lucide-react";
 
 export type Section = {
@@ -27,6 +27,7 @@ export const SECTIONS: Section[] = [
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, description: "Le journal du monde et de votre ville.", available: true },
   { id: "jt", label: "JT", icon: Tv, description: "Journal télévisé local et national, interviews.", available: true },
+  { id: "reseau", label: "Réseau", icon: Network, description: "Profils des joueurs, contacts, abonnements et messages.", available: true },
   { id: "parametres", label: "Paramètres", icon: Settings, description: "Langue, notifications, confidentialité.", available: true },
 ];
 
@@ -37,6 +38,7 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "banque", label: "Banque", icon: Wallet, available: true },
   { id: "messages", label: "Messages", icon: MessageCircle, available: true },
   { id: "contacts", label: "Contacts", icon: Contact, available: true },
+  { id: "reseau", label: "Joueurs", icon: Network, available: true },
   { id: "organisations", label: "Organisations", icon: Users, available: true },
   { id: "social", label: "Civi", icon: Share2, available: true },
   { id: "actualites", label: "Actualités", icon: Newspaper, available: true },

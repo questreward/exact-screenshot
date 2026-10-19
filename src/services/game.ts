@@ -673,3 +673,61 @@ export const businessTaxQuery = queryOptions({
     return data as BusinessTaxState;
   },
 });
+
+// P6 — Profils publics et réseau entre joueurs
+export type PlayerCard = { id: string; name: string; age: number; city: string; situation: string; reputation: number; contact_id?: string };
+export type PlayerProfile = PlayerCard & {
+  bio: string; influence: number; political_reputation: number; job: string | null;
+  organizations: { id: string; name: string; kind: string; role: string }[];
+  mandate: null | { function: string; city: string }; business: null | { name: string; sector: string };
+  followers: number; contacts_count: number; is_me: boolean; following: boolean;
+  contact: null | { id: string; status: "pending" | "accepted"; incoming: boolean };
+};
+export type NetworkState = {
+  me: string; settings: { bio_max: number; message_max: number };
+  bio: { bio: string; listed: boolean };
+  contacts: PlayerCard[]; incoming: PlayerCard[]; outgoing: PlayerCard[]; following: PlayerCard[]; followers: number;
+  threads: { id: string; last_at: string; other: PlayerCard; last_body: string | null; unread: number }[];
+};
+export const networkQuery = queryOptions({
+  queryKey: ["network", "state"],
+  queryFn: async (): Promise<NetworkState> => {
+    const { data, error } = await untyped.rpc("network_state", {});
+    if (error) throw new Error(error.message);
+    return data as NetworkState;
+  },
+});
+export const playerDirectoryQuery = (q: string) => queryOptions({
+  queryKey: ["network", "directory", q],
+  queryFn: async (): Promise<{ city: string; players: PlayerCard[]; here: PlayerCard[] }> => {
+    const { data, error } = await untyped.rpc("player_directory", { _query: q });
+    if (error) throw new Error(error.message);
+    return data as { city: string; players: PlayerCard[]; here: PlayerCard[] };
+  },
+});
+export const playerProfileQuery = (id: string) => queryOptions({
+  queryKey: ["network", "profile", id],
+  queryFn: async (): Promise<PlayerProfile> => {
+    const { data, error } = await untyped.rpc("player_profile", { _target: id });
+    if (error) throw new Error(error.message);
+    return data as PlayerProfile;
+  },
+});
+export const playerThreadQuery = (id: string) => queryOptions({
+  queryKey: ["network", "thread", id],
+  queryFn: async (): Promise<{ other: PlayerCard; can_write: boolean; messages: { id: string; mine: boolean; body: string; sent_at: string }[] }> => {
+    const { data, error } = await untyped.rpc("read_player_thread", { _other: id });
+    if (error) throw new Error(error.message);
+    return data as { other: PlayerCard; can_write: boolean; messages: { id: string; mine: boolean; body: string; sent_at: string }[] };
+  },
+});
+async function netRpc(fn: string, args: Record<string, unknown>) {
+  const { error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+}
+export const setPlayerBio = (i: { bio: string; listed: boolean }) => netRpc("set_player_bio", { _bio: i.bio, _listed: i.listed });
+export const requestContact = (id: string) => netRpc("request_contact", { _target: id });
+export const respondContact = (i: { id: string; accept: boolean }) => netRpc("respond_contact", { _request: i.id, _accept: i.accept });
+export const cancelContact = (id: string) => netRpc("cancel_contact", { _contact: id });
+export const followPlayer = (i: { id: string; on: boolean }) => netRpc("follow_player", { _target: i.id, _on: i.on });
+export const sendPlayerMessage = (i: { id: string; body: string }) => netRpc("send_player_message", { _target: i.id, _body: i.body, _request_id: crypto.randomUUID() });

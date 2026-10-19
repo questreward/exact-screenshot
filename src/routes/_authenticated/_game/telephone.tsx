@@ -12,6 +12,7 @@ import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { gameMeta } from "@/game/metadata";
+import { NetworkPanel } from '@/components/game/NetworkPanel';
 import { GovernanceLink } from '@/components/game/GovernancePage';
 import { governanceQuery } from '@/services/game';
 import { economyQuery } from '@/services/game';
@@ -67,7 +68,7 @@ function PhonePage() {
                 <ChevronLeft className="h-4 w-4" /> Accueil
               </button>
               <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
-              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : (
+              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
                   <p className="mt-6 font-semibold">{COMING_SOON}</p>
