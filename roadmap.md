@@ -200,8 +200,15 @@
 - [x] Vague 1 : conséquences différées (0066), projets citoyens (0067), crises (0068) — préparés et testés, en attente d'installation
 - [ ] Vague 2 : réputations multiples, compétences, journal de vie
 - [x] Priorité 2 vague A : sondages, débats publics, CV citoyen (installée)
-- [x] Priorité 2 vague B : coalitions, vie interne des partis, vérification des faits (0074 préparée, à installer)
-- [ ] Priorités 3 et 4 (après accord)
+- [x] Priorité 2 vague B : coalitions, vie interne des partis, vérification des faits (0074 installée)
+- [ ] Priorité 3 vague A : évolution professionnelle + entretiens d'embauche
+- [ ] Priorité 3 vague B : marché immobilier + médias des joueurs
+- [ ] Priorité 4 (après accord)
+
+# Boutique, voitures, immobilier (document reçu)
+- [ ] Phase 1 : boutique, catalogue, achats, historique, patrimoine, voitures, locations, achat immobilier
+- [ ] Phase 2 : crédits auto/immo, assurance auto, entretien, revente, seconde main
+- [ ] Phase 3 : commerces, boutiques de joueurs, marché, promotions, wishlist, objectifs
 
 # Documents administratifs
 - [x] Vague 1 : profil, carte, photo, signature (installée)
