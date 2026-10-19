@@ -6,6 +6,7 @@ import { useLifeMutation } from "@/components/game/LifeControls";
 import { cancelContact, followPlayer, playerProfileQuery, requestContact, respondContact } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { PlayerActions } from "@/components/game/PlayerActions";
+import { CivicProfileCard } from "@/components/game/CivicProfileCard";
 
 export const Route = createFileRoute("/_authenticated/_game/reseau_/$id")({
   head: () => ({ meta: gameMeta("Profil d'un joueur", "Profil public d'un citoyen de CIVITAS : parcours, engagements et réputation.") }),
@@ -26,6 +27,7 @@ function ProfilePage() {
   const follow = useLifeMutation(followPlayer, p.following ? "Vous ne suivez plus ce joueur" : "Vous suivez ce joueur");
   return <div className="space-y-5">
     <Button asChild variant="ghost" className="h-12"><Link to="/reseau">← Réseau</Link></Button>
+    {!p.blocked_by_me && <CivicProfileCard id={p.id} />}
     <section className="space-y-2 rounded-lg border border-border bg-card p-5">
       <h1 className="text-2xl font-bold">{p.name}</h1>
       <p className="text-muted-foreground">{p.age} ans · {p.city}{p.situation ? ` · ${p.situation}` : ""}</p>
