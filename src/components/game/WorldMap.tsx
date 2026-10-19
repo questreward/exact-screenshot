@@ -158,7 +158,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { data: p } = useSuspenseQuery(positionQuery);
   const { data: spaces } = useSuspenseQuery(spacesQuery(l.id));
   const q = useQueryClient();
-  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
+  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] }), q.invalidateQueries({ queryKey: ["location-presence"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
   const here = p?.location_id === l.id;
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
