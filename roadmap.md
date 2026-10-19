@@ -225,3 +225,7 @@
 # Entreprises de services et agences (document reçu)
 - [ ] Phase 1 + médias des joueurs (après la Boutique, avant l'International)
 - [x] Corriger les pages du menu qui ouvrent /section/... en 404
+
+# Documents reçus (à lire après la Boutique phase 3)
+- [ ] Système de mise en scène réaliste (document reçu)
+- [ ] Refonte complète de l'accueil (document reçu)
