@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { LoaderCircle, ShoppingBag, Search, Check, Wrench } from "lucide-react";
+import { LoaderCircle, ShoppingBag, Search, Check, Wrench, Heart, Target, BadgePercent } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopQuery, shopSell, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
+import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, shopQuery, shopSell, shopWish, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
-import { SECTIONS, creditCost, creditMonthly, filterProducts, notaryFees, type ShopSort } from "@/game/shop";
+import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
   head: () => ({ meta: gameMeta("Boutique", "Achetez de vrais produits comptant ou à crédit, revendez vos biens et trouvez des occasions de seconde main.") }),
@@ -40,11 +40,20 @@ function ShopPage() {
     onSuccess: (_r, l) => { toast.success(`${l.name} d'occasion acheté.`); setUsed(null); refresh(); }, onError });
   const maintain = useMutation({ mutationFn: (a: ShopAsset) => maintainAsset(a.catalog_id),
     onSuccess: () => { toast.success("Entretien payé, véhicule de nouveau disponible."); refresh(); }, onError });
+  const extras = useQuery(shopExtrasQuery);
+  const wish = useMutation({ mutationFn: (v: { cmd: "wish" | "goal"; p: ShopProduct }) => shopWish(v.cmd, v.p.id),
+    onSuccess: (r, v) => { toast.success(v.cmd === "goal" ? (r.goal ? `${v.p.name} devient ton objectif d'achat.` : "Objectif retiré.") : (r.wished ? "Ajouté à tes envies." : "Retiré de tes envies.")); qc.invalidateQueries({ queryKey: ["shop"] }); }, onError });
+  const promo = useMemo(() => new Map((extras.data?.promos ?? []).map(p => [p.id, p.percent])), [extras.data]);
+  const wished = useMemo(() => new Map((extras.data?.wishlist ?? []).map(w => [w.id, w.goal])), [extras.data]);
+  const cashPrice = (p: ShopProduct) => storePrice(p.price, promo.get(p.id) ?? 0);
 
   const brands = useMemo(() => [...new Set((s?.products ?? []).map(p => p.brand))].sort((a, b) => a.localeCompare(b, "fr")), [s]);
-  const list = useMemo(() => filterProducts(s?.products ?? [], { search, section, brand, maxPrice: max ? Number(max) : null }, sort), [s, search, section, brand, max, sort]);
+  const list = useMemo(() => filterProducts((s?.products ?? []).map(p => ({ ...p, price: storePrice(p.price, promo.get(p.id) ?? 0), base: p })), { search, section, brand, maxPrice: max ? Number(max) : null }, sort).map(x => x.base), [s, search, section, brand, max, sort, promo]);
   const total = (s?.assets ?? []).reduce((n, a) => n + a.value, 0);
   const activeCredits = (s?.credit.list ?? []).filter(c => c.status === "active");
+  const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
+  const wishList = (s?.products ?? []).filter(p => wished.has(p.id));
+  const goal = wishList.find(p => wished.get(p.id));
 
   return <div className="mx-auto max-w-3xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
@@ -54,11 +63,18 @@ function ShopPage() {
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Boutique : Disponible dans une prochaine étape.</p>}
     {s && <Tabs defaultValue="catalogue">
       <TabsList className="flex h-12 w-full justify-start overflow-x-auto">
-        <TabsTrigger value="catalogue">Catalogue</TabsTrigger><TabsTrigger value="occasions">Occasions</TabsTrigger>
+        <TabsTrigger value="catalogue">Catalogue</TabsTrigger><TabsTrigger value="envies">Envies{wishList.length ? ` (${wishList.length})` : ""}</TabsTrigger>
+        <TabsTrigger value="occasions">Occasions</TabsTrigger>
         <TabsTrigger value="credits">Crédits{activeCredits.length ? ` (${activeCredits.length})` : ""}</TabsTrigger>
         <TabsTrigger value="patrimoine">Mes biens</TabsTrigger><TabsTrigger value="achats">Historique</TabsTrigger></TabsList>
 
       <TabsContent value="catalogue" className="mt-4 space-y-3">
+        {promoList.length > 0 && <section className="rounded-xl border border-primary/40 bg-primary/10 p-4">
+          <p className="flex items-center gap-2 font-heading font-bold"><BadgePercent className="h-5 w-5 text-primary" />Promos de la semaine</p>
+          <p className="text-xs text-muted-foreground">{promoList.length} produits remisés, au comptant{extras.data?.promo_ends ? `, jusqu'au ${day(extras.data.promo_ends)}` : ""}. Nouvelles promos chaque semaine de jeu.</p>
+          <div className="mt-2 flex flex-wrap gap-2">{promoList.map(p => <button key={p.id} type="button" onClick={() => setSearch(p.name)}
+            className="min-h-11 rounded-full bg-card px-3 py-2 text-sm font-semibold">{p.name} <span className="text-primary">−{promo.get(p.id)} %</span></button>)}</div>
+        </section>}
         <label className="relative block"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
           <input className="h-12 w-full rounded-lg border border-input bg-background pl-10 pr-3" placeholder="Rechercher une marque, un produit…" value={search} onChange={e => setSearch(e.target.value)} /></label>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -68,22 +84,22 @@ function ShopPage() {
           <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
         </div>
         <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
-        <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => {
-          const creditable = p.kind === "vehicle" || !!p.details.realestate;
-          const cash = p.price + (p.details.realestate ? notaryFees(p.price) : 0);
-          const blocked = p.kind === "vehicle" && !s.license;
-          return <li key={p.id} className="flex flex-col rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
-            <p className="font-heading text-lg font-bold">{p.name}</p>
-            <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
-            {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
-            {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
-            <div className="mt-3 flex items-center justify-between gap-2"><div><p className="font-heading text-xl font-bold">{eur(p.price)}</p>
-              {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
-              {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
-                : <Button className="h-11" disabled={blocked || (!creditable && cash > s.balance)} onClick={() => setConfirm(p)}>
-                  {blocked ? "Permis requis" : !creditable && cash > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
-          </li>; })}</ul>
+        <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
+          busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+      </TabsContent>
+
+      <TabsContent value="envies" className="mt-4 space-y-3">
+        {goal ? (() => { const g = goalProgress(s.balance, cashPrice(goal) + (goal.details.realestate ? notaryFees(goal.price) : 0)); return <div className="rounded-xl bg-secondary p-4 text-secondary-foreground">
+          <p className="flex items-center gap-2 text-sm opacity-80"><Target className="h-4 w-4" />Mon objectif d'achat</p>
+          <p className="font-heading text-xl font-bold">{goal.brand} {goal.name}</p>
+          <div className="mt-2 h-3 overflow-hidden rounded-full bg-background/30"><div className="h-full bg-primary" style={{ width: `${g.percent}%` }} /></div>
+          <p className="mt-1 text-sm">{g.missing === 0 ? "Objectif atteint : tu peux l'acheter !" : `${g.percent} % · il te manque ${eur(g.missing)}`}</p>
+          <p className="text-xs opacity-80">Calculé sur ton solde : l'argent reste sur ton compte.</p></div>; })()
+          : <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Pas d'objectif. Touche la cible sur un produit pour suivre ton épargne.</p>}
+        {wishList.length === 0 ? <p className="text-sm text-muted-foreground">Ta liste d'envies est vide. Touche le cœur sur un produit pour l'ajouter.</p> :
+          <ul className="grid gap-3 sm:grid-cols-2">{wishList.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished isGoal={!!wished.get(p.id)}
+            busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
+        <p className="text-xs text-muted-foreground">Ta liste est privée. Un produit acheté en sort automatiquement.</p>
       </TabsContent>
 
       <TabsContent value="occasions" className="mt-4 space-y-3">
