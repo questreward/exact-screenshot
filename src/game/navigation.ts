@@ -39,6 +39,8 @@ export const SECTIONS: Section[] = [
   { id: "reseau", label: "Réseau", icon: Network, description: "Profils des joueurs, contacts, abonnements et messages.", available: true },
   { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
+  { id: "debats-publics", label: "Débats publics", icon: MessagesSquare, description: "Positions, questions et réponses sur une loi, un projet ou une crise.", available: true },
+  { id: "sondages", label: "Sondages", icon: PieChart, description: "Opinion des joueurs et opinion simulée des habitants.", available: true },
   { id: "famille", label: "Famille", icon: Heart, description: "Couple, enfants, logement partagé et amis proches.", available: true },
   { id: "projets", label: "Projets citoyens", icon: Hammer, description: "Proposez et portez des projets pour votre ville.", available: true },
   { id: "crises", label: "Crises", icon: Siren, description: "Crises en cours, réponses et conséquences à venir.", available: true },
