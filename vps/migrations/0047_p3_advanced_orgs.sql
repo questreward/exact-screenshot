@@ -99,7 +99,7 @@ DECLARE cid uuid; c public.characters; s public.org_settings; oid uuid; okind te
   IF NOT s.enabled THEN RAISE EXCEPTION 'Création momentanément indisponible'; END IF;
   okind := CASE _kind WHEN 'association' THEN 'citizen' WHEN 'movement' THEN 'movement' WHEN 'party' THEN 'party' END;
   IF okind IS NULL THEN RAISE EXCEPTION 'Type d''organisation inconnu'; END IF;
-  IF c.age < CASE WHEN okind = 'party' THEN s.party_min_age ELSE s.other_min_age END THEN RAISE EXCEPTION 'Âge minimum non atteint'; END IF;
+  IF c.age < (CASE WHEN okind = 'party' THEN s.party_min_age ELSE s.other_min_age END) THEN RAISE EXCEPTION 'Âge minimum non atteint'; END IF;
   IF length(nm) < 3 OR length(nm) > 60 THEN RAISE EXCEPTION 'Le nom doit faire entre 3 et 60 caractères'; END IF;
   IF length(coalesce(_description, '')) > 500 THEN RAISE EXCEPTION 'Description trop longue'; END IF;
   IF EXISTS (SELECT 1 FROM public.organizations WHERE lower(name) = lower(nm)) THEN RAISE EXCEPTION 'Ce nom est déjà pris'; END IF;
