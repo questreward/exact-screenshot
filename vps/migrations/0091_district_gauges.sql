@@ -68,7 +68,7 @@ BEGIN
   SELECT * INTO s FROM district_gauge_settings; _cur := district_gauge_week(_now);
   PERFORM pg_advisory_xact_lock(hashtext('district_gauges:' || _city));
   INSERT INTO district_gauges(district_id, gauge, value, settled_week)
-    SELECT d.id, x.g, s.base, _cur FROM districts d CROSS JOIN (VALUES ('cadre'),('tranquillite'),('animation')) x(g) WHERE d.city_id = _city
+    SELECT d.id, x.g, s.base, _cur - 1 FROM districts d CROSS JOIN (VALUES ('cadre'),('tranquillite'),('animation')) x(g) WHERE d.city_id = _city
   ON CONFLICT DO NOTHING;
 
   FOR r IN SELECT p.id, p.title, coalesce(p.district_id, l.district_id) AS district_id, p.completed_at FROM public_decisions p JOIN locations l ON l.id = p.location_id
