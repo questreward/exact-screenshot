@@ -382,5 +382,7 @@
 - [ ] Économie unique sur tout le jeu (vérifier/unifier)
 - [ ] Interactions plus développées, IA locale au maximum (facultative)
 - [ ] Tous les documents et espaces français
-- [ ] Une centaine de lois supplémentaires
+- [x] Une centaine de lois supplémentaires : 0103 prête (fr-101 à fr-200)
+- [ ] Installer 0103 sur le VPS (accord d’Alex)
+- [ ] Ensuite : personnages animés, économie unique, documents et espaces français (choisis par Alex)
 - [ ] Animations de personnages qui rappellent qu'on est dans un jeu
