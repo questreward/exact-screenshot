@@ -546,7 +546,7 @@ export async function joinProtest(protestId: string) {
   const { error } = await untyped.rpc("join_protest", { _protest: protestId });
   if (error) throw new Error(error.message);
 }
-export type TvSegment = { id: string; kind: "news" | "interview"; title: string; body: string; news_id: string | null; scene?: import('@/game/scenes').EventScene };
+export type TvSegment = { id: string; kind: "news" | "interview"; title: string; body: string; news_id: string | null; scene?: import('@/game/scenes').EventScene | undefined };
 export type TvState = { date: string; city_id: string; local: TvSegment[]; national: TvSegment[]; invitations: { id: string; question: string; deadline: string; answer: string | null; scope: string }[] };
 export const tvQuery = (cityId?: string) => queryOptions({
   queryKey: ["tv", "state", cityId ?? "mine"],
