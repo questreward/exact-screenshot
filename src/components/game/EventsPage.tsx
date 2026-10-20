@@ -79,7 +79,7 @@ export function EventsPage() {
 
 export function LocationEvents({ locationId, full = false }: { locationId: string; full?: boolean }) {
   const { data } = useSuspenseQuery(worldEventsQuery);
-  const list = data.events.filter(e => e.location_id === locationId && e.phase !== 'termine');
+  const list = data.events.filter(e => e.location_id === locationId && displayPhase(e, data.now) !== 'termine');
   if (list.length === 0) return null;
   if (full) return <section id="evenements-lieu" aria-label="Événements de ce lieu" className="space-y-3"><p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="h-4 w-4" />{list.length > 1 ? `${list.length} événements ici` : 'Événement ici'}</p>{list.map(e => <EventCard key={e.id} e={e} now={data.now} />)}</section>;
   return <div className="space-y-2 border-y border-border py-3">
