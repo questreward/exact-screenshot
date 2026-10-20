@@ -423,3 +423,8 @@
 - [x] Protection civile : existant audité ; recrutement immédiat, formation courte, bénévolat, missions et progression présents ; antennes/dossier/qualifications détaillées absents.
 - [ ] Extension Protection civile : périmètre et nouvelles règles à valider avant préparation SQL exact ; aucune application autorisée.
 - [ ] Nouvelle extension V1 vidéo/scènes/intérieurs/catalogue : arbitrage de clôture demandé par Alex à 17:56 ; ressources VPS pour vidéo à mesurer, périmètre détaillé et règles à valider, aucun service externe ni migration implicite.
+
+## Livraison finale unique — demande d’Alex à 18:00 UTC
+- [ ] Réunir téléphone, contrôles, Protection civile, JT vidéo local, scènes/intérieurs et 10 000 produits dans une proposition cohérente ; aucun sujet retiré implicitement.
+- [ ] Présenter les règles nouvelles et le SQL exact avant toute installation ; livrer un point d’entrée unique avec sauvegarde et essais préalables, sans réinstaller les migrations validées.
+- [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.
