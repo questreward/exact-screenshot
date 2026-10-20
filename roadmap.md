@@ -363,7 +363,7 @@
 - [x] Impôts réalistes : 0096 prête et testée, page Impôts
 - [x] 0096 installée sur le VPS (déclaré par Alex)
 - [x] Transports du quotidien : 0097 prête et testée, page Transports
-- [ ] Installer 0097 sur le VPS (accord d’Alex)
+- [x] 0097 installée sur le VPS (déclaré par Alex)
 - [ ] Vie étudiante (orientation fictive, bourses, logement étudiant, examens, diplômes)
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
 
