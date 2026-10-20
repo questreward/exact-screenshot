@@ -418,3 +418,4 @@
 - [ ] Vérifier les corrections au navigateur sur petites largeurs et relancer les essais concernés.
 - [ ] Comparer les engagements aux fonctions présentes ; distinguer les manques essentiels, propositions V2 et essais VPS encore nécessaires.
 - [ ] Protection civile : demande explicite avant clôture V1 ; examiner interventions, paperasse, recrutement et antennes, préparer une extension réaliste réutilisant les secours ; SQL exact et accord distinct requis avant toute application.
+- [ ] Nouvelle extension explicitement demandée avant clôture V1 : JT avec vidéos alimentées par IA locale, personnages/interventions/manifestations plus réalistes, intérieurs logement et véhicules, boutique de 10 000 produits répartis entre magasins ; préparer lots et limites VPS avant développement, aucun service externe ni migration implicite.
