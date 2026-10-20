@@ -43,6 +43,7 @@
 - Mission scenes/dossiers use only server snapshots, no invented incidents, progress or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
-- Interior views and volunteer reports project recorded trips, placements and shifts only; no decorative state may imply a paid ticket, certification, casualty or settled outcome.
+- Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
 - TV captions quote stored editions; device-local French voices, paused clips and bundled-image fallback preserve independence.
-- Volunteer history and completed-shift notes use separate private snapshots and character-locked RPCs; append-only records never alter career rewards.
+- Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
+- VPS test restores omit pg_cron/cron via archive TOC; full backups retain them because cron is production-bound.
