@@ -1832,15 +1832,15 @@ export async function claimRetirement() {
   return data as RetirementState;
 }
 
-export type EconomyState = {
+export type ConjonctureState = {
   smic: number;
   treasury: { balance: number; debt: number; income: number; expenses: number };
   history: { month: string; inflation: number; cpi: number; smic: number; unemployment: number; growth: number; budget: number; debt: number }[];
   cities: { id: string; name: string; food: number; rent: number; fuel: number }[];
   city_history: { city_id: string; month: string; food: number; rent: number; fuel: number }[];
 };
-export const economyQuery = queryOptions({ queryKey: ['economy', 'conjoncture'], staleTime: 30_000, queryFn: async (): Promise<EconomyState> => {
+export const conjonctureQuery = queryOptions({ queryKey: ['conjoncture'], staleTime: 30_000, queryFn: async (): Promise<ConjonctureState> => {
   const { data, error } = await (supabase.rpc as unknown as LooseRpc)('economy_state', {});
   if (error) throw new Error(error.message);
-  return data as EconomyState;
+  return data as ConjonctureState;
 } });

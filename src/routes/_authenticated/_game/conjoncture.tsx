@@ -1,17 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { economyQuery } from '@/services/game';
+import { conjonctureQuery } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
 import { economyPercent } from '@/game/economy-presentation';
 import { euros } from '@/game/income-tax';
 
 export const Route = createFileRoute('/_authenticated/_game/conjoncture')({
   head: () => ({ meta: gameMeta('Conjoncture', 'Inflation, SMIC, prix locaux et budget de l’État dans CIVITAS.') }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(economyQuery),
+  loader: ({ context }) => context.queryClient.ensureQueryData(conjonctureQuery),
   component: EconomyPage,
 });
 function EconomyPage() {
-  const { data: s } = useSuspenseQuery(economyQuery);
+  const { data: s } = useSuspenseQuery(conjonctureQuery);
   const current = s.history[0];
   return <main className="mx-auto max-w-4xl space-y-6 p-4 pb-24">
     <header><h1 className="font-heading text-2xl font-bold">Conjoncture</h1><p className="text-sm text-muted-foreground">Économie fictive · Mise à jour à la lecture · Mois du jeu</p></header>
