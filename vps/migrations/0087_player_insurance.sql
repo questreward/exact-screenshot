@@ -38,7 +38,8 @@ CREATE TABLE public.insurer_ledger (
   world_at timestamptz NOT NULL DEFAULT public.game_now(),
   CHECK (amount = treasury_amount + fictive_amount)
 );
-GRANT SELECT ON public.insurer_ledger TO authenticated;
+-- La clé technique contient des identifiants : elle n'est jamais lisible par les joueurs.
+GRANT SELECT (id,business_id,kind,amount,treasury_amount,fictive_amount,world_at) ON public.insurer_ledger TO authenticated;
 GRANT ALL ON public.insurer_ledger TO service_role;
 ALTER TABLE public.insurer_ledger ENABLE ROW LEVEL SECURITY;
 CREATE POLICY insurer_ledger_owner ON public.insurer_ledger FOR SELECT TO authenticated USING (

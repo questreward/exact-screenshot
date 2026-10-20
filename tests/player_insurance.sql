@@ -66,6 +66,7 @@ SELECT public.test_assert((public.insurance_state()->'contracts'->0->>'insurer')
 DO $$ BEGIN BEGIN PERFORM public.insurer_subscribe('health',(SELECT bid FROM refs),gen_random_uuid()); RAISE EXCEPTION 'Compagnie fermée acceptée'; EXCEPTION WHEN OTHERS THEN IF SQLERRM='Compagnie fermée acceptée' THEN RAISE; END IF; END; END $$;
 SELECT public.test_assert(NOT has_function_privilege('authenticated','public.insurer_claim(uuid,text,integer)','EXECUTE'),'Paiement interne inaccessible aux joueurs');
 SELECT public.test_assert(NOT has_function_privilege('authenticated','public.insurer_premium(uuid,text,integer)','EXECUTE'),'Recette interne inaccessible aux joueurs');
+SELECT public.test_assert(NOT has_column_privilege('authenticated','public.insurer_ledger','operation_key','SELECT'),'Identifiants techniques invisibles aux joueurs');
 -- Propriétaire ne peut lire les contrats/incidents privés : mêmes politiques que 0050.
 GRANT SELECT ON public.characters,public.businesses TO authenticated;
 SELECT set_config('test.user','10000000-0000-0000-0000-000000000001',true);
