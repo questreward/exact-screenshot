@@ -67,6 +67,7 @@ export const SECTIONS: Section[] = [
   { id: "presse", label: "Médias", icon: Newspaper, description: "Ton journal et ta chaîne : articles, émissions, abonnés.", available: true },
   { id: "reseau", label: "Réseau", icon: Network, description: "Profils des joueurs, contacts, abonnements et messages.", available: true },
   { id: "civi", label: "Civi", icon: MessagesSquare, description: "Le réseau social du jeu : publications, abonnés et buzz.", available: true },
+  { id: "presidence", label: "Présidence", icon: Landmark, description: "Élysée : présidentielle, allocutions, lois et référendums.", available: true },
   { id: "petitions", label: "Pétitions", icon: FileSignature, description: "Pétitions de ville ou nationales et référendums.", available: true },
   { id: "debats", label: "Débats", icon: Swords, description: "Défiez un joueur en débat, le public tranche.", available: true },
   { id: "debats-publics", label: "Débats publics", icon: MessagesSquare, description: "Positions, questions et réponses sur une loi, un projet ou une crise.", available: true },
@@ -116,7 +117,7 @@ export const SECTION_GROUPS: SectionGroup[] = [
   { id: "argent", label: "Argent et achats", ids: ["banque", "patrimoine", "impots", "retraite", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
   { id: "monde", label: "Monde", ids: ["voyages", "monde", "carte", "france", "evenements", "crises", "conjoncture", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["civi", "reseau", "organisations", "syndicats", "justice", "classements"] },
-  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "elections", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
+  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "presidence", "elections", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
   { id: "reglages", label: "Réglages", ids: ["parametres"] },
 ];
 
