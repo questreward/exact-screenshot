@@ -2,18 +2,19 @@ import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
+import { CivilProtectionPresidency } from "@/components/game/CivilProtectionPresidency";
 import { VolunteerDossier } from "@/components/game/VolunteerDossier";
 import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { securityAction, securityMissionsQuery, securityQuery, volunteerDossierQuery, type SecurityState } from "@/services/game";
+import { cpPresidencyQuery, securityAction, securityMissionsQuery, securityQuery, volunteerDossierQuery, type SecurityState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { OUTCOME_LABELS, SERVICE_INTRO, TEAMS, nextRank, weeklyPay, type SecurityServiceId } from "@/game/security-careers";
 
 export const Route = createFileRoute("/_authenticated/_game/secours")({
   head: () => ({ meta: gameMeta("Police, pompiers et secours", "Concours, formation, horaires d'équipe et missions de police, de sapeur-pompier et de protection civile.") }),
   loader: async ({ context }) => {
-    await Promise.all([context.queryClient.ensureQueryData(securityQuery), context.queryClient.ensureQueryData(securityMissionsQuery), context.queryClient.ensureQueryData(volunteerDossierQuery)]);
+    await Promise.all([context.queryClient.ensureQueryData(securityQuery), context.queryClient.ensureQueryData(securityMissionsQuery), context.queryClient.ensureQueryData(volunteerDossierQuery), context.queryClient.ensureQueryData(cpPresidencyQuery)]);
   },
   component: SecurityPage,
 });
@@ -54,6 +55,7 @@ function SecurityPage() {
     {s && (s.career && s.career.status !== "quitte"
       ? <Career s={s} missions={missions} busy={act.isPending} run={act.mutate} />
       : <Recruitment s={s} busy={act.isPending} run={act.mutate} />)}
+    {s?.career?.service === "protection_civile" && <CivilProtectionPresidency />}
     {s && <VolunteerDossier state={s} missions={missions}/>}
     {s && s.ledger.length > 0 && <Card title="Mon dossier" icon={Wallet}>
       <ul className="space-y-1 text-sm">{s.ledger.map(l => <li key={l.key} className="flex justify-between gap-2">

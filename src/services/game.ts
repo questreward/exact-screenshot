@@ -2019,3 +2019,28 @@ export async function rsaDeclare(input: { quarter: string; salary: number; unemp
   const { error } = await rsaRpc('rsa_declare', { _quarter: input.quarter, _salary: input.salary, _unemployment: input.unemployment, _pension: input.pension, _free_housing: input.freeHousing });
   if (error) throw new Error(error.message);
 }
+
+export type CpState = {
+ now: string; actor: string; eligible: boolean; president: string | null; is_president: boolean;
+ settings: { message_limit: number; indemnity: number };
+ elections: { id: string; opens_at: string; vote_at: string; closes_at: string; ends_at: string; settled: boolean; winner: string | null }[];
+ candidates: { election_id: string; character_id: string }[]; voted: string[];
+ branches: { city_id: string; label: string }[];
+ dashboard: { city_id: string; label: string; volunteers: number; completed: number; operation_services: number }[];
+ nominees: { character_id: string; city_id: string | null }[];
+ heads: { city_id: string; character_id: string }[];
+ operations: { id: string; city_id: string; expires_at: string; slots: number }[];
+ messages: { id: string; body: string; city_id: string | null; created_at: string }[]; balance: number | null;
+};
+export const cpPresidencyQuery = queryOptions({ queryKey: ['cp-presidency'], staleTime: 0, refetchInterval: 15000,
+ queryFn: async (): Promise<CpState> => {
+  const { data, error } = await (supabase.rpc as unknown as Rpc)('cp_state');
+  if (error) throw new Error(error.message);
+  return data as CpState;
+ },
+});
+export async function cpAction(args: { _action: 'candidate' | 'vote' | 'head' | 'operation' | 'message' | 'join'; _election?: string; _target?: string | null; _city?: string | null; _body?: string; _request?: string }) {
+ const { data, error } = await (supabase.rpc as unknown as Rpc)('cp_action', args);
+ if (error) throw new Error(error.message);
+ return data as CpState;
+}
