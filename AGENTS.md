@@ -42,3 +42,5 @@
 
 - Postal mail: internal post_deliver uses recipient-scoped unique keys; registered deadlines retain first presentation, postage carries prepaid cents across whole-euro economy debits.
 - Online bank extends bank_profiles and player_transfers; fictional RIBs never represent real accounts, card limits are informational, and monthly account fees skip insufficient balances without new debt.
+
+- Secure titles extend character_identity and administrative_documents; never duplicate a valid title, and activate CNI/passport only after registered-mail collection.
