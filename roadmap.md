@@ -237,7 +237,8 @@
 - [ ] CIVITAS Services (annuaire + parcours)
 - [x] Aménager chez soi : plan validé ; écran Chez moi et proposition additive 0089 préparés, aucune fonction financière remplacée. 215 tests frontend réussis ; règles SQL testées sur copie jetable, placement/rotation/nom/sauvegarde/relecture/rangement vérifiés dans l’aperçu connecté avec sauvegarde reliée à cette copie, téléphone et ordinateur contrôlés.
 - [x] Aménager chez soi : SQL exact 0089 présenté et validé par Alex le 20 octobre 2026 ; commandes directes d’installation fournies.
-- [ ] Aménager chez soi : installation VPS à confirmer par le résultat jusqu’à COMMIT, puis mise à jour du site et essai en jeu. Aucun SQL appliqué sur VPS ou Lovable Cloud par l’assistant ; essais financiers limités aux règles existantes et patrimoine de la copie, pas de régression VPS complète prétendue.
+- [x] Aménager chez soi : installation 0089 sur VPS confirmée le 20 octobre 2026 par le compte rendu transmis jusqu’à COMMIT sans erreur, après sauvegarde ; ne pas relancer la migration.
+- [ ] Aménager chez soi : mise à jour du site et essai en jeu sur VPS à confirmer. Essais financiers limités aux règles existantes et patrimoine de la copie, pas de régression VPS complète prétendue.
 - [x] Logements visuels : plan validé, catalogue illustré et visites intégrés à la Boutique ; six images locales, filtres ville/pièces, données et achats existants conservés, aucune migration.
 - [x] Logements visuels : 207 tests réussis et affichage téléphone/ordinateur vérifié avec catalogue simulé ; filtres, galerie, fermeture et confirmation sans paiement contrôlés. Compilation OK.
 - [x] Logements visuels : mise à jour du site VPS déclarée installée par Alex le 20 octobre 2026 ; aucune migration nécessaire.
