@@ -369,7 +369,7 @@
 
 ## Demandes d'Alex (20/10) — à découper et valider
 - [x] Simulation de conduite entre villes : 0098 prête et testée, page En route
-- [ ] Installer 0098 sur le VPS (accord d’Alex)
+- [x] 0098 installée sur le VPS (déclaré par Alex)
 - [ ] Économie unique sur tout le jeu (vérifier/unifier)
 - [ ] Interactions plus développées, IA locale au maximum (facultative)
 - [ ] Tous les documents et espaces français
