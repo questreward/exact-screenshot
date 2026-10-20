@@ -442,10 +442,12 @@
 - [x] Intérieur camion lié aux missions existantes : ouverture/retour au véhicule, sans trajet ni vitesse inventés ; mise à jour VPS requise.
 - [x] Contrôles visuels 390/1280 : ouverture/retour camion, pause reportage, mouvement réduit et absence de débordement ; montage simulé sans erreur, pas parcours connecté VPS.
 - [x] Catalogue : tarifs fictifs validés par Alex (petits objets 5–100 €, mode/sport 10–500 €, mobilier 25–3 000 €, électronique/électroménager 20–3 000 €), aucun accord d’application SQL implicite.
-- [ ] Catalogue 10 000 : inventaire VPS réel requis avant SQL exact ; recherche/pagination serveur à préparer, aucun produit inséré.
+- [x] Inventaire VPS 18:34 reçu : 62 produits distincts, 7 rubriques, 30 magasins ; 9 938 produits supplémentaires nécessaires.
+- [ ] Catalogue 10 000 : préparer 9 938 fiches distinctes et SQL exact avec recherche/pagination serveur ; aucun produit inséré.
 - [ ] Antennes/notes 0114 et essais VPS : résultat du contrôle corrigé requis, aucune installation supposée.
 - [x] Réponse à Alex 18:26 : distinguer améliorations livrées, 0114 préparée non installée, engagements non terminés et essais manquants ; aucun gel assimilé à une réalisation complète.
 - [x] Rapport VPS 18:25 reçu : sauvegarde créée, restauration bloquée par pg_cron avant essai 0114 ; correction du contrôle isolé préparée sans changement du jeu.
-- [ ] Relancer le contrôle corrigé sur VPS : sortie de restauration des données du jeu et essai 0114 requis ; tâches pg_cron exclues du contrôle, sauvegarde complète conservée.
+- [x] Rapport VPS 18:34 : restauration isolée des données du jeu annoncée réussie, pg_cron exclu ; sauvegarde complète créée.
+- [ ] Recevoir la fin du contrôle 0114 : fichier reçu tronqué avant essai à blanc ; résultat non confirmé, aucune installation supposée.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.
