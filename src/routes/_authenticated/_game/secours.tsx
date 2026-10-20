@@ -1,3 +1,4 @@
+import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -41,6 +42,7 @@ function SecurityPage() {
   });
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
+    <JobMissionCard />
     <header className="flex items-center gap-3"><Siren className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Police, pompiers, secours</h1>
         <p className="text-sm text-muted-foreground">Recrutement, formation, horaires et missions tirées de ce qui se passe dans ta ville.</p></div></header>
