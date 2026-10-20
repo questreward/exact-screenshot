@@ -84,7 +84,7 @@ BEGIN
   FOR e IN SELECT value FROM jsonb_array_elements(_room_names) LOOP
     IF jsonb_typeof(e)<>'string' OR length(e#>>'{}') NOT BETWEEN 1 AND 40 THEN RAISE EXCEPTION 'Nom de pièce invalide'; END IF;
   END LOOP;
-  DELETE FROM public.rental_home_placements p USING public.housing_leases l WHERE p.lease_id=l.id AND p.character_id=cid AND (l.status<>'actif' OR l.ended_at IS NOT NULL);
+  DELETE FROM public.rental_home_placements rp USING public.housing_leases l WHERE rp.lease_id=l.id AND rp.character_id=cid AND (l.status<>'actif' OR l.ended_at IS NOT NULL);
   INSERT INTO public.rental_home_layouts(lease_id,character_id) VALUES(_lease_id,cid) ON CONFLICT DO NOTHING;
   SELECT version INTO v FROM public.rental_home_layouts WHERE lease_id=_lease_id AND character_id=cid FOR UPDATE;
   IF v IS NULL OR v<>_version THEN RAISE EXCEPTION 'Aménagement modifié ailleurs : rechargez avant de sauvegarder'; END IF;
@@ -95,7 +95,7 @@ BEGIN
     rm:=(e->>'room')::integer; px:=(e->>'x')::integer; py:=(e->>'y')::integer; r:=(e->>'rotation')::integer;
     SELECT f.width,f.height INTO item_box FROM public.personal_assets a JOIN public.furnishing_catalog f ON f.catalog_id=a.catalog_id WHERE a.id=aid AND a.character_id=cid FOR UPDATE OF a;
     IF NOT FOUND THEN RAISE EXCEPTION 'Objet non possédé ou non plaçable'; END IF;
-    IF EXISTS(SELECT 1 FROM public.home_placements WHERE asset_id=aid) OR EXISTS(SELECT 1 FROM public.rental_home_placements p JOIN public.housing_leases l ON l.id=p.lease_id WHERE p.asset_id=aid AND p.lease_id<>_lease_id AND l.status='actif' AND l.ended_at IS NULL) THEN RAISE EXCEPTION 'Objet placé dans un autre logement : rangez-le d’abord'; END IF;
+    IF EXISTS(SELECT 1 FROM public.home_placements WHERE asset_id=aid) OR EXISTS(SELECT 1 FROM public.rental_home_placements rp JOIN public.housing_leases l ON l.id=rp.lease_id WHERE rp.asset_id=aid AND rp.lease_id<>_lease_id AND l.status='actif' AND l.ended_at IS NULL) THEN RAISE EXCEPTION 'Objet placé dans un autre logement : rangez-le d’abord'; END IF;
     IF r NOT IN(0,90,180,270) OR rm>=rooms THEN RAISE EXCEPTION 'Pièce ou rotation invalide'; END IF;
     w:=CASE WHEN r IN(90,270) THEN item_box.height ELSE item_box.width END; ht:=CASE WHEN r IN(90,270) THEN item_box.width ELSE item_box.height END;
     IF px+w>g OR py+ht>g THEN RAISE EXCEPTION 'Objet hors de la pièce'; END IF;
