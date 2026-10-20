@@ -389,3 +389,9 @@
 - [x] Économie unique (0104) installée
 - [x] Espaces français 0105–0108 installés
 - [x] Métiers manquants (0109) installés
+
+## Lot suivant (choisi par Alex)
+- [ ] 0110 Économie réelle (prix/SMIC/salaires publics/carte/pourboires) — règles à valider
+- [ ] 0111 Missions des nouveaux métiers
+- [ ] 0112 Taxe foncière aux mairies
+- [ ] 0113 Voyages à l'étranger
