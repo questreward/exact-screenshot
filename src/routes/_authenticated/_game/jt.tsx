@@ -11,10 +11,15 @@ import { CHANNELS, popularityBarometer, speechFor, weatherFor, anchorFor, report
 import anchorNational from "@/assets/tv-anchor-national.jpg";
 import anchorLocal from "@/assets/tv-anchor-local.jpg";
 import anchorInfo from "@/assets/tv-anchor-info.jpg";
+import { SCENE_IMAGES } from '@/components/game/EventScene';
+import { sceneKind, importanceLevel, IMPORTANCE_LABEL } from '@/game/scenes';
 
 const castImages = import.meta.glob("@/assets/tv/*.jpg", { eager: true, import: "default" }) as Record<string, string>;
 const IMG: Record<string, string> = { "anchor-national": anchorNational, "anchor-local": anchorLocal, "anchor-info": anchorInfo };
-for (const [path, url] of Object.entries(castImages)) IMG[path.split("/").pop()!.replace(".jpg", "")] = url;
+for (const [path, url] of Object.entries(castImages)) {
+  const filename = path.split('/').pop();
+  if (filename) IMG[filename.replace('.jpg', '')] = url;
+}
 
 export const Route = createFileRoute("/_authenticated/_game/jt")({
   validateSearch: (s: Record<string, unknown>): { city?: string | undefined } => ({ city: typeof s["city"] === "string" ? s["city"] : undefined }),
@@ -49,7 +54,7 @@ function useVoice() {
 }
 
 function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; segments: TvSegment[]; ticker: string[]; cityName: string }) {
-  const info = CHANNELS.find(c => c.id === channel)!;
+  const info = CHANNELS.find(c => c.id === channel) ?? { name: 'CIVITAS', tagline: 'Le journal' };
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
@@ -71,7 +76,9 @@ function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; s
   const anchor = anchorFor(channel, today);
   const topic = seg ? (seg.kind === "interview" ? "general" : topicFor(`${seg.title} ${seg.body}`)) : "general";
   const reporter = reporterFor(channel, topic, seg ? `${seg.title}|${today}` : today);
-  const video = seg && seg.kind !== "interview" ? TOPIC_VIDEO[topic] : undefined;
+  const scene = seg?.scene;
+  const sceneImage = scene ? SCENE_IMAGES[sceneKind(scene.category)] : undefined;
+  const video = seg && seg.kind !== "interview" && !scene ? TOPIC_VIDEO[topic] : undefined;
   // Plateau : présentateur 4 s, puis reportage (vidéo ou reporter sur place) pendant la lecture.
   const [onSet, setOnSet] = useState(true);
   useEffect(() => { setOnSet(true); if (!playing) return; const t = window.setTimeout(() => setOnSet(false), 4000); return () => window.clearTimeout(t); }, [idx, playing, channel]);
@@ -80,14 +87,16 @@ function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; s
 
   return <section className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
     <div className="relative aspect-video w-full overflow-hidden bg-muted">
-      {showReport && video
+      {showReport && sceneImage
+        ? <img src={sceneImage} alt={`Illustration thématique : ${scene?.title}`} width={1280} height={720} className="absolute inset-0 h-full w-full object-cover" />
+        : showReport && video
         ? <video key={video} src={`/tv/${video}.mp4`} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" />
         : <img key={person.id + idx} src={IMG[person.id]} alt={`${person.name}, ${person.role === "anchor" ? "présentateur" : "journaliste"} de ${info.name}`} width={1280} height={720} className={`absolute inset-0 h-full w-full object-cover ${playing ? "animate-[tvzoom_12s_ease-out_forwards]" : ""}`} />}
       {showReport && video && <img src={IMG[reporter.id]} alt={reporter.name} width={1280} height={720} className="absolute bottom-16 right-3 aspect-video w-1/3 rounded border-2 border-primary object-cover shadow-lg sm:bottom-24" />}
       <div className="absolute left-3 top-3 rounded bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">{info.name}</div>
       {playing && <div className="absolute right-3 top-3 flex items-center gap-1 rounded bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground"><span className="h-2 w-2 animate-pulse rounded-full bg-destructive-foreground" />EN DIRECT</div>}
       {seg && <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/90 to-transparent p-3 pt-10 sm:p-5 sm:pt-16">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{seg.kind === "interview" ? "Joueur à l'antenne" : channel === "local" ? cityName : "À la une"} · {idx + 1}/{segments.length}{showReport ? ` · ${reporter.name}, sur place` : ""}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{seg.kind === "interview" ? "Joueur à l'antenne" : channel === "local" ? cityName : "À la une"} · {idx + 1}/{segments.length}{showReport ? ' · Illustration' : ''}</p>
         <h3 className="font-heading text-lg font-bold leading-tight sm:text-2xl">{seg.title}</h3>
       </div>}
     </div>
@@ -97,6 +106,7 @@ function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; s
     </div>}
     <div className="space-y-3 p-4">
       {seg ? <>
+        {scene && <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-primary"><span>{IMPORTANCE_LABEL[importanceLevel(scene.importance)]}</span>{scene.location_name && <span>{scene.location_name}</span>}<span>Événement du {new Date(scene.starts_at).toLocaleDateString('fr-FR', { timeZone: 'UTC' })}</span></div>}
         {seg.body && <p className="text-sm leading-relaxed text-muted-foreground">{seg.body}</p>}
         {seg.news_id && <Button asChild variant="link" className="h-10 px-0"><Link to="/actualites/$id" params={{ id: seg.news_id }}>Lire l'article complet</Link></Button>}
       </> : <p className="text-sm text-muted-foreground">Journée calme : aucun sujet pour cette édition.</p>}
@@ -124,7 +134,7 @@ function TvPage() {
     if (channel === "national") return tv.national;
     if (channel === "local") return tv.local;
     const mix: TvSegment[] = []; const n = Math.max(tv.national.length, tv.local.length);
-    for (let i = 0; i < n; i++) { if (tv.national[i]) mix.push(tv.national[i]!); if (tv.local[i]) mix.push(tv.local[i]!); }
+    for (let i = 0; i < n; i++) { const national = tv.national[i]; const local = tv.local[i]; if (national) mix.push(national); if (local) mix.push(local); }
     return mix;
   }, [channel, tv]);
   const guests = [...tv.national, ...tv.local].filter(s => s.kind === "interview");

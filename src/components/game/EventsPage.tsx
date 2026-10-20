@@ -10,6 +10,8 @@ import { canAct, displayPhase, filterEvents, rewardSummary, PARTICIPATION_LABEL,
 import { gameHour } from '@/game/life';
 import { useLifeMutation } from './LifeControls';
 import { WorldClock } from './WorldClock';
+import { EventSceneImage } from './EventScene';
+import { importanceLevel, IMPORTANCE_LABEL } from '@/game/scenes';
 
 const TABS: [EventTab, string][] = [['aujourdhui', 'Aujourd’hui'], ['a_venir', 'À venir'], ['pour_vous', 'Pour vous'], ['ma_ville', 'Ma ville'], ['recents', 'Récents']];
 const when = (e: WorldEvent) => {
@@ -23,12 +25,13 @@ export function EventCard({ e, now }: { e: WorldEvent; now: string }) {
   const gains = rewardSummary(e.reward);
   const open = canAct(e, now);
   return <article className="space-y-3 rounded-lg border border-border bg-card p-4">
+    {!e.personal && e.importance >= 65 && <EventSceneImage category={e.press_category ?? e.category} title={e.title} />}
     <div className="flex flex-wrap items-center gap-2">
       <Badge variant="outline">{e.category}</Badge>
       <Badge variant={displayPhase(e, now) === 'en_cours' ? 'default' : 'secondary'}>{e.ends_at || e.phase === 'a_venir' ? PHASE[displayPhase(e, now)] : displayPhase(e, now) === 'termine' ? 'Archive' : 'Aujourd’hui'}</Badge>
       {e.personal && <Badge><User className="h-3 w-3" />Pour vous</Badge>}
       {e.scope === 'national' && <Badge variant="secondary">National</Badge>}
-      {e.importance >= 65 && <Badge variant="destructive">Important</Badge>}
+      <Badge variant={e.importance >= 65 ? 'destructive' : 'outline'}>{IMPORTANCE_LABEL[importanceLevel(e.importance)]}</Badge>
     </div>
     <h3 className="text-lg font-semibold">{e.title}</h3>
     {e.description && <p className="text-sm text-muted-foreground">{e.description}</p>}
