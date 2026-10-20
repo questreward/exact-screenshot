@@ -1806,3 +1806,15 @@ export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_re
 }
 export type AgingState = { age: number; next_birthday: string | null; new_birthday: boolean; birthdays: { age: number; at: string }[] };
 export const agingQuery = queryOptions({ queryKey: ['aging'], staleTime: 60_000, retry: false, queryFn: looseState<AgingState>('aging_state') });
+export type VehicleWearState = {
+  settings: { breakdown_below: number; breakdown_pct: number; tow_price: number; repair_permille_per_10: number };
+  cars: { catalog_id: string; name: string; condition_pct: number; repair_ref: number }[];
+  garages: { id: string; name: string; percent: number; rating: number | null }[];
+  history: { kind: 'usure' | 'panne' | 'reparation'; delta: number; amount: number; label: string; at: string }[];
+};
+export const vehicleWearQuery = queryOptions({ queryKey: ['vehicle-wear'], staleTime: 0, retry: false, queryFn: looseState<VehicleWearState>('vehicle_wear_state') });
+export async function repairVehicle(catalogId: string, businessId: string | null) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('vehicle_repair', { _catalog: catalogId, _business: businessId, _request: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data as VehicleWearState;
+}
