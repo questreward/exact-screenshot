@@ -482,3 +482,4 @@
 - [x] Feuille de route V2 (V2_FEUILLE_DE_ROUTE.md)
 - [ ] Liens vers les réseaux en bas du site — en attente des adresses des comptes
 - [ ] Président de la République jouable — règles validées, SQL à préparer après 0118
+- [ ] Présidence PC : afficher noms/prénoms au lieu des identifiants ; vérifier pourquoi le copain ne voit rien
