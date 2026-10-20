@@ -367,6 +367,8 @@
 - [x] Vie étudiante : 0099 prête et testée, page Études supérieures
 - [x] Installer 0099 sur le VPS (installée)
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
+  - Règles validées : trimestres réels (4/an max), pension 50 % × trimestres/172 + points, départ à 64 ans
+  - [ ] Vieillissement : 1 an de jeu par mois réel (âge calculé, pas stocké figé) — à préparer avant la retraite
 
 ## Demandes d'Alex (20/10) — à découper et valider
 - [x] Simulation de conduite entre villes : 0098 prête et testée, page En route
