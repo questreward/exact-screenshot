@@ -475,3 +475,10 @@
 - Vrais politiques : 574/577 députés trouvés (3 sièges à vérifier), gouvernement à confirmer — import bloqué jusqu'à vérification
 - [ ] Président de la Protection civile (élu, 4 pouvoirs, indemnité) — règles validées (300 €/mois caisse nationale subventionnée État, 1 op/semaine, 1 responsable/ville révocable, intérim copain) — en préparation 0117
 - [x] Historique des promotions (grade, date, raison) sur la page Secours
+
+# V2 — Réseaux sociaux et préparation
+- [ ] Civi vrai réseau (0118) — en attente des chiffres validés par Alex (publications/jour, seuil de signalements, plafond de buzz)
+- [x] Kit de communication réelle (docs/communication/kit-reseaux.md)
+- [x] Feuille de route V2 (V2_FEUILLE_DE_ROUTE.md)
+- [ ] Liens vers les réseaux en bas du site — en attente des adresses des comptes
+- [ ] Président de la République jouable — en attente des règles validées par Alex (aujourd'hui, seul un PNJ peut l'être)
