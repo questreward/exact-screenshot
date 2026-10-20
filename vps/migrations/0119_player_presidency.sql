@@ -122,7 +122,7 @@ DECLARE s public.pr_settings; e public.pr_elections; total integer; top record; 
   SELECT x.cid INTO w FROM (SELECT unnest(e.finalists) cid, generate_subscripts(e.finalists,1) i) x
    ORDER BY (SELECT count(*) FROM public.pr_ballots b WHERE b.election_id=e.id AND b.round=2 AND b.candidate=x.cid) DESC, x.i LIMIT 1;
   UPDATE public.pr_elections SET settled=true, winner=w, results=results||jsonb_build_object('round2',(SELECT jsonb_agg(jsonb_build_object('character_id',f,'name',public.pr_name(f),
-    'votes',(SELECT count(*) FROM public.pr_ballots b WHERE b.election_id=e.id AND b.round=2 AND b.candidate=f)))) FROM unnest(e.finalists) f)) WHERE id=e.id;
+    'votes',(SELECT count(*) FROM public.pr_ballots b WHERE b.election_id=e.id AND b.round=2 AND b.candidate=f))) FROM unnest(e.finalists) f)) WHERE id=e.id;
   PERFORM public.national_publish('pr-round2:'||e.id,'Présidentielle : résultat du second tour',public.pr_name(w)||' est élu(e) Président(e) de la République.');
  END LOOP;
  -- Successeur unique : à la fin du mandat si élu, sinon nouveau scrutin immédiat.
