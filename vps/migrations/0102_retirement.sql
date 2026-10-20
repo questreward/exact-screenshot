@@ -99,7 +99,6 @@ BEGIN
     net := public.retirement_period_income(_cid, p.last_game_at, t);
     gross := net * 100.0 / s.net_to_gross_pct;
     months := GREATEST(1, extract(epoch FROM (t - p.last_game_at)) / (30.44 * 86400));
-    annual := round(gross * 12 / months / (a - p.last_age))::int * 1;
     -- Revenus répartis à parts égales entre les années d'âge écoulées depuis la dernière lecture.
     annual := round(gross * 12 / months)::int;
     FOR i IN p.last_age .. a - 1 LOOP
