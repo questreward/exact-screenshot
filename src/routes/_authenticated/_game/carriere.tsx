@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { careerAction, careerQuery, type CareerProfile } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
+import { Payslips } from "@/components/game/Payslips";
 import { HISTORY_LABELS, housingShare, interviewOutlook } from "@/game/career";
 
 export const Route = createFileRoute("/_authenticated/_game/carriere")({
@@ -110,6 +111,8 @@ function CareerPage() {
       {s.salary_months.length > 0 && <Card title="Évolution du salaire" icon={TrendingUp}>
         <ul className="space-y-1 text-sm">{s.salary_months.map(m => <li key={m.month} className="flex justify-between"><span className="text-muted-foreground">{m.month}</span><span className="font-semibold">{eur(m.total)}</span></li>)}</ul>
       </Card>}
+
+      <Payslips />
 
       <Card title="Mon parcours professionnel" icon={History}>
         {s.history.length ? <ul className="space-y-1 text-sm">{s.history.map((h, k) => <li key={k}><b>{HISTORY_LABELS[h.kind] ?? h.kind}</b> · {h.label} <span className="text-xs text-muted-foreground">· {day(h.at)}</span></li>)}</ul>
