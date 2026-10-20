@@ -5,3 +5,4 @@
 - [Taxe foncière municipale](mem://features/municipal-property-tax.md) — 0112 : vers la mairie du logement, taux conseil 80–120 %, non rétroactif
 - [Voyages à l étranger](mem://features/foreign-travel.md) — 0113 : 12 pays, CNI/passeport, congés 25 j, imprévus 5 %
 - [RSA et vraie politique](mem://features/rsa-real-politics.md) — V1 rouverte : RSA réel + vraies personnalités politiques françaises, but pédagogique
+- [Président Protection civile](mem://features/civil-protection-president.md) — Rôle national élu par les bénévoles, 4 pouvoirs, indemnité

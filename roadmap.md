@@ -473,3 +473,4 @@
 - [ ] Vraies personnalités politiques françaises (Bardella, Le Pen…) — attend validation du cadre par Alex
 - RSA : 0116 prêt, essais locaux OK — attend l'essai sans risque sur le VPS
 - Vrais politiques : 574/577 députés trouvés (3 sièges à vérifier), gouvernement à confirmer — import bloqué jusqu'à vérification
+- [ ] Président de la Protection civile (élu, 4 pouvoirs, indemnité) — attend validation des règles détaillées
