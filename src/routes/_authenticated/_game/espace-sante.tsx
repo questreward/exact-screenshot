@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarCheck, FileText, HeartPulse, Home, Shield, User, Wallet } from 'lucide-react';
+import { CalendarCheck, FileText, HeartPulse, Home, Shield, Stethoscope, User, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { characterQuery, formatMoney, healthAction, healthQuery, insuranceQuery } from '@/services/game';
+import { characterQuery, formatMoney, healthAction, healthQuery, insuranceQuery, medicalQuery, realismAction, type MedicalState } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
 
 export const Route = createFileRoute('/_authenticated/_game/espace-sante')({
@@ -12,9 +12,9 @@ export const Route = createFileRoute('/_authenticated/_game/espace-sante')({
   component: HealthSpace,
 });
 
-type Tab = 'accueil' | 'rdv' | 'remboursements' | 'mutuelle' | 'attestations';
+type Tab = 'accueil' | 'medecin' | 'rdv' | 'remboursements' | 'mutuelle' | 'attestations';
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
-  { id: 'accueil', label: 'Accueil', icon: Home }, { id: 'rdv', label: 'Consulter un médecin', icon: CalendarCheck },
+  { id: 'accueil', label: 'Accueil', icon: Home }, { id: 'medecin', label: 'Mon médecin traitant', icon: Stethoscope }, { id: 'rdv', label: 'Consulter un médecin', icon: CalendarCheck },
   { id: 'remboursements', label: 'Mes remboursements', icon: Wallet }, { id: 'mutuelle', label: 'Ma complémentaire', icon: Shield },
   { id: 'attestations', label: 'Mes attestations', icon: FileText },
 ];
@@ -28,10 +28,16 @@ function HealthSpace() {
   const { data: c } = useQuery(characterQuery);
   const { data: h, isError } = useQuery(healthQuery);
   const { data: ins } = useQuery({ ...insuranceQuery, retry: false });
+  const { data: med } = useQuery(medicalQuery);
   const [tab, setTab] = useState<Tab>('accueil');
+  const choose = useMutation({
+    mutationFn: (id: string) => realismAction<MedicalState>('medical_choose_doctor', { _doctor: id }),
+    onSuccess: r => { qc.setQueryData(medicalQuery.queryKey, r); toast.success('Médecin traitant déclaré.'); },
+    onError: (e: Error) => toast.error(e.message),
+  });
   const doctor = useMutation({
     mutationFn: () => healthAction('medecin'),
-    onSuccess: () => { toast.success('Consultation effectuée.'); qc.invalidateQueries({ queryKey: ['health'] }); qc.invalidateQueries({ queryKey: ['character'] }); },
+    onSuccess: () => { toast.success('Consultation effectuée.'); qc.invalidateQueries({ queryKey: ['health'] }); qc.invalidateQueries({ queryKey: ['medical'] }); qc.invalidateQueries({ queryKey: ['character'] }); },
     onError: (e: Error) => toast.error(e.message),
   });
   const name = c ? `${c.first_name} ${c.last_name}` : 'Assuré';
@@ -75,9 +81,20 @@ function HealthSpace() {
             <Button variant="outline" className="min-h-12 justify-start" onClick={() => setTab('attestations')}>Télécharger mon attestation de droits</Button>
             <Button variant="outline" className="min-h-12 justify-start" asChild><Link to="/sante">Prendre soin de moi (sport, détente)</Link></Button>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">Déclarer mon médecin traitant : Disponible dans une prochaine étape.</p>
+          <Button variant="outline" className="mt-2 min-h-12 w-full justify-start" onClick={() => setTab('medecin')}>{med?.doctor ? `Mon médecin traitant : ${med.doctor.name}` : 'Déclarer mon médecin traitant'}</Button>
         </Box>
       </>}
+
+      {tab === 'medecin' && <Box>
+        <h1 className="font-heading text-xl font-bold">Mon médecin traitant</h1>
+        {!med ? <p className="mt-2 text-sm">Disponible dans une prochaine étape.</p> : <>
+          <p className="mt-1 text-sm">Avec un médecin traitant, tes consultations sont remboursées à {Math.round(med.settings.refund_with_doctor * 100)} %. Sans, à {Math.round(med.settings.refund_without_doctor * 100)} %. Changement possible tous les {med.settings.change_days} jours.</p>
+          {med.doctor && <p className="mt-3 rounded-lg bg-muted p-3 text-sm"><b>{med.doctor.name}</b> · {med.doctor.address} · déclaré le {fmt(med.doctor.chosen_at)}</p>}
+          <div className="mt-3 grid gap-2">{med.doctors.filter(d => d.id !== med.doctor?.id).map(d => <Button key={d.id} variant="outline" className="h-auto min-h-12 justify-start whitespace-normal text-left" disabled={choose.isPending}
+            onClick={() => choose.mutate(d.id)}><span><b>{d.name}</b><br /><span className="text-xs text-muted-foreground">{d.address}</span></span></Button>)}</div>
+          <p className="mt-2 text-xs text-muted-foreground">Médecins fictifs.</p>
+        </>}
+      </Box>}
 
       {tab === 'rdv' && h && <Box>
         <h1 className="font-heading text-xl font-bold">Consulter un médecin</h1>
@@ -93,7 +110,14 @@ function HealthSpace() {
           <p className="font-semibold">{i.label} · {fmt(i.occurred_at)}</p>
           <p className="text-muted-foreground">Coût {formatMoney(i.cost)} · pris en charge {formatMoney(i.insurer_paid)} · reste à ma charge {formatMoney(i.player_paid + i.unpaid)}</p></li>)}</ul>
           : <p className="mt-2 text-sm text-muted-foreground">Aucun remboursement pour le moment.</p>}
-        <p className="mt-3 text-sm text-muted-foreground">Remboursement des consultations par l’Assurance maladie : Disponible dans une prochaine étape.</p>
+        {med && <div className="mt-4 border-t border-border pt-3">
+          <p className="font-semibold">Consultations remboursées par Santé CIVITAS</p>
+          {med.pending.length > 0 && <p className="mt-1 text-sm">En cours de traitement : {med.pending.length} consultation(s), remboursement sous {med.settings.refund_delay_days} jours.</p>}
+          {med.refunds.length ? <ul className="mt-2 divide-y divide-border text-sm">{med.refunds.map(r => <li key={r.consult_day} className="py-2">
+            <p className="font-semibold">Consultation du {fmt(r.consult_day)}</p>
+            <p className="text-muted-foreground">Payé {formatMoney(r.cost)} · remboursé {formatMoney(r.amount)} ({Math.round(r.rate * 100)} %{r.with_doctor ? ', médecin traitant' : ', sans médecin traitant'})</p></li>)}</ul>
+            : <p className="mt-1 text-sm text-muted-foreground">Aucune consultation remboursée pour le moment.</p>}
+        </div>}
       </Box>}
 
       {tab === 'mutuelle' && <Box>
@@ -111,6 +135,7 @@ function HealthSpace() {
           <p className="font-heading font-bold">Santé CIVITAS — Attestation de droits · FICTIF</p>
           <p className="mt-2">Assuré : {name}</p><p>N° : {number}</p>
           <p>Droits ouverts à l’assurance maladie à la date du {fmt(h?.now)}</p>
+          <p>Médecin traitant : {med?.doctor?.name ?? 'non déclaré'}</p>
           <p>Complémentaire santé : {healthContracts.length ? healthContracts.map(k => k.name).join(', ') : 'aucune'}</p>
         </div>
         <Button className="mt-3 min-h-12 w-full" onClick={() => window.print()}>Imprimer</Button>

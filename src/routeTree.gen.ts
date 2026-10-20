@@ -57,6 +57,7 @@ import { Route as AuthenticatedGameOrganisationsRouteImport } from './routes/_au
 import { Route as AuthenticatedGameOrientationRouteImport } from './routes/_authenticated/_game/orientation'
 import { Route as AuthenticatedGameParametresRouteImport } from './routes/_authenticated/_game/parametres'
 import { Route as AuthenticatedGamePatrimoineRouteImport } from './routes/_authenticated/_game/patrimoine'
+import { Route as AuthenticatedGamePermisRouteImport } from './routes/_authenticated/_game/permis'
 import { Route as AuthenticatedGamePersonnageRouteImport } from './routes/_authenticated/_game/personnage'
 import { Route as AuthenticatedGamePetitionsRouteImport } from './routes/_authenticated/_game/petitions'
 import { Route as AuthenticatedGamePolitiqueRouteImport } from './routes/_authenticated/_game/politique'
@@ -349,6 +350,11 @@ const AuthenticatedGamePatrimoineRoute =
     path: '/patrimoine',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGamePermisRoute = AuthenticatedGamePermisRouteImport.update({
+  id: '/permis',
+  path: '/permis',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGamePersonnageRoute =
   AuthenticatedGamePersonnageRouteImport.update({
     id: '/personnage',
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/orientation': typeof AuthenticatedGameOrientationRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
+  '/permis': typeof AuthenticatedGamePermisRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/petitions': typeof AuthenticatedGamePetitionsRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
@@ -623,6 +630,7 @@ export interface FileRoutesByTo {
   '/orientation': typeof AuthenticatedGameOrientationRoute
   '/parametres': typeof AuthenticatedGameParametresRoute
   '/patrimoine': typeof AuthenticatedGamePatrimoineRoute
+  '/permis': typeof AuthenticatedGamePermisRoute
   '/personnage': typeof AuthenticatedGamePersonnageRoute
   '/petitions': typeof AuthenticatedGamePetitionsRoute
   '/politique': typeof AuthenticatedGamePolitiqueRoute
@@ -700,6 +708,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/orientation': typeof AuthenticatedGameOrientationRoute
   '/_authenticated/_game/parametres': typeof AuthenticatedGameParametresRoute
   '/_authenticated/_game/patrimoine': typeof AuthenticatedGamePatrimoineRoute
+  '/_authenticated/_game/permis': typeof AuthenticatedGamePermisRoute
   '/_authenticated/_game/personnage': typeof AuthenticatedGamePersonnageRoute
   '/_authenticated/_game/petitions': typeof AuthenticatedGamePetitionsRoute
   '/_authenticated/_game/politique': typeof AuthenticatedGamePolitiqueRoute
@@ -776,6 +785,7 @@ export interface FileRouteTypes {
     | '/orientation'
     | '/parametres'
     | '/patrimoine'
+    | '/permis'
     | '/personnage'
     | '/petitions'
     | '/politique'
@@ -850,6 +860,7 @@ export interface FileRouteTypes {
     | '/orientation'
     | '/parametres'
     | '/patrimoine'
+    | '/permis'
     | '/personnage'
     | '/petitions'
     | '/politique'
@@ -926,6 +937,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/orientation'
     | '/_authenticated/_game/parametres'
     | '/_authenticated/_game/patrimoine'
+    | '/_authenticated/_game/permis'
     | '/_authenticated/_game/personnage'
     | '/_authenticated/_game/petitions'
     | '/_authenticated/_game/politique'
@@ -1302,6 +1314,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGamePatrimoineRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/permis': {
+      id: '/_authenticated/_game/permis'
+      path: '/permis'
+      fullPath: '/permis'
+      preLoaderRoute: typeof AuthenticatedGamePermisRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/personnage': {
       id: '/_authenticated/_game/personnage'
       path: '/personnage'
@@ -1527,6 +1546,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameOrientationRoute: typeof AuthenticatedGameOrientationRoute
   AuthenticatedGameParametresRoute: typeof AuthenticatedGameParametresRoute
   AuthenticatedGamePatrimoineRoute: typeof AuthenticatedGamePatrimoineRoute
+  AuthenticatedGamePermisRoute: typeof AuthenticatedGamePermisRoute
   AuthenticatedGamePersonnageRoute: typeof AuthenticatedGamePersonnageRoute
   AuthenticatedGamePetitionsRoute: typeof AuthenticatedGamePetitionsRoute
   AuthenticatedGamePolitiqueRoute: typeof AuthenticatedGamePolitiqueRoute
@@ -1597,6 +1617,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameOrientationRoute: AuthenticatedGameOrientationRoute,
     AuthenticatedGameParametresRoute: AuthenticatedGameParametresRoute,
     AuthenticatedGamePatrimoineRoute: AuthenticatedGamePatrimoineRoute,
+    AuthenticatedGamePermisRoute: AuthenticatedGamePermisRoute,
     AuthenticatedGamePersonnageRoute: AuthenticatedGamePersonnageRoute,
     AuthenticatedGamePetitionsRoute: AuthenticatedGamePetitionsRoute,
     AuthenticatedGamePolitiqueRoute: AuthenticatedGamePolitiqueRoute,
