@@ -1,0 +1,72 @@
+-- Disposable PostgreSQL only; projected production tables, constraints and economy_cash/transfer_collect bodies.
+-- Disposable test database only. Projected columns retain production names/types.
+CREATE SCHEMA auth;
+CREATE ROLE authenticated; CREATE ROLE anon; CREATE ROLE service_role;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$ SELECT nullif(current_setting('test.uid',true),'')::uuid $$;
+CREATE TABLE characters(id uuid PRIMARY KEY,user_id uuid NOT NULL UNIQUE,first_name text NOT NULL,last_name text NOT NULL);
+CREATE TABLE fake_clock(t timestamptz); INSERT INTO fake_clock VALUES('2026-01-01Z');
+CREATE FUNCTION game_now() RETURNS timestamptz LANGUAGE sql AS $$ SELECT t FROM fake_clock $$;
+CREATE FUNCTION social_actor() RETURNS uuid LANGUAGE sql AS $$ SELECT id FROM characters WHERE user_id=auth.uid() $$;
+CREATE TABLE test_contacts(a uuid,b uuid,blocked boolean DEFAULT false);
+CREATE FUNCTION network_is_contact(a uuid,b uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT EXISTS(SELECT 1 FROM test_contacts c WHERE c.a=$1 AND c.b=$2) $$;
+CREATE FUNCTION network_blocked(a uuid,b uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT EXISTS(SELECT 1 FROM test_contacts c WHERE c.a=$1 AND c.b=$2 AND blocked) $$;
+CREATE TABLE public.accounts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  character_id uuid NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
+  label text NOT NULL DEFAULT 'Compte courant',
+  balance integer NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE public.transactions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_id uuid NOT NULL REFERENCES public.accounts(id) ON DELETE CASCADE,
+  amount integer NOT NULL,
+  label text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE transactions ADD COLUMN category text NOT NULL DEFAULT 'autres', ADD COLUMN operation_key text, ADD COLUMN world_at timestamptz;
+CREATE TABLE public.economy_operations(character_id uuid NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,operation_key text NOT NULL,kind text NOT NULL,amount integer NOT NULL DEFAULT 0,status text NOT NULL DEFAULT 'done' CHECK(status IN('done','failed')),payload jsonb NOT NULL DEFAULT '{}',occurred_at timestamptz NOT NULL DEFAULT public.game_now(),PRIMARY KEY(character_id,operation_key));
+CREATE TABLE public.bank_profiles (
+  character_id uuid PRIMARY KEY REFERENCES public.characters(id),
+  score integer NOT NULL CHECK (score BETWEEN 0 AND 100),
+  overdraft_used integer NOT NULL DEFAULT 0 CHECK (overdraft_used >= 0),
+  overdraft_since date,
+  fees_settled_date date,
+  consecutive_missed integer NOT NULL DEFAULT 0,
+  blocked boolean NOT NULL DEFAULT false
+);
+CREATE FUNCTION public.economy_cash(_cid uuid,_key text,_amount integer,_label text,_category text,_payload jsonb DEFAULT '{}') RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE acc public.accounts; BEGIN
+IF NOT EXISTS(SELECT 1 FROM public.characters WHERE id=_cid AND user_id=auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
+IF EXISTS(SELECT 1 FROM public.economy_operations WHERE character_id=_cid AND operation_key=_key) THEN RETURN false; END IF;
+SELECT * INTO acc FROM public.accounts WHERE character_id=_cid FOR UPDATE;
+IF NOT FOUND OR acc.balance+_amount<0 THEN RAISE EXCEPTION 'Solde insuffisant'; END IF;
+INSERT INTO public.economy_operations(character_id,operation_key,kind,amount,payload) VALUES(_cid,_key,_category,_amount,_payload);
+UPDATE public.accounts SET balance=balance+_amount WHERE id=acc.id;
+IF _amount<>0 THEN INSERT INTO public.transactions(account_id,amount,label,category,operation_key,world_at) VALUES(acc.id,_amount,_label,_category,_key,public.game_now()); END IF;
+RETURN true; END $$;
+REVOKE ALL ON FUNCTION public.economy_cash(uuid,text,integer,text,text,jsonb) FROM PUBLIC;
+CREATE TABLE public.player_transfers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sender_id uuid NOT NULL REFERENCES public.characters(id),
+  recipient_id uuid NOT NULL REFERENCES public.characters(id),
+  request_key text NOT NULL,
+  amount integer NOT NULL CHECK (amount > 0),
+  note text NOT NULL DEFAULT '',
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','collected')),
+  created_at timestamptz NOT NULL DEFAULT public.game_now(),
+  collected_at timestamptz,
+  UNIQUE (sender_id, request_key),
+  CHECK (sender_id <> recipient_id)
+);
+CREATE FUNCTION public.transfer_collect(_cid uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE t record; BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.characters WHERE id = _cid AND user_id = auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
+  FOR t IN SELECT tr.*, c.first_name || ' ' || c.last_name AS sender_name FROM public.player_transfers tr JOIN public.characters c ON c.id = tr.sender_id
+           WHERE tr.recipient_id = _cid AND tr.status = 'pending' ORDER BY tr.created_at FOR UPDATE OF tr LOOP
+    PERFORM public.economy_cash(_cid, 'transfer-in:' || t.id, t.amount, 'Virement de ' || t.sender_name, 'virement', jsonb_build_object('transfer', t.id));
+    UPDATE public.player_transfers SET status = 'collected', collected_at = public.game_now() WHERE id = t.id;
+  END LOOP;
+END $$;
+
+CREATE TABLE test_receipts(key text PRIMARY KEY,amount bigint,category text);
+CREATE FUNCTION economy_post(_key text,_amount bigint,_category text) RETURNS void LANGUAGE sql AS $$ INSERT INTO test_receipts VALUES(_key,_amount,_category) ON CONFLICT DO NOTHING $$;

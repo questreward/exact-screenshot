@@ -13,6 +13,7 @@ export type Section = {
 
 // Sections not yet available route to /section/$id and show a "coming soon" screen.
 export const SECTIONS: Section[] = [
+  { id: "banque", label: "Banque", icon: Wallet, description: "Compte, carte et relevés · FICTIF.", available: true },
   { id: "la-poste", label: "La Poste", icon: FileText, description: "Courriers et recommandés · FICTIF.", available: true },
   { id: "conjoncture", label: "Conjoncture", icon: BarChart3, description: "Inflation, SMIC, prix des villes et finances publiques.", available: true },
   { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
@@ -102,7 +103,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
   { id: "quotidien", label: "Quotidien", ids: ["la-poste", "civitas-services", "vie", "etudes", "carriere", "secours", "permis", "transports", "logement", "telephone", "demarches", "vie-administrative"] },
-  { id: "argent", label: "Argent et achats", ids: ["patrimoine", "impots", "retraite", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
+  { id: "argent", label: "Argent et achats", ids: ["banque", "patrimoine", "impots", "retraite", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
   { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "conjoncture", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
   { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },

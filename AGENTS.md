@@ -41,3 +41,4 @@
 - Unified economy: `economy_state` settles locked monthly indices; `economy-*.ts` is presentation-only. State receipts track actual paid deltas, never assessed debt; legacy price/payment wiring must be explicit and prospective.
 
 - Postal mail: internal post_deliver uses recipient-scoped unique keys; registered deadlines retain first presentation, postage carries prepaid cents across whole-euro economy debits.
+- Online bank extends bank_profiles and player_transfers; fictional RIBs never represent real accounts, card limits are informational, and monthly account fees skip insufficient balances without new debt.

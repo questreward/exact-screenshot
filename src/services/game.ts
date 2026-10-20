@@ -1858,3 +1858,17 @@ export async function postAction(fn: 'post_send' | 'post_update', args: Record<s
   if (error) throw new Error(error.message);
   return data as import('@/game/post').PostState;
 }
+
+export const onlineBankQuery = queryOptions({
+  queryKey: ['online-bank', 'account-statements'], refetchInterval: 15000,
+  queryFn: async (): Promise<import('@/game/online-bank').OnlineBankState> => {
+    const { data, error } = await untyped.rpc('online_bank_state', {});
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+export async function onlineBankAction(fn: 'online_bank_card' | 'online_bank_transfer', args: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return data as import('@/game/online-bank').OnlineBankState;
+}
