@@ -21,7 +21,7 @@ export function DistrictBadges({ status, small }: { status: Status | null; small
   return <span className="flex flex-wrap gap-1.5">{status.badges.map(b => { const Icon = BADGE_ICON[b]; return <span key={b} className={`district-chip chip-${b} inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium`}><Icon className="h-3.5 w-3.5" />{DISTRICT_BADGE_LABEL[b]}</span>; })}</span>;
 }
 
-export function DistrictReasons({ status, onLocation }: { status: Status | null; onLocation: (id: string) => void }) {
+export function DistrictReasons({ status, onLocation, children }: { status: Status | null; onLocation: (id: string) => void; children?: React.ReactNode }) {
   if (!status) return null;
   return <section className="mb-5 space-y-2 rounded-lg border border-border bg-surface p-3">
     <h3 className="text-sm font-semibold">État du quartier</h3>
@@ -31,5 +31,6 @@ export function DistrictReasons({ status, onLocation }: { status: Status | null;
         : <p className="px-2 py-2 text-sm">{r.text}</p>}
     </li>)}</ul>}
     {status.badges.includes('delaisse') && <p className="text-xs text-muted-foreground">« Délaissé » est une estimation à partir des signalements, pas une mesure officielle.</p>}
+    {children}
   </section>;
 }

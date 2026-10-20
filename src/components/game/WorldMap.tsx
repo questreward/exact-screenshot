@@ -20,6 +20,7 @@ import { isCurrentPlace } from '@/game/living-city';
 import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
 import { BADGE_ICON, DistrictBadges, DistrictReasons, useDistrictStatuses } from './DistrictStatus';
 import { DISTRICT_BADGE_LABEL } from '@/game/districts-state';
+import { DistrictGauges } from './DistrictGauges';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -125,7 +126,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
         <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><span className="h-2 w-2 rounded-full bg-primary" /> Votre position {playerHere ? `· ${position?.location?.name}` : `· ${position?.city?.name ?? "—"}`}</p>
       </div>
       <div className="min-w-0">
-        {selected ? <><DistrictReasons status={statusOf(selected.id)} onLocation={setSelectedLocation} /><Suspense fallback={<p>Chargement des lieux…</p>}><LocationList district={selected} city={city} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense></> : <>
+        {selected ? <><DistrictReasons status={statusOf(selected.id)} onLocation={setSelectedLocation}><DistrictGauges cityId={city.id} districtId={selected.id} /></DistrictReasons><Suspense fallback={<p>Chargement des lieux…</p>}><LocationList district={selected} city={city} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense></> : <>
           <h2 className="mb-2 text-lg font-semibold">Quartiers de {city.name}</h2><p className="mb-4 text-sm text-muted-foreground">{city.description}</p>
           <div className="divide-y divide-border">{districts.map(d => <Button key={d.id} variant="ghost" className="h-auto min-h-20 w-full justify-start whitespace-normal rounded-none px-2 py-4 text-left" onClick={() => districtSelect(d.id)} disabled={!d.available}>
             <MapPin className="shrink-0 text-primary" /><span className="min-w-0"><span className="block">{d.name}</span><span className="mt-1 block text-xs font-normal text-muted-foreground">{d.description}</span><span className="mt-2 block"><DistrictBadges status={statusOf(d.id)} small /></span></span>

@@ -331,4 +331,5 @@
 ## Quartiers qui changent
 - [x] Étape 1 : badges de quartier sur la carte (chantier, rénové, crise, animé, délaissé) — aucun SQL
 - [ ] Mise à jour du site VPS (git pull + docker build)
-- [ ] Étape 2 : vraies jauges par quartier — règles chiffrées à proposer à Alex, puis SQL à valider
+- [x] Étape 2 préparée : migration 0091 (jauges) testée sur base jetable
+- [ ] Installer 0091 sur le VPS après accord d'Alex sur le SQL, puis mettre le site à jour
