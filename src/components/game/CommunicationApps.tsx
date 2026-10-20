@@ -110,6 +110,7 @@ export function CiviApp() {
   const has = (id: string, kind: string) => feed.reactions.some((r) => r.post_id === id && r.kind === kind);
   return (
     <div className="space-y-4">
+      <Link to="/civi" className="flex min-h-12 items-center justify-center rounded-xl bg-primary px-4 font-semibold text-primary-foreground">Ouvrir Civi : écrire librement, suivre, commenter</Link>
       <section className="rounded-xl border border-border bg-card p-3">
         <label htmlFor="civi-template" className="text-sm font-semibold">Publier</label>
         <select id="civi-template" value={choice} onChange={(e) => setChoice(e.target.value)} className="mt-2 h-12 w-full rounded-md border border-input bg-background px-3 text-sm">
