@@ -174,20 +174,20 @@ GRANT EXECUTE ON FUNCTION public.vehicle_wear_state() TO authenticated;
 
 -- Réparation complète : garage d'un joueur (son tarif, argent dans sa caisse) ou garage fictif (_business NULL).
 CREATE FUNCTION public.vehicle_repair(_catalog text, _business uuid, _request uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid := public.social_actor(); w public.vehicle_wear; a public.personal_assets; e public.economy_catalog; ref integer; amount integer; key text := 'repair:' || _request;
+DECLARE cid uuid := public.social_actor(); w public.vehicle_wear; a public.personal_assets; e public.economy_catalog; ref integer; amount integer; k text := 'repair:' || _request;
 BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Personnage introuvable.'; END IF;
   PERFORM 1 FROM public.characters WHERE id = cid FOR UPDATE;
-  IF EXISTS (SELECT 1 FROM public.vehicle_wear_log WHERE key = key) THEN RETURN public.vehicle_wear_state(); END IF;
+  IF EXISTS (SELECT 1 FROM public.vehicle_wear_log WHERE vehicle_wear_log.key = k) THEN RETURN public.vehicle_wear_state(); END IF;
   w := public.vehicle_wear_row(cid, _catalog);
   IF w.asset_id IS NULL THEN RAISE EXCEPTION 'Véhicule introuvable.'; END IF;
   IF w.condition_pct >= 100 THEN RAISE EXCEPTION 'Cette voiture est déjà en parfait état.'; END IF;
   SELECT * INTO a FROM public.personal_assets WHERE id = w.asset_id;
   SELECT * INTO e FROM public.economy_catalog WHERE id = _catalog;
   ref := public.vehicle_repair_ref(a.purchase_price, w.condition_pct);
-  amount := public.service_pay(cid, _business, 'garage', ref, key, 'Réparation — ' || e.name, 'transport');
+  amount := public.service_pay(cid, _business, 'garage', ref, k, 'Réparation — ' || e.name, 'transport');
   INSERT INTO public.vehicle_wear_log (key, asset_id, character_id, kind, delta, amount, label)
-  VALUES (key, w.asset_id, cid, 'reparation', 100 - w.condition_pct, amount, 'Réparation au garage');
+  VALUES (k, w.asset_id, cid, 'reparation', 100 - w.condition_pct, amount, 'Réparation au garage');
   UPDATE public.vehicle_wear SET condition_pct = 100, updated_at = now() WHERE asset_id = w.asset_id;
   RETURN public.vehicle_wear_state();
 END $$;
