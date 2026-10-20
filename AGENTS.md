@@ -40,3 +40,4 @@
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Full-body fingerprints guard patches against incompatible installs.
 
 - Housing: read-only visits; secured buys. Private asset/lease layouts, versioned saves; cascades and inactive leases release furniture without money changes.
+- NPC chats (src/lib/npc-chat.functions.ts) are narrative only: local Ollama, user-RLS reads, public events only, no writes, no external fallback.
