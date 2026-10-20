@@ -23,7 +23,7 @@
 
 ## Détails techniques
 - Réutiliser les baux existants, les objets de `personal_assets`, l’éditeur Chez moi et les accès centralisés de `src/services/game.ts`.
-- Étendre les sauvegardes privées avec une référence au bail, sans remplacer les fonctions financières ni ouvrir les écritures directes aux joueurs.
+- Ajouter des sauvegardes privées séparées, rattachées à l’identifiant du bail ; conserver les tables et sauvegardes 0089, sans remplacer les fonctions financières ni ouvrir les écritures directes aux joueurs.
 - Les contrôles de locataire, de bail actif, de possession, de collision et de version sont imposés par les fonctions sécurisées de la base.
-- Toute évolution des fonctions 0089 sera protégée contre une installation incompatible ; les règles existantes seront couvertes par des essais de non-régression.
+- Privilégier de nouvelles fonctions pour les locations ; tout ajustement nécessaire de 0089 pour l’unicité des meubles sera protégé contre une installation incompatible et couvert par des essais de non-régression.
 - L’installation proposée sera atomique : ajouts, configuration et contrôles dans une seule transaction ; aucune application avant accord sur le SQL exact.
