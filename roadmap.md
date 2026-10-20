@@ -371,7 +371,7 @@
   - [x] Vieillissement : 0100 prête et testée (bandeau anniversaire)
   - [x] 0100 installée sur le VPS (déclaré par Alex)
 - [x] Usure des véhicules + réparations : 0101 prête et testée (page Transports)
-- [ ] Installer 0101 sur le VPS (accord d’Alex)
+- [x] 0101 installée sur le VPS (déclaré par Alex)
 - [x] Conduite entre villes : choix du véhicule, vitesses, radars, amendes déjà en 0098 ; usure ajoutée en 0101
   - [ ] Retraite 0102 (trimestres, pension, départ 64 ans)
 
