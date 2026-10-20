@@ -23,7 +23,7 @@ CREATE TABLE public.retirement_settings (
   net_to_gross_pct integer NOT NULL DEFAULT 78,
   compl_rate_permille integer NOT NULL DEFAULT 62,
   point_price_cents integer NOT NULL DEFAULT 2019,
-  point_value_cents integer NOT NULL DEFAULT 1439
+  point_value_cents integer NOT NULL DEFAULT 144
 );
 INSERT INTO public.retirement_settings DEFAULT VALUES;
 
