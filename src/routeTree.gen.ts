@@ -28,6 +28,7 @@ import { Route as AuthenticatedGameCaisseDesAidesRouteImport } from './routes/_a
 import { Route as AuthenticatedGameCarriereRouteImport } from './routes/_authenticated/_game/carriere'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameChezMoiRouteImport } from './routes/_authenticated/_game/chez-moi'
+import { Route as AuthenticatedGameCiviRouteImport } from './routes/_authenticated/_game/civi'
 import { Route as AuthenticatedGameCivitasServicesRouteImport } from './routes/_authenticated/_game/civitas-services'
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameConcessionRouteImport } from './routes/_authenticated/_game/concession'
@@ -194,6 +195,11 @@ const AuthenticatedGameChezMoiRoute =
     path: '/chez-moi',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameCiviRoute = AuthenticatedGameCiviRouteImport.update({
+  id: '/civi',
+  path: '/civi',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameCivitasServicesRoute =
   AuthenticatedGameCivitasServicesRouteImport.update({
     id: '/civitas-services',
@@ -592,6 +598,7 @@ export interface FileRoutesByFullPath {
   '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/chez-moi': typeof AuthenticatedGameChezMoiRoute
+  '/civi': typeof AuthenticatedGameCiviRoute
   '/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
@@ -677,6 +684,7 @@ export interface FileRoutesByTo {
   '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/chez-moi': typeof AuthenticatedGameChezMoiRoute
+  '/civi': typeof AuthenticatedGameCiviRoute
   '/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
@@ -765,6 +773,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/carriere': typeof AuthenticatedGameCarriereRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/chez-moi': typeof AuthenticatedGameChezMoiRoute
+  '/_authenticated/_game/civi': typeof AuthenticatedGameCiviRoute
   '/_authenticated/_game/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/concession': typeof AuthenticatedGameConcessionRoute
@@ -852,6 +861,7 @@ export interface FileRouteTypes {
     | '/carriere'
     | '/carte'
     | '/chez-moi'
+    | '/civi'
     | '/civitas-services'
     | '/classements'
     | '/concession'
@@ -937,6 +947,7 @@ export interface FileRouteTypes {
     | '/carriere'
     | '/carte'
     | '/chez-moi'
+    | '/civi'
     | '/civitas-services'
     | '/classements'
     | '/concession'
@@ -1024,6 +1035,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/carriere'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/chez-moi'
+    | '/_authenticated/_game/civi'
     | '/_authenticated/_game/civitas-services'
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/concession'
@@ -1235,6 +1247,13 @@ declare module '@tanstack/react-router' {
       path: '/chez-moi'
       fullPath: '/chez-moi'
       preLoaderRoute: typeof AuthenticatedGameChezMoiRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/civi': {
+      id: '/_authenticated/_game/civi'
+      path: '/civi'
+      fullPath: '/civi'
+      preLoaderRoute: typeof AuthenticatedGameCiviRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/civitas-services': {
@@ -1713,6 +1732,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameCarriereRoute: typeof AuthenticatedGameCarriereRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameChezMoiRoute: typeof AuthenticatedGameChezMoiRoute
+  AuthenticatedGameCiviRoute: typeof AuthenticatedGameCiviRoute
   AuthenticatedGameCivitasServicesRoute: typeof AuthenticatedGameCivitasServicesRoute
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameConcessionRoute: typeof AuthenticatedGameConcessionRoute
@@ -1793,6 +1813,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameCarriereRoute: AuthenticatedGameCarriereRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameChezMoiRoute: AuthenticatedGameChezMoiRoute,
+    AuthenticatedGameCiviRoute: AuthenticatedGameCiviRoute,
     AuthenticatedGameCivitasServicesRoute:
       AuthenticatedGameCivitasServicesRoute,
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,

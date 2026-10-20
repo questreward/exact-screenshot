@@ -477,7 +477,7 @@
 - [x] Historique des promotions (grade, date, raison) sur la page Secours
 
 # V2 — Réseaux sociaux et préparation
-- [ ] Civi vrai réseau (0118) — règles validées, SQL à préparer
+- [ ] Civi vrai réseau (0118) — prêt, essai sans risque à lancer par Alex
 - [x] Kit de communication réelle (docs/communication/kit-reseaux.md)
 - [x] Feuille de route V2 (V2_FEUILLE_DE_ROUTE.md)
 - [ ] Liens vers les réseaux en bas du site — en attente des adresses des comptes
