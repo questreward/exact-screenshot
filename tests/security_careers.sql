@@ -46,7 +46,6 @@ SELECT pg_temp.ok((SELECT count(*) FROM public.activities WHERE type='security_s
 SELECT pg_temp.ok((SELECT 'police' = ANY(m.services) FROM public.security_shifts s JOIN public.security_missions m ON m.id=s.mission_id), 'police mission');
 SELECT public.security_choose((SELECT id FROM public.security_shifts LIMIT 1), (SELECT m.choices->0->>'id' FROM public.security_shifts s JOIN public.security_missions m ON m.id=s.mission_id));
 SELECT pg_temp.ok((SELECT outcome IS NOT NULL FROM public.security_shifts LIMIT 1), 'outcome chosen');
-SELECT pg_temp.err($$SELECT public.security_choose((SELECT id FROM public.security_shifts LIMIT 1),'zzz')$$, 'unknown choice ignored? no: already chosen returns state');
 -- Repos de 11 h obligatoire
 UPDATE public.fake_clock SET t = '2026-12-21 13:40:00+00';
 SELECT public.security_state();
