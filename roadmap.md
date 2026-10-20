@@ -421,7 +421,7 @@
 - [ ] Vérifier les parcours téléphone avec personnage réel sur VPS : accès/session disponible requis ; navigation du montage temporaire non validée.
 - [x] Comparer les engagements aux fonctions présentes ; priorités de clôture et limites documentées dans V1_CONTROLES_ET_SUITE.md.
 - [x] Protection civile : existant audité ; recrutement immédiat, formation courte, bénévolat, missions et progression présents ; antennes/dossier/qualifications détaillées absents.
-- [ ] Extension Protection civile : périmètre et nouvelles règles à valider avant préparation SQL exact ; aucune application autorisée.
+- [x] Extension Protection civile : principes validés, 0114 et dossier préparés ; SQL exact fourni, aucune application effectuée.
 - [ ] Nouvelle extension V1 vidéo/scènes/intérieurs/catalogue : arbitrage de clôture demandé par Alex à 17:56 ; ressources VPS pour vidéo à mesurer, périmètre détaillé et règles à valider, aucun service externe ni migration implicite.
 
 ## Livraison finale unique — demande d’Alex à 18:00 UTC
@@ -431,10 +431,11 @@
 - [x] Mesures VPS reçues : 4 processeurs, 8 Go RAM, 16 Go disque libre, aucun GPU de calcul identifié, FFmpeg absent du service ; génération vidéo non vérifiée.
 - [x] Première amélioration JT : sous-titres fidèles, voix française locale seulement si disponible, pause/repli images ; 13 tests ciblés réussis et montage navigateur 390/1280 sans erreur. Montage tombé sur repli image : clip réel et parcours connecté VPS non vérifiés. Aucune narration Ollama ni vidéo générée ajoutée ici.
 - [x] Protection civile : principes consultatifs acceptés le 20 octobre à 18:18 UTC ; préparer antennes, historique privé et notes privées, puis présenter SQL exact sans application implicite.
-- [ ] Antennes/affectations/qualifications, vidéo JT, scènes et intérieur camion liés, 10 000 produits et documents complémentaires : prix/effets/périmètre détaillé et SQL exact à valider ; non livrés.
-- [ ] Présenter les règles nouvelles et le SQL exact avant toute installation ; livrer un point d’entrée unique avec sauvegarde et essais préalables, sans réinstaller les migrations validées.
+- [ ] Installation VPS du dossier 0114 : sortie du contrôle et approbation du SQL exact à recevoir ; antennes et notes préparées seulement.
+- [ ] Vidéo JT complète, intérieur camion lié, 10 000 produits et documents complémentaires : engagements conservés sous gel des ajouts ; reprise attend un choix explicite d’Alex, pas une réalisation implicite.
+- [x] SQL exact 0114 et inventaire fournis ; point d’entrée sauvegarde/restauration isolée/essai à blanc livré sans réinstaller les migrations validées.
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.
 
 ## Gel demandé par Alex — 20 octobre 18:18 UTC
-- [ ] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici.
-- [ ] Geler les nouveaux ajouts V1 après cette livraison ; conserver explicitement les engagements non livrés et les contrôles bloqués.
+- [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
+- [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.
