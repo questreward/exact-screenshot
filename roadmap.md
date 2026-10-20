@@ -364,7 +364,8 @@
 - [x] 0096 installée sur le VPS (déclaré par Alex)
 - [x] Transports du quotidien : 0097 prête et testée, page Transports
 - [x] 0097 installée sur le VPS (déclaré par Alex)
-- [ ] Vie étudiante (orientation fictive, bourses, logement étudiant, examens, diplômes)
+- [x] Vie étudiante : 0099 prête et testée, page Études supérieures
+- [ ] Installer 0099 sur le VPS (accord d’Alex)
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
 
 ## Demandes d'Alex (20/10) — à découper et valider
