@@ -318,3 +318,6 @@
 - [ ] **Logements et visites** : descriptions personnalisées des pièces, objets et aménagements réellement présents ; photos, plans et images demandent une étude distincte, le modèle texte ne les produit pas à lui seul.
 - [ ] **Voix locales facultatives** : étudier séparément narration du JT et voix des habitants avec des outils locaux ; vérifier les ressources du VPS avant toute promesse.
 - [ ] Préparer les priorités et le découpage après examen : IA non décisionnaire, données minimales, aucune dépendance externe obligatoire, jeu utilisable sans IA ; règles et SQL exact soumis à accord avant installation.
+
+- [x] Logements suite : locations aménageables (0090) installées par Alex ; essai en jeu réel à confirmer.
+- [x] CIVITAS Services : page d'entrée commune (aucun SQL) prête ; mise à jour du site VPS à faire.
