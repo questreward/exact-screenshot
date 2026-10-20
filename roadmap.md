@@ -484,3 +484,5 @@
 - [x] Président de la République jouable — voir 0119
 - [x] Présidence PC : noms affichés (0117b à installer) ; nomination du copain confirmée réussie
 - [ ] Présidence de la République (0119) — prête, essai sans risque à lancer par Alex, puis nomination d'Alex par intérim
+- [x] Allocution présidentielle rédigée par l'IA locale (brouillon, diffusion manuelle)
+- [ ] Installer 0119 sur le VPS (essai à blanc réussi) puis nommer Alex par intérim
