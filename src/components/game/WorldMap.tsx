@@ -16,6 +16,8 @@ import { CIVIC_LOCATION_STATE } from "@/game/civic";
 import { MunicipalLocationProjects } from './MunicipalLocationProjects';
 import { LocationEvents } from './EventsPage';
 import { markersByLocation } from "@/game/events";
+import { isCurrentPlace } from '@/game/living-city';
+import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -159,14 +161,19 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { data: spaces } = useSuspenseQuery(spacesQuery(l.id));
   const q = useQueryClient();
   const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] }), q.invalidateQueries({ queryKey: ["location-presence"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
-  const here = p?.location_id === l.id;
+  const here = isCurrentPlace(p?.location_id, l.id);
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
-  return <article className="overflow-hidden rounded-lg border border-border bg-card">
-    <img src={l.illustration ?? worldSquare} alt="Ambiance illustrée de la ville CIVITAS" loading="lazy" width={1536} height={768} className="aspect-[2/1] w-full object-cover" />
-    <div className="space-y-4 p-4">
+  return <article className="min-w-0 border-t border-border pt-4">
+    <figure className="relative overflow-hidden rounded-lg">
+      <img src={l.illustration ?? worldSquare} alt={`Ambiance illustrée · ${l.name}`} loading="lazy" width={1536} height={768} className="aspect-[2/1] w-full object-cover" />
+      <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-2 bg-overlay px-3 py-2 text-xs text-foreground"><span>Illustration · CIVITAS</span><span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{here ? 'Vous êtes ici' : 'Lieu consulté'}</span></figcaption>
+    </figure>
+    <div className="space-y-4 py-4">
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
       <p className="text-sm text-muted-foreground">{l.description}</p>
+      <Suspense fallback={<p className="text-xs text-muted-foreground">Ambiance du lieu…</p>}><PlaceAtmosphere cityId={city.id} /></Suspense>
+      <Suspense fallback={<p className="text-xs text-muted-foreground">Vie du lieu…</p>}><PublicPlaceLife cityId={city.id} locationId={l.id} /></Suspense>
       <Suspense fallback={<p className="text-xs text-muted-foreground">Projets municipaux…</p>}><MunicipalLocationProjects locationId={l.id}/></Suspense>
       <Suspense fallback={null}><LocationEvents locationId={l.id} full/></Suspense>
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}

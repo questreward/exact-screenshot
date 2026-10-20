@@ -257,7 +257,9 @@
 - [x] Essais 0088 : 20 tests frontend ciblés ; SQL sur base jetable (15 contrôles : niveaux, ancien JT, accès privé, limite, interviews non attribuées), double installation refusée ; affichage téléphone contrôlé avec sujet simulé, sans débordement.
 - [x] 0088 : SQL exact présenté et validé ; installation VPS confirmée le 20 octobre 2026 par le résultat jusqu’à COMMIT sans erreur ; ne pas relancer.
 - [x] 0088 : mise à jour du site VPS déclarée installée par Alex le 20 octobre 2026 ; vérification en jeu toujours à faire.
-- [ ] Suite choisie après 0088 : Ville vivante ; préparer les lieux et la carte reflétant les événements officiels, sans modifier les règles validées ; logements visuels et CIVITAS Services restent ensuite.
+- [x] Suite choisie après 0088 : Ville vivante ; plan validé, lieux enrichis par heure/météo existantes, résumé public des événements et distinction des effets enregistrés/prévus ; aucune migration ni règle modifiée.
+- [x] Ville vivante : 203 tests réussis ; lieu actuel vérifié connecté dans l’aperçu sur téléphone et ordinateur, accès aux événements confirmé, aucun débordement. Annonces anciennes exclues de la liste active ; événements/projets couverts par tests, mais non rencontrés en jeu pendant ce contrôle.
+- [ ] Ville vivante : mise à jour et contrôle réel sur le VPS à confirmer ; aucune migration nécessaire.
 - [ ] 0088 : essai connecté réel sur VPS après installation. Aperçu connecté bloqué par tv_state absent de Lovable Cloud ; images vérifiées seulement avec projection simulée, pas de parcours réel prétendu.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
 
