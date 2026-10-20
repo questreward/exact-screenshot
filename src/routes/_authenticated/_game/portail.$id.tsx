@@ -20,7 +20,7 @@ function PortalPage() {
       <div><h1 className="font-heading text-2xl font-bold">{p.name}</h1><p className="text-sm opacity-80">Équivalent réel : {p.real}</p></div></header>
     <p className="rounded-lg border border-primary p-3 text-xs font-semibold text-primary">Simulation CIVITAS — pas un vrai service public.</p>
     <section className="space-y-2"><h2 className="font-heading text-lg font-semibold">Dans la vraie vie</h2><p className="text-sm">{p.about}</p></section>
-    <section className="space-y-2"><h2 className="font-heading text-lg font-semibold">Dans le jeu</h2><ul className="list-disc space-y-1 pl-5 text-sm">{p.inGame.map(t => <li key={t}>{t}</li>)}</ul></section>
-    <div className="grid gap-2">{p.links.map(l => <Link key={l.path} to={l.path} className="flex min-h-14 items-center justify-between rounded-xl border border-border bg-card px-4 font-semibold hover:border-primary">{l.label}<ChevronRight className="h-5 w-5 text-primary" /></Link>)}</div>
+    <section className="space-y-2"><h2 className="font-heading text-lg font-semibold">Dans le jeu</h2><ul className="list-disc space-y-1 pl-5 text-sm">{p.inGame.map((t: string) => <li key={t}>{t}</li>)}</ul></section>
+    <div className="grid gap-2">{p.links.map((l: { path: string; label: string }) => <Link key={l.path} to={l.path} className="flex min-h-14 items-center justify-between rounded-xl border border-border bg-card px-4 font-semibold hover:border-primary">{l.label}<ChevronRight className="h-5 w-5 text-primary" /></Link>)}</div>
   </main>;
 }
