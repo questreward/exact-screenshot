@@ -240,8 +240,17 @@
 - [x] Agence immobilière (0082) prête, à installer sur le VPS
 - [x] Médias des joueurs (0083) : journal + chaîne, abonnés, caisse, signalements, influence plafonnée — installé
 - [x] Concessionnaire (0084) installé
-- [x] Construction (0085) : installation déclarée par l'utilisateur
+- [x] Construction (0085) : installation confirmée par le compte rendu VPS (COMMIT, image construite, site relancé)
 - [x] Recrutement (0086) : page + SQL proposés, tests sur copie isolée avec embauches existantes ; primes, consentement, blocages et double clic contrôlés
 - [ ] Recrutement (0086) : règles chiffrées et installation VPS à valider ; parcours réel dans le site VPS non vérifié avant installation
 - [ ] Assurance joueur (0087) : après le recrutement
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
+
+## Checklist de reprise — pause du 20 octobre 2026
+- [ ] Vérifier en jeu la page Construction après l’installation confirmée ; ne pas relancer 0085.
+- [ ] Valider les montants proposés du recrutement : ouverture 1 500 €, prime employeur 200 € au tarif 70–150 %, client fictif 150 €, candidat gratuit.
+- [ ] Présenter le SQL exact 0086 et la commande d’installation après accord ; installation VPS non faite à ce stade.
+- [ ] Confirmer l’installation 0086 et tester le parcours réel : candidat volontaire → proposition → embauche → prime → relecture.
+- [ ] Préparer l’assurance joueur 0087, proposer ses règles et son SQL avant toute installation.
+- [ ] Après les quatre entreprises : commencer les étapes 1–3 du Monde mis en scène selon le plan validé.
+- Aucun travail ni installation ne continue pendant la pause ; annuaire CIVITAS Services et relations internationales restent pour plus tard.
