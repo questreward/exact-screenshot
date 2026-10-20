@@ -1,7 +1,7 @@
 import { BonhommeG } from './Bonhomme';
 
 /** Scenic cabin only. Speed, route and trip outcomes stay with the existing server state. */
-export function VehicleInterior({ kind, speed = 0, limit, label }: { kind: 'voiture' | 'car' | 'train' | 'camion'; speed?: number; limit?: number; label: string }) {
+export function VehicleInterior({ kind, speed, limit, label }: { kind: 'voiture' | 'car' | 'train' | 'camion'; speed?: number; limit?: number; label: string }) {
   const driving = kind === 'voiture' || kind === 'camion';
   return <figure className="overflow-hidden border-y border-border bg-surface" aria-label={`Intérieur ${kind} · ${label}`}>
     <svg viewBox="0 0 600 330" className="block aspect-[20/11] w-full" role="img" aria-label={driving ? 'Vue du poste de conduite' : 'Vue de la cabine voyageurs'}>
@@ -16,14 +16,22 @@ export function VehicleInterior({ kind, speed = 0, limit, label }: { kind: 'voit
       {driving ? <>
         <path d="M0 232Q300 194 600 232V330H0Z" fill="var(--foreground)" />
         <rect x="248" y="242" width="108" height="54" rx="6" fill="var(--background)" />
-        <text x="302" y="266" textAnchor="middle" fill="var(--primary)" fontSize="23" fontWeight="bold">{Math.round(speed)}</text>
-        <text x="302" y="285" textAnchor="middle" fill="var(--muted-foreground)" fontSize="11">km/h</text>
+        <text x="302" y="266" textAnchor="middle" fill="var(--primary)" fontSize="23" fontWeight="bold">{speed === undefined ? '—' : Math.round(speed)}</text>
+        <text x="302" y="285" textAnchor="middle" fill="var(--muted-foreground)" fontSize="11">{speed === undefined ? 'POSTE DE CONDUITE' : 'km/h'}</text>
         <circle cx="145" cy="280" r="60" fill="none" stroke="var(--background)" strokeWidth="15" />
         <path d="M92 264L145 284L198 264M145 284V330" stroke="var(--background)" strokeWidth="12" />
         <circle cx="145" cy="280" r="16" fill="var(--primary)" />
         <rect x="400" y="246" width="116" height="37" rx="4" fill="var(--background)" />
         {[419, 443, 467, 491].map(x => <path key={x} d={`M${x} 252V278`} stroke="var(--muted-foreground)" strokeWidth="3"/>)}
-        {kind === 'camion' && <path d="M278 26V93M278 38H327V77H278" fill="var(--background)" stroke="var(--foreground)" strokeWidth="4"/>}
+        {kind === 'camion' && <>
+          <path d="M278 26V93M278 38H327V77H278" fill="var(--background)" stroke="var(--foreground)" strokeWidth="4"/>
+          <path d="M19 54H48V142H19ZM552 54H581V142H552Z" fill="var(--muted)" stroke="var(--foreground)" strokeWidth="5" />
+          <path d="M22 78H44M556 78H578" stroke="var(--background)" strokeWidth="3" />
+          <rect x="372" y="285" width="65" height="31" rx="4" fill="var(--muted)" />
+          <path d="M398 286L400 252M384 294H423M384 305H423" stroke="var(--background)" strokeWidth="3" />
+          <path d="M458 291H549V321H458Z" fill="var(--surface)" stroke="var(--background)" strokeWidth="2" />
+          <text x="503" y="309" textAnchor="middle" fill="var(--foreground)" fontSize="9">RADIO · ÉQUIPE</text>
+        </>}
       </> : <>
         <path d="M280 203H320L360 330H240Z" fill="var(--muted)" />
         {[60, 150, 390, 480].map((x, i) => <g key={x}>

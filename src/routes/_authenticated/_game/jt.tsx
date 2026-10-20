@@ -12,6 +12,7 @@ import anchorNational from "@/assets/tv-anchor-national.jpg";
 import anchorLocal from "@/assets/tv-anchor-local.jpg";
 import anchorInfo from "@/assets/tv-anchor-info.jpg";
 import { TvReportMedia } from "@/components/game/TvReportMedia";
+import { TvReportSequence } from "@/components/game/TvReportSequence";
 import { useTvPlayback } from "@/components/game/useTvPlayback";
 import { SCENE_IMAGES } from '@/components/game/EventScene';
 import { sceneKind, importanceLevel, IMPORTANCE_LABEL } from '@/game/scenes';
@@ -70,8 +71,7 @@ function Studio({ channel, segments, ticker, cityName, date }: { channel: Channe
 
   return <section className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
     <div className="relative aspect-video w-full overflow-hidden bg-muted">
-      <TvReportMedia key={`${seg?.id ?? 'empty'}-${showReport ? 'report' : 'studio'}`} video={showReport ? video : undefined} image={showReport && sceneImage ? sceneImage : IMG[person.id] ?? anchorNational} alt={showReport ? `Illustration thématique : ${seg?.title}` : `${person.name}, ${info.name}`} playing={playing} />
-      {showReport && video && <img src={IMG[reporter.id]} alt={reporter.name} width={1280} height={720} className="absolute bottom-16 right-3 aspect-video w-1/3 rounded border-2 border-primary object-cover shadow-lg sm:bottom-24" />}
+      {showReport && seg ? <TvReportSequence key={seg.id} video={video} image={sceneImage ?? IMG[person.id] ?? anchorNational} reporter={IMG[reporter.id] ?? anchorNational} title={seg.title} text={seg.body} playing={playing} /> : <TvReportMedia image={IMG[person.id] ?? anchorNational} alt={`${person.name}, ${info.name}`} playing={playing} />}
       <div className="absolute left-3 top-3 rounded bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">{info.name}</div>
       {playing && <div className="absolute right-3 top-3 flex items-center gap-1 rounded bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground"><span className="h-2 w-2 animate-pulse rounded-full bg-destructive-foreground" />ÉDITION DU JOUR</div>}
       {seg && <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/90 to-transparent p-3 pt-10 sm:p-5 sm:pt-16">

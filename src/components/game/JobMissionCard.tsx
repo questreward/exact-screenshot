@@ -6,6 +6,7 @@ import { chooseJobMission, jobMissionsQuery } from '@/services/game';
 import { missionResult, missionStepLabel, nextMissionThreshold } from '@/game/job-missions';
 import { MissionScene } from './MissionScene';
 import { MissionDossier } from './MissionDossier';
+import { MissionVehiclePanel } from './MissionVehiclePanel';
 
 export function JobMissionCard() {
   const query = useQuery(jobMissionsQuery);
@@ -25,6 +26,7 @@ export function JobMissionCard() {
     {query.isPending ? <p role="status">Chargement…</p> : query.isError ? <div role="alert"><p>Impossible de charger la mission.</p><Button variant="outline" onClick={() => void query.refetch()}>Réessayer</Button></div> : !m ? <p className="mt-3 text-sm text-muted-foreground">Commencez une vacation pour recevoir votre mission du jour.</p> : <div className="mt-3 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="min-w-0 break-words font-semibold">{m.title}</h3><MissionDossier mission={m} /></div>
       <MissionScene key={`${m.day}-${m.step_index}-${m.status}`} job={m.job} title={m.title} step={m.step_index} count={m.step_count} active={m.status === 'active'} />
+      <MissionVehiclePanel key={`${m.day}-${m.job}`} job={m.job} title={m.title} />
       {m.status === 'active' && m.step ? <>
         <p className="text-xs text-muted-foreground">{missionStepLabel(m.step_index, m.step_count)} · expire en fin de journée (UTC), sans pénalité</p>
         <progress className="h-2 w-full accent-primary" max={m.step_count} value={m.step_index} aria-label="Progression de la mission" />

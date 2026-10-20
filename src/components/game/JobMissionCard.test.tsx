@@ -6,6 +6,16 @@ vi.mock('@/services/game', () => ({ chooseJobMission: choose, jobMissionsQuery: 
 import { JobMissionCard } from './JobMissionCard';
 afterEach(cleanup);
 describe('intervention existante', () => {
+  it('ouvrir puis quitter le véhicule ne lance aucune action de mission', () => {
+    choose.mockClear();
+    const client = new QueryClient();
+    client.setQueryData(['job-missions', 'daily'], { mission: { day: '2026-10-20', title: 'Poste de secours', job: 'protection_civile', status: 'active', step_index: 0, step_count: 2, step: { text: 'Accueil', choices: [{ label: 'Accueillir' }] }, reputation_delta: null, energy_cost: null }, progress: { successes: 0 } });
+    render(<QueryClientProvider client={client}><JobMissionCard /></QueryClientProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Entrer dans le véhicule' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à l’intervention' }));
+    expect(choose).not.toHaveBeenCalled();
+    expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { step_index: 0, status: 'active', reputation_delta: null } });
+  });
   it('transmet le jour et l’étape enregistrés, puis affiche le résultat renvoyé', async () => {
     const mission = { day: '2026-10-20', title: 'Feu d’appartement', job: 'pompier_pro', city_id: 'lyon', status: 'active', step_index: 2, step_count: 3, step: { text: 'Rapport', choices: [{ label: 'Rédiger le rapport' }] }, reputation_delta: null, energy_cost: null };
     const client = new QueryClient(); client.setQueryData(['job-missions', 'daily'], { mission, progress: { successes: 0 } });
