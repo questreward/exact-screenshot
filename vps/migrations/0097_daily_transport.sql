@@ -140,7 +140,7 @@ DECLARE s public.transport_settings; p public.transport_profiles; lic timestampt
              WHERE a.character_id = NEW.character_id AND a.catalog_id = NEW.economy_payload->>'catalog_id' AND v.due_at <= public.game_now()) THEN
     RAISE EXCEPTION 'Voiture bloquée : contrôle technique à faire (page Transports).'; END IF;
   SELECT license_at INTO lic FROM public.driving_licenses WHERE character_id = NEW.character_id;
-  IF lic IS NOT NULL AND p.points_lost >= CASE WHEN lic > public.game_now() - s.young_years * interval '1 year' THEN s.points_young ELSE s.points_full END THEN
+  IF lic IS NOT NULL AND p.points_lost >= (CASE WHEN lic > public.game_now() - s.young_years * interval '1 year' THEN s.points_young ELSE s.points_full END) THEN
     RAISE EXCEPTION 'Permis invalide : plus aucun point.'; END IF;
   RETURN NEW;
 END $$;
