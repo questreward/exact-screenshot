@@ -397,8 +397,17 @@
 - [x] 0113 Voyages à l'étranger installée (confirmation d’Alex)
 
 ## Suite choisie par Alex — après 0113
-- [ ] Vérifier le lot 0110–0113 : audit et tests disponibles ; contrôle réel du VPS si accès disponible
-- [ ] Interactions et IA locale : examiner l’existant puis préparer conversations suivies et mémoire privée sans récompense IA
-- [ ] Interventions plus immersives : enrichir les scènes des missions existantes sans modifier leurs règles
-- [ ] Documents français : inventorier les manques et compléter sans dupliquer les espaces existants
+- [x] Audit local du lot et 21 essais ciblés réussis ; contrôle VPS en lecture seule préparé dans vps/tools/check_v1.sh
+- [ ] Contrôle réel du lot sur VPS/copie isolée : bloqué par absence d’accès disponible et de sortie du contrôle
+- [x] Conversations dans la page : reprise, remise à zéro, nouvelle tentative après erreur ; limite de réponse compatible avec la poursuite
+- [x] Scènes et dossier fictif des interventions : choix/résultats testés sans changer les règles
+- [ ] Vérification visuelle des scènes sur téléphone/ordinateur en jeu réel : accès à une mission active requis ; page de contrôle temporaire non servie
+- [x] Inventaire des documents terminé ; dossier ajouté, compléments non essentiels réservés à V2
 - Toute nouvelle migration doit être présentée exactement et approuvée avant application ; aucune installation VPS présumée.
+
+## Clôture V1 et communauté — demande d’Alex
+- [x] Première livraison terminée ; contrôles locaux réussis distingués des contrôles réels manquants
+- [x] Nouveautés non essentielles réservées à V2 ; aucune extension supplémentaire de V1
+- [x] Brouillon d’annonce V2 et structure Discord préparés dans V1_CONTROLES_ET_SUITE.md
+- [ ] Publication de l’annonce et ouverture de Discord : après contrôle V1 et accès au serveur Discord fourni par Alex
+- [x] Réseaux conseillés : Discord prioritaire, TikTok/Instagram pour gameplay, YouTube ensuite
