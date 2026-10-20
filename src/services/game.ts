@@ -2063,3 +2063,31 @@ export async function cpAction(args: { _action: 'candidate' | 'vote' | 'head' | 
  if (error) throw new Error(error.message);
  return data as CpState;
 }
+
+// ---------- V2 : réseau Civi (0118) ----------
+export type CiviPhoto = 'ville' | 'place' | 'transport' | 'culture' | 'politique' | 'societe';
+export type CiviPost = {
+  id: string; author_kind: string; author_label: string; character_id: string | null; mine: boolean; body: string;
+  photo: CiviPhoto | null; city_id: string | null; posted_at: string; news_id: string | null;
+  repost: { id: string; body: string; photo: CiviPhoto | null; author_label: string } | null;
+  likes: number; reposts: number; comments: number; liked: boolean; reposted: boolean; following: boolean | null; badge: string | null;
+  reports?: string[];
+};
+export type CiviTab = 'pour_toi' | 'abonnements' | 'ville';
+export type CiviFeed = { posts: CiviPost[]; posts_today: number; posts_per_day: number; body_limit: number; buzz_week: number; buzz_week_cap: number; buzz_likes: number; moderator: boolean };
+export type CiviComment = { id: string; character_id: string; mine: boolean; author_label: string; body: string; created_at: string };
+export type CiviProfile = { character_id: string; mine: boolean; name: string; city_id: string | null; followers: number; following_count: number; following: boolean; blocked: boolean; posts: CiviPost[] };
+const civiRpc = async <T,>(fn: string, args: Record<string, unknown> = {}): Promise<T> => {
+  const { data, error } = await (supabase.rpc as unknown as Rpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as T;
+};
+export const civiNetworkQuery = (tab: CiviTab) => queryOptions({ queryKey: ['civi', 'feed', tab], staleTime: 0, refetchInterval: 20000, queryFn: () => civiRpc<CiviFeed>('civi_feed', { _tab: tab }) });
+export const civiDetailQuery = (id: string) => queryOptions({ queryKey: ['civi', 'detail', id], staleTime: 0, queryFn: () => civiRpc<{ post: CiviPost; comments: CiviComment[] }>('civi_detail', { _post: id }) });
+export const civiProfileQuery = (id: string) => queryOptions({ queryKey: ['civi', 'profile', id], staleTime: 0, queryFn: () => civiRpc<CiviProfile>('civi_profile', { _character: id }) });
+export const civiModerationQuery = queryOptions({ queryKey: ['civi', 'moderation'], staleTime: 0, queryFn: () => civiRpc<CiviPost[]>('civi_moderation_queue') });
+export const civiPublish = (a: { body: string; photo: CiviPhoto | null; repost: string | null; request: string }) =>
+  civiRpc<string>('civi_publish', { _body: a.body, _photo: a.photo, _repost: a.repost, _request: a.request });
+export const civiAct = (a: { command: 'like' | 'unlike' | 'comment' | 'delete_comment' | 'report' | 'follow' | 'unfollow' | 'block' | 'unblock' | 'delete'; post?: string; target?: string; body?: string; reason?: string; request?: string }) =>
+  civiRpc<void>('civi_action', { _command: a.command, _post: a.post ?? null, _target: a.target ?? null, _body: a.body ?? null, _reason: a.reason ?? null, _request: a.request ?? null });
+export const civiModerate = (a: { post: string; decision: 'retablir' | 'supprimer' }) => civiRpc<void>('civi_moderate', { _post: a.post, _decision: a.decision });
