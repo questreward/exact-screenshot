@@ -77,7 +77,7 @@ function HousingPage() {
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="mb-2 font-heading font-bold">Annonces de location</h2>
         <div className="mb-3 flex gap-2 overflow-x-auto">{Object.entries(TYPES).map(([k, v]) =>
-          <button key={k} type="button" onClick={() => setType(k)} className={`h-10 shrink-0 rounded-full px-4 text-sm ${type === k ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{v}</button>)}</div>
+          <Button key={k} type="button" variant={type === k ? "default" : "secondary"} aria-pressed={type === k} onClick={() => setType(k)} className="min-h-11 shrink-0 rounded-full px-4 text-sm">{v}</Button>)}</div>
         {movers.length > 0 && <label className="mb-3 block text-sm">Déménageur
           <select className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={mover} onChange={e => setMover(e.target.value)}>
             <option value="">Déménageurs fictifs CIVITAS (prix normal)</option>

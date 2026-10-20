@@ -398,7 +398,8 @@
 
 ## Suite choisie par Alex — après 0113
 - [x] Audit local du lot et 21 essais ciblés réussis ; contrôle VPS en lecture seule préparé dans vps/tools/check_v1.sh
-- [ ] Contrôle réel du lot sur VPS/copie isolée : bloqué par absence d’accès disponible et de sortie du contrôle
+- [x] Rapport de présence/protections VPS reçu et conforme ; fonctionnement des parcours distinct de ce contrôle.
+- [ ] Parcours réels du lot sur copie isolée : accès/copie de test indépendante requis.
 - [x] Conversations dans la page : reprise, remise à zéro, nouvelle tentative après erreur ; limite de réponse compatible avec la poursuite
 - [x] Scènes et dossier fictif des interventions : choix/résultats testés sans changer les règles
 - [ ] Vérification visuelle des scènes sur téléphone/ordinateur en jeu réel : accès à une mission active requis ; page de contrôle temporaire non servie
@@ -407,7 +408,18 @@
 
 ## Clôture V1 et communauté — demande d’Alex
 - [x] Première livraison terminée ; contrôles locaux réussis distingués des contrôles réels manquants
-- [x] Nouveautés non essentielles réservées à V2 ; aucune extension supplémentaire de V1
+- [x] Principe initial de gel enregistré ; élargi ensuite explicitement par Alex pour Protection civile, vidéo, intérieurs et catalogue avant clôture.
 - [x] Brouillon d’annonce V2 et structure Discord préparés dans V1_CONTROLES_ET_SUITE.md
 - [ ] Publication de l’annonce et ouverture de Discord : après contrôle V1 et accès au serveur Discord fourni par Alex
 - [x] Réseaux conseillés : Discord prioritaire, TikTok/Instagram pour gameplay, YouTube ensuite
+
+## Dernier contrôle téléphone — avant clôture V1
+- [x] Contrôle de présence et protections 0110–0113 sur VPS reçu : objets présents, RLS et déclencheurs actifs, services démarrés ; ne vaut pas validation des parcours.
+- [x] Auditer les écrans et accès sur téléphone ; corrections navigation, champs, fenêtres, carte, onglets et noms longs sans changer les règles.
+- [x] Contrôles visuels ciblés 320/390/430/1280 px et 24 essais réussis ; composants en mission simulée, pas parcours VPS.
+- [x] Suite complète : 310 essais réussis, compilation automatique sans erreur.
+- [ ] Vérifier les parcours téléphone avec personnage réel sur VPS : accès/session disponible requis ; navigation du montage temporaire non validée.
+- [x] Comparer les engagements aux fonctions présentes ; priorités de clôture et limites documentées dans V1_CONTROLES_ET_SUITE.md.
+- [x] Protection civile : existant audité ; recrutement immédiat, formation courte, bénévolat, missions et progression présents ; antennes/dossier/qualifications détaillées absents.
+- [ ] Extension Protection civile : périmètre et nouvelles règles à valider avant préparation SQL exact ; aucune application autorisée.
+- [ ] Nouvelle extension V1 vidéo/scènes/intérieurs/catalogue : arbitrage de clôture demandé par Alex à 17:56 ; ressources VPS pour vidéo à mesurer, périmètre détaillé et règles à valider, aucun service externe ni migration implicite.

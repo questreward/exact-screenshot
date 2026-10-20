@@ -6,6 +6,7 @@ import { adminQuery, characterQuery, formatMoney } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
 import { aidPayments, aidRights, type AidRight } from '@/game/aid-portal';
 import { housingAid } from '@/game/admin';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/_authenticated/_game/caisse-des-aides')({
   head: () => ({ meta: gameMeta('Caisse des aides — Mon compte', 'Espace allocataire CIVITAS : paiements, droits, messages, attestations et simulation d’aide au logement.') }),
@@ -31,13 +32,13 @@ function AidSpace() {
   const number = c ? c.id.replace(/-/g, '').slice(0, 7).toUpperCase() : '—';
   return <div className="-mx-4 -mt-4 min-h-screen bg-background pb-24 sm:mx-0 sm:mt-0">
     <header className="border-b-4 border-primary bg-secondary text-secondary-foreground">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-        <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-md bg-primary font-heading text-lg font-bold text-primary-foreground">CA</span>
-          <div><p className="font-heading text-lg font-bold leading-tight">Caisse des aides</p><p className="text-xs opacity-80">Mon Compte allocataire · FICTIF</p></div></div>
-        <div className="text-right text-xs"><p className="flex items-center justify-end gap-1 font-semibold"><User className="h-3.5 w-3.5" />{allocataire}</p><p className="opacity-80">N° allocataire {number}</p></div>
+      <div className="mx-auto grid max-w-3xl gap-3 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div className="flex min-w-0 items-center gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary font-heading text-lg font-bold text-primary-foreground">CA</span>
+          <div className="min-w-0"><p className="font-heading text-lg font-bold leading-tight">Caisse des aides</p><p className="text-xs opacity-80">Mon Compte allocataire · FICTIF</p></div></div>
+        <div className="min-w-0 break-words text-xs sm:text-right"><p className="flex items-start gap-1 font-semibold sm:justify-end"><User className="h-3.5 w-3.5 shrink-0" />{allocataire}</p><p className="opacity-80">N° allocataire {number}</p></div>
       </div>
       <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2" aria-label="Menu Mon Compte">
-        {TABS.map(t => <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-md px-3 text-sm ${tab === t.id ? 'bg-background font-semibold text-foreground' : 'opacity-85 hover:bg-background/20'}`}><t.icon className="h-4 w-4" />{t.label}</button>)}
+        {TABS.map(t => <Button key={t.id} variant="ghost" type="button" aria-pressed={tab === t.id} onClick={() => setTab(t.id)} className={`min-h-11 shrink-0 gap-1.5 rounded-md px-3 text-sm ${tab === t.id ? 'bg-background font-semibold text-foreground' : 'opacity-85 hover:bg-background/20'}`}><t.icon className="h-4 w-4" />{t.label}</Button>)}
       </nav>
     </header>
     <p className="mx-auto max-w-3xl px-4 pt-3 text-xs text-muted-foreground">Simulation CIVITAS inspirée de l’espace CAF — pas un vrai service public, montants du jeu.</p>
