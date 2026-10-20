@@ -235,6 +235,7 @@
 
 - [x] Menu par rubriques + accueil personnel (affichage seulement)
 - [ ] CIVITAS Services (annuaire + parcours)
+- [ ] Logements — suite choisie par Alex : préparer l’aménagement des locations et des intérieurs plus lisibles ; plan à valider, baux et finances conservés, SQL exact soumis séparément avant installation.
 - [x] Aménager chez soi : plan validé ; écran Chez moi et proposition additive 0089 préparés, aucune fonction financière remplacée. 215 tests frontend réussis ; règles SQL testées sur copie jetable, placement/rotation/nom/sauvegarde/relecture/rangement vérifiés dans l’aperçu connecté avec sauvegarde reliée à cette copie, téléphone et ordinateur contrôlés.
 - [x] Aménager chez soi : SQL exact 0089 présenté et validé par Alex le 20 octobre 2026 ; commandes directes d’installation fournies.
 - [x] Aménager chez soi : installation 0089 sur VPS confirmée le 20 octobre 2026 par le compte rendu transmis jusqu’à COMMIT sans erreur, après sauvegarde ; ne pas relancer la migration.
