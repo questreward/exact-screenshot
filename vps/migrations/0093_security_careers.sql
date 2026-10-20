@@ -252,11 +252,12 @@ DECLARE car public.security_careers; sv public.security_services; st public.secu
     wk := GREATEST(wk, last_wk - 7 * 11);   -- au plus 12 semaines rattrapées
     WHILE wk <= last_wk LOOP
       IF (wk + 7)::timestamp AT TIME ZONE 'UTC' > car.joined_at THEN
-        IF wk::timestamp AT TIME ZONE 'UTC' < car.trained_at THEN monthly := sv.training_monthly; worked := true;
+        IF (wk + 7)::timestamp AT TIME ZONE 'UTC' <= car.trained_at THEN monthly := sv.training_monthly; worked := true;
         ELSE
           monthly := sv.rank_monthly[GREATEST(car.rank, 1) + 1];
           worked := EXISTS (SELECT 1 FROM public.security_shifts WHERE character_id = _cid AND starts_at >= wk::timestamp AT TIME ZONE 'UTC'
                               AND starts_at < (wk + 7)::timestamp AT TIME ZONE 'UTC' AND ends_at <= t)
+                 OR car.trained_at > wk::timestamp AT TIME ZONE 'UTC'
                  OR (car.injured_until IS NOT NULL AND car.injured_until > wk::timestamp AT TIME ZONE 'UTC');
         END IF;
         weekly := round(monthly * 12 / 52.0);
