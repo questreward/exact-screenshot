@@ -428,7 +428,8 @@
 - [x] Proposition regroupée approuvée ; aucun sujet retiré implicitement.
 - [x] Intérieur voiture et cabine car/train, vue de pièce sur possessions, dossier bénévole et rapports enregistrés intégrés sans nouvelles règles ; 24 essais ciblés et affichage simulé 320/390/1280 réussis.
 - [x] Point d’entrée de précontrôle unique préparé, lecture seule : vps/tools/check_final_v1.sh.
-- [ ] Mesurer les ressources locales vidéo : sortie du précontrôle VPS nécessaire, aucune génération locale vérifiée.
+- [x] Mesures VPS reçues : 4 processeurs, 8 Go RAM, 16 Go disque libre, aucun GPU de calcul identifié, FFmpeg absent du service ; génération vidéo non vérifiée.
+- [ ] JT animé avec narration locale accepté à 18:13 : sous-titres, pause et repli sans voix ; pas de génération vidéo par modèle annoncée.
 - [ ] Antennes/affectations/qualifications, vidéo JT, scènes et intérieur camion liés, 10 000 produits et documents complémentaires : prix/effets/périmètre détaillé et SQL exact à valider ; non livrés.
 - [ ] Présenter les règles nouvelles et le SQL exact avant toute installation ; livrer un point d’entrée unique avec sauvegarde et essais préalables, sans réinstaller les migrations validées.
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.

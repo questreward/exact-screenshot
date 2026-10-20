@@ -278,6 +278,8 @@
 /* Mission scenes never simulate progress or results. */
 .mission-vehicle-arriving { animation: mission-arrival 1.2s ease-out both; }
 .mission-step-enter { animation: rise 240ms ease-out both; }
+.tv-report-motion { animation: slow-zoom 18s ease-in-out infinite alternate; }
+@keyframes tvticker { from { transform: translateX(0); } to { transform: translateX(-100%); } }
 @keyframes mission-arrival { from { transform: translateX(-160px); } to { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) {
   .mission-vehicle-arriving, .mission-step-enter { animation: none !important; }
