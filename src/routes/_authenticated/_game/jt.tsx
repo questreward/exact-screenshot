@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Tv, Mic, LoaderCircle, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, CloudSun, BarChart3, Users } from "lucide-react";
@@ -11,6 +11,8 @@ import { CHANNELS, popularityBarometer, speechFor, weatherFor, anchorFor, report
 import anchorNational from "@/assets/tv-anchor-national.jpg";
 import anchorLocal from "@/assets/tv-anchor-local.jpg";
 import anchorInfo from "@/assets/tv-anchor-info.jpg";
+import { TvReportMedia } from "@/components/game/TvReportMedia";
+import { useTvPlayback } from "@/components/game/useTvPlayback";
 import { SCENE_IMAGES } from '@/components/game/EventScene';
 import { sceneKind, importanceLevel, IMPORTANCE_LABEL } from '@/game/scenes';
 
@@ -40,39 +42,20 @@ function Invitation({ id, question }: { id: string; question: string }) {
   </div>;
 }
 
-function useVoice() {
-  const [supported, setSupported] = useState(false);
-  useEffect(() => { setSupported(typeof window !== "undefined" && "speechSynthesis" in window); return () => { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); }; }, []);
-  const speak = (text: string, onEnd: () => void) => {
-    const synth = window.speechSynthesis; synth.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang = "fr-FR"; u.rate = 1.02;
-    const fr = synth.getVoices().find(v => v.lang.startsWith("fr")); if (fr) u.voice = fr;
-    u.onend = onEnd; synth.speak(u);
-  };
-  const stop = () => { if (supported) window.speechSynthesis.cancel(); };
-  return { supported, speak, stop };
-}
-
-function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; segments: TvSegment[]; ticker: string[]; cityName: string }) {
+function Studio({ channel, segments, ticker, cityName, date }: { channel: ChannelId; segments: TvSegment[]; ticker: string[]; cityName: string; date: string }) {
   const info = CHANNELS.find(c => c.id === channel) ?? { name: 'CIVITAS', tagline: 'Le journal' };
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
-  const voice = useVoice();
   const seg = segments[idx];
-
-  useEffect(() => { setIdx(0); setPlaying(false); voice.stop(); }, [channel, segments.length]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!playing || !seg) return;
-    const next = () => setIdx(i => { if (i + 1 >= segments.length) { setPlaying(false); return i; } return i + 1; });
-    if (voiceOn && voice.supported) { voice.speak(speechFor(seg.kind, seg.title, seg.body), next); return () => voice.stop(); }
-    const t = window.setTimeout(next, 9000); return () => window.clearTimeout(t);
-  }, [playing, idx, voiceOn, seg]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const go = (d: number) => { voice.stop(); setIdx(i => Math.min(Math.max(i + d, 0), Math.max(segments.length - 1, 0))); };
-
-  const today = new Date().toISOString().slice(0, 10);
+  useEffect(() => { setIdx(0); setPlaying(false); }, [channel, segments]);
+  const advance = useCallback(() => {
+    if (idx + 1 >= segments.length) setPlaying(false);
+    else setIdx(idx + 1);
+  }, [idx, segments.length]);
+  const playback = useTvPlayback(seg ? speechFor(seg.kind, seg.title, seg.body) : '', playing, voiceOn, advance);
+  const go = (d: number) => setIdx(i => Math.min(Math.max(i + d, 0), Math.max(segments.length - 1, 0)));
+  const today = date;
   const anchor = anchorFor(channel, today);
   const topic = seg ? (seg.kind === "interview" ? "general" : topicFor(`${seg.title} ${seg.body}`)) : "general";
   const reporter = reporterFor(channel, topic, seg ? `${seg.title}|${today}` : today);
@@ -87,23 +70,20 @@ function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; s
 
   return <section className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
     <div className="relative aspect-video w-full overflow-hidden bg-muted">
-      {showReport && sceneImage
-        ? <img src={sceneImage} alt={`Illustration thématique : ${scene?.title}`} width={1280} height={720} className="absolute inset-0 h-full w-full object-cover" />
-        : showReport && video
-        ? <video key={video} src={`/tv/${video}.mp4`} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" />
-        : <img key={person.id + idx} src={IMG[person.id]} alt={`${person.name}, ${person.role === "anchor" ? "présentateur" : "journaliste"} de ${info.name}`} width={1280} height={720} className={`absolute inset-0 h-full w-full object-cover ${playing ? "animate-[tvzoom_12s_ease-out_forwards]" : ""}`} />}
+      <TvReportMedia key={`${seg?.id ?? 'empty'}-${showReport ? 'report' : 'studio'}`} video={showReport ? video : undefined} image={showReport && sceneImage ? sceneImage : IMG[person.id] ?? anchorNational} alt={showReport ? `Illustration thématique : ${seg?.title}` : `${person.name}, ${info.name}`} playing={playing} />
       {showReport && video && <img src={IMG[reporter.id]} alt={reporter.name} width={1280} height={720} className="absolute bottom-16 right-3 aspect-video w-1/3 rounded border-2 border-primary object-cover shadow-lg sm:bottom-24" />}
       <div className="absolute left-3 top-3 rounded bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">{info.name}</div>
-      {playing && <div className="absolute right-3 top-3 flex items-center gap-1 rounded bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground"><span className="h-2 w-2 animate-pulse rounded-full bg-destructive-foreground" />EN DIRECT</div>}
+      {playing && <div className="absolute right-3 top-3 flex items-center gap-1 rounded bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground"><span className="h-2 w-2 animate-pulse rounded-full bg-destructive-foreground" />ÉDITION DU JOUR</div>}
       {seg && <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/90 to-transparent p-3 pt-10 sm:p-5 sm:pt-16">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">{seg.kind === "interview" ? "Joueur à l'antenne" : channel === "local" ? cityName : "À la une"} · {idx + 1}/{segments.length}{showReport ? ' · Illustration' : ''}</p>
-        <h3 className="font-heading text-lg font-bold leading-tight sm:text-2xl">{seg.title}</h3>
+        <h3 className="line-clamp-2 break-words font-heading text-sm font-bold leading-tight sm:text-2xl">{seg.title}</h3>
       </div>}
     </div>
     {ticker.length > 0 && <div className="flex items-center overflow-hidden bg-primary text-primary-foreground">
       <span className="shrink-0 bg-foreground px-3 py-2 text-xs font-bold text-background">FLASH</span>
       <div className="relative flex-1 overflow-hidden whitespace-nowrap py-2 text-sm"><span className="inline-block animate-[tvticker_40s_linear_infinite] pl-[100%]">{ticker.join("  •  ")}</span></div>
     </div>}
+    {seg && <p className="min-h-20 border-b border-border bg-background px-4 py-3 text-sm leading-relaxed" aria-label="Sous-titres">{playback.caption}</p>}
     <div className="space-y-3 p-4">
       {seg ? <>
         {scene && <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-primary"><span>{IMPORTANCE_LABEL[importanceLevel(scene.importance)]}</span>{scene.location_name && <span>{scene.location_name}</span>}<span>Événement du {new Date(scene.starts_at).toLocaleDateString('fr-FR', { timeZone: 'UTC' })}</span></div>}
@@ -112,11 +92,11 @@ function Studio({ channel, segments, ticker, cityName }: { channel: ChannelId; s
       </> : <p className="text-sm text-muted-foreground">Journée calme : aucun sujet pour cette édition.</p>}
       <div className="grid grid-cols-4 gap-2">
         <Button variant="outline" className="h-12" aria-label="Sujet précédent" disabled={idx === 0} onClick={() => go(-1)}><SkipBack /></Button>
-        <Button className="h-12" aria-label={playing ? "Pause" : "Lancer le JT"} disabled={!segments.length} onClick={() => { if (playing) voice.stop(); setPlaying(p => !p); }}>{playing ? <Pause /> : <Play />}</Button>
+        <Button className="h-12" aria-label={playing ? "Pause" : "Lancer le JT"} disabled={!segments.length} onClick={() => setPlaying(p => !p)}>{playing ? <Pause /> : <Play />}</Button>
         <Button variant="outline" className="h-12" aria-label="Sujet suivant" disabled={idx >= segments.length - 1} onClick={() => go(1)}><SkipForward /></Button>
-        <Button variant="outline" className="h-12" aria-label={voiceOn ? "Couper la voix" : "Activer la voix"} disabled={!voice.supported} onClick={() => { voice.stop(); setVoiceOn(v => !v); }}>{voiceOn ? <Volume2 /> : <VolumeX />}</Button>
+        <Button variant="outline" className="h-12" aria-label={voiceOn ? "Couper la voix" : "Activer la voix"} disabled={!playback.voiceAvailable} onClick={() => setVoiceOn(v => !v)}>{voiceOn ? <Volume2 /> : <VolumeX />}</Button>
       </div>
-      <p className="text-xs text-muted-foreground">Présenté par {anchor.name} · {info.tagline}{!voice.supported && " · voix indisponible sur cet appareil"}</p>
+      <p className="text-xs text-muted-foreground">Présenté par {anchor.name} · {info.tagline}{!playback.voiceAvailable && " · voix locale indisponible sur cet appareil"}</p>
     </div>
   </section>;
 }
@@ -143,7 +123,6 @@ function TvPage() {
   const poll = popularityBarometer(politics.organizations.filter(o => o.kind === "party")).slice(0, 6);
 
   return <div className="space-y-6 animate-rise">
-    <style>{"@keyframes tvticker{from{transform:translateX(0)}to{transform:translateX(-100%)}}@keyframes tvzoom{from{transform:scale(1)}to{transform:scale(1.12)}}"}</style>
     <div className="flex items-center gap-3"><Tv className="h-8 w-8 text-primary" /><div><h1 className="text-3xl font-bold">Journal télévisé</h1><p className="text-sm capitalize text-muted-foreground">{date}</p></div></div>
 
     <div className="grid grid-cols-3 gap-2">{CHANNELS.map(c => <Button key={c.id} className="h-14 flex-col gap-0 px-1" variant={channel === c.id ? "default" : "outline"} onClick={() => setChannel(c.id)}>
@@ -151,7 +130,7 @@ function TvPage() {
     </Button>)}</div>
     {channel === "local" && <nav className="flex flex-wrap gap-2">{cities.map(c => <Button key={c.id} size="sm" className="h-10" variant={tv.city_id === c.id ? "secondary" : "ghost"} asChild><Link to="/jt" search={{ city: c.id }}>{c.name}</Link></Button>)}</nav>}
 
-    <Studio channel={channel} segments={segments} ticker={ticker} cityName={cityName} />
+    <Studio channel={channel} segments={segments} ticker={ticker} cityName={cityName} date={tv.date} />
     <PlayerPress />
 
     {tv.invitations.length > 0 && <section className="space-y-4 rounded-lg border border-primary bg-card p-5">
@@ -186,7 +165,7 @@ function PlayerPress() {
   return <section className="space-y-3">
     <div className="flex items-center justify-between"><h2 className="font-heading text-xl font-bold">Presse des joueurs</h2><Button asChild variant="link" className="h-10"><Link to="/presse">Tout voir</Link></Button></div>
     {items.length ? <div className="grid gap-3 md:grid-cols-3">{items.map(a => <Link key={a.id} to="/presse" className="flex gap-3 rounded-xl border border-border bg-card p-3">
-      {a.photo || a.portrait ? <img src={(a.photo ?? a.portrait)!} alt={a.title} loading="lazy" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : null}
+      {a.photo || a.portrait ? <img src={a.photo ?? a.portrait ?? undefined} alt={a.title} loading="lazy" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : null}
       <div className="min-w-0"><p className="line-clamp-2 text-sm font-semibold">{a.title}</p><p className="truncate text-xs text-muted-foreground">{a.author} · {a.outlet}</p></div>
     </Link>)}</div> : <p className="text-sm text-muted-foreground">Aucun article de joueur pour l'instant. Devenez journaliste depuis la page Presse.</p>}
   </section>;
