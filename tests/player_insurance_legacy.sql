@@ -48,7 +48,7 @@ SELECT public.test_assert(NOT EXISTS (
 ),'Toutes les anciennes colonnes des contrats sont identiques après installation');
 \endif
 SELECT public.test_assert(NOT EXISTS (
- (SELECT kind,row FROM public.test_legacy_config EXCEPT
+ SELECT kind,row FROM public.test_legacy_config EXCEPT (
  SELECT 'settings',to_jsonb(x) FROM public.insurance_settings x UNION ALL
  SELECT 'products',to_jsonb(x) FROM public.insurance_products x UNION ALL
  SELECT 'coverage',to_jsonb(x) FROM public.insurance_coverage x UNION ALL
