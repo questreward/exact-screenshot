@@ -33,6 +33,7 @@ export const SECTIONS: Section[] = [
   { id: "construction", label: "Construction", icon: Hammer, description: "Rénover ou agrandir ton logement avec une entreprise de joueur ou fictive.", available: true },
   { id: "recrutement", label: "Recrutement", icon: Briefcase, description: "Trouver un emploi ou des candidats avec une agence.", available: true },
   { id: "assurances", label: "Assurances", icon: HeartPulse, description: "Choisir une assurance ou gérer sa compagnie.", available: true },
+  { id: "civitas-services", label: "CIVITAS Services", icon: Compass, description: "Toutes les démarches, logements, emplois et entreprises réunis par besoin.", available: true },
   { id: "logement", label: "Logement", icon: Home, description: "Annonces de location, bail, emménager dans un bien acheté.", available: true },
   { id: "patrimoine", label: "Patrimoine", icon: Wallet, description: "Épargne, biens et projets de vie.", available: true },
   { id: "demarches", label: "Mes démarches", icon: FileText, description: "Démarches administratives simulées.", available: true },
@@ -92,7 +93,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 // Big menu headings: every section belongs to exactly one group.
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
-  { id: "quotidien", label: "Quotidien", ids: ["vie", "carriere", "logement", "telephone", "demarches", "vie-administrative"] },
+  { id: "quotidien", label: "Quotidien", ids: ["civitas-services", "vie", "carriere", "logement", "telephone", "demarches", "vie-administrative"] },
   { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
   { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
@@ -108,4 +109,4 @@ export function groupedSections() {
 }
 
 // Personal home shortcuts (kept short on purpose).
-export const HOME_SHORTCUTS = ["vie", "carriere", "telephone", "carte", "ma-ville", "boutique"];
+export const HOME_SHORTCUTS = ["civitas-services", "vie", "carriere", "telephone", "carte", "ma-ville"];
