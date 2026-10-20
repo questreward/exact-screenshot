@@ -411,3 +411,9 @@
 - [x] Brouillon d’annonce V2 et structure Discord préparés dans V1_CONTROLES_ET_SUITE.md
 - [ ] Publication de l’annonce et ouverture de Discord : après contrôle V1 et accès au serveur Discord fourni par Alex
 - [x] Réseaux conseillés : Discord prioritaire, TikTok/Instagram pour gameplay, YouTube ensuite
+
+## Dernier contrôle téléphone — avant clôture V1
+- [x] Contrôle de présence et protections 0110–0113 sur VPS reçu : objets présents, RLS et déclencheurs actifs, services démarrés ; ne vaut pas validation des parcours.
+- [ ] Auditer les écrans et accès sur téléphone, corriger les obstacles de présentation sans modifier les règles du jeu.
+- [ ] Vérifier les corrections au navigateur sur petites largeurs et relancer les essais concernés.
+- [ ] Comparer les engagements aux fonctions présentes ; distinguer les manques essentiels, propositions V2 et essais VPS encore nécessaires.
