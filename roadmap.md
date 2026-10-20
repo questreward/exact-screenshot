@@ -466,3 +466,4 @@
 - [x] Mise à jour du site VPS déclarée installée par Alex à 18:58 UTC ; aucun parcours connecté supplémentaire confirmé par cette déclaration.
 - [ ] Vérifier les parcours connectés Protection civile, boutique et confort téléphone sur le site réel ; accès boutique redirigé vers connexion, session du jeu non disponible ici.
 - [x] Bilan établi : installation des données et restauration confirmées par rapports, site public accessible ; mise à jour finale, parcours réels, régressions indépendantes et fonctionnement sans IA restent non confirmés. V1 non clôturable comme entièrement vérifiée.
+- [x] À 18:59 UTC, Alex demande la clôture : ajouts V1 clos, nouveautés réservées à V2 ; les contrôles ouverts ci-dessus restent des tâches de stabilisation, sans validation technique implicite.
