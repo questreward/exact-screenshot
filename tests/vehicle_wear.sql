@@ -23,13 +23,13 @@ SELECT pg_temp.ok((SELECT condition_pct FROM public.vehicle_wear) IN (93, 91), '
 UPDATE public.activities SET status='completed';
 -- Panne sous 40 % : forcer un trajet qui tombe en panne
 UPDATE public.vehicle_wear SET condition_pct = 30;
-DO $$ DECLARE i int := 0; id uuid; BEGIN
-  LOOP id := gen_random_uuid(); EXIT WHEN abs(hashtext(id::text || ':panne')) % 100 < 10; END LOOP;
-  INSERT INTO public.activities(id,character_id,type,title,start_time,end_time,status) VALUES (id,'00000000-0000-0000-0000-0000000000c1','intercity_travel','V','2026-10-27 10:00+00','2026-10-27 12:00+00','running');
-  INSERT INTO public.drive_trips(activity_id,character_id,catalog_id,from_city,to_city,segments,radars) VALUES (id,'00000000-0000-0000-0000-0000000000c1','car','paris','lyon','[]','[]');
-  UPDATE public.drive_trips SET settled = true WHERE activity_id = id;
-  UPDATE public.drive_trips SET settled = true WHERE activity_id = id;
-  UPDATE public.activities SET status='completed' WHERE id = id;
+DO $$ DECLARE i int := 0; x uuid; BEGIN
+  LOOP x := gen_random_uuid(); EXIT WHEN abs(hashtext(x::text || ':panne')) % 100 < 10; END LOOP;
+  INSERT INTO public.activities(id,character_id,type,title,start_time,end_time,status) VALUES (x,'00000000-0000-0000-0000-0000000000c1','intercity_travel','V','2026-10-27 10:00+00','2026-10-27 12:00+00','running');
+  INSERT INTO public.drive_trips(activity_id,character_id,catalog_id,from_city,to_city,segments,radars) VALUES (x,'00000000-0000-0000-0000-0000000000c1','car','paris','lyon','[]','[]');
+  UPDATE public.drive_trips SET settled = true WHERE activity_id = x;
+  UPDATE public.drive_trips SET settled = true WHERE activity_id = x;
+  UPDATE public.activities SET status='completed' WHERE id = x;
 END $$;
 SELECT pg_temp.ok((SELECT count(*) FROM public.transport_ledger WHERE kind='depannage' AND amount=120) = 1, 'tow 120 once');
 SELECT pg_temp.ok((SELECT condition_pct FROM public.vehicle_wear) = 26, 'breakdown trip -4');
