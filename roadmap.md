@@ -235,6 +235,7 @@
 
 - [x] Menu par rubriques + accueil personnel (affichage seulement)
 - [ ] CIVITAS Services (annuaire + parcours)
+- [ ] Suite choisie le 20 octobre 2026 : aménager chez soi ; préparer un plan distinct pour les pièces, les objets possédés et la sauvegarde, sans modifier les achats ; SQL exact soumis à accord avant installation.
 - [x] Logements visuels : plan validé, catalogue illustré et visites intégrés à la Boutique ; six images locales, filtres ville/pièces, données et achats existants conservés, aucune migration.
 - [x] Logements visuels : 207 tests réussis et affichage téléphone/ordinateur vérifié avec catalogue simulé ; filtres, galerie, fermeture et confirmation sans paiement contrôlés. Compilation OK.
 - [x] Logements visuels : mise à jour du site VPS déclarée installée par Alex le 20 octobre 2026 ; aucune migration nécessaire.
