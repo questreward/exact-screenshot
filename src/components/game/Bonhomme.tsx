@@ -2,7 +2,7 @@ import { personLook, type PersonMood } from '@/game/people';
 import { cn } from '@/lib/utils';
 
 /** SVG <g> of a small animated person, drawn in a 40×70 box (feet at y=70). Usable inside any SVG. */
-export function BonhommeG({ seed, mood = 'idle', delay = 0, sign }: { seed: string; mood?: PersonMood; delay?: number; sign?: string }) {
+export function BonhommeG({ seed, mood = 'idle', delay = 0, sign }: { seed: string; mood?: PersonMood; delay?: number; sign?: string | undefined }) {
   const l = personLook(seed);
   const style = { animationDelay: `${delay}s` };
   return <g className={cn('bh', `bh-${mood}`)} style={style}>
@@ -28,12 +28,12 @@ export function BonhommeG({ seed, mood = 'idle', delay = 0, sign }: { seed: stri
 }
 
 /** Standalone animated person. */
-export function Bonhomme({ seed, mood = 'idle', delay = 0, className, sign }: { seed: string; mood?: PersonMood; delay?: number; className?: string; sign?: string }) {
+export function Bonhomme({ seed, mood = 'idle', delay = 0, className, sign }: { seed: string; mood?: PersonMood; delay?: number; className?: string | undefined; sign?: string | undefined }) {
   return <svg viewBox="0 -14 40 86" className={cn('h-16 w-8 overflow-visible', className)} aria-hidden><BonhommeG seed={seed} mood={mood} delay={delay} sign={sign} /></svg>;
 }
 
 /** A strip of people walking across, for places and scenes. */
-export function Crowd({ seedBase, count, moods, signs, className }: { seedBase: string; count: number; moods?: PersonMood[]; signs?: string[]; className?: string }) {
+export function Crowd({ seedBase, count, moods, signs, className }: { seedBase: string; count: number; moods?: PersonMood[]; signs?: string[] | undefined; className?: string }) {
   if (count <= 0) return null;
   return <div className={cn('relative flex items-end justify-around gap-1 overflow-hidden', className)} aria-hidden>
     {Array.from({ length: count }, (_, i) => {
