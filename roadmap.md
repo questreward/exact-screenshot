@@ -430,7 +430,11 @@
 - [x] Point d’entrée de précontrôle unique préparé, lecture seule : vps/tools/check_final_v1.sh.
 - [x] Mesures VPS reçues : 4 processeurs, 8 Go RAM, 16 Go disque libre, aucun GPU de calcul identifié, FFmpeg absent du service ; génération vidéo non vérifiée.
 - [x] Première amélioration JT : sous-titres fidèles, voix française locale seulement si disponible, pause/repli images ; 13 tests ciblés réussis et montage navigateur 390/1280 sans erreur. Montage tombé sur repli image : clip réel et parcours connecté VPS non vérifiés. Aucune narration Ollama ni vidéo générée ajoutée ici.
-- [ ] Protection civile : principes consultatifs proposés dans V1_PROTECTION_CIVILE_PROPOSITION.md ; accord attendu pour rattachements historiques et notes privées, puis SQL exact à présenter.
+- [x] Protection civile : principes consultatifs acceptés le 20 octobre à 18:18 UTC ; préparer antennes, historique privé et notes privées, puis présenter SQL exact sans application implicite.
 - [ ] Antennes/affectations/qualifications, vidéo JT, scènes et intérieur camion liés, 10 000 produits et documents complémentaires : prix/effets/périmètre détaillé et SQL exact à valider ; non livrés.
 - [ ] Présenter les règles nouvelles et le SQL exact avant toute installation ; livrer un point d’entrée unique avec sauvegarde et essais préalables, sans réinstaller les migrations validées.
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.
+
+## Gel demandé par Alex — 20 octobre 18:18 UTC
+- [ ] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici.
+- [ ] Geler les nouveaux ajouts V1 après cette livraison ; conserver explicitement les engagements non livrés et les contrôles bloqués.
