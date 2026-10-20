@@ -349,5 +349,5 @@
 - [x] 0093 installée sur le VPS (déclaré par Alex)
 - [x] Espace Santé (type ameli) créé, sans nouvelle installation de base
 - [x] Bloc A vague 2 : Gendarmerie et SAMU (0094 prête et testée)
-- [ ] Installer 0094 sur le VPS (accord d’Alex)
+- [x] 0094 installée sur le VPS (déclaré par Alex)
 - [ ] Idées de réalisme France à proposer
