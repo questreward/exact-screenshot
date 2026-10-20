@@ -3,7 +3,7 @@ BEGIN;
 CREATE FUNCTION pg_temp.ok(c boolean,m text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN IF c IS DISTINCT FROM true THEN RAISE EXCEPTION '%',m; END IF; END $$;
 CREATE FUNCTION pg_temp.refuse(q text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN EXECUTE q; RAISE EXCEPTION 'UNEXPECTED SUCCESS'; EXCEPTION WHEN raise_exception THEN IF SQLERRM='UNEXPECTED SUCCESS' THEN RAISE; END IF; END $$;
 SET LOCAL test.uid='00000000-0000-0000-0000-000000000001';
-SELECT public.security_apply('protection_civile','disponible','{}',gen_random_uuid());
+SELECT public.security_apply('protection_civile','libre','{}',gen_random_uuid());
 SELECT public.volunteer_attach('paris','00000000-0000-0000-0000-000000001001');
 SELECT public.volunteer_attach('paris','00000000-0000-0000-0000-000000001001');
 SELECT pg_temp.ok((SELECT count(*)=1 FROM public.volunteer_attachments),'Rattachement exactement une fois');
