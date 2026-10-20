@@ -450,11 +450,12 @@
 - [x] Rapport VPS 18:34 : restauration isolée des données du jeu annoncée réussie, pg_cron exclu ; sauvegarde complète créée.
 - [x] Fin du contrôle 0114 reçue : restauration réussie, puis refus « Écriture directe interdite » ; aucune installation conservée.
 - [ ] Demande 18:37 : corriger le contrôle 0114 « Écriture directe interdite », retester, fournir installation après réussite puis contrôler antenne/note en jeu ; accès VPS non disponible ici.
-- [ ] Demande 18:37 : ajouter les 9 938 produits aux prix validés, présenter le SQL exact puis vérifier 10 000 sur VPS ; ne pas substituer la base Cloud au VPS.
+- [x] Demande 18:37 catalogue : SQL exact présenté, 9 938 produits installés sur VPS ; rapport 18:54 confirme 10 000 produits distincts et les fourchettes validées.
 - [x] 0114 corrigée : REVOKE explicite sur les trois nouvelles tables/séquence ; test local avec droits hérités larges, confidentialité et écritures contrôlées réussi.
 - [x] 0115 préparée : 9 938 lignes littérales, prix/caractéristiques testés, page SQL + état compact ; essai SQL jetable total 10 000 et anciens produits inchangés réussi.
 - [ ] Parcours visuels connectés Protection civile/boutique : montage simulé non concluant (connexions/cache du montage), aucun parcours réel VPS vérifié ; accès VPS requis.
 - [x] Rapport VPS 18:53 : sauvegarde/restauration isolée et essais 0114+0115 réussis, ROLLBACK ; total boutique testé 10 000. Installation réelle fournie conformément à la demande après validation.
-- [ ] Installation réelle 0114/0115 : attendre sortie COMMIT des deux fichiers puis contrôler le total réel ; mise à jour du site et parcours connectés VPS non vérifiés, accès serveur absent ici.
+- [x] Installation réelle 0114/0115 confirmée par rapport VPS 18:54 : deux COMMIT, 10 000 produits distincts, 5 antennes pour 5 villes.
+- [ ] Mise à jour du site et parcours connectés antenne/note/boutique : non vérifiés ; accès serveur et session du jeu absents ici, procédure de déploiement VPS à confirmer.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.

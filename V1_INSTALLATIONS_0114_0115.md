@@ -1,7 +1,7 @@
 # CIVITAS — Protection civile et catalogue : SQL exact avant installation
 
 ## État constaté
-Le rapport VPS reçu à 18:53 confirme une sauvegarde complète, la restauration isolée des données du jeu (sans pg_cron) et les deux essais 0114 corrigée/0115 réussis avec ROLLBACK. Le total boutique testé est 10 000 après INSERT de 9 938 ; les 83 lignes sauvegardées dans le contrôle d’intégrité comprennent aussi les entrées hors boutique, et ne contredisent pas les 62 produits vendus initialement. Aucun accès à ce VPS n’est disponible ici ; aucune installation ni vérification connectée du jeu ne peut être annoncée.
+Le rapport VPS reçu à 18:54 confirme l’installation réelle : COMMIT de 0114 puis de 0115, INSERT de 9 938, 10 000 produits et 10 000 identifiants distincts, 5 antennes pour 5 villes. Les sept rubriques et les 30 magasins existants sont conservés ; les prix des nouveaux articles respectent les fourchettes validées. Les 83 lignes sauvegardées dans le contrôle d’intégrité comprennent aussi les entrées hors boutique, en plus des 62 produits initialement vendus. Sauvegarde complète et restauration isolée sans cron déjà réussies à l’essai préalable. Ne pas réexécuter ces migrations. La mise à jour de l’application et les parcours connectés restent non vérifiés : aucun accès direct à ce VPS ni session du jeu disponible ici.
 
 ## 0114 corrigé
 SQL exact : `vps/migrations/0114_volunteer_dossier.sql`.
