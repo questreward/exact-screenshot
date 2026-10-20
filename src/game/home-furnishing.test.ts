@@ -7,7 +7,7 @@ describe('Aménagement : indications de placement',()=>{
  it('refuse la superposition de deux objets',()=>expect(canPlace({...p,asset_id:'bed'},[p],items,1,8)).toBe(false));
  it('refuse un emplacement hors de la pièce',()=>expect(canPlace({...p,x:7},[],items,1,8)).toBe(false));
  it('refuse une pièce inexistante',()=>expect(canPlace({...p,room:1},[],items,1,8)).toBe(false));
- it('tourne l’empreinte sans modifier l’objet possédé',()=>{expect(footprint(items[0],90)).toEqual({width:1,height:3});expect(items[0].width).toBe(3);});
+ it('tourne l’empreinte sans modifier l’objet possédé',()=>{const sofa=items.find(i=>i.asset_id==='sofa');if(!sofa)throw new Error('Canapé manquant');expect(footprint(sofa,90)).toEqual({width:1,height:3});expect(sofa.width).toBe(3);});
  it('déplace un objet sans collision avec son ancien emplacement',()=>expect(canPlace({...p,x:1},[p],items,1,8)).toBe(true));
  it('refuse une rotation non autorisée',()=>expect(canPlace({...p,rotation:45},[],items,1,8)).toBe(false));
  it('refuse les coordonnées fractionnaires',()=>expect(canPlace({...p,x:0.5},[],items,1,8)).toBe(false));

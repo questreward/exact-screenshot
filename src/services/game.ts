@@ -1461,7 +1461,8 @@ export const furnishingQuery = queryOptions({
   queryFn: async (): Promise<import("@/game/home-furnishing").FurnishingState> => {
     const { data, error } = await untyped.rpc("home_furnishing_state", {});
     if (error) {
-      if (error.code === "PGRST202" || error.code === "42883") return { available: false, homes: [], furniture: [], grid: 8 };
+      const code = "code" in error ? error.code : undefined;
+      if (code === "PGRST202" || code === "42883" || error.message.includes("Could not find the function public.home_furnishing_state")) return { available: false, homes: [], furniture: [], grid: 8 };
       throw new Error(error.message);
     }
     return data as import("@/game/home-furnishing").FurnishingState;

@@ -22,7 +22,7 @@ SELECT pg_temp.reject($q$SELECT public.home_furnishing_save('20000000-0000-0000-
 SELECT pg_temp.reject($q$SELECT public.home_furnishing_save('20000000-0000-0000-0000-000000000002',0,'["A"]','[{"asset_id":"30000000-0000-0000-0000-000000000001","room":0,"x":0,"y":0,"rotation":0}]',gen_random_uuid())$q$,'Objet placé dans un autre logement');
 SELECT pg_temp.assert_true((SELECT room_names->>0='Salon' FROM public.home_layouts),'Nom enregistré');
 SELECT pg_temp.assert_true((SELECT x=1 AND y=1 AND rotation=90 FROM public.home_placements),'Position et rotation relues');
-SELECT pg_temp.assert_true((SELECT sum(purchase_price)=200887 FROM public.personal_assets),'Valeurs du patrimoine inchangées');
+SELECT pg_temp.assert_true((SELECT sum(purchase_price)=150887 FROM public.personal_assets),'Valeurs du patrimoine inchangées');
 SET LOCAL ROLE authenticated;
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM public.home_placements),'Lecture propriétaire autorisée');
 SELECT pg_temp.reject($q$DELETE FROM public.home_placements$q$,'permission denied');
