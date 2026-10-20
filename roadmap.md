@@ -344,5 +344,5 @@
 - [x] Actualisation mensuelle préparée : migration 0092 testée sur base jetable
 - [ ] Installer 0092 sur le VPS après accord sur le SQL
 - [ ] Espace Santé (type ameli)
-- [ ] Bloc A métiers sécurité/secours : règles chiffrées à faire valider (concours, école, grades, salaires)
+- [ ] Bloc A métiers police / pompiers / protection civile : recrutement, formation, horaires, missions par service — règles chiffrées à valider puis SQL
 - [ ] Idées de réalisme France à proposer
