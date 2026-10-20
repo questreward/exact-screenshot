@@ -126,7 +126,7 @@ CREATE FUNCTION public.student_grade(_cid uuid, _key text, _delta integer) RETUR
 
 CREATE FUNCTION public.student_settle(_cid uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.student_settings; p public.student_profiles; pr public.higher_ed_programs; t timestamptz := public.game_now();
-  m date; now_m date; prog int; y int; sess date; k text; g numeric; avg numeric; n int; amount int; BEGIN
+  m date; now_m date; prog int; y int; sess date; k text; g numeric; av numeric; n int; amount int; BEGIN
   SELECT * INTO s FROM public.student_settings WHERE id = 1;
   p := public.student_profile(_cid);
   SELECT * INTO p FROM public.student_profiles WHERE character_id = _cid FOR UPDATE;
@@ -172,8 +172,8 @@ DECLARE s public.student_settings; p public.student_profiles; pr public.higher_e
           UPDATE public.student_profiles SET session_progress = prog WHERE character_id = _cid;
           p.session_progress := prog;
           IF extract(month FROM sess) = 5 THEN
-            SELECT avg(grade), count(*) INTO avg, n FROM public.student_ledger WHERE character_id = _cid AND kind = 'partiel' AND key IN ('partiel:' || y || '-01', 'partiel:' || y || '-05');
-            IF avg < s.pass_grade THEN UPDATE public.student_profiles SET retake_open = true WHERE character_id = _cid; p.retake_open := true; END IF;
+            SELECT avg(grade), count(*) INTO av, n FROM public.student_ledger WHERE character_id = _cid AND kind = 'partiel' AND key IN ('partiel:' || y || '-01', 'partiel:' || y || '-05');
+            IF av < s.pass_grade THEN UPDATE public.student_profiles SET retake_open = true WHERE character_id = _cid; p.retake_open := true; END IF;
           END IF;
         END IF;
       END IF;
@@ -182,18 +182,18 @@ DECLARE s public.student_settings; p public.student_profiles; pr public.higher_e
     IF make_date(y, 7, 1) > (p.year_started_at AT TIME ZONE 'UTC')::date AND make_date(y, 7, 1) <= (t AT TIME ZONE 'UTC')::date
        AND EXISTS (SELECT 1 FROM public.student_ledger WHERE character_id = _cid AND key = 'partiel:' || y || '-05')
        AND NOT EXISTS (SELECT 1 FROM public.student_ledger WHERE character_id = _cid AND key = 'annee:' || y) THEN
-      SELECT avg(grade) INTO avg FROM public.student_ledger WHERE character_id = _cid AND key IN ('partiel:' || y || '-01', 'partiel:' || y || '-05');
-      SELECT greatest(avg, COALESCE((SELECT grade FROM public.student_ledger WHERE character_id = _cid AND key = 'rattrapage:' || y), 0)) INTO avg;
-      IF avg >= s.pass_grade THEN
-        INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'annee:' || y, 'annee', round(avg, 1), 'Année ' || p.year || ' validée');
+      SELECT avg(grade) INTO av FROM public.student_ledger WHERE character_id = _cid AND key IN ('partiel:' || y || '-01', 'partiel:' || y || '-05');
+      SELECT greatest(av, COALESCE((SELECT grade FROM public.student_ledger WHERE character_id = _cid AND key = 'rattrapage:' || y), 0)) INTO av;
+      IF av >= s.pass_grade THEN
+        INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'annee:' || y, 'annee', round(av, 1), 'Année ' || p.year || ' validée');
         IF p.year >= pr.years THEN
-          INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'diplome:' || pr.id, 'diplome', round(avg, 1), pr.diploma || ' obtenu') ON CONFLICT DO NOTHING;
+          INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'diplome:' || pr.id, 'diplome', round(av, 1), pr.diploma || ' obtenu') ON CONFLICT DO NOTHING;
           UPDATE public.student_profiles SET program_id = NULL, year = 1, retake_open = false WHERE character_id = _cid;
           RETURN;
         END IF;
         UPDATE public.student_profiles SET year = year + 1, retake_open = false WHERE character_id = _cid; p.year := p.year + 1;
       ELSE
-        INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'annee:' || y, 'annee', round(avg, 1), 'Année ' || p.year || ' non validée : redoublement');
+        INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, 'annee:' || y, 'annee', round(av, 1), 'Année ' || p.year || ' non validée : redoublement');
         UPDATE public.student_profiles SET retake_open = false WHERE character_id = _cid;
       END IF;
       p.retake_open := false;
