@@ -2,9 +2,22 @@
 -- Exactement 5 000 € à la création : frais existants inclus, solde en capital.
 -- Pas de nouveaux incidents, ni modification des franchises/plafonds/contrats anciens.
 -- Modifie par remplacement contrôlé insurance_settle et insurance_state.
--- Ajoute le secteur au réglage des tarifs, sans changer les recettes PNJ des autres services.
+-- Tarifs d'assurance via insurer_set_price uniquement ; services existants inchangés.
 -- Tout ou rien ; à appliquer une seule fois après accord.
 BEGIN;
+
+-- Vérifier les corps complets, pas seulement un fragment à remplacer.
+DO $$ BEGIN
+  IF (SELECT md5(btrim(regexp_replace(prosrc,'\s+',' ','g'))) FROM pg_proc WHERE oid='public.insurance_settle(uuid)'::regprocedure)
+      IS DISTINCT FROM '91e2d185d6b2efa7fb2a660a9e120f09' THEN
+    RAISE EXCEPTION 'insurance_settle diffère de la version attendue : installation annulée'; END IF;
+  IF (SELECT md5(btrim(regexp_replace(prosrc,'\s+',' ','g'))) FROM pg_proc WHERE oid='public.insurance_state()'::regprocedure)
+      IS DISTINCT FROM 'f74358c542b885a60d785ec32f2fe8bd' THEN
+    RAISE EXCEPTION 'insurance_state diffère de la version attendue : installation annulée'; END IF;
+  IF position('IN (''garage'',''demenagement'',''immobilier'',''concession'',''construction'',''recrutement'')'
+    IN pg_get_functiondef('public.service_set_price(integer)'::regprocedure))=0 THEN
+    RAISE EXCEPTION '0086 doit être installé avant 0087'; END IF;
+END $$;
 
 CREATE TABLE public.insurer_settings (
   id integer PRIMARY KEY CHECK (id = 1),
@@ -144,11 +157,7 @@ DO $$ DECLARE def text; old text; BEGIN
   IF position(old IN def)=0 THEN RAISE EXCEPTION 'Contrats introuvables'; END IF;
   def:=replace(def,old,old||', ''insurer'', COALESCE((SELECT b.name FROM public.businesses b WHERE b.id=ct.insurer_id AND b.status=''active''), ''Assureur fictif CIVITAS'')');
   EXECUTE def;
-  -- Le réglage commun reconnaît le nouveau secteur ; pas de recettes PNJ inventées.
-  def:=pg_get_functiondef('public.service_set_price(integer)'::regprocedure);
-  old:='IN (''garage'',''demenagement'',''immobilier'',''concession'',''construction'',''recrutement'')';
-  IF position(old IN def)=0 THEN RAISE EXCEPTION '0086 doit être installé avant 0087'; END IF;
-  EXECUTE replace(def,old,'IN (''garage'',''demenagement'',''immobilier'',''concession'',''construction'',''recrutement'',''assurance'')');
+  -- Le réglage partagé reste inchangé : aucune deuxième voie pour les tarifs assurance.
 END $$;
 
 CREATE FUNCTION public.insurer_state() RETURNS jsonb
