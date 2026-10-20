@@ -398,7 +398,8 @@
 
 ## Suite choisie par Alex — après 0113
 - [x] Audit local du lot et 21 essais ciblés réussis ; contrôle VPS en lecture seule préparé dans vps/tools/check_v1.sh
-- [ ] Contrôle réel du lot sur VPS/copie isolée : bloqué par absence d’accès disponible et de sortie du contrôle
+- [x] Rapport de présence/protections VPS reçu et conforme ; fonctionnement des parcours distinct de ce contrôle.
+- [ ] Parcours réels du lot sur copie isolée : accès/copie de test indépendante requis.
 - [x] Conversations dans la page : reprise, remise à zéro, nouvelle tentative après erreur ; limite de réponse compatible avec la poursuite
 - [x] Scènes et dossier fictif des interventions : choix/résultats testés sans changer les règles
 - [ ] Vérification visuelle des scènes sur téléphone/ordinateur en jeu réel : accès à une mission active requis ; page de contrôle temporaire non servie
@@ -414,8 +415,9 @@
 
 ## Dernier contrôle téléphone — avant clôture V1
 - [x] Contrôle de présence et protections 0110–0113 sur VPS reçu : objets présents, RLS et déclencheurs actifs, services démarrés ; ne vaut pas validation des parcours.
-- [ ] Auditer les écrans et accès sur téléphone, corriger les obstacles de présentation sans modifier les règles du jeu.
-- [ ] Vérifier les corrections au navigateur sur petites largeurs et relancer les essais concernés.
-- [ ] Comparer les engagements aux fonctions présentes ; distinguer les manques essentiels, propositions V2 et essais VPS encore nécessaires.
+- [x] Auditer les écrans et accès sur téléphone ; corrections navigation, champs, fenêtres, carte, onglets et noms longs sans changer les règles.
+- [x] Contrôles visuels ciblés 320/390/430/1280 px et 24 essais réussis ; composants en mission simulée, pas parcours VPS.
+- [ ] Vérifier les parcours téléphone avec personnage réel sur VPS : accès/session disponible requis ; navigation du montage temporaire non validée.
+- [x] Comparer les engagements aux fonctions présentes ; priorités de clôture et limites documentées dans V1_CONTROLES_ET_SUITE.md.
 - [ ] Protection civile : demande explicite avant clôture V1 ; examiner interventions, paperasse, recrutement et antennes, préparer une extension réaliste réutilisant les secours ; SQL exact et accord distinct requis avant toute application.
 - [ ] Nouvelle extension explicitement demandée avant clôture V1 : JT avec vidéos alimentées par IA locale, personnages/interventions/manifestations plus réalistes, intérieurs logement et véhicules, boutique de 10 000 produits répartis entre magasins ; préparer lots et limites VPS avant développement, aucun service externe ni migration implicite.

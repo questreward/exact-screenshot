@@ -26,9 +26,27 @@ Point à contrôler : 0113 crée ses trois politiques sous une seule condition. 
 5. Voyages : documents requis, un seul débit par clé, refus agenda/travail/déplacement/vote pendant le séjour, un seul retour et souvenir. Accélérer le délai seulement dans la copie de test.
 6. Deux comptes dans la copie : aucune lecture croisée des voyages, cartes postales, missions ni conversations privées.
 
-Le VPS et Ollama n’ont pas été testés directement depuis cette session ; leur configuration et les parcours complets restent à vérifier à partir des résultats du contrôle. Les essais locaux utilisent des données contrôlées et ne sont pas présentés comme un essai de production.
+Le rapport transmis par Alex le 20 octobre confirme les huit objets et onze fonctions présents, les RLS/permissions attendues, les politiques propriétaires et déclencheurs actifs, ainsi que les trois conteneurs démarrés. Les réglages Ollama sont présents ; aucune inférence IA ni aucun parcours complet n’est prouvé par ce rapport. Les essais locaux utilisent des données contrôlées et ne sont pas présentés comme un essai de production.
 
 21 essais ciblés réussis, dont nouvelle tentative sans double message, reprise/remise à zéro et transmission du choix de mission suivie du résultat serveur simulé. Compilation automatique sans erreur. La vérification visuelle par navigateur n’a pas abouti : la page temporaire de contrôle n’était pas servie. Les fichiers temporaires ont été retirés ; l’affichage dans une vraie mission et Ollama restent non vérifiés.
+
+## Dernière passe téléphone — 20 octobre
+- Commandes et champs tactiles agrandis ; textes longs peuvent revenir à la ligne, saisie native à 16 px pour limiter le zoom automatique.
+- Fenêtres et menu limités à la hauteur disponible, défilement interne et fermeture de 44 px ; réserve basse tenant compte de la zone système du téléphone.
+- Recherche dans le menu, insensible aux accents, et accès directs aux pages déjà présentes : Agenda, Élections, En route, Chez moi et trois espaces aides/emploi/santé.
+- Carte sans largeur minimum imposée, en conservant déplacement/zoom ; onglets Concession sur deux colonnes sur téléphone ; en-tête allocataire et anniversaire adaptés aux noms longs.
+- 24 essais ciblés passent. Accueil, Découvrir et connexion contrôlés au navigateur à 320/390/430 px sans débordement. Vrais composants navigation/scène/dossier contrôlés avec une mission simulée à 320/390/430/1280 px sans débordement ni erreur JavaScript ; fermeture du dossier vérifiée. La navigation entre pages dans ce montage isolé n’a pas été validée (conflit entre routeurs de contrôle et application) ; aucune preuve de parcours connecté.
+- Audit : les destinations Banque, Poste, Monde, etc. existent bien ; l’alerte initiale issue de la lecture partielle du fichier généré était infondée. Un essai vérifie désormais chaque destination disponible contre le fichier de page.
+- Connexion de contrôle de l’aperçu indisponible pour le compte Lovable d’Alex ; les parcours VPS réels restent nécessaires. Tous les fichiers d’écran temporaire ont été retirés.
+
+## Conditions nécessaires pour fermer V1
+1. Aucune action essentielle inaccessible sur téléphone ; parcours métier, déplacement, achat, document, message et retour au jeu vérifiés avec un vrai personnage.
+2. Régressions sur copie indépendante : absence de double paiement/récompense, confidentialité de deux comptes, échéances et reconnexion.
+3. Sauvegarde récente ET restauration réussie dans une copie, sans modifier le monde de production.
+4. Nouveau joueur capable de créer son personnage, trouver son activité et comprendre les refus/indisponibilités ; pas d’écrans vides ou d’annonce mensongère.
+5. Erreurs compréhensibles, performances téléphone raisonnables, jeu utilisable lorsque l’IA locale est indisponible.
+
+Protection civile, JT vidéo, intérieurs et 10 000 produits sont de nouvelles extensions explicitement demandées, pas des conditions universelles de stabilité. Les construire en lots avant clôture si retenus ; ne pas confondre leur installation avec leur validation. Ollama qwen2.5:3b génère du texte, pas des vidéos : une narration locale et une mise en scène animée sont distinctes d’un modèle de génération vidéo, dont les ressources restent à mesurer sur le VPS.
 
 ## Inventaire des documents
 Déjà présents : carte fictive, contrat, paie, bail, quittance mensuelle, relevé bancaire, avis d’impôt, échéancier, assurance, consultation, mandat, candidature, décisions d’aide et formulaires. CAF/emploi/santé/banque/impôts/titres ont déjà leurs espaces : pas de doublon à créer.

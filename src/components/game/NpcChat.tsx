@@ -30,7 +30,7 @@ function NpcConversation({ npcId, name, here }: { npcId: string; name: string; h
   };
   if (!open) return <Button variant="outline" className="min-h-12 w-full justify-start" disabled={!here} onClick={() => setOpen(true)}><MessageSquare />{turns.length ? 'Reprendre la conversation' : 'Discuter'}</Button>;
   return <div className="space-y-3 border-t border-border py-3" aria-label={`Conversation avec ${name}`}>
-    <div className="flex items-center justify-between gap-2"><p className="min-w-0 break-words font-semibold">{name}</p><div className="flex shrink-0 gap-1">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><p className="min-w-0 break-words font-semibold">{name}</p><div className="flex shrink-0 gap-1">
       <Button variant="ghost" size="icon" className="h-12 w-12" title="Recommencer la conversation" aria-label="Recommencer la conversation" disabled={send.isPending} onClick={() => { setTurns([]); setText(''); send.reset(); }}><RotateCcw /></Button>
       <Button variant="ghost" size="icon" className="h-12 w-12" title="Fermer la conversation" aria-label="Fermer la conversation" onClick={() => setOpen(false)}><X /></Button>
     </div></div>
