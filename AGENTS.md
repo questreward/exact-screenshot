@@ -12,7 +12,7 @@
 ## Architecture rules
 - Game rules in `src/game/` are UI hints only; authoritative checks live in SECURITY DEFINER DB functions — the client is never trusted for money, age or rewards.
 - Data access goes through `src/services/game.ts` query options; pages use loader `ensureQueryData` + `useSuspenseQuery`.
-- Query keys distinguish response shapes.
+- Query keys separate shapes.
 - Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
 - In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
 - World hierarchy: cities > districts > locations > location_spaces, loaded progressively; move_character controls position; gestures use react-zoom-pan-pinch. Living places reuse public facts, distinguish selected/current place and expected/recorded effects.
@@ -39,4 +39,4 @@
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Full-body fingerprints guard patches against incompatible installs.
 
-- Housing visits are read-only; generic images establish no equipment/layout, purchases retain secured RPCs.
+- Housing visits: read-only, generic images; purchases retain secured RPCs.
