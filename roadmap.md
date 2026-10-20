@@ -351,3 +351,10 @@
 - [x] Bloc A vague 2 : Gendarmerie et SAMU (0094 prête et testée)
 - [x] 0094 installée sur le VPS (déclaré par Alex)
 - [ ] Idées de réalisme France à proposer
+
+## Réalisme France — lot quotidien (0095)
+- [x] Médecin traitant + remboursements 70 % / 30 %
+- [x] Calendrier : jours fériés (pas de cours, travail payé double), vacances scolaires affichées
+- [x] Bulletins de paie (net conservé, brut et cotisations affichés)
+- [x] Permis de conduire (code, leçons, examen ; exigé pour voiture et ambulancier)
+- [ ] Installer 0095 sur le VPS (accord d’Alex)
