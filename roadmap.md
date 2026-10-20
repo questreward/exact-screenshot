@@ -327,3 +327,8 @@
 - [x] IA locale : aide à l'écriture (pétitions, médias, débats), brouillon seulement, aucun SQL ; mise à jour du site VPS à faire.
 
 - [x] Portails de services (Caisse des aides, Espace impôts, Emploi, Santé, Titres) dans CIVITAS Services, aucun SQL ; mise à jour du site VPS à faire.
+
+## Quartiers qui changent
+- [x] Étape 1 : badges de quartier sur la carte (chantier, rénové, crise, animé, délaissé) — aucun SQL
+- [ ] Mise à jour du site VPS (git pull + docker build)
+- [ ] Étape 2 : vraies jauges par quartier — règles chiffrées à proposer à Alex, puis SQL à valider

@@ -1626,3 +1626,22 @@ export async function recruitAction(fn: "recruit_seek" | "recruit_mandate" | "re
   if (error) throw new Error(error.message);
   return data as { already?: boolean; amount?: number } | null;
 }
+
+/** Read-only district facts: plain SELECTs only, never the *_state RPCs that advance the simulation. Missing VPS tables degrade to empty lists. */
+export const districtFactsQuery = (cityId: string) => queryOptions({
+  queryKey: ['district-facts', cityId], staleTime: 30000, refetchInterval: 60000,
+  queryFn: async (): Promise<Omit<import('@/game/districts-state').DistrictFacts, 'events'>> => {
+    const safe = async <T,>(p: PromiseLike<{ data: T[] | null; error: { code?: string; message: string } | null }>): Promise<T[]> => {
+      const { data, error } = await p; if (error) return []; return data ?? [];
+    };
+    const db = supabase as unknown as { from: (t: string) => any };
+    const [locations, decisions, issues, crises, projects] = await Promise.all([
+      safe<{ id: string; name: string; district_id: string; civic_state: string }>(supabase.from('locations').select('id, name, district_id, civic_state, district:districts!inner(city_id)').eq('district.city_id', cityId) as never),
+      safe(supabase.from('public_decisions').select('id, title, district_id, location_id, workflow, completed_at').eq('city_id', cityId).in('workflow', ['running', 'completed']) as never),
+      safe(supabase.from('public_issues').select('id, title, district_id, location_id, severity, status').eq('city_id', cityId).neq('status', 'resolved') as never),
+      safe(db.from('crises').select('id, district_id, status').eq('city_id', cityId).neq('status', 'terminee')),
+      safe(db.from('citizen_projects').select('id, title, district_id, status').eq('city_id', cityId).eq('status', 'travaux')),
+    ]);
+    return { locations, decisions, issues, crises, projects } as never;
+  },
+});

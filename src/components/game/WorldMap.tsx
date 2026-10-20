@@ -18,6 +18,8 @@ import { LocationEvents } from './EventsPage';
 import { markersByLocation } from "@/game/events";
 import { isCurrentPlace } from '@/game/living-city';
 import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
+import { BADGE_ICON, DistrictBadges, DistrictReasons, useDistrictStatuses } from './DistrictStatus';
+import { DISTRICT_BADGE_LABEL } from '@/game/districts-state';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -89,6 +91,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
   const { data: districts } = useSuspenseQuery(districtsQuery(city.id));
   const { data: position } = useSuspenseQuery(positionQuery);
   const selected = districts.find(d => d.id === selectedDistrict);
+  const statusOf = useDistrictStatuses(city.id);
   const [selectedLocation, setSelectedLocation] = useState<string | undefined>(initialLocation);
   const districtSelect = (id?: string) => { onDistrict(id); setSelectedLocation(undefined); };
   const playerHere = position?.city_id === city.id;
@@ -109,11 +112,12 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
             <path className="world-river" d="M-20 150 C160 310 235 145 420 295 S640 400 925 595" />
             <path className="world-road" d="M40 510 L240 510 L435 300 L700 225 M240 510 L695 580 M435 300 L695 580" />
             <path className="world-park" d="M85 585 Q130 550 180 590 L175 690 L75 690 Z M700 65 L820 65 L820 135 L700 135 Z" />
-            {districts.filter(d => !selected || d.id === selected.id).map(d => <g key={d.id} transform={`translate(${selected ? 450 : Number(d.map_x)*8+40},${selected ? 380 : Number(d.map_y)*6.8+20})`}>
-              <rect x="-115" y="-80" width="230" height="160" rx="16" className={`world-district ${d.id === selected?.id ? "district-selected" : ""}`} />
+            {districts.filter(d => !selected || d.id === selected.id).map(d => { const st = statusOf(d.id); const MainIcon = st?.main ? BADGE_ICON[st.main] : null; return <g key={d.id} transform={`translate(${selected ? 450 : Number(d.map_x)*8+40},${selected ? 380 : Number(d.map_y)*6.8+20})`}>
+              <rect x="-115" y="-80" width="230" height="160" rx="16" className={`world-district ${st?.main ? `district-${st.main}` : ""} ${d.id === selected?.id ? "district-selected" : ""}`} />
+              {!selected && MainIcon && st?.main && <g transform="translate(-95,-62)" aria-label={DISTRICT_BADGE_LABEL[st.main]}><circle r="15" className={`district-icon-bg chip-${st.main}`} /><MainIcon x={-9} y={-9} width={18} height={18} className="district-icon" /></g>}
               {!selected && <MapMarker label={d.name} active={playerHere && position?.district_id === d.id} onClick={() => districtSelect(d.id)} />}
               {selected && <text y="-210" textAnchor="middle" className="district-label">{d.name}</text>}
-            </g>)}
+            </g>; })}
             {selected && <Suspense fallback={null}><LocationMarkers district={selected} positionId={playerHere ? position?.location_id : undefined} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense>}
             {playerHere && !selected && <text x="30" y="730" className="district-label">● {position?.district?.name} — {position?.location?.name}</text>}
           </svg>
@@ -121,10 +125,10 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
         <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><span className="h-2 w-2 rounded-full bg-primary" /> Votre position {playerHere ? `· ${position?.location?.name}` : `· ${position?.city?.name ?? "—"}`}</p>
       </div>
       <div className="min-w-0">
-        {selected ? <Suspense fallback={<p>Chargement des lieux…</p>}><LocationList district={selected} city={city} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense> : <>
+        {selected ? <><DistrictReasons status={statusOf(selected.id)} onLocation={setSelectedLocation} /><Suspense fallback={<p>Chargement des lieux…</p>}><LocationList district={selected} city={city} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense></> : <>
           <h2 className="mb-2 text-lg font-semibold">Quartiers de {city.name}</h2><p className="mb-4 text-sm text-muted-foreground">{city.description}</p>
           <div className="divide-y divide-border">{districts.map(d => <Button key={d.id} variant="ghost" className="h-auto min-h-20 w-full justify-start whitespace-normal rounded-none px-2 py-4 text-left" onClick={() => districtSelect(d.id)} disabled={!d.available}>
-            <MapPin className="shrink-0 text-primary" /><span><span className="block">{d.name}</span><span className="mt-1 block text-xs font-normal text-muted-foreground">{d.description}</span></span>
+            <MapPin className="shrink-0 text-primary" /><span className="min-w-0"><span className="block">{d.name}</span><span className="mt-1 block text-xs font-normal text-muted-foreground">{d.description}</span><span className="mt-2 block"><DistrictBadges status={statusOf(d.id)} small /></span></span>
           </Button>)}</div>
         </>}
       </div>
