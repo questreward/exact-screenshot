@@ -440,6 +440,7 @@
 - [x] Reprise explicite 18:27 enregistrée : terminer le lot dans le jeu avant clôture, sans application SQL implicite.
 - [x] Reportages illustrés : séquences de passages enregistrés, journaliste et clips locaux, voix locale facultative ; sans Ollama ni vidéo générée. 16 essais ciblés passent ; VPS non vérifié.
 - [x] Intérieur camion lié aux missions existantes : ouverture/retour au véhicule, sans trajet ni vitesse inventés ; mise à jour VPS requise.
+- [x] Contrôles visuels 390/1280 : ouverture/retour camion, pause reportage, mouvement réduit et absence de débordement ; montage simulé sans erreur, pas parcours connecté VPS.
 - [ ] Catalogue 10 000 : inventaire VPS réel et validation des tarifs fictifs proposés requis avant SQL exact ; recherche/pagination serveur à préparer, aucun produit inséré.
 - [ ] Antennes/notes 0114 et essais VPS : résultat du contrôle corrigé requis, aucune installation supposée.
 - [x] Réponse à Alex 18:26 : distinguer améliorations livrées, 0114 préparée non installée, engagements non terminés et essais manquants ; aucun gel assimilé à une réalisation complète.
