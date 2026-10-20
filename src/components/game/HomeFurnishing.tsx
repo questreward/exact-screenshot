@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { furnishingSave } from '@/services/game';
 import { canPlace, footprint, type FurnishingState, type FurnishingHome, type Placement } from '@/game/home-furnishing';
+import { RoomInterior } from './RoomInterior';
 import { FurnitureVisual } from './FurnitureVisual';
 
 export function HomeFurnishing({ data }: { data: FurnishingState }) {
@@ -56,6 +57,7 @@ function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: Furn
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Pièces">{names.map((name,i)=><Button key={i} variant={room===i?'default':'outline'} aria-pressed={room===i} className="h-auto min-h-16 min-w-0 justify-start whitespace-normal p-3 text-left" onClick={()=>setRoom(i)}><span className="min-w-0"><span className="block break-words">{name}</span><span className="block text-xs opacity-80">{placements.filter(p=>p.room===i).length} objet(s)</span></span></Button>)}</div>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <section className="min-w-0 space-y-3" aria-label="Aménagement de la pièce">
+        <RoomInterior name={names[room] ?? `Pièce ${room + 1}`} placements={placements} furniture={data.furniture} room={room} grid={data.grid}/>
         <Input aria-label="Nom de la pièce" maxLength={40} className="h-12" value={names[room] ?? ''} disabled={save.isPending} onChange={e=>setNames(old=>old.map((n,i)=>i===room?e.target.value:n))}/>
         <div className="relative isolate grid aspect-square w-full overflow-hidden border-4 border-secondary bg-surface" style={{ gridTemplateColumns: `repeat(${data.grid}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${data.grid}, minmax(0, 1fr))` }}>
           {Array.from({length:data.grid*data.grid},(_,i)=><Button key={i} variant="ghost" aria-label={`Emplacement ${i%data.grid+1}, ${Math.floor(i/data.grid)+1}`} disabled={!chosen || save.isPending} className="h-full min-h-0 w-full rounded-none border border-border p-0" onClick={()=>put(i%data.grid,Math.floor(i/data.grid))}/>)}

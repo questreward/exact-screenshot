@@ -1,11 +1,12 @@
 import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { VolunteerDossier } from "@/components/game/VolunteerDossier";
 import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { securityAction, securityMissionsQuery, securityQuery, type SecurityService, type SecurityState } from "@/services/game";
+import { securityAction, securityMissionsQuery, securityQuery, type SecurityState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { OUTCOME_LABELS, SERVICE_INTRO, TEAMS, nextRank, weeklyPay, type SecurityServiceId } from "@/game/security-careers";
 
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/_game/secours")({
 const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 const when = (s: string) => new Date(s).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
-function Card({ title, icon: Icon, children }: { title: string; icon: typeof Siren; children: React.ReactNode }) {
+function Card({ title, icon: Icon, children }: { title: string; icon: typeof Siren; children: ReactNode }) {
   return <section className="rounded-xl border border-border bg-card p-4">
     <h2 className="mb-3 flex items-center gap-2 font-heading text-base font-bold"><Icon className="h-5 w-5 text-primary" />{title}</h2>{children}
   </section>;
@@ -43,8 +44,8 @@ function SecurityPage() {
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
     <JobMissionCard />
-    <header className="flex items-center gap-3"><Siren className="h-8 w-8 text-primary" />
-      <div><h1 className="font-heading text-2xl font-bold">Police, pompiers, secours</h1>
+    <header className="flex min-w-0 items-center gap-3"><Siren className="h-8 w-8 shrink-0 text-primary" />
+      <div className="min-w-0 break-words"><h1 className="font-heading text-2xl font-bold">Police, pompiers, secours</h1>
         <p className="text-sm text-muted-foreground">Recrutement, formation, horaires et missions tirées de ce qui se passe dans ta ville.</p></div></header>
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">{String((error as Error)?.message ?? "")}</p>}
@@ -52,6 +53,7 @@ function SecurityPage() {
     {s && (s.career && s.career.status !== "quitte"
       ? <Career s={s} missions={missions} busy={act.isPending} run={act.mutate} />
       : <Recruitment s={s} busy={act.isPending} run={act.mutate} />)}
+    {s && <VolunteerDossier state={s} missions={missions}/>}
     {s && s.ledger.length > 0 && <Card title="Mon dossier" icon={Wallet}>
       <ul className="space-y-1 text-sm">{s.ledger.map(l => <li key={l.key} className="flex justify-between gap-2">
         <span>{l.label}</span>{l.amount > 0 && <span className="font-semibold">+{eur(l.amount)}</span>}</li>)}</ul>
@@ -71,14 +73,14 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
 
   if (!sv) return <div className="space-y-3">{s.services.map(x => {
     const eligible = s.age >= x.min_age && s.age <= x.max_age;
-    return <button key={x.id} onClick={() => { setPick(x.id); setTeam(TEAMS[x.id][0]?.id ?? ""); setAnswers({}); }}
-      className="w-full rounded-xl border border-border bg-card p-4 text-left transition hover:border-primary">
+    return <Button variant="outline" key={x.id} onClick={() => { setPick(x.id); setTeam(TEAMS[x.id][0]?.id ?? ""); setAnswers({}); }}
+      className="block h-auto min-h-14 w-full whitespace-normal rounded-lg border border-border bg-card p-4 text-left transition hover:border-primary">
       <p className="font-heading font-bold">{x.label}</p>
       <p className="mt-1 text-sm text-muted-foreground">{SERVICE_INTRO[x.id]}</p>
       <p className="mt-2 text-sm">{x.min_age} à {x.max_age} ans · {x.exam ? "Concours" : "Sans concours"} · {
         x.hourly_pay ? `${x.hourly_pay} € de l'heure` : (x.rank_monthly[1] ?? 0) ? `${eur(x.rank_monthly[1] ?? 0)} par mois au départ` : "Bénévole"}</p>
       {!eligible && <p className="mt-1 text-sm font-semibold text-destructive">Pas accessible à ton âge ({s.age} ans).</p>}
-    </button>;
+    </Button>;
   })}</div>;
 
   const last = s.exams.find(e => e.service === sv.id);
@@ -87,16 +89,16 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
     {sv.exclusive_job && s.employed && <p className="mb-3 rounded-lg bg-muted p-3 text-sm">C'est un métier à temps plein : il faut d'abord quitter ton emploi actuel.</p>}
     {last && !last.passed && <p className="mb-3 rounded-lg bg-muted p-3 text-sm">Dernier concours : écrit {last.written}/20, sport {last.sport}/20, oral {last.oral}/20. Prochaine session {s.settings.exam_retry_days} jours après.</p>}
     <p className="mb-2 font-semibold">Ton équipe et tes horaires</p>
-    <div className="mb-4 grid gap-2">{TEAMS[sv.id].map(t => <button key={t.id} onClick={() => setTeam(t.id)}
-      className={`min-h-12 rounded-lg border p-3 text-left text-sm ${team === t.id ? "border-primary bg-primary/10" : "border-border"}`}>
-      <span className="font-semibold">{t.label}</span> · {t.hours}</button>)}</div>
+    <div className="mb-4 grid gap-2">{TEAMS[sv.id].map(t => <Button variant="outline" aria-pressed={team === t.id} key={t.id} onClick={() => setTeam(t.id)}
+      className={`h-auto min-h-12 justify-start whitespace-normal rounded-lg border p-3 text-left text-sm ${team === t.id ? "border-primary bg-primary/10" : "border-border"}`}>
+      <span className="font-semibold">{t.label}</span> · {t.hours}</Button>)}</div>
     {sv.exam && <>
       <p className="mb-1 font-semibold">{sv.id === "samu_infirmier" ? "Questions de soins" : "Épreuve écrite"}</p>
       <p className="mb-3 text-sm text-muted-foreground">5 points par bonne réponse. Le sport dépend de ta santé et de ton énergie (coûte {s.settings.exam_energy} d'énergie), puis vient l'entretien oral. Il faut {s.settings.exam_pass_total} / 60.</p>
       <div className="mb-4 space-y-4">{qs.map((q, i) => <div key={q.id}>
         <p className="mb-2 text-sm font-semibold">{i + 1}. {q.question}</p>
-        <div className="grid gap-2">{q.choices.map((c, ci) => <button key={ci} onClick={() => setAnswers(a => ({ ...a, [q.id]: ci }))}
-          className={`min-h-12 rounded-lg border p-3 text-left text-sm ${answers[q.id] === ci ? "border-primary bg-primary/10" : "border-border"}`}>{c}</button>)}</div>
+        <div className="grid gap-2">{q.choices.map((c, ci) => <Button variant="outline" aria-pressed={answers[q.id] === ci} key={ci} onClick={() => setAnswers(a => ({ ...a, [q.id]: ci }))}
+          className={`h-auto min-h-12 justify-start whitespace-normal rounded-lg border p-3 text-left text-sm ${answers[q.id] === ci ? "border-primary bg-primary/10" : "border-border"}`}>{c}</Button>)}</div>
       </div>)}</div>
     </>}
     <div className="flex flex-col gap-2 sm:flex-row">
@@ -109,8 +111,10 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
 }
 
 function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: string; title: string; situation: string; choices: { id: string; label: string }[] }[]; busy: boolean; run: Run }) {
-  const c = s.career!;
-  const sv = s.services.find(x => x.id === c.service) as SecurityService;
+  const c = s.career;
+  if (!c) return null;
+  const sv = s.services.find(x => x.id === c.service);
+  if (!sv) return null;
   const now = new Date(s.now).getTime();
   const current = s.shifts.find(x => new Date(x.ends_at).getTime() > now);
   const mission = current && missions.find(m => m.id === current.mission_id);
@@ -123,7 +127,7 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
     <Card title={sv.label} icon={ShieldCheck}>
       <p className="text-lg font-bold">{sv.rank_titles[c.rank]}</p>
       <ul className="mt-2 space-y-1 text-sm">
-        <li>{c.status === "formation" ? `En formation jusqu'au ${when(c.trained_at)}` : "En service"}{injured && ` · en arrêt jusqu'au ${when(c.injured_until!)}`}</li>
+        <li>{c.status === "formation" ? `En formation jusqu'au ${when(c.trained_at)}` : "En service"}{injured && ` · en arrêt jusqu'au ${when(c.injured_until ?? s.now)}`}</li>
         <li>Missions réussies : {c.missions_ok} / {c.missions_total} · Félicitations : {c.commendations} · Plaintes : {c.complaints}</li>
         {sv.exclusive_job && <li>Traitement : {eur(monthly)} par mois ({eur(weeklyPay(monthly))} par semaine travaillée)</li>}
         {sv.hourly_pay > 0 && <li>Indemnités : {sv.hourly_pay} € par heure de service</li>}
