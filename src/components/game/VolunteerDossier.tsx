@@ -1,6 +1,7 @@
 import { ClipboardList, FileText, ShieldCheck } from 'lucide-react';
 import type { SecurityMission, SecurityState } from '@/services/game';
 import { OUTCOME_LABELS } from '@/game/security-careers';
+import { volunteerReports } from '@/game/volunteer-report';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
@@ -20,7 +21,7 @@ export function VolunteerDossier({ state, missions }: { state: SecurityState; mi
     <p className="text-xs text-muted-foreground">Qualifications CIVITAS uniquement · aucune certification réelle de secourisme.</p>
     <h3 className="flex items-center gap-2 font-semibold"><ClipboardList className="h-5 w-5"/>Comptes rendus de service</h3>
     {!state.shifts.some(s => s.service === 'protection_civile') && <p className="text-sm text-muted-foreground">Aucun service enregistré.</p>}
-    <ul className="divide-y divide-border">{state.shifts.filter(s => s.service === 'protection_civile').map(shift => {
+    <ul className="divide-y divide-border">{volunteerReports(state.shifts).map(shift => {
       const mission = missions.find(m => m.id === shift.mission_id);
       return <li key={shift.id} className="py-3"><Dialog><DialogTrigger asChild><Button variant="outline" className="h-auto min-h-14 w-full min-w-0 justify-start whitespace-normal text-left"><FileText className="shrink-0"/><span className="min-w-0 break-words">{mission?.title ?? 'Service Protection civile'}<span className="block text-xs text-muted-foreground">{date(shift.starts_at)} · {shift.settled ? 'Clôturé' : 'Bilan en attente'}</span></span></Button></DialogTrigger>
         <DialogContent><DialogHeader><DialogTitle className="pr-8">Compte rendu de service</DialogTitle><DialogDescription>DOCUMENT FICTIF — CIVITAS · aucune valeur officielle</DialogDescription></DialogHeader>
