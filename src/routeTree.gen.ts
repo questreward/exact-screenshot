@@ -31,6 +31,7 @@ import { Route as AuthenticatedGameCivitasServicesRouteImport } from './routes/_
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameConcessionRouteImport } from './routes/_authenticated/_game/concession'
 import { Route as AuthenticatedGameConduiteRouteImport } from './routes/_authenticated/_game/conduite'
+import { Route as AuthenticatedGameConjonctureRouteImport } from './routes/_authenticated/_game/conjoncture'
 import { Route as AuthenticatedGameConstructionRouteImport } from './routes/_authenticated/_game/construction'
 import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
@@ -206,6 +207,12 @@ const AuthenticatedGameConduiteRoute =
   AuthenticatedGameConduiteRouteImport.update({
     id: '/conduite',
     path: '/conduite',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameConjonctureRoute =
+  AuthenticatedGameConjonctureRouteImport.update({
+    id: '/conjoncture',
+    path: '/conjoncture',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameConstructionRoute =
@@ -562,6 +569,7 @@ export interface FileRoutesByFullPath {
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
   '/conduite': typeof AuthenticatedGameConduiteRoute
+  '/conjoncture': typeof AuthenticatedGameConjonctureRoute
   '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
@@ -642,6 +650,7 @@ export interface FileRoutesByTo {
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
   '/conduite': typeof AuthenticatedGameConduiteRoute
+  '/conjoncture': typeof AuthenticatedGameConjonctureRoute
   '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
@@ -725,6 +734,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/concession': typeof AuthenticatedGameConcessionRoute
   '/_authenticated/_game/conduite': typeof AuthenticatedGameConduiteRoute
+  '/_authenticated/_game/conjoncture': typeof AuthenticatedGameConjonctureRoute
   '/_authenticated/_game/construction': typeof AuthenticatedGameConstructionRoute
   '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
@@ -807,6 +817,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/concession'
     | '/conduite'
+    | '/conjoncture'
     | '/construction'
     | '/crises'
     | '/debats'
@@ -887,6 +898,7 @@ export interface FileRouteTypes {
     | '/classements'
     | '/concession'
     | '/conduite'
+    | '/conjoncture'
     | '/construction'
     | '/crises'
     | '/debats'
@@ -969,6 +981,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/concession'
     | '/_authenticated/_game/conduite'
+    | '/_authenticated/_game/conjoncture'
     | '/_authenticated/_game/construction'
     | '/_authenticated/_game/crises'
     | '/_authenticated/_game/debats'
@@ -1193,6 +1206,13 @@ declare module '@tanstack/react-router' {
       path: '/conduite'
       fullPath: '/conduite'
       preLoaderRoute: typeof AuthenticatedGameConduiteRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/conjoncture': {
+      id: '/_authenticated/_game/conjoncture'
+      path: '/conjoncture'
+      fullPath: '/conjoncture'
+      preLoaderRoute: typeof AuthenticatedGameConjonctureRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/construction': {
@@ -1618,6 +1638,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameConcessionRoute: typeof AuthenticatedGameConcessionRoute
   AuthenticatedGameConduiteRoute: typeof AuthenticatedGameConduiteRoute
+  AuthenticatedGameConjonctureRoute: typeof AuthenticatedGameConjonctureRoute
   AuthenticatedGameConstructionRoute: typeof AuthenticatedGameConstructionRoute
   AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
@@ -1694,6 +1715,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameConcessionRoute: AuthenticatedGameConcessionRoute,
     AuthenticatedGameConduiteRoute: AuthenticatedGameConduiteRoute,
+    AuthenticatedGameConjonctureRoute: AuthenticatedGameConjonctureRoute,
     AuthenticatedGameConstructionRoute: AuthenticatedGameConstructionRoute,
     AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,
