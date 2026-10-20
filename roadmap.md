@@ -271,3 +271,19 @@
 - [ ] **Moins de menus, davantage d’actions dans les lieux** : rencontrer, acheter, postuler ou entreprendre une démarche directement depuis une scène ; conserver les accès rapides et de grandes zones tactiles.
 - [ ] **Retour au jeu plus vivant et serein** : un résumé des changements pertinents, des histoires à retrouver et des objectifs personnels facultatifs ; aucune nouvelle punition liée à l’absence ni série de connexions obligatoire.
 - [ ] Après sélection : proposer pour chaque idée le parcours joueur, ses liens avec l’existant, les risques et un découpage progressif ; toute modification de règle ou installation reste soumise à accord.
+
+## IA locale indépendante — pistes à examiner demain
+- [ ] Retrouver les anciennes propositions IA dans les échanges et les documents, comparer aux fonctions déjà présentes, et compléter cet inventaire sans prétendre que toutes ont déjà été retrouvées.
+- [ ] Vérifier chaque piste avec l’IA locale du VPS (Ollama) : qualité en français, mémoire disponible, temps de réponse et plusieurs joueurs à la fois. Aucun appel à AI Gateway ni secours externe automatique ; contenu de secours non généré si l’IA est indisponible.
+- [ ] **Analyse des projets de loi et décisions** : vérifier l’analyse locale déjà prévue puis envisager des explications des avantages, coûts et points de vue à partir des effets officiels du jeu ; aucune décision ni conséquence calculée par l’IA.
+- [ ] **Dialogues avec les habitants fictifs** : conversations contextualisées, souvenirs autorisés, interviews et réactions à la ville ; l’IA raconte, les règles du jeu contrôlent les relations et les actions.
+- [ ] **Histoires et missions personnalisées** : variantes narratives liées à la carrière, aux relations et aux événements ; choix, conditions et récompenses validés par les systèmes existants.
+- [ ] **Entretiens et mentorat professionnel** : entraînements, questions adaptées au métier et conseils ; embauche et progression restent régies par le jeu.
+- [ ] **Médias et JT enrichis** : articles, interviews fictives et résumés issus des événements réellement enregistrés ; distinguer faits du jeu et narration, sans inventer d’accusations sur les joueurs.
+- [ ] **Aide à l’écriture** : brouillons de discours, programmes, pétitions, articles et interventions de débat ; le joueur relit et choisit de publier, sans publication automatique ni vote généré.
+- [ ] **CIVITAS Services pédagogique** : expliquer les démarches simulées, guider vers les services existants et aider à comprendre un document fictif ; jamais présenter cela comme un conseil administratif, médical ou juridique réel.
+- [ ] **Journal de vie et retour après absence** : résumer les faits accessibles au seul joueur et raconter ses étapes importantes sans inventer d’actions ni révéler de données privées.
+- [ ] **Enquêtes, crises et vie de quartier** : dialogues et récits fondés sur des indices et états officiels ; l’IA ne tranche ni culpabilité, ni sanction, ni réussite.
+- [ ] **Logements et visites** : descriptions personnalisées des pièces, objets et aménagements réellement présents ; photos, plans et images demandent une étude distincte, le modèle texte ne les produit pas à lui seul.
+- [ ] **Voix locales facultatives** : étudier séparément narration du JT et voix des habitants avec des outils locaux ; vérifier les ressources du VPS avant toute promesse.
+- [ ] Préparer les priorités et le découpage après examen : IA non décisionnaire, données minimales, aucune dépendance externe obligatoire, jeu utilisable sans IA ; règles et SQL exact soumis à accord avant installation.
