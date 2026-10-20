@@ -17,6 +17,8 @@ CREATE TABLE public.volunteer_branches (
 );
 GRANT SELECT ON public.volunteer_branches TO authenticated;
 GRANT ALL ON public.volunteer_branches TO service_role;
+REVOKE ALL ON public.volunteer_branches FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.volunteer_branches TO authenticated;
 ALTER TABLE public.volunteer_branches ENABLE ROW LEVEL SECURITY;
 CREATE POLICY volunteer_branches_read ON public.volunteer_branches FOR SELECT TO authenticated USING (true);
 INSERT INTO public.volunteer_branches(city_id,label)
@@ -34,6 +36,9 @@ CREATE TABLE public.volunteer_attachments (
 GRANT SELECT ON public.volunteer_attachments TO authenticated;
 GRANT ALL ON public.volunteer_attachments TO service_role;
 GRANT USAGE, SELECT ON SEQUENCE public.volunteer_attachments_ordinal_seq TO service_role;
+REVOKE ALL ON public.volunteer_attachments FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.volunteer_attachments TO authenticated;
+REVOKE ALL ON SEQUENCE public.volunteer_attachments_ordinal_seq FROM PUBLIC, anon, authenticated;
 ALTER TABLE public.volunteer_attachments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY volunteer_attachments_owner ON public.volunteer_attachments FOR SELECT TO authenticated
 USING (EXISTS (SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
@@ -46,6 +51,8 @@ CREATE TABLE public.volunteer_notes (
 );
 GRANT SELECT ON public.volunteer_notes TO authenticated;
 GRANT ALL ON public.volunteer_notes TO service_role;
+REVOKE ALL ON public.volunteer_notes FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.volunteer_notes TO authenticated;
 ALTER TABLE public.volunteer_notes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY volunteer_notes_owner ON public.volunteer_notes FOR SELECT TO authenticated
 USING (EXISTS (SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
@@ -105,6 +112,9 @@ REVOKE ALL ON FUNCTION public.volunteer_save_note(uuid,text) FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.volunteer_dossier_state(),public.volunteer_attach(text,uuid),public.volunteer_save_note(uuid,text) TO authenticated;
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.volunteer_branches) <> (SELECT count(*) FROM public.cities) THEN RAISE EXCEPTION 'Une antenne par ville requise'; END IF;
-  IF has_table_privilege('authenticated','public.volunteer_notes','INSERT') OR has_table_privilege('authenticated','public.volunteer_attachments','UPDATE') THEN RAISE EXCEPTION 'Écriture directe interdite'; END IF;
+  IF EXISTS (SELECT 1 FROM (VALUES ('volunteer_branches'), ('volunteer_attachments'), ('volunteer_notes')) t(name)
+    CROSS JOIN (VALUES ('anon'), ('authenticated')) r(name)
+    CROSS JOIN (VALUES ('INSERT'), ('UPDATE'), ('DELETE'), ('TRUNCATE'), ('REFERENCES'), ('TRIGGER')) p(name)
+    WHERE has_table_privilege(r.name, 'public.' || t.name, p.name)) THEN RAISE EXCEPTION 'Écriture directe interdite'; END IF;
 END $$;
 COMMIT;

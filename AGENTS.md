@@ -11,7 +11,7 @@
 
 ## Architecture rules
 - src/game is presentation-only; secured SQL enforces age, money, rewards and configured balance values.
-- src/services/game.ts owns distinct query shapes; loaders ensureQueryData, pages useSuspenseQuery.
+- src/services/game.ts owns queries; loaders ensureQueryData, pages useSuspenseQuery. Catalog inserts are additive, reads paged; purchases unchanged.
 - Player money, character, position and stats tables are owner-SELECT-only; secured writes lock characters and use unique keys.
 - Game routes belong under _authenticated/_game; missing characters redirect to creation, unavailable navigation uses section/$id.
 - World hierarchy: cities/districts/locations/spaces; move_character controls location. Map badges use public SELECT facts, never state RPCs; distinguish selected/current and expected/recorded effects.
@@ -46,4 +46,4 @@
 - Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
-- VPS test restores omit pg_cron/cron via archive TOC; full backups retain them because cron is production-bound.
+- VPS test restores omit cron via TOC; full backups retain production cron.

@@ -27,6 +27,8 @@ Le script garde une sauvegarde privée dans `/data/civitas-live/backups`, restau
 
 Correction après le rapport de 18:25 : pg_cron refuse une restauration dans une autre base que celle configurée. Le contrôle exclut donc l’extension pg_cron et son schéma cron uniquement de la copie d’essai, via la liste des objets de l’archive. La sauvegarde reste complète, la configuration du serveur et le jeu restent inchangés. La restauration des données du jeu ne certifie pas la restauration ni l’exécution des tâches pg_cron. Aucun nettoyage manuel de la copie du premier échec n’est effectué ici.
 
+Rapport complet 18:37 : restauration isolée réussie, essai 0114 annulé sur « Écriture directe interdite ». Le SQL corrigé retire explicitement les droits hérités de PUBLIC/anon/authenticated sur les trois nouvelles tables et la séquence, puis accorde seulement SELECT aux joueurs. Les privilèges par défaut du serveur et les anciens objets restent inchangés. Le contrôle vérifie désormais toutes les écritures directes sur les trois tables. Relancer le même essai ; ne pas installer avant réussite.
+
 Envoyer la sortie jusqu’à « essai à blanc réussi » et confirmer le SQL joint avant l’installation réelle. Aucune migration 0093–0113 n’est relancée.
 
 ## Éléments vérifiés ici

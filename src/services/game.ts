@@ -1402,6 +1402,21 @@ export const shopQuery = queryOptions({
   queryKey: ["shop", "state"], retry: false,
   queryFn: async (): Promise<ShopState> => { const { data, error } = await untyped.rpc("shop_state", {}); if (error) throw new Error(error.message); return data as ShopState; },
 });
+export type ShopCatalogPage = { products: ShopProduct[]; total: number; catalog_total: number; brands: string[] };
+export const shopCatalogQuery = (filters: { search: string; section: string; brand: string; max: string; sort: string; city: string; rooms: string; page: number }) => queryOptions({
+  queryKey: ['shop', 'catalog-page', filters], retry: false,
+  queryFn: async (): Promise<ShopCatalogPage | null> => {
+    const { data, error } = await untyped.rpc('shop_catalog_page', { _search: filters.search, _section: filters.section, _brand: filters.brand,
+      _max: filters.max ? Number(filters.max) : null, _sort: filters.sort, _city: filters.city, _rooms: filters.rooms ? Number(filters.rooms) : null,
+      _offset: filters.page * 24, _limit: 24 });
+    if (error) {
+      // Existing VPS installations stay usable until the reviewed 0115 is installed.
+      if (/Could not find the function public\.shop_catalog_page|function public\.shop_catalog_page.*does not exist/i.test(error.message)) return null;
+      throw new Error(error.message);
+    }
+    return data as ShopCatalogPage;
+  },
+});
 export async function shopBuy(catalogId: string, requestId: string) {
   const { data, error } = await untyped.rpc("shop_buy", { _catalog_id: catalogId, _request_id: requestId });
   if (error) throw new Error(error.message);
