@@ -7,6 +7,8 @@ DELETE FROM public.cash; DELETE FROM public.personal_assets; DELETE FROM public.
 UPDATE public.transport_profiles SET debt = 0, points_lost = 0;
 UPDATE public.fake_clock SET t = '2026-10-26 10:00+00';
 UPDATE public.characters SET energy = 100;
+DELETE FROM public.driving_licenses;
+INSERT INTO public.driving_licenses(character_id, license_at) VALUES ('00000000-0000-0000-0000-0000000000c1','2020-01-01');
 INSERT INTO public.personal_assets(character_id,catalog_id,acquired_at) VALUES ('00000000-0000-0000-0000-0000000000c1','car','2026-10-20');
 -- Sans permis : refusé
 DELETE FROM public.driving_licenses;
