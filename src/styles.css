@@ -262,3 +262,11 @@
 @media (prefers-reduced-motion: reduce) {
   .bh *, .bh-wander, .avatar-alive, .avatar-eyes { animation: none !important; }
 }
+
+/* Mission scenes never simulate progress or results. */
+.mission-vehicle-arriving { animation: mission-arrival 1.2s ease-out both; }
+.mission-step-enter { animation: rise 240ms ease-out both; }
+@keyframes mission-arrival { from { transform: translateX(-160px); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .mission-vehicle-arriving, .mission-step-enter { animation: none !important; }
+}
