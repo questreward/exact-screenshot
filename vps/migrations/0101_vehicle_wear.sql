@@ -13,6 +13,11 @@
 -- Installation : docker exec -i civitas-db psql -v ON_ERROR_STOP=1 -U postgres -d civitas < vps/migrations/0101_vehicle_wear.sql
 BEGIN;
 
+-- Seule modification d'existant : le journal des transports accepte le nouveau type « depannage ».
+ALTER TABLE public.transport_ledger DROP CONSTRAINT transport_ledger_kind_check;
+ALTER TABLE public.transport_ledger ADD CONSTRAINT transport_ledger_kind_check
+  CHECK (kind IN ('abonnement','remboursement','controle','amende_transport','assurance','controle_technique','radar','depannage'));
+
 CREATE TABLE public.vehicle_wear_settings (
   id integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   used_start integer NOT NULL DEFAULT 75,
