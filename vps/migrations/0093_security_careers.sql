@@ -349,7 +349,7 @@ END $$;
 -- Prendre son service : horaires, repos, énergie ; mission tirée des faits publics de la ville
 CREATE FUNCTION public.security_start_shift(_request uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE cid uuid := public.social_actor(); c public.characters; car public.security_careers; sv public.security_services; st public.security_settings;
-  t timestamptz := public.game_now(); h integer; ti record; energy integer; src text; mis text; last_end timestamptz; last_hours integer;
+  t timestamptz := public.game_now(); h integer; ti record; need integer; src text; mis text; last_end timestamptz; last_hours integer;
   loc uuid; rest interval; BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Personnage introuvable.'; END IF;
   SELECT * INTO c FROM public.characters WHERE id = cid FOR UPDATE;
@@ -376,8 +376,8 @@ DECLARE cid uuid := public.social_actor(); c public.characters; car public.secur
   IF last_end IS NOT NULL AND t < last_end + rest THEN RAISE EXCEPTION 'Repos obligatoire avant le prochain service.'; END IF;
   IF EXISTS (SELECT 1 FROM public.activities WHERE character_id = cid AND status IN ('planned','running') AND start_time < t + ti.hours * interval '1 hour' AND end_time > t) THEN
     RAISE EXCEPTION 'Ce service chevauche votre agenda.'; END IF;
-  energy := ceil(st.energy_per_8h * ti.hours / 8.0 * CASE WHEN ti.hours >= 24 THEN 0.8 ELSE 1 END)::integer;
-  IF c.energy < energy THEN RAISE EXCEPTION 'Pas assez d''énergie (% nécessaires).', energy; END IF;
+  need := ceil(st.energy_per_8h * ti.hours / 8.0 * CASE WHEN ti.hours >= 24 THEN 0.8 ELSE 1 END)::integer;
+  IF c.energy < need THEN RAISE EXCEPTION 'Pas assez d''énergie (% nécessaires).', need; END IF;
 
   src := CASE
     WHEN EXISTS (SELECT 1 FROM public.crises WHERE city_id = c.city_id AND status <> 'terminee') THEN 'crise'
@@ -390,11 +390,11 @@ DECLARE cid uuid := public.social_actor(); c public.characters; car public.secur
 
   SELECT location_id INTO loc FROM public.character_positions WHERE character_id = cid;
   IF loc IS NULL THEN RAISE EXCEPTION 'Position introuvable.'; END IF;
-  UPDATE public.characters SET energy = energy - energy WHERE id = cid;
+  UPDATE public.characters SET energy = energy - need WHERE id = cid;
   INSERT INTO public.security_shifts (character_id, request_id, service, starts_at, ends_at, hours, mission_id)
   VALUES (cid, _request, car.service, t, t + ti.hours * interval '1 hour', ti.hours, mis);
   INSERT INTO public.activities (character_id, type, title, start_time, end_time, location_id, energy_cost, status, source_key)
-  VALUES (cid, 'security_shift', 'Service : ' || sv.label, t, t + ti.hours * interval '1 hour', loc, energy, 'running', 'security:' || _request);
+  VALUES (cid, 'security_shift', 'Service : ' || sv.label, t, t + ti.hours * interval '1 hour', loc, need, 'running', 'security:' || _request);
   RETURN public.security_state();
 END $$;
 
