@@ -2091,3 +2091,29 @@ export const civiPublish = (a: { body: string; photo: CiviPhoto | null; repost: 
 export const civiAct = (a: { command: 'like' | 'unlike' | 'comment' | 'delete_comment' | 'report' | 'follow' | 'unfollow' | 'block' | 'unblock' | 'delete'; post?: string; target?: string; body?: string; reason?: string; request?: string }) =>
   civiRpc<void>('civi_action', { _command: a.command, _post: a.post ?? null, _target: a.target ?? null, _body: a.body ?? null, _reason: a.reason ?? null, _request: a.request ?? null });
 export const civiModerate = (a: { post: string; decision: 'retablir' | 'supprimer' }) => civiRpc<void>('civi_moderate', { _post: a.post, _decision: a.decision });
+
+// ---------- V2 : Présidence de la République (0119) ----------
+export type PrPerson = { character_id: string; name: string };
+export type PrState = {
+  now: string; actor: string; eligible: boolean; president: string | null; president_name: string | null; is_president: boolean; interim: boolean;
+  prime_minister: string | null; settings: { sponsors_required: number; min_age: number; speech_limit: number; question_limit: number; mandate_days: number };
+  election: null | { id: string; opens_at: string; round1_at: string; round2_at: string; closes_at: string; round1_counted: boolean;
+    results: { round1?: (PrPerson & { votes: number })[] } | null; finalists: PrPerson[] | null;
+    candidates: (PrPerson & { sponsors: number })[]; my_sponsor: string | null; voted: number[] };
+  last_results: null | { closes_at: string; winner: string | null; results: { round1?: (PrPerson & { votes: number })[]; round2?: (PrPerson & { votes: number })[] } | null };
+  referendum: null | { id: string; question: string; closes_at: string; voted: boolean };
+  acts: { kind: string; president: string; body: string | null; created_at: string }[];
+  pending_laws: { id: string; title: string; adopted_at: string; in_force_at: string }[];
+  players: PrPerson[]; can_dissolve: boolean;
+};
+export const presidencyQuery = queryOptions({ queryKey: ['presidency'], staleTime: 0, refetchInterval: 20000,
+  queryFn: async (): Promise<PrState> => {
+    const { data, error } = await (supabase.rpc as unknown as Rpc)('pr_state');
+    if (error) throw new Error(error.message);
+    return data as PrState;
+  } });
+export async function presidencyAction(a: { _action: 'candidate' | 'sponsor' | 'vote' | 'pm' | 'promulgate' | 'refer_back' | 'dissolve' | 'speech' | 'referendum' | 'referendum_vote'; _target?: string | null; _body?: string; _yes?: boolean; _request?: string }) {
+  const { data, error } = await (supabase.rpc as unknown as Rpc)('pr_action', a);
+  if (error) throw new Error(error.message);
+  return data as PrState;
+}

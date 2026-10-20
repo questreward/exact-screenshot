@@ -481,5 +481,6 @@
 - [x] Kit de communication réelle (docs/communication/kit-reseaux.md)
 - [x] Feuille de route V2 (V2_FEUILLE_DE_ROUTE.md)
 - [ ] Liens vers les réseaux en bas du site — en attente des adresses des comptes
-- [ ] Président de la République jouable — règles validées, SQL à préparer après 0118
+- [x] Président de la République jouable — voir 0119
 - [x] Présidence PC : noms affichés (0117b à installer) ; nomination du copain confirmée réussie
+- [ ] Présidence de la République (0119) — prête, essai sans risque à lancer par Alex, puis nomination d'Alex par intérim
