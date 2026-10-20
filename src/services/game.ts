@@ -1932,3 +1932,17 @@ export async function chooseJobMission(day: string, step: number, choice: number
   if (error) throw new Error(error.message);
   return data as JobMissionState;
 }
+
+// Municipal property-tax budget: distinct read-only shape, no tax settlement here.
+export const municipalPropertyTaxQuery = queryOptions({
+  queryKey: ['municipal-property-tax', 'budget-rates'], staleTime: 0, refetchInterval: 30_000,
+  queryFn: async (): Promise<import('@/game/municipal-property-tax').MunicipalPropertyTaxState> => {
+    const { data, error } = await untyped.rpc('municipal_property_tax_state', {});
+    if (error) throw error;
+    return data as import('@/game/municipal-property-tax').MunicipalPropertyTaxState;
+  },
+});
+export async function setMunicipalPropertyTaxRate(input: { city: string; rate: number }) {
+  const { error } = await untyped.rpc('municipal_property_tax_set_rate', { _city: input.city, _rate: input.rate });
+  if (error) throw error;
+}

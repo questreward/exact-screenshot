@@ -11,6 +11,7 @@ export function propertyTax(price: number, dailyRent?: number): number {
 }
 export interface TaxNotice {
   id: string; notice_key: string; year: number; kind: 'revenu' | 'foncier'; label: string;
+  city_id?: string | null; base_amount?: number | null; rate_pct?: number | null;
   amount: number; paid: number; instalments: 1 | 10 | null; chosen_at: string | null; created_at: string;
 }
 export interface TaxMessage {
