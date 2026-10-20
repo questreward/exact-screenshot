@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.job_mission_scripts (
 CREATE TABLE IF NOT EXISTS public.job_mission_runs (
  character_id uuid NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
  game_day date NOT NULL, script_id text NOT NULL REFERENCES public.job_mission_scripts(id),
- activity_id uuid NOT NULL REFERENCES public.activities(id), city_id uuid REFERENCES public.cities(id),
+ activity_id uuid NOT NULL REFERENCES public.activities(id), city_id text REFERENCES public.cities(id),
  answers integer[] NOT NULL DEFAULT '{}', status text NOT NULL DEFAULT 'active' CHECK(status IN ('active','expired','success','failure')),
  reputation_delta integer, energy_cost integer, PRIMARY KEY(character_id,game_day)
 );
