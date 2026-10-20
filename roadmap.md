@@ -388,4 +388,4 @@
 - [ ] Animations de personnages qui rappellent qu'on est dans un jeu
 - [x] Économie unique (0104) installée
 - [ ] Espaces français : 0105 Poste (installée), 0106 Banque (installée), 0107 ANTS (installée), 0108 Impôts (prête, installation en attente), 0106 Banque, 0107 ANTS, 0108 Impôts
-- [ ] Métiers manquants (0109) : tous les groupes validés (banque, fonction publique, santé, éducation, commerce, BTP/transport, justice) — en préparation
+- [ ] Métiers manquants (0109) prêts — installation en attente (après 0108)
