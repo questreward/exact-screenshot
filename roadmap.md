@@ -246,7 +246,9 @@
 - [x] Recrutement (0086) : installation VPS confirmée par le résultat transmis par Alex le 20 octobre 2026 (contrôles et COMMIT sans erreur).
 - [ ] Recrutement (0086) : vérifier le parcours réel sur le site VPS ; publication de la page à confirmer.
 - [x] Assurance joueur (0087) : règles validées le 20 octobre 2026 — ouverture 5 000 €, cotisations 70–150 %, caisse puis secours fictif sans pénalité ; garanties existantes seulement, franchises et plafonds inchangés.
-- [ ] Assurance joueur (0087) : préparer et tester le fichier SQL exact et les écrans ; présenter les changements avant accord d’installation VPS.
+- [x] Assurance joueur (0087) : fichier SQL exact et écran préparés ; migration passée sur base temporaire, 30 assertions SQL et 193 tests frontend réussis. Fixture conservée dans tests/tools/player_insurance_fixture.sql ; moteur banque et règlement entreprise simulés dans la fixture, pas de régression VPS complète prétendue.
+- [ ] Assurance joueur (0087) : accord d’installation VPS après présentation du SQL exact ; aucun changement appliqué au VPS.
+- [ ] Assurance joueur (0087) : installer et vérifier le parcours réel sur le site VPS après mise à jour du site ; non vérifiable avant installation.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
 
 ## Checklist de reprise — pause du 20 octobre 2026
@@ -255,7 +257,7 @@
 - [x] Présenter le SQL exact 0086 et la commande d’installation après accord.
 - [x] Confirmer l’installation 0086 : résultat VPS transmis, COMMIT sans erreur.
 - [ ] Tester le parcours réel : candidat volontaire → proposition → embauche → prime → relecture ; page sur le site VPS à confirmer.
-- [ ] Préparer l’assurance joueur 0087, proposer ses règles et son SQL avant toute installation.
+- [x] Préparer l’assurance joueur 0087 : règles validées, SQL exact livré et essais isolés réussis ; installation soumise à accord distinct.
 - [ ] Après les quatre entreprises : commencer les étapes 1–3 du Monde mis en scène selon le plan validé.
 - [ ] Nouveau document immobilier : préparer un découpage pour logements variés, catalogue visuel (photos, plans, pièces), visites et maisons personnalisables avec objets ; réutiliser logement, agence et boutique existants. Aucun développement autorisé cette nuit.
 - [ ] Nouveau document écosystème : comparer les portails proposés aux fonctions existantes et préparer CIVITAS Services comme entrée commune (administration, logement, emploi, études, mobilité, finances, assurances, santé, entreprises, citoyenneté, documents) ; proposer les manques sans doubler les systèmes.
