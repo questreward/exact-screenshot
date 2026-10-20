@@ -69,7 +69,7 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
 
   if (!sv) return <div className="space-y-3">{s.services.map(x => {
     const eligible = s.age >= x.min_age && s.age <= x.max_age;
-    return <button key={x.id} onClick={() => { setPick(x.id); setTeam(TEAMS[x.id][0].id); setAnswers({}); }}
+    return <button key={x.id} onClick={() => { setPick(x.id); setTeam(TEAMS[x.id][0]?.id ?? ""); setAnswers({}); }}
       className="w-full rounded-xl border border-border bg-card p-4 text-left transition hover:border-primary">
       <p className="font-heading font-bold">{x.label}</p>
       <p className="mt-1 text-sm text-muted-foreground">{SERVICE_INTRO[x.id]}</p>
