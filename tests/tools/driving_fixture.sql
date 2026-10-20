@@ -11,3 +11,4 @@ CREATE TABLE public.world_state(id int PRIMARY KEY, time_speed numeric); INSERT 
 CREATE FUNCTION public.prepare_daily_life() RETURNS uuid LANGUAGE sql AS $$ SELECT public.social_actor() $$;
 INSERT INTO public.life_rules VALUES ('intercity_travel','Voyage',10,0,0,0,0,'{}') ON CONFLICT DO NOTHING;
 ALTER TABLE public.personal_assets ADD COLUMN condition text DEFAULT 'Bon état';
+ALTER TABLE public.characters ADD COLUMN updated_at timestamptz; ALTER TABLE public.character_positions ADD COLUMN updated_at timestamptz;
