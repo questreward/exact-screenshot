@@ -1,0 +1,11 @@
+export function FurnitureVisual({ kind }: { kind: string }) {
+  return <svg viewBox="0 0 100 100" aria-hidden="true" className="h-full w-full text-primary">
+    {kind === 'sofa' ? <><rect x="7" y="25" width="86" height="55" rx="8" className="fill-secondary stroke-current" strokeWidth="3"/><rect x="18" y="32" width="64" height="18" rx="4" className="fill-primary"/><path d="M39 50v25m23-25v25" className="stroke-current" strokeWidth="2"/><rect x="8" y="43" width="10" height="32" rx="3" className="fill-primary"/><rect x="82" y="43" width="10" height="32" rx="3" className="fill-primary"/></>
+    : kind === 'bed' || kind === 'mattress' ? <><rect x="20" y="7" width="60" height="86" rx="5" className="fill-secondary stroke-current" strokeWidth="3"/><rect x="25" y="12" width="23" height="20" rx="4" className="fill-background"/><rect x="52" y="12" width="23" height="20" rx="4" className="fill-background"/><rect x="24" y="38" width="52" height="47" rx="3" className="fill-primary"/><path d="M24 48h52" className="stroke-background" strokeWidth="3"/></>
+    : kind === 'shelf' ? <><rect x="10" y="20" width="80" height="60" rx="3" className="fill-secondary stroke-current" strokeWidth="3"/>{[25,40,55,70].map(x=><rect key={x} x={x} y="30" width="8" height="40" rx="1" className="fill-primary"/>)}</>
+    : kind === 'washer' ? <><rect x="16" y="12" width="68" height="76" rx="5" className="fill-secondary stroke-current" strokeWidth="3"/><circle cx="50" cy="56" r="22" className="fill-background stroke-current" strokeWidth="4"/><circle cx="68" cy="24" r="4" className="fill-primary"/></>
+    : kind === 'fridge' ? <><rect x="20" y="10" width="60" height="80" rx="5" className="fill-secondary stroke-current" strokeWidth="3"/><path d="M20 38h60m-10 10v24m0-56v12" className="stroke-current" strokeWidth="3"/></>
+    : kind === 'tv' ? <><rect x="8" y="22" width="84" height="50" rx="5" className="fill-background stroke-current" strokeWidth="4"/><path d="M50 72v12m-18 0h36" className="stroke-current" strokeWidth="4"/><path d="M20 35l15-5" className="stroke-primary" strokeWidth="3"/></>
+    : <><rect x="18" y="18" width="64" height="64" rx="6" className="fill-secondary stroke-current" strokeWidth="3"/><rect x="27" y="30" width="40" height="35" rx="4" className="fill-background"/><circle cx="73" cy="35" r="4" className="fill-primary"/></>}
+  </svg>;
+}
