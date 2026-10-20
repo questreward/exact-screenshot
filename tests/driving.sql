@@ -30,6 +30,8 @@ INSERT INTO public.activities(id,character_id,type,title,start_time,end_time,sta
 INSERT INTO public.drive_trips(activity_id,character_id,catalog_id,from_city,to_city,segments,radars) VALUES ('00000000-0000-0000-0000-00000000d002','00000000-0000-0000-0000-0000000000c1','car','paris','lyon','[]','[{"at":5,"limit":50}]');
 UPDATE public.activities SET status='completed' WHERE id = '00000000-0000-0000-0000-00000000d002';
 SELECT pg_temp.ok((SELECT settled AND mode='automatique' FROM public.drive_trips WHERE activity_id='00000000-0000-0000-0000-00000000d002'), 'auto settled on arrival');
-SELECT pg_temp.err($$SELECT public.drive_report('00000000-0000-0000-0000-00000000d002', ARRAY[200])$$ , 'no-op after settle') ;
+SELECT count(*) AS before FROM public.transport_ledger \gset
+SELECT public.drive_report('00000000-0000-0000-0000-00000000d002', ARRAY[200]);
+SELECT pg_temp.ok((SELECT count(*) FROM public.transport_ledger) = :before, 'no-op after settle');
 ROLLBACK;
 SELECT 'driving tests OK';
