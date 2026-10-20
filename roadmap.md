@@ -417,3 +417,4 @@
 - [ ] Auditer les écrans et accès sur téléphone, corriger les obstacles de présentation sans modifier les règles du jeu.
 - [ ] Vérifier les corrections au navigateur sur petites largeurs et relancer les essais concernés.
 - [ ] Comparer les engagements aux fonctions présentes ; distinguer les manques essentiels, propositions V2 et essais VPS encore nécessaires.
+- [ ] Protection civile : demande explicite avant clôture V1 ; examiner interventions, paperasse, recrutement et antennes, préparer une extension réaliste réutilisant les secours ; SQL exact et accord distinct requis avant toute application.
