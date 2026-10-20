@@ -75,7 +75,8 @@ SELECT public.insurance_state(); SELECT public.insurance_state();
 SELECT public.test_assert((SELECT status='active' AND months_paid=2 AND next_try_at IS NULL FROM public.insurance_contracts WHERE id=(SELECT ct FROM public.test_legacy_refs WHERE n=2)),'Ancienne mutuelle réactivée après paiement');
 SELECT public.test_assert((SELECT balance=980 FROM public.accounts WHERE character_id='00000000-0000-0000-0000-000000000002'),'Mutuelle : une seule cotisation de 20 €');
 -- Incidents habitation forcés : couvert / résilié / carence.
-UPDATE public.test_clock SET t=t+interval '8 days';
+-- Fin de semaine : tous les tirages déterministes de cette semaine sont échus.
+UPDATE public.test_clock SET t='2026-11-08 23:59Z';
 UPDATE public.incident_types SET chance=CASE WHEN id='home' THEN 100 ELSE 0 END;
 UPDATE public.insurance_profiles SET settled_week=floor(extract(epoch FROM game_now())/604800)::int-1;
 UPDATE public.insurance_contracts SET covered_from=game_now()+interval '3 days' WHERE id=(SELECT ct FROM public.test_legacy_refs WHERE n=4);
