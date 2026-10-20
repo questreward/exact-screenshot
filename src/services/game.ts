@@ -1782,6 +1782,22 @@ export async function driveReport(activity: string, speeds: number[] | null, aut
   if (error) throw new Error(error.message);
   return data as DriveState;
 }
+export type StudentProgram = { id: string; kind: 'BTS' | 'BUT' | 'Licence' | 'École'; name: string; field_id: string; years: number; min_grade: number; diploma: string };
+export type StudentState = {
+  now: string; age: number; path: string; progress: number;
+  settings: { max_wishes: number; answer_days: number; min_age: number; scholarship: number[]; room_rent: number; pass_grade: number };
+  profile: null | { hs_average: number; family_income: number; scholarship_level: number; program_id: string | null; year: number; year_started_at: string | null; retake_open: boolean };
+  programs: StudentProgram[];
+  wishes: { program_id: string; answer: 'attente_reponse' | 'oui' | 'en_attente' | 'non' | 'acceptee' | 'renoncee'; answer_at: string }[];
+  room: null | { status: 'attribuee' | 'refusee'; residence: string; since: string };
+  ledger: { key: string; kind: string; amount: number; grade: number | null; label: string; created_at: string }[];
+};
+export const studentQuery = queryOptions({ queryKey: ['student'], staleTime: 0, queryFn: looseState<StudentState>('student_state') });
+export async function studentAction(fn: 'student_wish' | 'student_accept' | 'student_retake' | 'student_room_request', args: object = {}) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as StudentState;
+}
 export const drivingQuery = queryOptions({ queryKey: ['driving'], staleTime: 0, queryFn: looseState<DrivingState>('driving_state') });
 export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_register' | 'driving_code' | 'driving_lesson' | 'driving_exam', args: object = {}) {
   const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
