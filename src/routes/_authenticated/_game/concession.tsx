@@ -32,7 +32,7 @@ function DealerPage() {
     <div className="flex items-center gap-3"><Car className="h-8 w-8 text-primary" /><div><h1 className="text-3xl font-bold">Concessionnaire</h1>
       <p className="text-sm text-muted-foreground">Les concessions des joueurs de ta ville. Sans concession joueur, la <Link to="/boutique" className="underline">Boutique</Link> vend les voitures au prix normal.</p></div></div>
     <Tabs defaultValue="neuf">
-      <TabsList className="grid h-auto w-full grid-cols-4">
+      <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
         <TabsTrigger value="neuf" className="h-11">Neuf</TabsTrigger>
         <TabsTrigger value="occasion" className="h-11">Occasion</TabsTrigger>
         <TabsTrigger value="reprise" className="h-11">Reprise</TabsTrigger>

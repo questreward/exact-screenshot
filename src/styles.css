@@ -107,6 +107,8 @@
   }
   html {
     font-family: var(--font-sans);
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     background-color: var(--color-background);
@@ -115,9 +117,20 @@
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 }
+
+/* Touch ergonomics cover native controls in the legacy game portals too. */
+@media (pointer: coarse) {
+  button:not([role="switch"]):not([role="checkbox"]):not([role="radio"]),
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]),
+  select { min-height: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select { font-size: 16px; }
+  button, a, input, select, textarea { touch-action: manipulation; }
+}
+.game-content { overflow-wrap: anywhere; padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }
+@media (min-width: 1024px) { .game-content { padding-bottom: 3rem; } }
 
 @utility bg-gradient-primary {
   background-image: var(--gradient-primary);
@@ -191,7 +204,7 @@
 .world-map[data-phase="soiree"] { --map-ground: oklch(0.27 0.028 255); --map-road: oklch(0.57 0.04 50); }
 .world-map-viewport { width: 100% !important; height: 520px !important; touch-action: none; }
 .world-map-content { width: 100%; height: 100%; }
-.world-svg { display: block; width: 100%; height: 100%; min-width: 600px; }
+.world-svg { display: block; width: 100%; height: 100%; min-width: 0; }
 .world-block { fill: var(--map-block); }
 .world-land { fill: var(--map-land); stroke: var(--map-road); stroke-width: 2; }
 .world-river { fill: none; stroke: var(--map-river); stroke-width: 35; }
@@ -229,8 +242,7 @@
 .is-player .marker-icon { color: var(--primary-foreground); }
 .marker-pulse { fill: none; stroke: var(--primary); stroke-width: 2; opacity: 0.5; animation: twinkle 3s infinite; }
 @media (max-width: 640px) {
-  .world-map-viewport { height: 420px !important; }
-  .world-svg { min-width: 540px; }
+  .world-map-viewport { height: min(420px, 60svh) !important; }
 }
 
 /* Animated bonshommes (presentation only) */
