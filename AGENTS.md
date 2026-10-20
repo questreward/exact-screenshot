@@ -40,3 +40,4 @@
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Body fingerprints guard patches.
 
 - Housing: read-only visits; secured buys. Private asset/lease layouts, versioned saves; cascades and inactive leases release furniture without money changes.
+- District badges (src/game/districts-state.ts) are derived read-only from public records via plain SELECTs, never via *_state RPCs; persistent district gauges would need a separate VPS migration.
