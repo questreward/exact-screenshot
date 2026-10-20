@@ -5,7 +5,7 @@ import { LoaderCircle, ShoppingBag, Search, Check, Wrench, Heart, Target, BadgeP
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, shopQuery, shopSell, shopWish, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
+import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, shopQuery, shopCatalogQuery, shopSell, shopWish, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
@@ -34,6 +34,7 @@ function ShopPage() {
   const [page, setPage] = useState(0);
   const pageSize = 24;
   useEffect(() => { setPage(0); }, [search, section, brand, max, sort, housingCity, housingRooms]);
+  const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s });
   const [sell, setSell] = useState<ShopAsset | null>(null);
   const [used, setUsed] = useState<SecondhandListing | null>(null);
   const refresh = () => KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
@@ -55,7 +56,7 @@ function ShopPage() {
   const wished = useMemo(() => new Map((extras.data?.wishlist ?? []).map(w => [w.id, w.goal])), [extras.data]);
   const cashPrice = (p: ShopProduct) => storePrice(p.price, promo.get(p.id) ?? 0);
 
-  const brands = useMemo(() => [...new Set((s?.products ?? []).map(p => p.brand))].sort((a, b) => a.localeCompare(b, "fr")), [s]);
+  const brands = useMemo(() => catalog.data?.brands ?? [...new Set((s?.products ?? []).map(p => p.brand))].sort((a, b) => a.localeCompare(b, "fr")), [s, catalog.data]);
   const list = useMemo(() => filterProducts(filterHousing((s?.products ?? []).map(p => ({ ...p, price: storePrice(p.price, promo.get(p.id) ?? 0), base: p })), section === "immobilier" ? housingCity : "", section === "immobilier" ? housingRooms : ""), { search, section, brand, maxPrice: max ? Number(max) : null }, sort).map(x => x.base), [s, search, section, brand, max, sort, promo, housingCity, housingRooms]);
   const housingCities = [...new Set((s?.products ?? []).filter(p => p.details.realestate).flatMap(p => p.details.city ? [p.details.city] : []))].sort();
   const roomCounts = [...new Set((s?.products ?? []).filter(p => p.details.realestate).flatMap(p => p.details.rooms != null ? [p.details.rooms] : []))].sort((a, b) => a - b);
@@ -64,9 +65,10 @@ function ShopPage() {
   const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
   const wishList = (s?.products ?? []).filter(p => wished.has(p.id));
   const goal = wishList.find(p => wished.get(p.id));
-  const lastPage = Math.max(0, Math.ceil(list.length / pageSize) - 1);
+  const count = catalog.data?.total ?? list.length;
+  const lastPage = Math.max(0, Math.ceil(count / pageSize) - 1);
   const currentPage = Math.min(page, lastPage);
-  const visible = list.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+  const visible = catalog.data?.products ?? list.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   return <div className="mx-auto max-w-3xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
@@ -100,14 +102,15 @@ function ShopPage() {
           <select className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</select>
           <select className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</select>
         </div>}
-        {list.length === 0 && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
-        <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
+        {catalog.isError && <p role="alert" className="text-sm text-destructive">Le catalogue ne peut pas être chargé pour le moment.</p>}
+        {count === 0 && !catalog.isFetching && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
+        <p className="text-xs text-muted-foreground" aria-live="polite">{catalog.isFetching ? 'Chargement…' : `${count.toLocaleString('fr-FR')} produit${count > 1 ? 's' : ''}${catalog.data ? ` sur ${catalog.data.catalog_total.toLocaleString('fr-FR')}` : ''}`}</p>
         <ul className="grid gap-3 sm:grid-cols-2">{visible.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
           busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
-        {list.length > pageSize && <nav aria-label="Pages du catalogue" className="flex items-center justify-between gap-3">
-          <Button variant="outline" className="h-12 w-12" aria-label="Page précédente" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}><ChevronLeft /></Button>
+        {count > pageSize && <nav aria-label="Pages du catalogue" className="flex items-center justify-between gap-3">
+          <Button variant="outline" className="h-12 w-12" aria-label="Page précédente" disabled={currentPage === 0 || catalog.isFetching} onClick={() => setPage(currentPage - 1)}><ChevronLeft /></Button>
           <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
-          <Button variant="outline" className="h-12 w-12" aria-label="Page suivante" disabled={currentPage >= lastPage} onClick={() => setPage(currentPage + 1)}><ChevronRight /></Button>
+          <Button variant="outline" className="h-12 w-12" aria-label="Page suivante" disabled={currentPage >= lastPage || catalog.isFetching} onClick={() => setPage(currentPage + 1)}><ChevronRight /></Button>
         </nav>}
       </TabsContent>
 

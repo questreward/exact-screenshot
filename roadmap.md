@@ -449,5 +449,10 @@
 - [x] Rapport VPS 18:25 reçu : sauvegarde créée, restauration bloquée par pg_cron avant essai 0114 ; correction du contrôle isolé préparée sans changement du jeu.
 - [x] Rapport VPS 18:34 : restauration isolée des données du jeu annoncée réussie, pg_cron exclu ; sauvegarde complète créée.
 - [ ] Recevoir la fin du contrôle 0114 : fichier reçu tronqué avant essai à blanc ; résultat non confirmé, aucune installation supposée.
+- [ ] Demande 18:37 : corriger le contrôle 0114 « Écriture directe interdite », retester, fournir installation après réussite puis contrôler antenne/note en jeu ; accès VPS non disponible ici.
+- [ ] Demande 18:37 : ajouter les 9 938 produits aux prix validés, présenter le SQL exact puis vérifier 10 000 sur VPS ; ne pas substituer la base Cloud au VPS.
+- [x] 0114 corrigée : REVOKE explicite sur les trois nouvelles tables/séquence ; test local avec droits hérités larges, confidentialité et écritures contrôlées réussi.
+- [x] 0115 préparée : 9 938 lignes littérales, prix/caractéristiques testés, page SQL + état compact ; essai SQL jetable total 10 000 et anciens produits inchangés réussi.
+- [ ] Installation réelle 0114/0115 : nouvel essai groupé VPS et accord SQL exact nécessaires ; parcours connectés après mise à jour du site non accessibles ici.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.

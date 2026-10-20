@@ -28,6 +28,9 @@ SELECT pg_temp.ok(jsonb_array_length(public.volunteer_dossier_state()->'notes')=
 GRANT USAGE ON SCHEMA auth TO authenticated;
 GRANT SELECT ON public.characters,public.fake_clock TO authenticated;
 SET LOCAL ROLE authenticated;
+SELECT pg_temp.ok(NOT has_table_privilege(current_user,'public.volunteer_notes','INSERT'),'Écriture directe des notes interdite malgré droits par défaut');
+SELECT pg_temp.ok(NOT has_table_privilege(current_user,'public.volunteer_attachments','UPDATE'),'Modification directe des rattachements interdite');
+SELECT pg_temp.ok(NOT has_table_privilege(current_user,'public.volunteer_branches','DELETE'),'Suppression directe des antennes interdite');
 SELECT pg_temp.ok((SELECT count(*)=0 FROM public.volunteer_notes),'Notes privées RLS');
 SELECT pg_temp.ok((SELECT count(*)=0 FROM public.volunteer_attachments),'Historique privé RLS');
 RESET ROLE;

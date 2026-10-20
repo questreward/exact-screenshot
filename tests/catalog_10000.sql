@@ -1,0 +1,20 @@
+-- After isolated fixture and 0115, never run on production.
+BEGIN;
+CREATE FUNCTION pg_temp.ok(c boolean,m text) RETURNS void LANGUAGE plpgsql AS $$BEGIN IF c IS DISTINCT FROM true THEN RAISE EXCEPTION '%',m; END IF; END$$;
+SET LOCAL test.uid='00000000-0000-0000-0000-000000000011';
+SELECT pg_temp.ok((SELECT count(*)=10000 FROM economy_catalog WHERE config->>'shop'='true'),'Exactly 10000');
+SELECT pg_temp.ok((SELECT count(*)=9938 FROM economy_catalog WHERE config->>'catalog_pack'='v1-0115'),'Exactly 9938 additions');
+SELECT pg_temp.ok(NOT EXISTS(SELECT 1 FROM original_fixture o JOIN economy_catalog e USING(id) WHERE o.row<>to_jsonb(e)),'Original products unchanged');
+SELECT pg_temp.ok((shop_catalog_page()->>'total')::integer=10000,'Page counts complete catalog beyond 1000');
+SELECT pg_temp.ok(jsonb_array_length(shop_catalog_page()->'products')=24,'First page bounded');
+SELECT pg_temp.ok(jsonb_array_length(shop_catalog_page(_offset=>9984)->'products')=16,'Last page contains remaining 16');
+SELECT pg_temp.ok(NOT EXISTS(SELECT 1 FROM jsonb_array_elements(shop_catalog_page()->'products') a JOIN jsonb_array_elements(shop_catalog_page(_offset=>24)->'products') b ON a->>'id'=b->>'id'),'Distinct consecutive pages');
+SELECT pg_temp.ok((shop_catalog_page(_search=>'Gourde',_section=>'maison')->>'total')::integer>0,'Search finds functional family');
+SELECT pg_temp.ok(NOT EXISTS(SELECT 1 FROM jsonb_array_elements(shop_catalog_page(_section=>'tech')->'products') p WHERE p->>'section'<>'tech'),'Section filter');
+SELECT pg_temp.ok((shop_state()->>'balance')::integer=42,'Other state unchanged');
+SELECT pg_temp.ok(jsonb_array_length(shop_state()->'products')=63,'Legacy state does not aggregate 10000 products');
+INSERT INTO shop_wishlist VALUES('shop-v1-0115-00002','00000000-0000-0000-0000-000000000001');
+SELECT pg_temp.ok(jsonb_array_length(shop_state()->'products')=64,'Wishlist still reads expanded product');
+SET LOCAL test.uid='';
+DO $$BEGIN PERFORM shop_catalog_page(); RAISE EXCEPTION 'Unexpected anonymous access'; EXCEPTION WHEN raise_exception THEN IF SQLERRM='Unexpected anonymous access' THEN RAISE; END IF; END$$;
+ROLLBACK;

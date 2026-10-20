@@ -5,10 +5,10 @@ Alex demande le 20 octobre à 18:27 de terminer les ajouts manquants avant clôt
 ## Ajouts préparés dans le jeu
 - Depuis une mission enregistrée de secours/pompiers/Protection civile/SAMU, ouvrir un intérieur de véhicule d’intervention et revenir aux choix. Radio, rétroviseurs et poste de conduite ; aucun trajet, vitesse ou opération médicale inventés. La patrouille ouvre un intérieur de voiture.
 - Les reportages du JT alternent des passages tirés de l’édition enregistrée, avec illustration locale, journaliste à l’image, clips locaux disponibles, sous-titres et voix française locale si l’appareil en possède une. Le texte n’est pas généré par Ollama ; aucun service externe ni nouvelle mémoire IA. Sur téléphone, les passages se lisent sous l’image pour éviter le chevauchement.
-- Antennes et notes Protection civile : 0114 reste proposée, non installée. Le contrôle de restauration corrigé doit encore passer sur VPS avant installation.
+- Antennes et notes Protection civile : 0114 corrigée après refus des droits hérités ; restauration VPS réussie, nouvel essai SQL requis avant installation.
 
 ## Catalogue : préalable à la proposition exacte
-Le code existant charge tout le catalogue, ce qui ne convient pas à 10 000 fiches sur téléphone. Il faudra une recherche/pagination côté serveur et conserver tous les anciens achats et IDs.
+Le rapport VPS compte 62 produits. 0115 prépare 9 938 ajouts littéraux et une recherche/pagination SQL, avec achats et anciens IDs conservés. Voir `V1_INSTALLATIONS_0114_0115.md` pour les effets exacts et le nouvel essai groupé. Aucun ajout appliqué sur VPS ici.
 
 Contrôle **lecture seule**, à joindre au prochain retour VPS :
 
