@@ -21,9 +21,10 @@ Après les quatre entreprises installées, enrichir les événements et le journ
 5. Vérifier ensuite le parcours sur le site avec Alex ; une installation réussie ne remplace pas cet essai.
 
 ## Détails techniques
-- `WorldEvent` expose déjà `importance` : réutiliser ce champ plutôt qu’ajouter une colonne en double.
+- `WorldEvent` expose déjà `importance` : vérifier son échelle actuelle et définir une correspondance de présentation vers les cinq niveaux prévus, sans changer l’importance utilisée par les anciens événements.
 - Réutiliser `events`, les actualités et les éditions TV existantes ; enrichir uniquement les données de présentation nécessaires.
 - Les anciens sujets sans lien structuré restent lisibles avec une illustration générique, sans attribuer arbitrairement un événement.
+- Le JT expose actuellement un lien vers l’article, pas vers l’événement : vérifier les fonctions SQL existantes avant d’ajouter une relation ; les interviews rattachées aux grands événements concernent les niveaux de présentation 4 et 5, sans supprimer les interviews actuelles.
 - Toute migration éventuelle est atomique, avec droits explicites, protection des données privées et contrôles d’intégrité ; aucune exécution sur le VPS depuis cette préparation.
 
 La ville vivante, les archives, les logements aménageables et CIVITAS Services restent les étapes suivantes, hors de cette livraison.
