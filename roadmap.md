@@ -387,4 +387,4 @@
 - [ ] Ensuite : personnages animés, économie unique, documents et espaces français (choisis par Alex)
 - [ ] Animations de personnages qui rappellent qu'on est dans un jeu
 - [x] Économie unique (0104) installée
-- [ ] Espaces français : 0105 Poste (installée), 0106 Banque (en cours), 0106 Banque, 0107 ANTS, 0108 Impôts
+- [ ] Espaces français : 0105 Poste (installée), 0106 Banque (prête, installation en attente), 0106 Banque, 0107 ANTS, 0108 Impôts
