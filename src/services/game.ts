@@ -1831,3 +1831,16 @@ export async function claimRetirement() {
   if (error) throw new Error(error.message);
   return data as RetirementState;
 }
+
+export type ConjonctureState = {
+  smic: number;
+  treasury: { balance: number; debt: number; income: number; expenses: number };
+  history: { month: string; inflation: number; cpi: number; smic: number; unemployment: number; growth: number; budget: number; debt: number }[];
+  cities: { id: string; name: string; food: number; rent: number; fuel: number }[];
+  city_history: { city_id: string; month: string; food: number; rent: number; fuel: number }[];
+};
+export const conjonctureQuery = queryOptions({ queryKey: ['conjoncture'], staleTime: 30_000, queryFn: async (): Promise<ConjonctureState> => {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('economy_state', {});
+  if (error) throw new Error(error.message);
+  return data as ConjonctureState;
+} });
