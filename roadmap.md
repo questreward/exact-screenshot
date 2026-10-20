@@ -237,7 +237,8 @@
 - [ ] CIVITAS Services (annuaire + parcours)
 - [x] Logements visuels : plan validé, catalogue illustré et visites intégrés à la Boutique ; six images locales, filtres ville/pièces, données et achats existants conservés, aucune migration.
 - [x] Logements visuels : 207 tests réussis et affichage téléphone/ordinateur vérifié avec catalogue simulé ; filtres, galerie, fermeture et confirmation sans paiement contrôlés. Compilation OK.
-- [ ] Logements visuels : mise à jour et essai connecté sur VPS à confirmer ; catalogue réel absent de l’aperçu, aucun essai réel d’achat prétendu.
+- [x] Logements visuels : mise à jour du site VPS déclarée installée par Alex le 20 octobre 2026 ; aucune migration nécessaire.
+- [ ] Logements visuels : essai connecté sur VPS à confirmer ; catalogue réel absent de l’aperçu, aucun essai réel d’achat prétendu.
 - [ ] Monde mis en scène
 
 - [x] Agence immobilière (0082) prête, à installer sur le VPS
