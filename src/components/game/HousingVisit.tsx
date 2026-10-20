@@ -20,6 +20,7 @@ const galleries = {
 };
 export function HousingPreview({ p }: { p: ShopProduct }) {
   const image = galleries[housingIllustrationKind(p)][0];
+  if (!image) return null;
   return <figure className="-mx-4 -mt-4 mb-3 overflow-hidden rounded-t-lg">
     <img src={image.src} alt={`Illustration de type de logement : ${p.name}`} width={1024} height={768} loading="lazy" className="aspect-[4/3] w-full object-cover" />
     <figcaption className="bg-muted px-3 py-1 text-xs text-muted-foreground">Illustration de type de logement · non contractuelle</figcaption>
@@ -29,6 +30,7 @@ export function HousingVisit({ p, pct, onClose, onBuy }: { p: ShopProduct; pct: 
   const [index, setIndex] = useState(0);
   const gallery = galleries[housingIllustrationKind(p)];
   const image = gallery[index] ?? gallery[0];
+  if (!image) return null;
   return <Dialog open onOpenChange={open => { if (!open) onClose(); }}>
     <DialogContent className="max-h-[90dvh] w-[calc(100%-1.5rem)] max-w-2xl gap-3 overflow-y-auto rounded-lg p-4 [&>button:last-child]:flex [&>button:last-child]:h-11 [&>button:last-child]:w-11 [&>button:last-child]:items-center [&>button:last-child]:justify-center [&>button:last-child]:bg-background [&>button:last-child]:opacity-100">
       <DialogTitle className="pr-12 font-heading leading-snug tracking-normal">{p.name}</DialogTitle>
