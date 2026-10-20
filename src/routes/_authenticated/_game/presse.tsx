@@ -14,6 +14,7 @@ import { pressQuery, registerPress, hideArticle, mediaQuery, openChannel, publis
 import { useLifeMutation } from "@/components/game/LifeControls";
 import { articleProblem, PRESS_LIMITS } from "@/game/press";
 import { indicatorLabel, TONES, type Tone } from "@/game/media";
+import { WritingHelper } from "@/components/game/WritingHelper";
 import { moderateArticle } from "@/lib/press-moderation.functions";
 
 export const Route = createFileRoute("/_authenticated/_game/presse")({
@@ -98,6 +99,7 @@ function Writer({ media }: { media: MediaState }) {
     {!hasChannel && <p className="text-xs text-muted-foreground">Ouvre ta chaîne dans « Mon média » pour diffuser des émissions.</p>}
     <Input className="h-12" value={title} maxLength={PRESS_LIMITS.titleMax} onChange={e => setTitle(e.target.value)} placeholder={format === "emission" ? "Titre de l'émission" : "Titre"} />
     <Textarea className="min-h-48" value={body} maxLength={PRESS_LIMITS.bodyMax} onChange={e => setBody(e.target.value)} placeholder={format === "emission" ? "Ton texte, comme lu à l'antenne…" : "Ton article…"} />
+    <WritingHelper kind="article" max={PRESS_LIMITS.bodyMax} onUse={setBody} />
     <p className="text-xs text-muted-foreground">{body.trim().length} / {PRESS_LIMITS.bodyMax} · {PRESS_LIMITS.dailyMax} publications par jour maximum · vérifié automatiquement</p>
     <PhotoPicker value={photo} onChange={setPhoto} label="Ajouter une photo" maxSide={1000} />
     <details className="rounded-lg bg-muted/50 p-3">

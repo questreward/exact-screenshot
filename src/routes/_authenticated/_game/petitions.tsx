@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLifeMutation } from "@/components/game/LifeControls";
 import { petitionAction, petitionQuery, type Petition, type PetitionState } from "@/services/game";
+import { WritingHelper } from "@/components/game/WritingHelper";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/petitions")({
@@ -82,6 +83,7 @@ function NewPetition({ st }: { st: PetitionState }) {
       : `Seuil : ${String(st.settings.national_pct).replace(".", ",")} % des Français en ${st.settings.signing_days} jours. Si elle réussit, elle est inscrite à l'ordre du jour de l'Assemblée.`}</p>
     <Input className="h-12" value={title} onChange={e => setTitle(e.target.value)} maxLength={st.settings.title_max} placeholder="Titre (10 caractères minimum)" />
     <Textarea rows={4} value={body} onChange={e => setBody(e.target.value)} maxLength={st.settings.body_max} placeholder="Ce que vous demandez et pourquoi (30 caractères minimum)" />
+    <WritingHelper kind="petition" max={st.settings.body_max} onUse={setBody} />
     <Button className="h-12 w-full" disabled={create.isPending || title.trim().length < 10 || body.trim().length < 30}
       onClick={() => create.mutate({ command: "create", request_id: rid, scope, title, body })}>{create.isPending && <LoaderCircle className="animate-spin" />}Lancer la pétition</Button>
   </section>;
