@@ -47,6 +47,7 @@ import { Route as AuthenticatedGameFranceRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameImpotsRouteImport } from './routes/_authenticated/_game/impots'
 import { Route as AuthenticatedGameJtRouteImport } from './routes/_authenticated/_game/jt'
 import { Route as AuthenticatedGameJusticeRouteImport } from './routes/_authenticated/_game/justice'
+import { Route as AuthenticatedGameLaPosteRouteImport } from './routes/_authenticated/_game/la-poste'
 import { Route as AuthenticatedGameLogementRouteImport } from './routes/_authenticated/_game/logement'
 import { Route as AuthenticatedGameLoisRouteImport } from './routes/_authenticated/_game/lois'
 import { Route as AuthenticatedGameMaVieRouteImport } from './routes/_authenticated/_game/ma-vie'
@@ -297,6 +298,12 @@ const AuthenticatedGameJusticeRoute =
   AuthenticatedGameJusticeRouteImport.update({
     id: '/justice',
     path: '/justice',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameLaPosteRoute =
+  AuthenticatedGameLaPosteRouteImport.update({
+    id: '/la-poste',
+    path: '/la-poste',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameLogementRoute =
@@ -585,6 +592,7 @@ export interface FileRoutesByFullPath {
   '/impots': typeof AuthenticatedGameImpotsRoute
   '/jt': typeof AuthenticatedGameJtRoute
   '/justice': typeof AuthenticatedGameJusticeRoute
+  '/la-poste': typeof AuthenticatedGameLaPosteRoute
   '/logement': typeof AuthenticatedGameLogementRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-vie': typeof AuthenticatedGameMaVieRoute
@@ -666,6 +674,7 @@ export interface FileRoutesByTo {
   '/impots': typeof AuthenticatedGameImpotsRoute
   '/jt': typeof AuthenticatedGameJtRoute
   '/justice': typeof AuthenticatedGameJusticeRoute
+  '/la-poste': typeof AuthenticatedGameLaPosteRoute
   '/logement': typeof AuthenticatedGameLogementRoute
   '/lois': typeof AuthenticatedGameLoisRoute
   '/ma-vie': typeof AuthenticatedGameMaVieRoute
@@ -750,6 +759,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/impots': typeof AuthenticatedGameImpotsRoute
   '/_authenticated/_game/jt': typeof AuthenticatedGameJtRoute
   '/_authenticated/_game/justice': typeof AuthenticatedGameJusticeRoute
+  '/_authenticated/_game/la-poste': typeof AuthenticatedGameLaPosteRoute
   '/_authenticated/_game/logement': typeof AuthenticatedGameLogementRoute
   '/_authenticated/_game/lois': typeof AuthenticatedGameLoisRoute
   '/_authenticated/_game/ma-vie': typeof AuthenticatedGameMaVieRoute
@@ -833,6 +843,7 @@ export interface FileRouteTypes {
     | '/impots'
     | '/jt'
     | '/justice'
+    | '/la-poste'
     | '/logement'
     | '/lois'
     | '/ma-vie'
@@ -914,6 +925,7 @@ export interface FileRouteTypes {
     | '/impots'
     | '/jt'
     | '/justice'
+    | '/la-poste'
     | '/logement'
     | '/lois'
     | '/ma-vie'
@@ -997,6 +1009,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/impots'
     | '/_authenticated/_game/jt'
     | '/_authenticated/_game/justice'
+    | '/_authenticated/_game/la-poste'
     | '/_authenticated/_game/logement'
     | '/_authenticated/_game/lois'
     | '/_authenticated/_game/ma-vie'
@@ -1318,6 +1331,13 @@ declare module '@tanstack/react-router' {
       path: '/justice'
       fullPath: '/justice'
       preLoaderRoute: typeof AuthenticatedGameJusticeRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/la-poste': {
+      id: '/_authenticated/_game/la-poste'
+      path: '/la-poste'
+      fullPath: '/la-poste'
+      preLoaderRoute: typeof AuthenticatedGameLaPosteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/logement': {
@@ -1654,6 +1674,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameImpotsRoute: typeof AuthenticatedGameImpotsRoute
   AuthenticatedGameJtRoute: typeof AuthenticatedGameJtRoute
   AuthenticatedGameJusticeRoute: typeof AuthenticatedGameJusticeRoute
+  AuthenticatedGameLaPosteRoute: typeof AuthenticatedGameLaPosteRoute
   AuthenticatedGameLogementRoute: typeof AuthenticatedGameLogementRoute
   AuthenticatedGameLoisRoute: typeof AuthenticatedGameLoisRoute
   AuthenticatedGameMaVieRoute: typeof AuthenticatedGameMaVieRoute
@@ -1731,6 +1752,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameImpotsRoute: AuthenticatedGameImpotsRoute,
     AuthenticatedGameJtRoute: AuthenticatedGameJtRoute,
     AuthenticatedGameJusticeRoute: AuthenticatedGameJusticeRoute,
+    AuthenticatedGameLaPosteRoute: AuthenticatedGameLaPosteRoute,
     AuthenticatedGameLogementRoute: AuthenticatedGameLogementRoute,
     AuthenticatedGameLoisRoute: AuthenticatedGameLoisRoute,
     AuthenticatedGameMaVieRoute: AuthenticatedGameMaVieRoute,

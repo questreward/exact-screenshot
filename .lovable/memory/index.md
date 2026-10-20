@@ -1,1 +1,2 @@
 - [Économie unique](mem://features/unified-economy.md) — Prix mobiles, argent qui circule, inflation/SMIC, tableau ; puis impôts, ANTS, banque, Poste
+- [Espaces français](mem://features/french-spaces.md) — 0105 Poste, 0106 Banque, 0107 ANTS, 0108 Impôts ; tarifs validés

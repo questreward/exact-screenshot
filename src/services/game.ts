@@ -1844,3 +1844,17 @@ export const conjonctureQuery = queryOptions({ queryKey: ['conjoncture'], staleT
   if (error) throw new Error(error.message);
   return data as ConjonctureState;
 } });
+
+export const postQuery = queryOptions({
+  queryKey: ['post', 'mailbox'], refetchInterval: 15000,
+  queryFn: async (): Promise<import('@/game/post').PostState> => {
+    const { data, error } = await untyped.rpc('post_state', {});
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+export async function postAction(fn: 'post_send' | 'post_update', args: Record<string, unknown>) {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return data as import('@/game/post').PostState;
+}

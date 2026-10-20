@@ -386,5 +386,5 @@
 - [x] 0103 installée sur le VPS
 - [ ] Ensuite : personnages animés, économie unique, documents et espaces français (choisis par Alex)
 - [ ] Animations de personnages qui rappellent qu'on est dans un jeu
-- [x] Économie unique (0104) installée
-- [ ] Espaces français : impôts complet, préfecture type ANTS, banque en ligne, La Poste et courrier
+- [ ] Économie unique (0104) : échec (nom déjà pris), corrigée — réinstallation en attente
+- [ ] Espaces français : 0105 Poste (en cours), 0106 Banque, 0107 ANTS, 0108 Impôts
