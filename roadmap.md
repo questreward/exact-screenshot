@@ -369,7 +369,7 @@
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
   - Règles validées : trimestres réels (4/an max), pension 50 % × trimestres/172 + points, départ à 64 ans
   - [x] Vieillissement : 0100 prête et testée (bandeau anniversaire)
-  - [ ] Installer 0100 sur le VPS (accord d’Alex)
+  - [x] 0100 installée sur le VPS (déclaré par Alex)
 - [x] Usure des véhicules + réparations : 0101 prête et testée (page Transports)
 - [ ] Installer 0101 sur le VPS (accord d’Alex)
 - [x] Conduite entre villes : choix du véhicule, vitesses, radars, amendes déjà en 0098 ; usure ajoutée en 0101
