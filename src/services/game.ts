@@ -1716,6 +1716,16 @@ export const securityQuery = queryOptions({
     return data as SecurityState;
   },
 });
+export type PromotionEntry = { key: string; kind: 'entree' | 'grade' | 'depart'; label: string; created_at: string };
+/** Historique personnel des grades (lecture propriétaire, sécurisée par la base). */
+export const promotionHistoryQuery = queryOptions({
+  queryKey: ['security-careers', 'promotions'], staleTime: 30000,
+  queryFn: async (): Promise<PromotionEntry[]> => {
+    const { data, error } = await untyped.from('security_ledger').select('key,kind,label,created_at').in('kind', ['entree', 'grade', 'depart']).order('created_at', { ascending: false }).limit(100);
+    if (error) throw new Error(error.message);
+    return (data ?? []) as PromotionEntry[];
+  },
+});
 export const securityMissionsQuery = queryOptions({
   queryKey: ['security-missions'], staleTime: 600000,
   queryFn: async (): Promise<SecurityMission[]> => {
