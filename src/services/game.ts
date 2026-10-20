@@ -559,7 +559,8 @@ export const tvQuery = (cityId?: string) => queryOptions({
     const scenes = await untyped.rpc('tv_scenes_state', { _segments: [...new Set(ids)].slice(0, 100) });
     // Before 0088 is installed, keep old editions working unchanged.
     if (scenes.error) {
-      if (scenes.error.code === 'PGRST202' || scenes.error.code === '42883') return state;
+      const code = 'code' in scenes.error ? scenes.error.code : undefined;
+      if (code === 'PGRST202' || code === '42883' || /Could not find the function public\.tv_scenes_state/.test(scenes.error.message)) return state;
       throw new Error(scenes.error.message);
     }
     const projection = (scenes.data ?? {}) as Record<string, import('@/game/scenes').EventScene>;
