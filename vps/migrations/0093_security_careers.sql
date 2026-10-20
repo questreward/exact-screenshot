@@ -189,7 +189,7 @@ VALUES ('security_shift', 'Service de sécurité ou de secours', 240, 0, 0, 0, 0
 -- Équipes et horaires : heure de prise de service autorisée (± 1 h) et durée
 CREATE FUNCTION public.security_team_info(_service text, _team text) RETURNS TABLE (start_hour integer, hours integer)
 LANGUAGE sql IMMUTABLE AS $$
-  SELECT * FROM (VALUES ('police','matin',5,8),('police','apres_midi',13,8),('police','nuit',21,8),
+  SELECT h, d FROM (VALUES ('police','matin',5,8),('police','apres_midi',13,8),('police','nuit',21,8),
     ('pompier_pro','garde12',7,12),('pompier_pro','garde24',7,24),
     ('pompier_vol','disponible',-1,4),('protection_civile','libre',-1,4)) v(s,t,h,d)
   WHERE s = _service AND t = _team $$;
