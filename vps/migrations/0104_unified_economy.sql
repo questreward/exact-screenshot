@@ -133,7 +133,7 @@ BEGIN
   INSERT INTO public.economy_city_history SELECT city_id,m,food,rent,fuel FROM public.economy_city_prices ON CONFLICT DO NOTHING;
   IF r>=.005 OR abs(u-s.unemployment)>=2 OR abs(growth)>=3 THEN
    INSERT INTO public.events(event_key,title,description,news_body,starts_at,scope,category,importance,source_id,target_kind)
-    VALUES('economy:'||m,'Conjoncture : les indicateurs évoluent',format('Inflation mensuelle : %s %%. SMIC : %s €. Chômage : %s %%.',round(r*100,2),round(1400*s.smic_index,2),round(u,2)),format('Inflation mensuelle : %s %%. SMIC : %s €.',round(r*100,2),round(1400*s.smic_index,2)),public.game_now(),'national','Économie',75,'civitas-matin','all') ON CONFLICT(event_key) DO NOTHING;
+    VALUES('economy:'||m,'Conjoncture : les indicateurs évoluent',format('Inflation mensuelle : %s %%. SMIC : %s €. Chômage : %s %%.',round(r*100,2),round(1400*s.smic_index,2),round(u,2)),format('Inflation mensuelle : %s %%. SMIC : %s €.',round(r*100,2),round(1400*s.smic_index,2)),public.game_now(),'national','Économie',75,'civitas-matin','general') ON CONFLICT(event_key) DO NOTHING;
    SELECT id INTO eid FROM public.events WHERE event_key='economy:'||m;
    PERFORM public.publish_world_event(eid);
   END IF;
