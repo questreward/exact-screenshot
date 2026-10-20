@@ -40,10 +40,10 @@
 - Titles extend character_identity/administrative_documents, no duplicate valid titles; CNI/passports activate only after registered-mail collection.
 - Tax space extends existing returns/withholding; notices never also enter profile debt; property based on owned assets, receipts on actual payments only.
 - Jobs reuse secured career/application hiring; diploma gates use student_ledger, missions have no separate money rewards.
-- Mission scenes/dossiers use only server snapshots, no invented incidents, progress or outcomes.
+- Mission scenes/dossiers/vehicle entry use server snapshots only, no invented trips, incidents or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
 - Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
-- TV captions quote stored editions; device-local French voices, paused clips and bundled-image fallback preserve independence.
+- TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
 - VPS test restores omit pg_cron/cron via archive TOC; full backups retain them because cron is production-bound.

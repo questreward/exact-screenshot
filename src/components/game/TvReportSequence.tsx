@@ -18,7 +18,7 @@ export function TvReportSequence({ image, reporter, video, text, title, playing 
   return <>
     <TvReportMedia image={image} video={video} alt={`Illustration du reportage : ${title}`} playing={playing} />
     <img src={reporter} alt="Journaliste CIVITAS" width={1280} height={720} className="absolute right-3 top-12 aspect-video w-1/4 rounded border border-primary object-cover sm:top-16" />
-    {passages[shot] && <div key={shot} className="absolute inset-x-3 top-12 mr-[28%] border-l-2 border-primary bg-background/90 p-2 sm:top-16 sm:p-3">
+    {passages[shot] && <div key={shot} className="absolute inset-x-3 top-16 mr-[28%] hidden border-l-2 border-primary bg-background/90 p-3 sm:block">
       <p className="text-[10px] font-semibold uppercase text-primary sm:text-xs">Dans cette édition · {shot + 1}/{passages.length}</p>
       <p className="mt-1 line-clamp-3 break-words text-xs leading-relaxed text-foreground sm:text-sm">{passages[shot]}</p>
     </div>}
