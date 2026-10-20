@@ -1,7 +1,7 @@
 # CIVITAS — Protection civile et catalogue : SQL exact avant installation
 
 ## État constaté
-Le rapport VPS reçu à 18:37 confirme 62 produits, une sauvegarde complète et une restauration isolée des données du jeu (sans pg_cron). L’essai 0114 a échoué et n’a rien installé : des droits par défaut accordaient des écritures directes. Aucun accès à ce VPS n’est disponible ici ; aucune installation ni vérification connectée du jeu ne peut être annoncée.
+Le rapport VPS reçu à 18:53 confirme une sauvegarde complète, la restauration isolée des données du jeu (sans pg_cron) et les deux essais 0114 corrigée/0115 réussis avec ROLLBACK. Le total boutique testé est 10 000 après INSERT de 9 938 ; les 83 lignes sauvegardées dans le contrôle d’intégrité comprennent aussi les entrées hors boutique, et ne contredisent pas les 62 produits vendus initialement. Aucun accès à ce VPS n’est disponible ici ; aucune installation ni vérification connectée du jeu ne peut être annoncée.
 
 ## 0114 corrigé
 SQL exact : `vps/migrations/0114_volunteer_dossier.sql`.
@@ -30,6 +30,19 @@ bash vps/tools/prepare_v1_installations.sh
 ```
 
 Crée une nouvelle sauvegarde privée, restaure dans une copie temporaire en excluant cron de cette copie seulement, teste 0114 puis 0115 avec ROLLBACK et supprime uniquement la copie. Aucun redémarrage du jeu. Envoyer la sortie jusqu’à « Les deux essais ont réussi ». L’installation réelle sera donnée après ce résultat et l’accord sur le SQL exact ; ne pas installer malgré une erreur.
+
+## Installation réelle après les deux essais réussis
+Alex a demandé l’installation après validation du contrôle. Les deux SQL exacts testés restent inchangés. Appliquer dans l’ordre ; le deuxième ne démarre pas si le premier échoue. Chaque fichier conserve sa propre transaction et son contrôle bloquant. En cas d’erreur ne pas relancer tout le bloc : envoyer la sortie pour identifier ce qui a réellement été validé.
+
+```bash
+cd /data/civitas-live/app &&
+docker exec -i civitas-db psql -X -v ON_ERROR_STOP=1 -U postgres -d civitas < vps/migrations/0114_volunteer_dossier.sql &&
+docker exec -i civitas-db psql -X -v ON_ERROR_STOP=1 -U postgres -d civitas < vps/migrations/0115_catalogue_10000.sql &&
+docker exec -i civitas-db psql -X -v ON_ERROR_STOP=1 -U postgres -d civitas < vps/tools/check_catalog_v1.sql &&
+docker exec civitas-db psql -X -v ON_ERROR_STOP=1 -U postgres -d civitas -c "SELECT (SELECT count(*) FROM public.volunteer_branches) AS antennes, (SELECT count(*) FROM public.cities) AS villes;"
+```
+
+Résultats attendus : COMMIT de 0114 puis COMMIT de 0115, 10 000 produits distincts, 5 antennes pour 5 villes. Cela installe les données/fonctions uniquement ; mise à jour de l’application et parcours en jeu restent distincts.
 
 ## Contrôles locaux réalisés
 - 0114 sur base jetable avec droits par défaut volontairement larges : migration réussie et essais de confidentialité, notes, historique et absence de paiement réussis.
