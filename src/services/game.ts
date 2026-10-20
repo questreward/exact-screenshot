@@ -1946,3 +1946,15 @@ export async function setMunicipalPropertyTaxRate(input: { city: string; rate: n
   const { error } = await untyped.rpc('municipal_property_tax_set_rate', { _city: input.city, _rate: input.rate });
   if (error) throw error;
 }
+
+export const foreignTravelQuery = queryOptions({
+  queryKey: ['foreign-travel', 'state'], staleTime: 0, refetchInterval: 10000,
+  queryFn: async (): Promise<import('@/game/foreign-travel').ForeignTravelState> => {
+    const { data, error } = await untyped.rpc('foreign_travel_state', {});
+    if (error) throw error; return data as import('@/game/foreign-travel').ForeignTravelState;
+  },
+});
+export async function departForeignTravel(args: { _country: string; _days: number; _lodging: string; _request: string }) {
+  const { data, error } = await untyped.rpc('foreign_travel_depart', args);
+  if (error) throw error; return data as import('@/game/foreign-travel').ForeignTravelState;
+}

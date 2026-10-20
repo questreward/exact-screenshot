@@ -86,6 +86,7 @@ import { Route as AuthenticatedGameVerificationRouteImport } from './routes/_aut
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
 import { Route as AuthenticatedGameVieAdministrativeRouteImport } from './routes/_authenticated/_game/vie-administrative'
 import { Route as AuthenticatedGameVieDesPartisRouteImport } from './routes/_authenticated/_game/vie-des-partis'
+import { Route as AuthenticatedGameVoyagesRouteImport } from './routes/_authenticated/_game/voyages'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameElectionsIdRouteImport } from './routes/_authenticated/_game/elections_.$id'
 import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
@@ -524,6 +525,12 @@ const AuthenticatedGameVieDesPartisRoute =
     path: '/vie-des-partis',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVoyagesRoute =
+  AuthenticatedGameVoyagesRouteImport.update({
+    id: '/voyages',
+    path: '/voyages',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameActualitesIdRoute =
   AuthenticatedGameActualitesIdRouteImport.update({
     id: '/actualites_/$id',
@@ -643,6 +650,7 @@ export interface FileRoutesByFullPath {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -727,6 +735,7 @@ export interface FileRoutesByTo {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -814,6 +823,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
   '/_authenticated/_game/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/_authenticated/_game/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/_authenticated/_game/voyages': typeof AuthenticatedGameVoyagesRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/elections_/$id': typeof AuthenticatedGameElectionsIdRoute
   '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
@@ -900,6 +910,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -984,6 +995,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
     | '/organisations/$id'
@@ -1070,6 +1082,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/vie'
     | '/_authenticated/_game/vie-administrative'
     | '/_authenticated/_game/vie-des-partis'
+    | '/_authenticated/_game/voyages'
     | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/elections_/$id'
     | '/_authenticated/_game/organisations_/$id'
@@ -1630,6 +1643,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieDesPartisRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/voyages': {
+      id: '/_authenticated/_game/voyages'
+      path: '/voyages'
+      fullPath: '/voyages'
+      preLoaderRoute: typeof AuthenticatedGameVoyagesRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/actualites_/$id': {
       id: '/_authenticated/_game/actualites_/$id'
       path: '/actualites/$id'
@@ -1751,6 +1771,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
   AuthenticatedGameVieAdministrativeRoute: typeof AuthenticatedGameVieAdministrativeRoute
   AuthenticatedGameVieDesPartisRoute: typeof AuthenticatedGameVieDesPartisRoute
+  AuthenticatedGameVoyagesRoute: typeof AuthenticatedGameVoyagesRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameElectionsIdRoute: typeof AuthenticatedGameElectionsIdRoute
   AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
@@ -1832,6 +1853,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameVieAdministrativeRoute:
       AuthenticatedGameVieAdministrativeRoute,
     AuthenticatedGameVieDesPartisRoute: AuthenticatedGameVieDesPartisRoute,
+    AuthenticatedGameVoyagesRoute: AuthenticatedGameVoyagesRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameElectionsIdRoute: AuthenticatedGameElectionsIdRoute,
     AuthenticatedGameOrganisationsIdRoute:
@@ -1872,13 +1894,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
