@@ -346,6 +346,6 @@
 - [ ] Vérifier en jeu : Caisse des aides, espace Emploi, M’actualiser
 - [ ] Espace Santé (type ameli)
 - [x] Bloc A vague 1 (police, pompiers pro/volontaires, protection civile) : 0093 prête et testée
-- [ ] Installer 0093 sur le VPS (accord d’Alex sur l’installation)
+- [x] 0093 installée sur le VPS (déclaré par Alex)
 - [ ] Bloc A vague 2 : Gendarmerie et SAMU
 - [ ] Idées de réalisme France à proposer
