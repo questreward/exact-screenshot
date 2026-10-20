@@ -43,3 +43,4 @@
 - Mission scenes/dossiers use only server snapshots, no invented incidents, progress or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Shared controls provide touch-sized targets and viewport-bounded scrollable dialogs; game navigation catalogs only real routes, tested against leaf files, so phone access never relies on hidden cross-links.
+- Interior views and volunteer reports project recorded trips, placements and shifts only; no decorative state may imply a paid ticket, certification, casualty or settled outcome.

@@ -33,17 +33,15 @@ function TripPage() {
     <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Aucun voyage en cours. Pars depuis la Gare, la Station de transport, ou avec ta voiture.</p>
     <Button asChild className="min-h-12 w-full"><Link to="/carte">Ouvrir la carte</Link></Button></div>;
   const pct = tripProgress(trip.start_time, trip.end_time, now || Date.parse(s.now));
-  return trip.kind === "voiture" && trip.drive ? <DriveSim s={s} pct={pct} /> : <RideView kind={trip.kind} title={trip.title} pct={pct} />;
+  return trip.kind === "voiture" && trip.drive ? <DriveSim s={s} d={trip.drive} pct={pct} /> : <RideView kind={trip.kind} title={trip.title} pct={pct} />;
 }
 
 function Progress({ pct }: { pct: number }) {
   return <div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} /></div>;
 }
 
-function DriveSim({ s, pct }: { s: DriveState; pct: number }) {
+function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<DriveState['trip']>['drive']>; pct: number }) {
   const qc = useQueryClient();
-  const d = s.trip?.drive;
-  if (!d) return null;
   const [speed, setSpeed] = useState(0);
   const speeds = useRef<(number | null)[]>(d.radars.map(() => null));
   const [flash, setFlash] = useState(false);
