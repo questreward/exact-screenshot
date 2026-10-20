@@ -425,6 +425,10 @@
 - [ ] Nouvelle extension V1 vidéo/scènes/intérieurs/catalogue : arbitrage de clôture demandé par Alex à 17:56 ; ressources VPS pour vidéo à mesurer, périmètre détaillé et règles à valider, aucun service externe ni migration implicite.
 
 ## Livraison finale unique — demande d’Alex à 18:00 UTC
-- [ ] Réunir téléphone, contrôles, Protection civile, JT vidéo local, scènes/intérieurs et 10 000 produits dans une proposition cohérente ; aucun sujet retiré implicitement.
+- [x] Proposition regroupée approuvée ; aucun sujet retiré implicitement.
+- [x] Intérieur voiture et cabine car/train, vue de pièce sur possessions, dossier bénévole et rapports enregistrés intégrés sans nouvelles règles ; 24 essais ciblés et affichage simulé 320/390/1280 réussis.
+- [x] Point d’entrée de précontrôle unique préparé, lecture seule : vps/tools/check_final_v1.sh.
+- [ ] Mesurer les ressources locales vidéo : sortie du précontrôle VPS nécessaire, aucune génération locale vérifiée.
+- [ ] Antennes/affectations/qualifications, vidéo JT, scènes et intérieur camion liés, 10 000 produits et documents complémentaires : prix/effets/périmètre détaillé et SQL exact à valider ; non livrés.
 - [ ] Présenter les règles nouvelles et le SQL exact avant toute installation ; livrer un point d’entrée unique avec sauvegarde et essais préalables, sans réinstaller les migrations validées.
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.

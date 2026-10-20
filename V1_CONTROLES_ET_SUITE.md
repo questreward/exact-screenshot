@@ -47,6 +47,16 @@ Le rapport transmis par Alex le 20 octobre confirme les huit objets et onze fonc
 4. Nouveau joueur capable de créer son personnage, trouver son activité et comprendre les refus/indisponibilités ; pas d’écrans vides ou d’annonce mensongère.
 5. Erreurs compréhensibles, performances téléphone raisonnables, jeu utilisable lorsque l’IA locale est indisponible.
 
+## Livraison finale regroupée — commencée après accord du plan
+- Intérieur voiture et cabine car/train intégrés à En route, avec vitesse/panneaux existants ; aucun nouveau trajet ou effet financier.
+- Suppression du faux passage de contrôleur et de l’affirmation « billet en règle » : aucun contrôle réel du billet n’était enregistré.
+- Vue intérieure des pièces dans Chez moi : uniquement objets placés par le joueur, y compris brouillon non enregistré clairement signalé par l’éditeur existant ; pas de nouvelles possessions.
+- Dossier bénévole Protection civile et comptes rendus consultables dans Secours : engagement, formation/fonction et services enregistrés. Résultats non clôturés masqués ; aucune qualification réelle, antenne inventée ou nouvelle récompense.
+- Recrutement et réponses utilisent les contrôles tactiles partagés ; aucune condition métier changée.
+- Contrôle unifié en lecture seule : `bash vps/tools/check_final_v1.sh`. Réunit audit structurel et mémoire/CPU/disque/modèles/GPU/outils vidéo ; ne lit ni secrets ni personnages et n’installe rien.
+- 24 essais ciblés réussis dont trois règles de projection des rapports. Vues et ouverture/fermeture de comptes rendus contrôlées à 320, 390 et 1280 px avec données simulées : aucun débordement ni erreur JavaScript. Ces contrôles ne prouvent pas un parcours connecté sur VPS.
+- Reste Protection civile étendue (antennes, affectations, suivi), vidéo réellement générée, intérieurs camion liés aux missions, catalogue 10 000, documents complémentaires et essais réels : **pas livrés ni installés**. Ressources VPS à mesurer ; prix/effets nouveaux et SQL exact à valider. La livraison finale n’est donc pas déclarée terminée.
+
 Protection civile, JT vidéo, intérieurs et 10 000 produits sont de nouvelles extensions explicitement demandées, pas des conditions universelles de stabilité. Les construire en lots avant clôture si retenus ; ne pas confondre leur installation avec leur validation. Ollama qwen2.5:3b génère du texte, pas des vidéos : une narration locale et une mise en scène animée sont distinctes d’un modèle de génération vidéo, dont les ressources restent à mesurer sur le VPS.
 
 ## Inventaire des documents
