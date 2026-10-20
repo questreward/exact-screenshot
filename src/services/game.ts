@@ -1752,6 +1752,20 @@ export async function declareIncome(year: number) {
   if (error) throw new Error(error.message);
   return data as IncomeTaxState;
 }
+export type TransportState = {
+  now: string; month: string; balance: number; employed: boolean; license_at: string | null;
+  settings: { pass_price: number; employer_pct: number; control_one_in: number; fare_fine: number; insurance_month: number; insurance_young_month: number; young_years: number; inspection_price: number; inspection_years: number; radar_pct: number; radar_fine: number; points_full: number; points_young: number };
+  profile: { without_ticket: boolean; points_lost: number; debt: number; paid_total: number } | null;
+  pass: { month: string; price: number; employer_refund: number } | null;
+  cars: { asset_id: string; name: string; due_at: string; last_at: string | null }[];
+  history: { key: string; kind: string; amount: number; label: string; unpaid: number; created_at: string }[];
+};
+export const transportQuery = queryOptions({ queryKey: ['transport'], staleTime: 0, queryFn: looseState<TransportState>('transport_state') });
+export async function transportAction(fn: 'transit_buy_pass' | 'transport_set_without_ticket' | 'transport_inspect', args: object = {}) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as TransportState;
+}
 export const drivingQuery = queryOptions({ queryKey: ['driving'], staleTime: 0, queryFn: looseState<DrivingState>('driving_state') });
 export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_register' | 'driving_code' | 'driving_lesson' | 'driving_exam', args: object = {}) {
   const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
