@@ -63,7 +63,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.furnishing_state_v2() FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.furnishing_state_v2() TO authenticated,service_role;
 CREATE FUNCTION public.rental_furnishing_save(_lease_id uuid,_version integer,_room_names jsonb,_placements jsonb,_request_id uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public,pg_temp AS $$
-DECLARE cid uuid; cfg jsonb; rooms integer; g integer; v integer; h text; old public.rental_home_save_operations; e jsonb; p record; b record; boxes jsonb:='[]'; w integer; ht integer; r integer; px integer; py integer; rm integer; aid uuid;
+DECLARE cid uuid; cfg jsonb; rooms integer; g integer; v integer; h text; old public.rental_home_save_operations; e jsonb; item_box record; b record; boxes jsonb:='[]'; w integer; ht integer; r integer; px integer; py integer; rm integer; aid uuid;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Non connecté'; END IF;
   SELECT id INTO cid FROM public.characters WHERE user_id=auth.uid() FOR UPDATE;
@@ -93,11 +93,11 @@ BEGIN
     aid:=(e->>'asset_id')::uuid;
     IF NOT (e->>'room' ~ '^[0-9]+$' AND e->>'x' ~ '^[0-9]+$' AND e->>'y' ~ '^[0-9]+$' AND e->>'rotation' ~ '^[0-9]+$') THEN RAISE EXCEPTION 'Position invalide'; END IF;
     rm:=(e->>'room')::integer; px:=(e->>'x')::integer; py:=(e->>'y')::integer; r:=(e->>'rotation')::integer;
-    SELECT f.width,f.height INTO p FROM public.personal_assets a JOIN public.furnishing_catalog f ON f.catalog_id=a.catalog_id WHERE a.id=aid AND a.character_id=cid FOR UPDATE OF a;
+    SELECT f.width,f.height INTO item_box FROM public.personal_assets a JOIN public.furnishing_catalog f ON f.catalog_id=a.catalog_id WHERE a.id=aid AND a.character_id=cid FOR UPDATE OF a;
     IF NOT FOUND THEN RAISE EXCEPTION 'Objet non possédé ou non plaçable'; END IF;
     IF EXISTS(SELECT 1 FROM public.home_placements WHERE asset_id=aid) OR EXISTS(SELECT 1 FROM public.rental_home_placements p JOIN public.housing_leases l ON l.id=p.lease_id WHERE p.asset_id=aid AND p.lease_id<>_lease_id AND l.status='actif' AND l.ended_at IS NULL) THEN RAISE EXCEPTION 'Objet placé dans un autre logement : rangez-le d’abord'; END IF;
     IF r NOT IN(0,90,180,270) OR rm>=rooms THEN RAISE EXCEPTION 'Pièce ou rotation invalide'; END IF;
-    w:=CASE WHEN r IN(90,270) THEN p.height ELSE p.width END; ht:=CASE WHEN r IN(90,270) THEN p.width ELSE p.height END;
+    w:=CASE WHEN r IN(90,270) THEN item_box.height ELSE item_box.width END; ht:=CASE WHEN r IN(90,270) THEN item_box.width ELSE item_box.height END;
     IF px+w>g OR py+ht>g THEN RAISE EXCEPTION 'Objet hors de la pièce'; END IF;
     FOR b IN SELECT * FROM jsonb_to_recordset(boxes) AS z(asset_id uuid,room integer,x integer,y integer,w integer,h integer) LOOP
       IF b.asset_id=aid THEN RAISE EXCEPTION 'Objet placé deux fois'; END IF;
@@ -115,7 +115,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.rental_furnishing_save(uuid,integer,jsonb,jsonb,uuid) FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.rental_furnishing_save(uuid,integer,jsonb,jsonb,uuid) TO authenticated,service_role;
 CREATE OR REPLACE FUNCTION public.home_furnishing_save(_home_id uuid,_version integer,_room_names jsonb,_placements jsonb,_request_id uuid) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public,pg_temp AS $$
-DECLARE cid uuid; cfg jsonb; rooms integer; g integer; v integer; h text; old public.home_save_operations; e jsonb; p record; b record; boxes jsonb:='[]'; w integer; ht integer; r integer; px integer; py integer; rm integer; aid uuid;
+DECLARE cid uuid; cfg jsonb; rooms integer; g integer; v integer; h text; old public.home_save_operations; e jsonb; item_box record; b record; boxes jsonb:='[]'; w integer; ht integer; r integer; px integer; py integer; rm integer; aid uuid;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Non connecté'; END IF;
   SELECT id INTO cid FROM public.characters WHERE user_id=auth.uid() FOR UPDATE;
@@ -144,12 +144,12 @@ BEGIN
     aid:=(e->>'asset_id')::uuid;
     IF NOT (e->>'room' ~ '^[0-9]+$' AND e->>'x' ~ '^[0-9]+$' AND e->>'y' ~ '^[0-9]+$' AND e->>'rotation' ~ '^[0-9]+$') THEN RAISE EXCEPTION 'Position invalide'; END IF;
     rm:=(e->>'room')::integer; px:=(e->>'x')::integer; py:=(e->>'y')::integer; r:=(e->>'rotation')::integer;
-    SELECT f.width,f.height INTO p FROM public.personal_assets a JOIN public.furnishing_catalog f ON f.catalog_id=a.catalog_id WHERE a.id=aid AND a.character_id=cid FOR UPDATE OF a;
+    SELECT f.width,f.height INTO item_box FROM public.personal_assets a JOIN public.furnishing_catalog f ON f.catalog_id=a.catalog_id WHERE a.id=aid AND a.character_id=cid FOR UPDATE OF a;
     IF NOT FOUND THEN RAISE EXCEPTION 'Objet non possédé ou non plaçable'; END IF;
     IF EXISTS(SELECT 1 FROM public.rental_home_placements p JOIN public.housing_leases l ON l.id=p.lease_id WHERE p.asset_id=aid AND l.status='actif' AND l.ended_at IS NULL) THEN RAISE EXCEPTION 'Objet placé dans une location : rangez-le d’abord'; END IF;
     IF EXISTS(SELECT 1 FROM public.home_placements WHERE asset_id=aid AND home_asset_id<>_home_id) THEN RAISE EXCEPTION 'Objet placé dans un autre logement : rangez-le d’abord'; END IF;
     IF r NOT IN(0,90,180,270) OR rm>=rooms THEN RAISE EXCEPTION 'Pièce ou rotation invalide'; END IF;
-    w:=CASE WHEN r IN(90,270) THEN p.height ELSE p.width END; ht:=CASE WHEN r IN(90,270) THEN p.width ELSE p.height END;
+    w:=CASE WHEN r IN(90,270) THEN item_box.height ELSE item_box.width END; ht:=CASE WHEN r IN(90,270) THEN item_box.width ELSE item_box.height END;
     IF px+w>g OR py+ht>g THEN RAISE EXCEPTION 'Objet hors de la pièce'; END IF;
     FOR b IN SELECT * FROM jsonb_to_recordset(boxes) AS z(asset_id uuid,room integer,x integer,y integer,w integer,h integer) LOOP
       IF b.asset_id=aid THEN RAISE EXCEPTION 'Objet placé deux fois'; END IF;
