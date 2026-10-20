@@ -35,7 +35,7 @@
 - Overdraft and insurance debt are separate debts (bank_profiles.overdraft_used, insurance_profiles.debt); balances never go negative. Loans and incidents (hashtext per character/week) settle on read with unique keys.
 - Player network data is exposed only through network_card/network_profile RPCs, never by widening characters RLS; one block guard (guard_player_block); 'live' updates use polling (no realtime server on VPS).
 - France map: local public/geo data, maplibre-gl v4; no tiles or v6.
-- Rent retries log failures under a distinct key; UI counts successes.
+- Rent retries log failures under a distinct key.
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Body fingerprints guard patches.
 
