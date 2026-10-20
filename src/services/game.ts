@@ -1872,3 +1872,23 @@ export async function onlineBankAction(fn: 'online_bank_card' | 'online_bank_tra
   if (error) throw new Error(error.message);
   return data as import('@/game/online-bank').OnlineBankState;
 }
+
+// ---- Titres sécurisés · FICTIF ----
+export type PrefectureTitleState = {
+  now: string;
+  identity: { number: string; expires_at: string; lost: boolean };
+  documents: { id: string; type_id: string; status: string; valid_until: string }[];
+  requests: { id: string; kind: string; type_id: string; fee: number; ready_at: string; completed_at: string | null }[];
+  vehicles: { id: string; name: string; type_id: string; cv: number; fee: number }[];
+};
+export const prefectureTitlesQuery = queryOptions({
+  queryKey: ['prefecture', 'secured-titles'], staleTime: 0, refetchInterval: 15000,
+  queryFn: async (): Promise<PrefectureTitleState> => {
+    const { data, error } = await untyped.rpc('prefecture_state', {});
+    if (error) throw error; return data as PrefectureTitleState;
+  },
+});
+export async function prefectureTitleAction(fn: 'prefecture_request' | 'prefecture_loss', args: Record<string, unknown>): Promise<PrefectureTitleState> {
+  const { data, error } = await untyped.rpc(fn, args);
+  if (error) throw error; return data as PrefectureTitleState;
+}
