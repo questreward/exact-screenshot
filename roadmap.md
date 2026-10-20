@@ -325,3 +325,5 @@
 - [x] IA locale : discussion avec les habitants (Ollama du VPS, sans enregistrement ni récompense, aucun SQL) prête ; mise à jour du site VPS à faire.
 
 - [x] IA locale : aide à l'écriture (pétitions, médias, débats), brouillon seulement, aucun SQL ; mise à jour du site VPS à faire.
+
+- [x] Portails de services (Caisse des aides, Espace impôts, Emploi, Santé, Titres) dans CIVITAS Services, aucun SQL ; mise à jour du site VPS à faire.
