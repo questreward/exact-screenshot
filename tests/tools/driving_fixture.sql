@@ -10,3 +10,4 @@ INSERT INTO public.intercity_routes VALUES ('paris-lyon-car','paris','lyon','car
 CREATE TABLE public.world_state(id int PRIMARY KEY, time_speed numeric); INSERT INTO public.world_state VALUES (1, 6);
 CREATE FUNCTION public.prepare_daily_life() RETURNS uuid LANGUAGE sql AS $$ SELECT public.social_actor() $$;
 INSERT INTO public.life_rules VALUES ('intercity_travel','Voyage',10,0,0,0,0,'{}') ON CONFLICT DO NOTHING;
+ALTER TABLE public.personal_assets ADD COLUMN condition text DEFAULT 'Bon état';
