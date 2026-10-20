@@ -255,7 +255,8 @@
 - [ ] Assurance joueur (0087) : vérifier le parcours réel sur le site VPS ; installation confirmée ne vaut pas essai en jeu.
 - [x] Reprise demandée après 0087 : première livraison Monde mis en scène préparée (0088), quatre illustrations locales, cinq niveaux de présentation conservant le seuil 65, projection des événements publics liés aux articles du JT ; anciens JT et interviews inchangés.
 - [x] Essais 0088 : 20 tests frontend ciblés ; SQL sur base jetable (15 contrôles : niveaux, ancien JT, accès privé, limite, interviews non attribuées), double installation refusée ; affichage téléphone contrôlé avec sujet simulé, sans débordement.
-- [ ] 0088 : présenter le SQL exact et obtenir l’accord avant installation ; commandes directes sans téléchargement séparé.
+- [x] 0088 : SQL exact présenté et validé ; installation VPS confirmée le 20 octobre 2026 par le résultat jusqu’à COMMIT sans erreur ; ne pas relancer.
+- [ ] 0088 : mettre à jour le site VPS pour afficher les nouvelles illustrations.
 - [ ] 0088 : essai connecté réel sur VPS après installation. Aperçu connecté bloqué par tv_state absent de Lovable Cloud ; images vérifiées seulement avec projection simulée, pas de parcours réel prétendu.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
 
