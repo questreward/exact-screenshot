@@ -68,6 +68,7 @@ import { Route as AuthenticatedGamePresseRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameProjetsRouteImport } from './routes/_authenticated/_game/projets'
 import { Route as AuthenticatedGameRecrutementRouteImport } from './routes/_authenticated/_game/recrutement'
 import { Route as AuthenticatedGameReseauRouteImport } from './routes/_authenticated/_game/reseau'
+import { Route as AuthenticatedGameRetraiteRouteImport } from './routes/_authenticated/_game/retraite'
 import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authenticated/_game/sante'
 import { Route as AuthenticatedGameSecoursRouteImport } from './routes/_authenticated/_game/secours'
 import { Route as AuthenticatedGameServicesRouteImport } from './routes/_authenticated/_game/services'
@@ -415,6 +416,12 @@ const AuthenticatedGameReseauRoute = AuthenticatedGameReseauRouteImport.update({
   path: '/reseau',
   getParentRoute: () => AuthenticatedGameRouteRoute,
 } as any)
+const AuthenticatedGameRetraiteRoute =
+  AuthenticatedGameRetraiteRouteImport.update({
+    id: '/retraite',
+    path: '/retraite',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameSanteRoute = AuthenticatedGameSanteRouteImport.update({
   id: '/sante',
   path: '/sante',
@@ -592,6 +599,7 @@ export interface FileRoutesByFullPath {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/recrutement': typeof AuthenticatedGameRecrutementRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
+  '/retraite': typeof AuthenticatedGameRetraiteRoute
   '/sante': typeof AuthenticatedGameSanteRoute
   '/secours': typeof AuthenticatedGameSecoursRoute
   '/services': typeof AuthenticatedGameServicesRoute
@@ -671,6 +679,7 @@ export interface FileRoutesByTo {
   '/projets': typeof AuthenticatedGameProjetsRoute
   '/recrutement': typeof AuthenticatedGameRecrutementRoute
   '/reseau': typeof AuthenticatedGameReseauRoute
+  '/retraite': typeof AuthenticatedGameRetraiteRoute
   '/sante': typeof AuthenticatedGameSanteRoute
   '/secours': typeof AuthenticatedGameSecoursRoute
   '/services': typeof AuthenticatedGameServicesRoute
@@ -753,6 +762,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/projets': typeof AuthenticatedGameProjetsRoute
   '/_authenticated/_game/recrutement': typeof AuthenticatedGameRecrutementRoute
   '/_authenticated/_game/reseau': typeof AuthenticatedGameReseauRoute
+  '/_authenticated/_game/retraite': typeof AuthenticatedGameRetraiteRoute
   '/_authenticated/_game/sante': typeof AuthenticatedGameSanteRoute
   '/_authenticated/_game/secours': typeof AuthenticatedGameSecoursRoute
   '/_authenticated/_game/services': typeof AuthenticatedGameServicesRoute
@@ -834,6 +844,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/recrutement'
     | '/reseau'
+    | '/retraite'
     | '/sante'
     | '/secours'
     | '/services'
@@ -913,6 +924,7 @@ export interface FileRouteTypes {
     | '/projets'
     | '/recrutement'
     | '/reseau'
+    | '/retraite'
     | '/sante'
     | '/secours'
     | '/services'
@@ -994,6 +1006,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/projets'
     | '/_authenticated/_game/recrutement'
     | '/_authenticated/_game/reseau'
+    | '/_authenticated/_game/retraite'
     | '/_authenticated/_game/sante'
     | '/_authenticated/_game/secours'
     | '/_authenticated/_game/services'
@@ -1441,6 +1454,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameReseauRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/retraite': {
+      id: '/_authenticated/_game/retraite'
+      path: '/retraite'
+      fullPath: '/retraite'
+      preLoaderRoute: typeof AuthenticatedGameRetraiteRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/sante': {
       id: '/_authenticated/_game/sante'
       path: '/sante'
@@ -1635,6 +1655,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameProjetsRoute: typeof AuthenticatedGameProjetsRoute
   AuthenticatedGameRecrutementRoute: typeof AuthenticatedGameRecrutementRoute
   AuthenticatedGameReseauRoute: typeof AuthenticatedGameReseauRoute
+  AuthenticatedGameRetraiteRoute: typeof AuthenticatedGameRetraiteRoute
   AuthenticatedGameSanteRoute: typeof AuthenticatedGameSanteRoute
   AuthenticatedGameSecoursRoute: typeof AuthenticatedGameSecoursRoute
   AuthenticatedGameServicesRoute: typeof AuthenticatedGameServicesRoute
@@ -1710,6 +1731,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameProjetsRoute: AuthenticatedGameProjetsRoute,
     AuthenticatedGameRecrutementRoute: AuthenticatedGameRecrutementRoute,
     AuthenticatedGameReseauRoute: AuthenticatedGameReseauRoute,
+    AuthenticatedGameRetraiteRoute: AuthenticatedGameRetraiteRoute,
     AuthenticatedGameSanteRoute: AuthenticatedGameSanteRoute,
     AuthenticatedGameSecoursRoute: AuthenticatedGameSecoursRoute,
     AuthenticatedGameServicesRoute: AuthenticatedGameServicesRoute,
