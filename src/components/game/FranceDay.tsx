@@ -8,7 +8,7 @@ const fmt = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString("fr-FR"
 /** Jour férié, vacances scolaires et prochain jour férié selon l'heure du monde. */
 export function FranceDay() {
   const { data } = useQuery(clockQuery);
-  const now = (data as { now?: string } | undefined)?.now;
+  const now = data?.anchor;
   if (!now) return null;
   const { holiday, school, next } = dayInfo(new Date(now));
   return <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
