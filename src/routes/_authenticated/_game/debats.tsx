@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLifeMutation } from "@/components/game/LifeControls";
 import { debateAction, debateQuery, playerDirectoryQuery, type Debate, type DebateState, type PlayerCard } from "@/services/game";
+import { WritingHelper } from "@/components/game/WritingHelper";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/debats")({
@@ -50,6 +51,7 @@ function DebateCard({ d, st }: { d: Debate; st: DebateState }) {
       : <div className="space-y-2">
           <p className="text-sm font-semibold">Votre {ROUND[d.round - 1]?.toLowerCase()} — avant le {d.turn_ends_at && fmt(d.turn_ends_at)}</p>
           <Textarea rows={5} value={body} onChange={e => setBody(e.target.value)} maxLength={st.settings.turn_max} placeholder="Votre argument (30 caractères minimum)" />
+          <WritingHelper kind="debat" max={st.settings.turn_max} onUse={setBody} />
           <Button className="h-12 w-full" disabled={act.isPending || body.trim().length < 30} onClick={() => act.mutate({ command: "turn", debate_id: d.id, body }, { onSuccess: () => setBody("") })}><Mic />Envoyer</Button>
           <p className="text-xs text-muted-foreground">Sans argument à temps, vous perdez par forfait.</p>
         </div>)}
