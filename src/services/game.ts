@@ -1738,6 +1738,20 @@ const looseState = <T,>(fn: string) => async (): Promise<T | null> => {
 };
 export const medicalQuery = queryOptions({ queryKey: ['medical'], staleTime: 0, queryFn: looseState<MedicalState>('medical_state') });
 export const payslipsQuery = queryOptions({ queryKey: ['payslips'], staleTime: 0, queryFn: looseState<{ now: string; months: PayslipMonth[] }>('payslips_state') });
+export type IncomeTaxState = {
+  now: string;
+  settings: { thresholds: number[]; rates: number[]; abatement_pct: number; late_pct: number; declare_from_month: number; declare_until_month: number };
+  profile: { debt: number; paid_total: number } | null;
+  current_month: { month: string; income: number };
+  months: { month: string; income: number; rate: number; withheld: number }[];
+  returns: { year: number; income: number; abatement: number; taxable: number; tax: number; late_fee: number; withheld: number; balance: number; kind: 'declaree' | 'automatique'; created_at: string }[];
+};
+export const incomeTaxQuery = queryOptions({ queryKey: ['income-tax'], staleTime: 0, queryFn: looseState<IncomeTaxState>('income_tax_state') });
+export async function declareIncome(year: number) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('income_tax_declare', { _year: year });
+  if (error) throw new Error(error.message);
+  return data as IncomeTaxState;
+}
 export const drivingQuery = queryOptions({ queryKey: ['driving'], staleTime: 0, queryFn: looseState<DrivingState>('driving_state') });
 export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_register' | 'driving_code' | 'driving_lesson' | 'driving_exam', args: object = {}) {
   const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);

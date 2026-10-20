@@ -360,7 +360,8 @@
 - [x] 0095 installée sur le VPS (déclaré par Alex)
 
 ## Réalisme France — lot suivant (choisi par Alex, dans cet ordre)
-- [ ] Impôts réalistes (déclaration annuelle, avis, prélèvement à la source) — règles à valider
+- [x] Impôts réalistes : 0096 prête et testée, page Impôts
+- [ ] Installer 0096 sur le VPS (accord d’Alex)
 - [ ] Transports du quotidien (abonnements, contrôles, amendes, voiture : assurance, essence, contrôle technique)
 - [ ] Vie étudiante (orientation fictive, bourses, logement étudiant, examens, diplômes)
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
