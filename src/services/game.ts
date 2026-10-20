@@ -1892,3 +1892,25 @@ export async function prefectureTitleAction(fn: 'prefecture_request' | 'prefectu
   const { data, error } = await untyped.rpc(fn, args);
   if (error) throw error; return data as PrefectureTitleState;
 }
+
+// Tax-space shapes deliberately do not reuse income-tax's withholding cache.
+export const taxSpaceQuery = queryOptions({
+  queryKey: ['tax-space', 'notices-messages'],
+  staleTime: 0,
+  refetchInterval: 30_000,
+  queryFn: async (): Promise<import('@/game/tax-space').TaxSpaceState> => {
+    const { data, error } = await supabase.rpc('tax_space_state' as never);
+    if (error) throw error;
+    return data as unknown as import('@/game/tax-space').TaxSpaceState;
+  },
+});
+export async function chooseTaxPayment(input: { id: string; count: 1 | 10 }): Promise<import('@/game/tax-space').TaxSpaceState> {
+  const { data, error } = await supabase.rpc('tax_space_choose' as never, { _id: input.id, _count: input.count } as never);
+  if (error) throw error;
+  return data as unknown as import('@/game/tax-space').TaxSpaceState;
+}
+export async function sendTaxQuestion(input: { category: string; body: string }): Promise<import('@/game/tax-space').TaxSpaceState> {
+  const { data, error } = await supabase.rpc('tax_space_send' as never, { _category: input.category, _body: input.body } as never);
+  if (error) throw error;
+  return data as unknown as import('@/game/tax-space').TaxSpaceState;
+}
