@@ -467,3 +467,7 @@
 - [ ] Vérifier les parcours connectés Protection civile, boutique et confort téléphone sur le site réel ; accès boutique redirigé vers connexion, session du jeu non disponible ici.
 - [x] Bilan établi : installation des données et restauration confirmées par rapports, site public accessible ; mise à jour finale, parcours réels, régressions indépendantes et fonctionnement sans IA restent non confirmés. V1 non clôturable comme entièrement vérifiée.
 - [x] À 18:59 UTC, Alex demande la clôture : ajouts V1 clos, nouveautés réservées à V2 ; les contrôles ouverts ci-dessus restent des tâches de stabilisation, sans validation technique implicite.
+
+## Réouverture V1 (demande 20/10 19:56 UTC)
+- [ ] RSA réel dans la Caisse des aides — attend validation des règles par Alex
+- [ ] Vraies personnalités politiques françaises (Bardella, Le Pen…) — attend validation du cadre par Alex
