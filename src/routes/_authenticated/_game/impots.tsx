@@ -1,14 +1,17 @@
+import { Suspense } from "react";
+import { TaxSpace } from "@/components/game/tax-space";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Landmark, LoaderCircle, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { declareIncome, incomeTaxQuery } from "@/services/game";
+import { declareIncome, incomeTaxQuery, taxSpaceQuery } from "@/services/game";
 import { estimateTax, euros, monthLabel } from "@/game/income-tax";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/impots")({
   head: () => ({ meta: gameMeta("Impôts", "Prélèvement à la source, déclaration de revenus et avis d'imposition (fictif).") }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(taxSpaceQuery),
   component: TaxPage,
 });
 
@@ -17,13 +20,14 @@ function TaxPage() {
   const { data: s, isLoading } = useQuery(incomeTaxQuery);
   const declare = useMutation({
     mutationFn: declareIncome,
-    onSuccess: (r) => { qc.setQueryData(incomeTaxQuery.queryKey, r); qc.invalidateQueries({ queryKey: ["bank"] }); toast.success("Déclaration envoyée. Ton avis d'imposition est disponible."); },
+    onSuccess: (r) => { qc.setQueryData(incomeTaxQuery.queryKey, r); qc.invalidateQueries({ queryKey: ["bank"] }); qc.invalidateQueries({ queryKey: taxSpaceQuery.queryKey }); toast.success("Déclaration envoyée. Ton avis d'imposition est disponible."); },
     onError: (e: Error) => toast.error(e.message),
   });
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><Landmark className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Impôts</h1><p className="text-sm text-muted-foreground">Espace particulier · FICTIF</p></div></header>
+    <Suspense fallback={<p>Chargement de l’espace fiscal…</p>}><TaxSpace /></Suspense>
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {!isLoading && !s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
     {s && (() => {

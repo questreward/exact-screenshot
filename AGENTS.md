@@ -44,3 +44,6 @@
 - Online bank extends bank_profiles and player_transfers; fictional RIBs never represent real accounts, card limits are informational, and monthly account fees skip insufficient balances without new debt.
 
 - Secure titles extend character_identity and administrative_documents; never duplicate a valid title, and activate CNI/passport only after registered-mail collection.
+- Tax space extends 0096 returns and withholding: annual notice balances must never also enter profile debt; property assessments use owned real-estate assets, and only actual notice payments create State receipts.
+
+- Job catalogue extensions reuse jobs and secured career/application hiring; diploma gates use student_ledger diploma keys, and narrative missions never grant separate rewards.

@@ -1,3 +1,4 @@
+import { groupJobOffers, jobDetails, jobRequirements } from "@/game/jobs-catalog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -88,16 +89,20 @@ function CareerPage() {
       </Card>
 
       <Card title="Offres et entretiens" icon={MessagesSquare}>
+        <p className="mb-3 text-xs text-muted-foreground">Salaires nets mensuels de base. Missions narratives sans récompense supplémentaire. Indexation publique indicative uniquement, non appliquée aux versements.</p>
         {!s.eligible_path ? <p className="text-sm text-muted-foreground">Réservé aux parcours professionnels. Termine tes études pour accéder au travail.</p> :
-          <ul className="space-y-2">{s.offers.map(o => { const out = interviewOutlook(o.profile.total, s.pass_score); return <li key={o.id} className="rounded-lg border border-border p-3">
+          <div className="space-y-4">{groupJobOffers(s.offers).map(group => <section key={group.category}><h3 className="mb-2 font-semibold">{group.category}</h3><ul className="space-y-2">{group.offers.map(o => { const out = interviewOutlook(o.profile.total, s.pass_score); return <li key={o.id} className="rounded-lg border border-border p-3">
             <div className="flex items-start justify-between gap-2"><div><p className="font-semibold">{o.title}</p>
               <p className="text-xs text-muted-foreground">{eur(o.salary)} / mois{o.skill ? ` · ${o.skill} niv. ${o.skill_min}` : ""}</p></div>
               {!o.current && !o.blocked && <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{OUTLOOK[out]}</span>}</div>
+            <p className="mt-2 text-xs text-muted-foreground">Prérequis : {jobRequirements(o.title).join(" · ")}</p>
+            {jobDetails(o.title) && <ul className="my-2 list-inside list-disc text-sm text-muted-foreground">{jobDetails(o.title)!.missions.map(m => <li key={m}>{m}</li>)}</ul>}
+            {o.title === "Serveur" && <p className="text-xs text-muted-foreground">Pourboires narratifs uniquement, non versés.</p>}
             {o.current ? <p className="mt-1 text-xs text-primary">Ton emploi actuel</p>
               : o.blocked ? <p className="mt-1 text-xs text-muted-foreground">{o.blocked}</p>
               : <Button className="mt-2 h-11 w-full" variant="outline" disabled={act.isPending || !!s.open_interview} onClick={() => act.mutate({ cmd: "interview_start", input: { job_id: o.id } })}>
                   {s.job ? "Passer l'entretien (changer d'entreprise)" : "Passer l'entretien"}</Button>}
-          </li>; })}</ul>}
+          </li>; })}</ul></section>)}</div>}
       </Card>
 
       {s.interviews.length > 0 && <Card title="Mes derniers entretiens" icon={History}>
