@@ -10,8 +10,8 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
-- Game rules in `src/game/` are UI hints only; authoritative checks live in SECURITY DEFINER DB functions — the client is never trusted for money, age or rewards.
-- Data access goes through `src/services/game.ts` query options; pages use loader `ensureQueryData` + `useSuspenseQuery`.
+- `src/game/` is UI hints only; SECURITY DEFINER functions enforce money, age and rewards.
+- Data: `src/services/game.ts` query options; loaders use `ensureQueryData`, pages `useSuspenseQuery`.
 - Query keys separate shapes.
 - Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
 - In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
@@ -39,4 +39,4 @@
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Full-body fingerprints guard patches against incompatible installs.
 
-- Housing visits are read-only; purchases use secured RPCs.
+- Housing visits are read-only; purchases use secured RPCs. Furnishings use private asset-linked layouts and versioned saves; cascades handle sold/seized assets.

@@ -54,6 +54,7 @@ function HousingPage() {
         <p className="font-heading text-xl font-bold">{s.lease?.title ?? s.current?.type ?? "Aucun"}</p>
         {s.current && <p className="text-sm opacity-80">{s.current.type_id === "owner" ? "Charges" : "Loyer"} : {eur(s.current.monthly)} / mois{s.salary > 0 ? ` · ${housingShare(s.current.monthly, s.salary)} % de ton salaire` : ""}</p>}
         <p className="mt-1 text-xs opacity-80">Solde : {eur(s.balance)}</p>
+        {s.owned.length > 0 && <Button asChild variant="outline" className="mt-3 min-h-12 w-full"><Link to="/chez-moi"><Home />Aménager chez moi</Link></Button>}
       </section>
 
       {s.lease && <section className="rounded-xl border border-border bg-card p-4 text-sm">

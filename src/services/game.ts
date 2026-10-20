@@ -1456,6 +1456,24 @@ export async function housingAction(command: "rent" | "move_in", input: Record<s
   return data as { lease_id: string; deposit?: number; move?: number };
 }
 
+export const furnishingQuery = queryOptions({
+  queryKey: ["furnishing", "state"], retry: false,
+  queryFn: async (): Promise<import("@/game/home-furnishing").FurnishingState> => {
+    const { data, error } = await untyped.rpc("home_furnishing_state", {});
+    if (error) {
+      const code = "code" in error ? error.code : undefined;
+      if (code === "PGRST202" || code === "42883" || error.message.includes("Could not find the function public.home_furnishing_state")) return { available: false, homes: [], furniture: [], grid: 8 };
+      throw new Error(error.message);
+    }
+    return data as import("@/game/home-furnishing").FurnishingState;
+  },
+});
+export async function furnishingSave(homeId: string, version: number, roomNames: string[], placements: import("@/game/home-furnishing").Placement[], requestId: string) {
+  const { data, error } = await untyped.rpc("home_furnishing_save", { _home_id: homeId, _version: version, _room_names: roomNames, _placements: placements, _request_id: requestId });
+  if (error) throw new Error(error.message);
+  return data as { version: number; already: boolean };
+}
+
 // ---- Entreprises de services : garages et déménageurs (joueurs en priorité, sinon entreprise fictive) ----
 export type ServiceKind = "garage" | "demenagement" | "immobilier";
 export type ServiceReview = { stars: number; comment: string | null; author: string; at?: string };
