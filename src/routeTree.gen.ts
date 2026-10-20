@@ -23,6 +23,7 @@ import { Route as AuthenticatedGameAgenceRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
 import { Route as AuthenticatedGameAssurancesRouteImport } from './routes/_authenticated/_game/assurances'
 import { Route as AuthenticatedGameBoutiqueRouteImport } from './routes/_authenticated/_game/boutique'
+import { Route as AuthenticatedGameCaisseDesAidesRouteImport } from './routes/_authenticated/_game/caisse-des-aides'
 import { Route as AuthenticatedGameCarriereRouteImport } from './routes/_authenticated/_game/carriere'
 import { Route as AuthenticatedGameCarteRouteImport } from './routes/_authenticated/_game/carte'
 import { Route as AuthenticatedGameChezMoiRouteImport } from './routes/_authenticated/_game/chez-moi'
@@ -149,6 +150,12 @@ const AuthenticatedGameBoutiqueRoute =
   AuthenticatedGameBoutiqueRouteImport.update({
     id: '/boutique',
     path: '/boutique',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameCaisseDesAidesRoute =
+  AuthenticatedGameCaisseDesAidesRouteImport.update({
+    id: '/caisse-des-aides',
+    path: '/caisse-des-aides',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameCarriereRoute =
@@ -487,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/assurances': typeof AuthenticatedGameAssurancesRoute
   '/boutique': typeof AuthenticatedGameBoutiqueRoute
+  '/caisse-des-aides': typeof AuthenticatedGameCaisseDesAidesRoute
   '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/chez-moi': typeof AuthenticatedGameChezMoiRoute
@@ -557,6 +565,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedGameAgendaRoute
   '/assurances': typeof AuthenticatedGameAssurancesRoute
   '/boutique': typeof AuthenticatedGameBoutiqueRoute
+  '/caisse-des-aides': typeof AuthenticatedGameCaisseDesAidesRoute
   '/carriere': typeof AuthenticatedGameCarriereRoute
   '/carte': typeof AuthenticatedGameCarteRoute
   '/chez-moi': typeof AuthenticatedGameChezMoiRoute
@@ -630,6 +639,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
   '/_authenticated/_game/assurances': typeof AuthenticatedGameAssurancesRoute
   '/_authenticated/_game/boutique': typeof AuthenticatedGameBoutiqueRoute
+  '/_authenticated/_game/caisse-des-aides': typeof AuthenticatedGameCaisseDesAidesRoute
   '/_authenticated/_game/carriere': typeof AuthenticatedGameCarriereRoute
   '/_authenticated/_game/carte': typeof AuthenticatedGameCarteRoute
   '/_authenticated/_game/chez-moi': typeof AuthenticatedGameChezMoiRoute
@@ -702,6 +712,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/assurances'
     | '/boutique'
+    | '/caisse-des-aides'
     | '/carriere'
     | '/carte'
     | '/chez-moi'
@@ -772,6 +783,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/assurances'
     | '/boutique'
+    | '/caisse-des-aides'
     | '/carriere'
     | '/carte'
     | '/chez-moi'
@@ -844,6 +856,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/agenda'
     | '/_authenticated/_game/assurances'
     | '/_authenticated/_game/boutique'
+    | '/_authenticated/_game/caisse-des-aides'
     | '/_authenticated/_game/carriere'
     | '/_authenticated/_game/carte'
     | '/_authenticated/_game/chez-moi'
@@ -1010,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/boutique'
       fullPath: '/boutique'
       preLoaderRoute: typeof AuthenticatedGameBoutiqueRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/caisse-des-aides': {
+      id: '/_authenticated/_game/caisse-des-aides'
+      path: '/caisse-des-aides'
+      fullPath: '/caisse-des-aides'
+      preLoaderRoute: typeof AuthenticatedGameCaisseDesAidesRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/carriere': {
@@ -1413,6 +1433,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameAgendaRoute: typeof AuthenticatedGameAgendaRoute
   AuthenticatedGameAssurancesRoute: typeof AuthenticatedGameAssurancesRoute
   AuthenticatedGameBoutiqueRoute: typeof AuthenticatedGameBoutiqueRoute
+  AuthenticatedGameCaisseDesAidesRoute: typeof AuthenticatedGameCaisseDesAidesRoute
   AuthenticatedGameCarriereRoute: typeof AuthenticatedGameCarriereRoute
   AuthenticatedGameCarteRoute: typeof AuthenticatedGameCarteRoute
   AuthenticatedGameChezMoiRoute: typeof AuthenticatedGameChezMoiRoute
@@ -1478,6 +1499,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameAgendaRoute: AuthenticatedGameAgendaRoute,
     AuthenticatedGameAssurancesRoute: AuthenticatedGameAssurancesRoute,
     AuthenticatedGameBoutiqueRoute: AuthenticatedGameBoutiqueRoute,
+    AuthenticatedGameCaisseDesAidesRoute: AuthenticatedGameCaisseDesAidesRoute,
     AuthenticatedGameCarriereRoute: AuthenticatedGameCarriereRoute,
     AuthenticatedGameCarteRoute: AuthenticatedGameCarteRoute,
     AuthenticatedGameChezMoiRoute: AuthenticatedGameChezMoiRoute,

@@ -337,5 +337,9 @@
 ## Demandes d'Alex (20/10)
 - [ ] Installation 0091 (jauges de quartier) — résultat VPS attendu
 - [ ] Métiers de la sécurité et des secours : police, pompiers, protection civile… (vraie carrière jouable)
-- [ ] Espaces publics réalistes façon CAF / France Travail / ameli (aujourd'hui : simple page « Vie administrative » pédagogique, pas d'interface ressemblante)
+- [x] Espace « Caisse des aides » (type CAF) : accueil, paiements, droits, messagerie, attestations, simulation
+- [ ] Déclaration trimestrielle de ressources (SQL à valider)
+- [ ] Espace Emploi (type France Travail) avec actualisation mensuelle (SQL à valider)
+- [ ] Espace Santé (type ameli)
+- [ ] Bloc A métiers sécurité/secours : règles chiffrées à faire valider (concours, école, grades, salaires)
 - [ ] Idées de réalisme France à proposer

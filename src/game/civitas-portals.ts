@@ -5,7 +5,7 @@ export type Portal = { id: string; name: string; real: string; about: string; in
 export const PORTALS: Portal[] = [
   { id: "aides", name: "Caisse des aides", real: "CAF", about: "Dans la vraie vie, la CAF verse des aides au logement, des aides familiales et le RSA selon tes revenus.",
     inGame: ["Déclarer un changement de situation", "Comprendre les aides au logement en missions"],
-    links: [{ path: "/demarches", label: "Mes démarches" }, { path: "/vie-administrative", label: "Apprendre les aides" }, { path: "/logement", label: "Mon logement" }, { path: "/famille", label: "Ma famille" }],
+    links: [{ path: "/caisse-des-aides", label: "Ouvrir Mon Compte allocataire" }, { path: "/demarches", label: "Mes démarches" }, { path: "/vie-administrative", label: "Apprendre les aides" }, { path: "/logement", label: "Mon logement" }, { path: "/famille", label: "Ma famille" }],
     keywords: ["caf", "aide", "apl", "rsa", "logement", "famille", "allocation"] },
   { id: "impots", name: "Espace impôts", real: "impots.gouv", about: "Dans la vraie vie, on déclare ses revenus chaque printemps et on reçoit un avis d'impôt.",
     inGame: ["Déclaration et avis simulés", "Retrouver ses avis dans le coffre-fort"],
