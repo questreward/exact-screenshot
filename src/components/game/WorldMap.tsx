@@ -40,7 +40,7 @@ export function WorldMap({ initialCity, initialDistrict, initialLocation, initia
       <Button variant="outline" onClick={() => { setFrance(!france); }}>{france ? <ArrowLeft /> : <MapPin />}{france ? "Retour à la ville" : "Carte de France"}</Button>
     </div>
     <Suspense fallback={<p className="text-sm text-muted-foreground">Horloge…</p>}><WorldClock cityId={city.id} /></Suspense>
-    {!france && position?.city_id !== city.id && <p className="flex items-center gap-2 border-l-2 border-primary bg-primary/10 p-3 text-sm"><Lock className="h-4 w-4 shrink-0" /> Voyage disponible dans une prochaine étape</p>}
+    {!france && position?.city_id !== city.id && <p className="flex items-center gap-2 border-l-2 border-primary bg-primary/10 p-3 text-sm"><MapPin className="h-4 w-4 shrink-0" /> Ville consultée · pour venir, prenez le train ou le car depuis votre ville.</p>}
     {france ? <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
       <MapSurface phase={phase} resetKey="france">
         <svg viewBox="0 0 800 700" role="img" aria-label="Carte de France stylisée" className="world-svg">
@@ -77,7 +77,7 @@ function MapSurface({ children, phase, resetKey }: { children: React.ReactNode; 
 
 function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin, events = 0, onEvents }: { label: string; active?: boolean; selected?: boolean; onClick: () => void; icon?: typeof MapPin; events?: number; onEvents?: () => void }) {
   return <g role="button" tabIndex={0} aria-label={label} onClick={e => { e.stopPropagation(); onClick(); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }} className={`world-marker ${active ? "is-player" : ""} ${selected ? "is-selected" : ""}`}>
-    <circle r="24" className="marker-hit" />
+    <circle r="40" className="marker-hit" />
     {active && <circle r="30" className="marker-pulse" />}
     <circle r="20" className="marker-body" />
     <Icon x={-10} y={-10} width={20} height={20} className="marker-icon" />

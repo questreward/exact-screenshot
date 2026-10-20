@@ -13,6 +13,13 @@ export type Section = {
 
 // Sections not yet available route to /section/$id and show a "coming soon" screen.
 export const SECTIONS: Section[] = [
+  { id: "agenda", label: "Agenda", icon: CalendarDays, description: "Activités en cours et rendez-vous.", available: true },
+  { id: "elections", label: "Élections", icon: Vote, description: "Candidatures, campagnes et votes municipaux.", available: true },
+  { id: "conduite", label: "En route", icon: Car, description: "Conduite et voyages entre villes.", available: true },
+  { id: "chez-moi", label: "Chez moi", icon: Home, description: "Aménagement de votre logement.", available: true },
+  { id: "caisse-des-aides", label: "Caisse des aides", icon: Landmark, description: "Droits, paiements et attestations fictifs.", available: true },
+  { id: "espace-emploi", label: "Espace Emploi", icon: Briefcase, description: "Offres et actualisation mensuelle.", available: true },
+  { id: "espace-sante", label: "Espace Santé", icon: HeartPulse, description: "Médecin traitant et remboursements fictifs.", available: true },
   { id: "voyages", label: "Voyages", icon: Globe2, description: "Séjours à l’étranger, congés et cartes postales.", available: true },
   { id: "banque", label: "Banque", icon: Wallet, description: "Compte, carte et relevés · FICTIF.", available: true },
   { id: "la-poste", label: "La Poste", icon: FileText, description: "Courriers et recommandés · FICTIF.", available: true },
@@ -104,11 +111,11 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 // Big menu headings: every section belongs to exactly one group.
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
-  { id: "quotidien", label: "Quotidien", ids: ["titres", "la-poste", "civitas-services", "vie", "etudes", "carriere", "secours", "permis", "transports", "logement", "telephone", "demarches", "vie-administrative"] },
+  { id: "quotidien", label: "Quotidien", ids: ["agenda", "titres", "la-poste", "civitas-services", "caisse-des-aides", "espace-emploi", "espace-sante", "vie", "etudes", "carriere", "secours", "permis", "transports", "conduite", "logement", "chez-moi", "telephone", "demarches", "vie-administrative"] },
   { id: "argent", label: "Argent et achats", ids: ["banque", "patrimoine", "impots", "retraite", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
   { id: "monde", label: "Monde", ids: ["voyages", "monde", "carte", "france", "evenements", "crises", "conjoncture", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
-  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
+  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "elections", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
   { id: "reglages", label: "Réglages", ids: ["parametres"] },
 ];
 

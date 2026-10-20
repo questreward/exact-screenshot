@@ -42,3 +42,4 @@
 - Jobs reuse secured career/application hiring; diploma gates use student_ledger, missions have no separate money rewards.
 - Mission scenes/dossiers use only server snapshots, no invented incidents, progress or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
+- Shared controls provide touch-sized targets and viewport-bounded scrollable dialogs; game navigation catalogs only real routes, tested against leaf files, so phone access never relies on hidden cross-links.

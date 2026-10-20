@@ -1,7 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { SECTIONS, SECTION_GROUPS, HOME_SHORTCUTS } from "./navigation";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 describe("menu groups", () => {
+  it("each available menu destination has its own content route", () => {
+    for (const section of SECTIONS.filter(s => s.available)) {
+      expect(existsSync(resolve('src/routes/_authenticated/_game', `${section.id}.tsx`)), section.id).toBe(true);
+    }
+  });
   it("every section appears in exactly one group", () => {
     const all = SECTION_GROUPS.flatMap((g) => g.ids);
     expect(new Set(all).size).toBe(all.length);
