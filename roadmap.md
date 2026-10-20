@@ -471,3 +471,5 @@
 ## Réouverture V1 (demande 20/10 19:56 UTC)
 - [ ] RSA réel dans la Caisse des aides — attend validation des règles par Alex
 - [ ] Vraies personnalités politiques françaises (Bardella, Le Pen…) — attend validation du cadre par Alex
+- RSA : 0116 prêt, essais locaux OK — attend l'essai sans risque sur le VPS
+- Vrais politiques : 574/577 députés trouvés (3 sièges à vérifier), gouvernement à confirmer — import bloqué jusqu'à vérification

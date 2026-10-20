@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { Bell, Calculator, ChevronRight, FileCheck2, FileText, Home, Mail, User, Wallet } from 'lucide-react';
-import { adminQuery, characterQuery, formatMoney } from '@/services/game';
+import { adminQuery, characterQuery, formatMoney, rsaQuery, rsaApply, rsaDeclare } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
 import { aidPayments, aidRights, type AidRight } from '@/game/aid-portal';
 import { housingAid } from '@/game/admin';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/_authenticated/_game/caisse-des-aides')({
   head: () => ({ meta: gameMeta('Caisse des aides — Mon compte', 'Espace allocataire CIVITAS : paiements, droits, messages, attestations et simulation d’aide au logement.') }),
-  loader: async ({ context: { queryClient: q } }) => { await Promise.all([q.ensureQueryData(adminQuery), q.ensureQueryData(characterQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await Promise.all([q.ensureQueryData(adminQuery), q.ensureQueryData(characterQuery), q.ensureQueryData(rsaQuery)]); },
   component: AidSpace,
 });
 
@@ -60,11 +60,13 @@ function AidSpace() {
           {s.procedures.filter(p => ['a_faire', 'a_completer'].includes(p.status)).slice(0, 4).map(p => <Link key={p.id} to="/demarches" className="flex min-h-12 items-center justify-between border-t border-border text-sm">{p.title}<ChevronRight className="h-4 w-4 text-primary" /></Link>)}
           {!s.procedures.some(p => ['a_faire', 'a_completer'].includes(p.status)) && <p className="text-sm text-muted-foreground">Rien à faire pour le moment.</p>}
         </section>
-        <section className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">Déclaration trimestrielle de ressources : Disponible dans une prochaine étape</section>
+        <TileBtn onClick={() => setTab('droits')} icon={FileText} label="RSA · Déclarer mes ressources trimestrielles" />
       </>}
       {tab === 'paiements' && <Card title="Mes paiements">{payments.length ? <ul>{payments.map(p => <li key={p.id} className="flex min-h-14 items-center justify-between gap-3 border-t border-border py-2 text-sm first:border-t-0"><span><span className="block font-medium">{p.label}</span><span className="text-xs text-muted-foreground">{fmt(p.occurred_at)}</span></span><strong className="text-primary">+{formatMoney(p.amount ?? 0)}</strong></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucun paiement.</p>}</Card>}
+      {tab === 'droits' && <RsaPanel />}
       {tab === 'droits' && <Card title="Mes droits">{rights.length ? <ul>{rights.map(r => <li key={r.id} className="border-t border-border py-3 text-sm first:border-t-0"><p className="font-medium">{r.label}</p><p className="text-xs text-primary">{STATUS[r.status]}</p>{r.amount !== null && <p>{formatMoney(r.amount)} par mois{r.until ? ` · jusqu’au ${fmt(r.until)}` : ''}</p>}</li>)}</ul> : <p className="text-sm text-muted-foreground">Aucune aide demandée. Faites une demande depuis <Link to="/demarches" className="text-primary underline">Mes démarches</Link>.</p>}</Card>}
       {tab === 'messages' && <Card title="Ma messagerie">{s.events.length ? <ul>{[...s.events].sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at)).slice(0, 30).map(e => <li key={e.id} className="flex min-h-14 items-start gap-3 border-t border-border py-2 text-sm first:border-t-0"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span><span className="block">{e.label}</span><span className="text-xs text-muted-foreground">{fmt(e.occurred_at)}</span></span></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucun message.</p>}</Card>}
+      {tab === 'attestations' && <RsaPanel attestation name={allocataire} />}
       {tab === 'attestations' && <Card title="Mes attestations">{s.documents.filter(d => d.status === 'valide').length ? <ul>{s.documents.filter(d => d.status === 'valide').map(d => <li key={d.id} className="flex min-h-14 items-center justify-between gap-3 border-t border-border py-2 text-sm first:border-t-0"><span><span className="block font-medium">{s.document_types.find(t => t.id === d.type_id)?.name ?? d.type_id}</span><span className="text-xs text-muted-foreground">Valable jusqu’au {fmt(d.valid_until)}</span></span><Link to="/mes-documents" className="text-primary underline">Voir</Link></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucune attestation valide.</p>}</Card>}
       {tab === 'simulation' && <Simulation />}
     </main>
@@ -87,3 +89,44 @@ function Simulation() {
 function Card({ title, children }: { title: string; children: React.ReactNode }) { return <section className="rounded-xl border border-border bg-card p-4"><h1 className="mb-3 font-heading text-xl font-bold">{title}</h1>{children}</section>; }
 function Tile({ to, icon: Icon, label, hint }: { to: '/demarches'; icon: typeof Home; label: string; hint: string }) { return <Link to={to} className="flex min-h-24 flex-col justify-between rounded-xl border border-border bg-card p-3 hover:border-primary"><Icon className="h-6 w-6 text-primary" /><span className="text-sm font-semibold">{label}<span className="block text-xs font-normal text-muted-foreground">{hint}</span></span></Link>; }
 function TileBtn({ onClick, icon: Icon, label }: { onClick: () => void; icon: typeof Home; label: string }) { return <button type="button" onClick={onClick} className="flex min-h-24 flex-col justify-between rounded-xl border border-border bg-card p-3 text-left hover:border-primary"><Icon className="h-6 w-6 text-primary" /><span className="text-sm font-semibold">{label}</span></button>; }
+
+
+function RsaPanel({ attestation = false, name = '' }: { attestation?: boolean; name?: string }) {
+  const { data: rsa } = useSuspenseQuery(rsaQuery);
+  const q = useQueryClient();
+  const [salary, setSalary] = useState('0');
+  const [unemployment, setUnemployment] = useState('0');
+  const [pension, setPension] = useState('0');
+  const [freeHousing, setFreeHousing] = useState(false);
+  const mutation = useMutation({ mutationFn: (action: 'apply' | 'declare') => action === 'apply' ? rsaApply() : rsaDeclare({ quarter: rsa.calculation.quarter, salary: Number(salary), unemployment: Number(unemployment), pension: Number(pension), freeHousing }),
+    onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ['rsa'] }), q.invalidateQueries({ queryKey: ['character'] }), q.invalidateQueries({ queryKey: ['economy'] })]); } });
+  const c = rsa.calculation;
+  if (attestation) return <Card title="Attestation RSA · CIVITAS">
+    <p className="text-sm">Document fictif · {name} · Édité le {fmt(rsa.world_now)}</p>
+    <p className="mt-2 text-sm">{!rsa.requested ? 'Aucun droit demandé.' : !c.eligible ? c.reason : !c.declared ? 'Versement suspendu : déclaration trimestrielle attendue, sans pénalité.' : `Montant mensuel calculé : ${formatMoney(c.amount)}.`}</p>
+    <ul className="my-3 space-y-2 text-sm">{rsa.payments.map(p => <li key={p.month}>Mois du {fmt(p.month)} : {formatMoney(p.amount)} · enregistré le {fmt(p.paid_at)}</li>)}</ul>
+    <Button className="min-h-11 print:hidden" onClick={() => window.print()}>Imprimer l’attestation</Button>
+  </Card>;
+  return <Card title="Revenu de solidarité active (RSA)">
+    <p className="text-sm text-muted-foreground">Montants fictifs proches du réel. Inscription à Espace Emploi obligatoire ; étudiants exclus. Les ressources déclarées sont les totaux du trimestre précédent, divisés par trois.</p>
+    <p className="my-3 font-semibold" role="status">{!c.eligible ? c.reason : !rsa.requested ? 'Vous pouvez demander le RSA.' : !c.declared ? 'Suspendu : déclaration attendue, sans pénalité.' : c.amount > 0 ? 'Droit ouvert' : 'Montant nul après déductions.'}</p>
+    {!rsa.requested && <Button className="min-h-11" disabled={!c.eligible || mutation.isPending} onClick={() => mutation.mutate('apply')}>Demander le RSA</Button>}
+    <dl className="my-4 grid grid-cols-2 gap-2 text-sm">
+      <dt>Base revalorisée</dt><dd>{formatMoney(c.base)}</dd>
+      <dt>Composition</dt><dd>{c.couple ? 'En couple' : 'Personne seule'} · {c.children} enfant(s)</dd>
+      <dt>Forfait majoré</dt><dd>{formatMoney(c.gross)}</dd>
+      <dt>Ressources mensuelles moyennes</dt><dd>− {formatMoney(c.resources)}</dd>
+      <dt>Forfait logement</dt><dd>− {formatMoney(c.housing)}</dd>
+      <dt>RSA mensuel calculé</dt><dd className="font-bold text-primary">{formatMoney(c.amount)}</dd>
+    </dl>
+    {rsa.requested && !c.declared && <form className="space-y-3" onSubmit={e => { e.preventDefault(); mutation.mutate('declare'); }}>
+      <h3 className="font-semibold">Déclaration trimestrielle de ressources</h3>
+      <p className="text-sm">Ressources perçues du {fmt(c.resource_start)} au {fmt(c.resource_end)}. La déclaration est définitive et valable pour le trimestre débutant le {fmt(c.quarter)}. Le versement reprend après déclaration, sans rappel des mois suspendus.</p>
+      {([{ id: 'rsa-salary', label: 'Total des salaires (€)', value: salary, set: setSalary }, { id: 'rsa-unemployment', label: 'Total des allocations chômage (€)', value: unemployment, set: setUnemployment }, { id: 'rsa-pension', label: 'Total des pensions (€)', value: pension, set: setPension }]).map(f => <label key={f.id} htmlFor={f.id} className="block text-sm">{f.label}<input id={f.id} required type="number" inputMode="decimal" min="0" max="100000000" step="0.01" value={f.value} onChange={e => f.set(e.target.value)} className="mt-1 min-h-11 w-full rounded-md border border-input bg-background px-3" /></label>)}
+      <label className="flex min-h-12 items-center gap-3 text-sm"><input type="checkbox" checked={freeHousing} onChange={e => setFreeHousing(e.target.checked)} className="h-5 w-5" />Je suis hébergé gratuitement (l’aide au logement est détectée automatiquement).</label>
+      <Button type="submit" className="min-h-11" disabled={mutation.isPending}>Certifier et envoyer ma déclaration</Button>
+    </form>}
+    {c.declared && <p className="text-sm">Déclaration enregistrée pour ce trimestre. Le paiement du mois est réglé une seule fois à la lecture de cet espace.</p>}
+    {mutation.error && <p role="alert" className="mt-3 text-sm text-destructive">{mutation.error.message}</p>}
+  </Card>;
+}

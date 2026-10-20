@@ -1997,3 +1997,25 @@ export async function volunteerAction(fn: 'volunteer_attach' | 'volunteer_save_n
   if (error) throw new Error(error.message);
   return data as VolunteerDossierState;
 }
+
+export type RsaState = {
+  world_now: string; requested: boolean;
+  calculation: { eligible: boolean; reason: string | null; quarter: string; resource_start: string; resource_end: string; declared: boolean; base: number; couple: boolean; children: number; gross: number; resources: number; housing: number; amount: number };
+  payments: { month: string; amount: number; paid_at: string; calculation: RsaState['calculation'] }[];
+};
+// Narrow RPC contract for additive migration 0116 (generated schema predates it).
+const rsaRpc = supabase.rpc.bind(supabase) as unknown as (name: 'rsa_state' | 'rsa_apply' | 'rsa_declare', args?: Record<string, string | number | boolean>) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+export const rsaQuery = queryOptions({ queryKey: ['rsa'], staleTime: 0, refetchInterval: 15000, queryFn: async (): Promise<RsaState> => {
+  const { data, error } = await rsaRpc('rsa_state');
+  if (error) throw new Error(error.message);
+  if (!data || typeof data !== 'object' || !('calculation' in data)) throw new Error('RSA indisponible');
+  return data as RsaState;
+} });
+export async function rsaApply() {
+  const { error } = await rsaRpc('rsa_apply');
+  if (error) throw new Error(error.message);
+}
+export async function rsaDeclare(input: { quarter: string; salary: number; unemployment: number; pension: number; freeHousing: boolean }) {
+  const { error } = await rsaRpc('rsa_declare', { _quarter: input.quarter, _salary: input.salary, _unemployment: input.unemployment, _pension: input.pension, _free_housing: input.freeHousing });
+  if (error) throw new Error(error.message);
+}

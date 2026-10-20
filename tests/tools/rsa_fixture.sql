@@ -1,0 +1,41 @@
+-- UNIQUEMENT base jetable vide ; aucune connexion VPS.
+CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role;
+CREATE SCHEMA auth;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$ SELECT nullif(current_setting('test.uid',true),'')::uuid $$;
+CREATE TABLE fake_clock(t timestamptz); INSERT INTO fake_clock VALUES('2026-10-20 08:00Z');
+CREATE FUNCTION game_now() RETURNS timestamptz LANGUAGE sql AS $$ SELECT t FROM fake_clock $$;
+CREATE TABLE characters(id uuid PRIMARY KEY,user_id uuid,age integer);
+ALTER TABLE characters ENABLE ROW LEVEL SECURITY;
+CREATE POLICY own ON characters FOR SELECT TO authenticated USING(user_id=auth.uid());
+GRANT SELECT ON characters TO authenticated; GRANT USAGE ON SCHEMA auth TO authenticated;
+CREATE FUNCTION social_actor() RETURNS uuid LANGUAGE sql AS $$ SELECT id FROM characters WHERE user_id=auth.uid() $$;
+CREATE FUNCTION aging_settle(uuid) RETURNS integer LANGUAGE sql AS $$ SELECT age FROM characters WHERE id=$1 $$;
+CREATE TABLE unemployment_declarations(character_id uuid);
+CREATE TABLE career_ledger(character_id uuid,kind text);
+CREATE TABLE student_profiles(character_id uuid,program_id text);
+CREATE TABLE study_enrollments(character_id uuid);
+CREATE TABLE family_settings(id integer,child_days_per_year integer); INSERT INTO family_settings VALUES(1,7);
+CREATE TABLE children(parent_a uuid,parent_b uuid,status text,born_at timestamptz);
+CREATE TABLE couples(a_id uuid,b_id uuid,status text);
+CREATE TABLE administrative_procedures(character_id uuid,type_id text,status text,result jsonb);
+CREATE TABLE economy_annual_factors(year integer PRIMARY KEY,cumulative numeric); INSERT INTO economy_annual_factors VALUES(2026,1);
+CREATE FUNCTION real_economy_factor(timestamptz) RETURNS numeric LANGUAGE sql AS $$ SELECT cumulative FROM economy_annual_factors WHERE year<=extract(year FROM $1) ORDER BY year DESC LIMIT 1 $$;
+CREATE FUNCTION economy_settle() RETURNS void LANGUAGE sql AS $$ SELECT $$;
+CREATE TABLE accounts(character_id uuid PRIMARY KEY,balance integer NOT NULL CHECK(balance>=0));
+CREATE TABLE economy_operations(character_id uuid,operation_key text,amount integer,PRIMARY KEY(character_id,operation_key));
+CREATE FUNCTION economy_cash(_cid uuid,_key text,_amount integer,_label text,_category text,_payload jsonb DEFAULT '{}') RETURNS boolean LANGUAGE plpgsql AS $$ BEGIN
+ INSERT INTO economy_operations VALUES(_cid,_key,_amount) ON CONFLICT DO NOTHING;
+ IF NOT FOUND THEN RETURN false; END IF;
+ UPDATE accounts SET balance=balance+_amount WHERE character_id=_cid;
+ IF NOT FOUND THEN RAISE EXCEPTION 'Compte absent'; END IF;
+ RETURN true;
+END $$;
+CREATE TABLE state_treasury(id integer PRIMARY KEY,balance bigint CHECK(balance>=0),debt bigint CHECK(debt>=0),expenses bigint);
+INSERT INTO state_treasury VALUES(1,0,0,0);
+CREATE TABLE state_ledger(entry_key text PRIMARY KEY,amount bigint,category text);
+CREATE FUNCTION economy_post(_key text,_amount bigint,_category text) RETURNS void LANGUAGE plpgsql AS $$ DECLARE b bigint; BEGIN
+ SELECT balance INTO b FROM state_treasury WHERE id=1 FOR UPDATE;
+ INSERT INTO state_ledger VALUES(_key,_amount,_category) ON CONFLICT DO NOTHING;
+ IF NOT FOUND THEN RETURN; END IF;
+ UPDATE state_treasury SET balance=greatest(0,balance+_amount),debt=debt+greatest(0,-_amount-b),expenses=expenses+greatest(0,-_amount) WHERE id=1;
+END $$;
