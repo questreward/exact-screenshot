@@ -395,3 +395,10 @@
 - [x] 0111 Missions des nouveaux métiers (installée)
 - [x] 0112 Taxe foncière aux mairies (installée)
 - [x] 0113 Voyages à l'étranger installée (confirmation d’Alex)
+
+## Suite choisie par Alex — après 0113
+- [ ] Vérifier le lot 0110–0113 : audit et tests disponibles ; contrôle réel du VPS si accès disponible
+- [ ] Interactions et IA locale : examiner l’existant puis préparer conversations suivies et mémoire privée sans récompense IA
+- [ ] Interventions plus immersives : enrichir les scènes des missions existantes sans modifier leurs règles
+- [ ] Documents français : inventorier les manques et compléter sans dupliquer les espaces existants
+- Toute nouvelle migration doit être présentée exactement et approuvée avant application ; aucune installation VPS présumée.
