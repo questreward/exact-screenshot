@@ -1,6 +1,7 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { BusFront, TrainFront, Zap, Clock } from "lucide-react";
-import { citiesQuery, lifeQuery, intercityRoutesQuery, travelIntercity, formatMoney } from "@/services/game";
+import { BusFront, TrainFront, Zap, Clock, Car } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { citiesQuery, lifeQuery, intercityRoutesQuery, travelIntercity, travelDrive, economyQuery, formatMoney } from "@/services/game";
 import { Button } from "@/components/ui/button";
 import { useLifeMutation } from "./LifeControls";
 import type { LifeLocation } from "@/game/life-state";
@@ -11,7 +12,12 @@ export function IntercityControl({ location }: { location: LifeLocation }) {
   const { data: life } = useSuspenseQuery(lifeQuery);
   const { data: cities } = useSuspenseQuery(citiesQuery);
   const { data: routes, isError } = useQuery(intercityRoutesQuery(location.city_id));
-  const travel = useLifeMutation(travelIntercity, "Voyage commencé");
+  const navigate = useNavigate();
+  const travel = useLifeMutation(async (v: { toCity: string; mode: "train" | "car" }) => { await travelIntercity(v); navigate({ to: "/conduite" }); }, "Voyage commencé");
+  const drive = useLifeMutation(async (v: { toCity: string; catalogId: string }) => { await travelDrive(v); navigate({ to: "/conduite" }); }, "En route !");
+  const { data: economy } = useQuery(economyQuery);
+  const cars = (economy?.assets ?? []).filter(a => a.catalog.kind === "vehicle");
+  const roads = (routes ?? []).filter(r => r.mode === "car");
   const mode = location.kind === "gare" ? "train" : "car";
   const list = (routes ?? []).filter(r => r.mode === mode);
   const here = life.position.location_id === location.id;
@@ -40,6 +46,13 @@ export function IntercityControl({ location }: { location: LifeLocation }) {
           </div>
         );
       })}
+      {cars.length > 0 && <div className="space-y-2 rounded-xl border border-border bg-card p-3">
+        <h4 className="flex items-center gap-2 text-sm font-semibold"><Car className="size-4" />Conduire ma voiture</h4>
+        <p className="text-xs text-muted-foreground">Départ d'où tu es. Carburant et 15 énergie. Respecte les limitations !</p>
+        {roads.map(r => cars.map(a => <Button key={r.id + a.id} variant="outline" className="h-12 w-full justify-between" disabled={busy || drive.isPending || a.condition !== "Bon état"}
+          onClick={() => drive.mutate({ toCity: r.to_city_id, catalogId: a.catalog_id })}>
+          <span>{cities.find(c => c.id === r.to_city_id)?.name ?? r.to_city_id}</span><span className="text-xs">{a.catalog.name} · ~{duration(Math.round(r.duration_minutes * 0.85))}</span></Button>))}
+      </div>}
       <p className="text-xs text-muted-foreground">Votre ville de résidence ne change pas : travail, études et vote restent chez vous.</p>
     </div>
   );
