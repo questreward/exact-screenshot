@@ -330,12 +330,13 @@
 
 ## Quartiers qui changent
 - [x] Étape 1 : badges de quartier sur la carte (chantier, rénové, crise, animé, délaissé) — aucun SQL
-- [ ] Mise à jour du site VPS (git pull + docker build)
+- [x] Mise à jour du site VPS
 - [x] Étape 2 préparée : migration 0091 (jauges) testée sur base jetable
-- [ ] Installer 0091 sur le VPS après accord d'Alex sur le SQL, puis mettre le site à jour
+- [x] 0091 installée sur le VPS (déclaré par Alex)
+- [ ] Vérifier les jauges en jeu réel
 
 ## Demandes d'Alex (20/10)
-- [ ] Installation 0091 (jauges de quartier) — résultat VPS attendu
+- [x] Installation 0091 (jauges de quartier) — confirmée par Alex
 - [ ] Métiers de la sécurité et des secours : police, pompiers, protection civile… (vraie carrière jouable)
 - [x] Espace « Caisse des aides » (type CAF) : accueil, paiements, droits, messagerie, attestations, simulation
 - [ ] Déclaration trimestrielle de ressources (SQL à valider)
