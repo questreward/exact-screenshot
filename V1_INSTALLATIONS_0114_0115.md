@@ -31,7 +31,6 @@ bash vps/tools/prepare_v1_installations.sh
 
 Crée une nouvelle sauvegarde privée, restaure dans une copie temporaire en excluant cron de cette copie seulement, teste 0114 puis 0115 avec ROLLBACK et supprime uniquement la copie. Aucun redémarrage du jeu. Envoyer la sortie jusqu’à « Les deux essais ont réussi ». L’installation réelle sera donnée après ce résultat et l’accord sur le SQL exact ; ne pas installer malgré une erreur.
 
-## Contrôles locaux réalisés
 ## Installation réelle après les deux essais réussis
 Alex a demandé l’installation après validation du contrôle. Les deux SQL exacts testés restent inchangés. Appliquer dans l’ordre ; le deuxième ne démarre pas si le premier échoue. Chaque fichier conserve sa propre transaction et son contrôle bloquant. En cas d’erreur ne pas relancer tout le bloc : envoyer la sortie pour identifier ce qui a réellement été validé.
 
