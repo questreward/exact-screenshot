@@ -370,9 +370,10 @@
   - Règles validées : trimestres réels (4/an max), pension 50 % × trimestres/172 + points, départ à 64 ans
   - [x] Vieillissement : 0100 prête et testée (bandeau anniversaire)
   - [ ] Installer 0100 sur le VPS (accord d’Alex)
-- [ ] Usure des véhicules pendant les trajets + réparations payées (0101, avant retraite)
-- [ ] Conduite entre villes : choix du véhicule (vitesses/radars/amendes déjà en 0098)
-  - [ ] Retraite 0101 (trimestres, pension, départ 64 ans)
+- [x] Usure des véhicules + réparations : 0101 prête et testée (page Transports)
+- [ ] Installer 0101 sur le VPS (accord d’Alex)
+- [x] Conduite entre villes : choix du véhicule, vitesses, radars, amendes déjà en 0098 ; usure ajoutée en 0101
+  - [ ] Retraite 0102 (trimestres, pension, départ 64 ans)
 
 ## Demandes d'Alex (20/10) — à découper et valider
 - [x] Simulation de conduite entre villes : 0098 prête et testée, page En route
