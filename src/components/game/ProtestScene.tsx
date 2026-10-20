@@ -13,7 +13,7 @@ export function ProtestScene({ cause, participants, city }: { cause: string; par
   return <figure className="overflow-hidden rounded-lg border border-border">
     <div className={`relative ${action === 'avancer' ? 'protest-march' : ''}`}>
       <img src={manif} alt={`Cortège fictif à ${city}`} width={1280} height={720} loading="lazy" className="block aspect-video w-full object-cover" />
-      <div className="absolute inset-x-[18%] bottom-[18%] rotate-[-1deg] rounded bg-background/90 px-2 py-1 text-center font-heading text-sm font-bold uppercase text-foreground shadow sm:text-lg">{cause}</div>
+      <div className="absolute inset-x-[18%] bottom-[18%] rotate-[-1deg] rounded bg-background/90 px-2 py-1 text-center font-display text-sm font-bold uppercase text-foreground shadow sm:text-lg">{cause}</div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-6 flex-wrap-reverse justify-center gap-0.5 px-2" aria-hidden="true">
         {Array.from({ length: dots }, (_, i) => <span key={i} className="crowd-dot h-2 w-2 rounded-full bg-primary" style={{ animationDelay: `${(i % 7) * 0.15}s` }} />)}
       </div>
