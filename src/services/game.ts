@@ -546,14 +546,24 @@ export async function joinProtest(protestId: string) {
   const { error } = await untyped.rpc("join_protest", { _protest: protestId });
   if (error) throw new Error(error.message);
 }
-export type TvSegment = { id: string; kind: "news" | "interview"; title: string; body: string; news_id: string | null };
+export type TvSegment = { id: string; kind: "news" | "interview"; title: string; body: string; news_id: string | null; scene?: import('@/game/scenes').EventScene };
 export type TvState = { date: string; city_id: string; local: TvSegment[]; national: TvSegment[]; invitations: { id: string; question: string; deadline: string; answer: string | null; scope: string }[] };
 export const tvQuery = (cityId?: string) => queryOptions({
   queryKey: ["tv", "state", cityId ?? "mine"],
   queryFn: async (): Promise<TvState> => {
     const { data, error } = await untyped.rpc("tv_state", { _city: cityId ?? null });
     if (error) throw new Error(error.message);
-    return data as TvState;
+    const state = data as TvState;
+    const ids = [...state.local, ...state.national].filter(s => s.kind === 'news').map(s => s.id);
+    if (ids.length === 0) return state;
+    const scenes = await untyped.rpc('tv_scenes_state', { _segments: [...new Set(ids)].slice(0, 100) });
+    // Before 0088 is installed, keep old editions working unchanged.
+    if (scenes.error) {
+      if (scenes.error.code === 'PGRST202' || scenes.error.code === '42883') return state;
+      throw new Error(scenes.error.message);
+    }
+    const projection = (scenes.data ?? {}) as Record<string, import('@/game/scenes').EventScene>;
+    return { ...state, local: state.local.map(s => ({ ...s, scene: projection[s.id] })), national: state.national.map(s => ({ ...s, scene: projection[s.id] })) };
   },
 });
 export async function answerTvInterview(input: { interviewId: string; answer: string }) {

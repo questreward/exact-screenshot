@@ -12,7 +12,7 @@
 ## Architecture rules
 - Game rules in `src/game/` are UI hints only; authoritative checks live in SECURITY DEFINER DB functions — the client is never trusted for money, age or rewards.
 - Data access goes through `src/services/game.ts` query options; pages use loader `ensureQueryData` + `useSuspenseQuery`.
-- Query cache keys distinguish response shapes (for example event summaries versus structured event state) to prevent cross-page cache collisions.
+- Query keys distinguish response shapes to prevent cache collisions.
 - Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
 - In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
 - World hierarchy: cities > districts > locations > location_spaces, loaded progressively; position changes only through move_character; map gestures use react-zoom-pan-pinch.
@@ -25,7 +25,7 @@
 - Parties/movements are organization kinds extended 1:1 (political_profiles/branches); political stats are separate from social stats; affinity in src/game/politics.ts is a hint only.
 - Elections: character-first RPCs, row locks, private immutable ballots; fictional electorates simulated separately; candidacies own campaign budget without new accounts.
 - Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts; one calendar successor per city election.
-- World events extend `events` (template_id/character_id) with config in world_event_templates/settings; participations/effects use unique ledgers and economy_cash — one event system, idempotent rewards.
+- World events extend `events` with config in world_event_templates/settings; rewards use unique ledgers and economy_cash. Staging preserves importance and uses a separate public-event TV projection, never headline guesses.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
 - Non-atomic installs are forbidden: schema, seeds and integrity checks run in one transaction (VPS psql file with BEGIN/COMMIT), never partial state or compensating cleanup.
