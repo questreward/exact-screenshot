@@ -1,5 +1,5 @@
 -- 0104 — Unified economy, prospective indices and public Conjoncture.
--- NEW TABLES: economy_settings, economy_months, economy_city_prices,
+-- NEW TABLES: macro_economy_settings, economy_months, economy_city_prices,
 -- economy_city_history, state_treasury, state_ledger.
 -- NEW FUNCTIONS: economy_post, economy_receipt, economy_settle, economy_index,
 -- economy_price_index, economy_state. All internal functions revoked from players.
@@ -17,7 +17,7 @@
 -- Catch-up freezes the latest observed unemployment/population; crisis timing uses
 -- event intervals, never headlines. No fictional 12-month pre-install history.
 BEGIN;
-CREATE TABLE public.economy_settings (
+CREATE TABLE public.macro_economy_settings (
  id integer PRIMARY KEY CHECK(id=1), baseline_annual numeric NOT NULL DEFAULT .02 CHECK(baseline_annual>=0),
  crisis_monthly numeric NOT NULL DEFAULT .004 CHECK(crisis_monthly>=0),
  unemployment_pressure numeric NOT NULL DEFAULT .0005 CHECK(unemployment_pressure>=0),
@@ -51,20 +51,20 @@ CREATE TABLE public.state_ledger (
  occurred_at timestamptz NOT NULL DEFAULT public.game_now()
 );
 INSERT INTO public.state_treasury(id) VALUES(1);
-INSERT INTO public.economy_settings(id,last_month) VALUES(1,date_trunc('month',public.game_now() AT TIME ZONE 'UTC')::date);
+INSERT INTO public.macro_economy_settings(id,last_month) VALUES(1,date_trunc('month',public.game_now() AT TIME ZONE 'UTC')::date);
 INSERT INTO public.economy_city_prices(city_id,population)
  SELECT c.id,c.population+(SELECT count(*) FROM public.character_positions p WHERE p.city_id=c.id) FROM public.cities c;
-INSERT INTO public.economy_months SELECT last_month,0,1,1400,0,0,0,0 FROM public.economy_settings;
-INSERT INTO public.economy_city_history SELECT city_id,s.last_month,food,rent,fuel FROM public.economy_city_prices CROSS JOIN public.economy_settings s;
-GRANT SELECT ON public.economy_settings,public.economy_months,public.economy_city_prices,public.economy_city_history,public.state_treasury TO authenticated;
-GRANT ALL ON public.economy_settings,public.economy_months,public.economy_city_prices,public.economy_city_history,public.state_treasury,public.state_ledger TO service_role;
-ALTER TABLE public.economy_settings ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.economy_months SELECT last_month,0,1,1400,0,0,0,0 FROM public.macro_economy_settings;
+INSERT INTO public.economy_city_history SELECT city_id,s.last_month,food,rent,fuel FROM public.economy_city_prices CROSS JOIN public.macro_economy_settings s;
+GRANT SELECT ON public.macro_economy_settings,public.economy_months,public.economy_city_prices,public.economy_city_history,public.state_treasury TO authenticated;
+GRANT ALL ON public.macro_economy_settings,public.economy_months,public.economy_city_prices,public.economy_city_history,public.state_treasury,public.state_ledger TO service_role;
+ALTER TABLE public.macro_economy_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.economy_months ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.economy_city_prices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.economy_city_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.state_treasury ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.state_ledger ENABLE ROW LEVEL SECURITY;
-CREATE POLICY economy_settings_read ON public.economy_settings FOR SELECT TO authenticated USING(true);
+CREATE POLICY economy_settings_read ON public.macro_economy_settings FOR SELECT TO authenticated USING(true);
 CREATE POLICY economy_months_read ON public.economy_months FOR SELECT TO authenticated USING(true);
 CREATE POLICY economy_city_read ON public.economy_city_prices FOR SELECT TO authenticated USING(true);
 CREATE POLICY economy_city_history_read ON public.economy_city_history FOR SELECT TO authenticated USING(true);
@@ -110,10 +110,10 @@ CREATE TRIGGER economy_pension_outlay AFTER INSERT ON public.retirement_payments
 CREATE TRIGGER economy_unemployment_outlay AFTER INSERT ON public.career_ledger FOR EACH ROW EXECUTE FUNCTION public.economy_receipt();
 
 CREATE FUNCTION public.economy_settle() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE s public.economy_settings; m date; target date:=date_trunc('month',public.game_now() AT TIME ZONE 'UTC')::date;
+DECLARE s public.macro_economy_settings; m date; target date:=date_trunc('month',public.game_now() AT TIME ZONE 'UTC')::date;
  u numeric; r numeric; pop bigint; oldpop bigint; growth numeric; crisis boolean; eid uuid;
 BEGIN
- SELECT * INTO s FROM public.economy_settings WHERE id=1 FOR UPDATE;
+ SELECT * INTO s FROM public.macro_economy_settings WHERE id=1 FOR UPDATE;
  SELECT coalesce(100.0*count(*) FILTER(WHERE NOT EXISTS(SELECT 1 FROM public.employments e WHERE e.character_id=c.id))/nullif(count(*),0),0) INTO u FROM public.characters c;
  INSERT INTO public.economy_city_prices(city_id,population) SELECT c.id,c.population+(SELECT count(*) FROM public.character_positions p WHERE p.city_id=c.id) FROM public.cities c ON CONFLICT DO NOTHING;
  m:=(s.last_month+interval '1 month')::date;
@@ -139,13 +139,13 @@ BEGIN
   END IF;
   s.unemployment:=u; s.last_month:=m; m:=(m+interval '1 month')::date;
  END LOOP;
- UPDATE public.economy_settings SET last_month=s.last_month,cpi=s.cpi,smic_index=s.smic_index,aids_index=s.aids_index,state_pay_index=s.state_pay_index,unemployment=u WHERE id=1;
+ UPDATE public.macro_economy_settings SET last_month=s.last_month,cpi=s.cpi,smic_index=s.smic_index,aids_index=s.aids_index,state_pay_index=s.state_pay_index,unemployment=u WHERE id=1;
 END $$;
 CREATE FUNCTION public.economy_index(_kind text) RETURNS numeric LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 BEGIN
  PERFORM public.economy_settle();
  IF _kind NOT IN ('smic','aids','state_pay') OR _kind IS NULL THEN RAISE EXCEPTION 'Indice inconnu.'; END IF;
- RETURN (SELECT CASE _kind WHEN 'smic' THEN smic_index WHEN 'aids' THEN aids_index ELSE state_pay_index END FROM public.economy_settings WHERE id=1);
+ RETURN (SELECT CASE _kind WHEN 'smic' THEN smic_index WHEN 'aids' THEN aids_index ELSE state_pay_index END FROM public.macro_economy_settings WHERE id=1);
 END $$;
 CREATE FUNCTION public.economy_price_index(_city text,_kind text) RETURNS numeric LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE v numeric; shock numeric;
@@ -155,18 +155,18 @@ BEGIN
  SELECT CASE _kind WHEN 'food' THEN food WHEN 'rent' THEN rent ELSE fuel END INTO v FROM public.economy_city_prices WHERE city_id=_city;
  IF v IS NULL THEN RAISE EXCEPTION 'Ville inconnue.'; END IF;
  IF _kind='fuel' AND EXISTS(SELECT 1 FROM public.events e WHERE e.status IN ('scheduled','published','active') AND e.game_category IN ('crise','penurie','crisis','shortage') AND (e.city_id IS NULL OR e.city_id=_city) AND e.starts_at<=public.game_now() AND public.game_now()<e.starts_at+interval '7 days' AND e.ends_at>public.game_now()) THEN
-  SELECT fuel_shock INTO shock FROM public.economy_settings WHERE id=1; v:=v*(1+shock);
+  SELECT fuel_shock INTO shock FROM public.macro_economy_settings WHERE id=1; v:=v*(1+shock);
  END IF;
  RETURN least(130,greatest(80,v));
 END $$;
 CREATE FUNCTION public.economy_state() RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 BEGIN
  PERFORM public.economy_settle();
- RETURN jsonb_build_object('smic',round(1400*(SELECT smic_index FROM public.economy_settings WHERE id=1),2),
+ RETURN jsonb_build_object('smic',round(1400*(SELECT smic_index FROM public.macro_economy_settings WHERE id=1),2),
  'treasury',(SELECT to_jsonb(t)-'id' FROM public.state_treasury t WHERE id=1),
  'history',coalesce((SELECT jsonb_agg(to_jsonb(h) ORDER BY month DESC) FROM (SELECT * FROM public.economy_months ORDER BY month DESC LIMIT 12) h),'[]'::jsonb),
  'cities',coalesce((SELECT jsonb_agg(jsonb_build_object('id',c.id,'name',c.name,'food',public.economy_price_index(c.id,'food'),'rent',public.economy_price_index(c.id,'rent'),'fuel',public.economy_price_index(c.id,'fuel')) ORDER BY c.name) FROM public.cities c),'[]'::jsonb),
- 'city_history',coalesce((SELECT jsonb_agg(to_jsonb(h) ORDER BY h.month DESC,h.city_id) FROM public.economy_city_history h WHERE month>=(SELECT last_month-interval '11 months' FROM public.economy_settings WHERE id=1)),'[]'::jsonb));
+ 'city_history',coalesce((SELECT jsonb_agg(to_jsonb(h) ORDER BY h.month DESC,h.city_id) FROM public.economy_city_history h WHERE month>=(SELECT last_month-interval '11 months' FROM public.macro_economy_settings WHERE id=1)),'[]'::jsonb));
 END $$;
 REVOKE ALL ON FUNCTION public.economy_post(text,bigint,text),public.economy_receipt(),public.economy_settle(),public.economy_index(text),public.economy_price_index(text,text),public.economy_state() FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.economy_index(text),public.economy_price_index(text,text),public.economy_state() TO authenticated,service_role;
