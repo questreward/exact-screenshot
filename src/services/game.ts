@@ -1804,3 +1804,5 @@ export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_re
   if (error) throw new Error(error.message);
   return data as T;
 }
+export type AgingState = { age: number; next_birthday: string | null; new_birthday: boolean; birthdays: { age: number; at: string }[] };
+export const agingQuery = queryOptions({ queryKey: ['aging'], staleTime: 60_000, retry: false, queryFn: looseState<AgingState>('aging_state') });

@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { supabase } from "@/integrations/supabase/client";
 import { SECTIONS, groupedSections, type Section } from "@/game/navigation";
 import { Logo } from "./Logo";
+import { BirthdayBanner } from "./BirthdayBanner";
 import { cn } from "@/lib/utils";
 
 function sectionLink(s: Section) {
@@ -93,6 +94,7 @@ export function GameShell() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 pt-6 pb-28 sm:px-6 lg:px-10 lg:pt-10 lg:pb-12">
+        <BirthdayBanner />
         <Outlet />
       </main>
 
