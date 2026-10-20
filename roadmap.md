@@ -342,7 +342,8 @@
 - [ ] Déclaration trimestrielle de ressources (SQL à valider)
 - [x] Espace Emploi (type France Travail) : offres, candidatures, conseiller
 - [x] Actualisation mensuelle préparée : migration 0092 testée sur base jetable
-- [ ] Installer 0092 sur le VPS après accord sur le SQL
+- [x] 0092 installée sur le VPS (déclaré par Alex)
+- [ ] Vérifier en jeu : Caisse des aides, espace Emploi, M’actualiser
 - [ ] Espace Santé (type ameli)
-- [ ] Bloc A métiers sécurité/secours : règles chiffrées à faire valider (concours, école, grades, salaires)
+- [ ] Bloc A métiers police / pompiers / protection civile : recrutement, formation, horaires, missions par service — règles chiffrées à valider puis SQL
 - [ ] Idées de réalisme France à proposer
