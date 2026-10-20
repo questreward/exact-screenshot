@@ -1645,3 +1645,14 @@ export const districtFactsQuery = (cityId: string) => queryOptions({
     return { locations, decisions, issues, crises, projects } as never;
   },
 });
+
+export type DistrictGauges = { gauges: { district_id: string; gauge: 'cadre' | 'tranquillite' | 'animation'; value: number }[]; history: { district_id: string; gauge: string; delta: number; reason: string; created_at: string }[] };
+/** District gauges (0091). Returns null when the VPS function is not installed yet. */
+export const districtGaugesQuery = (cityId: string) => queryOptions({
+  queryKey: ['district-gauges', cityId], staleTime: 30000, refetchInterval: 60000,
+  queryFn: async (): Promise<DistrictGauges | null> => {
+    const { data, error } = await (supabase.rpc as unknown as (f: string, a: object) => Promise<{ data: unknown; error: { code?: string; message: string } | null }>)('district_gauges_state', { _city: cityId });
+    if (error) { if (error.code === 'PGRST202' || error.code === '42883' || /district_gauges_state/.test(error.message)) return null; throw error; }
+    return data as DistrictGauges;
+  },
+});
