@@ -33,6 +33,7 @@ SELECT pg_temp.u(3); SELECT public.pr_action('candidate');
 SELECT pg_temp.u(4); SELECT public.pr_action('candidate');
 SELECT pg_temp.u(i), public.pr_action('sponsor',pg_temp.c(CASE WHEN i<=6 THEN 2 WHEN i<=11 THEN 3 END)) FROM generate_series(1,11) i WHERE i NOT IN (2,3);
 SELECT pg_temp.u(2); SELECT public.pr_action('sponsor',pg_temp.c(3));
+SELECT pg_temp.u(3); SELECT public.pr_action('sponsor',pg_temp.c(2));
 SELECT pg_temp.u(5); SELECT pg_temp.refuse($$SELECT public.pr_action('sponsor',pg_temp.c(4))$$);
 UPDATE public.fake_clock SET t=(SELECT round1_at FROM public.pr_elections WHERE predecessor IS NULL);
 SELECT pg_temp.u(5); SELECT pg_temp.refuse($$SELECT public.pr_action('vote',pg_temp.c(4))$$);
@@ -40,7 +41,6 @@ SELECT pg_temp.u(i), public.pr_action('vote',pg_temp.c(CASE WHEN i<=5 THEN 2 ELS
 SELECT pg_temp.u(1); SELECT pg_temp.refuse($$SELECT public.pr_action('vote',pg_temp.c(2))$$);
 UPDATE public.fake_clock SET t=(SELECT round2_at FROM public.pr_elections WHERE predecessor IS NULL);
 SELECT pg_temp.u(1); SELECT public.pr_state();
-SELECT pg_temp.ok((SELECT winner IS NULL AND round1_counted FROM public.pr_elections WHERE predecessor IS NULL)=false OR true,'1er tour compté');
 SELECT pg_temp.u(i), public.pr_action('vote',pg_temp.c(CASE WHEN i<=4 THEN 2 ELSE 3 END)) FROM generate_series(1,9) i;
 UPDATE public.fake_clock SET t=(SELECT closes_at FROM public.pr_elections WHERE predecessor IS NULL);
 SELECT pg_temp.u(1); SELECT public.pr_state(); SELECT public.pr_state();
