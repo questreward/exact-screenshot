@@ -2,18 +2,20 @@ import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
+import { CivilProtectionPresidency } from "@/components/game/CivilProtectionPresidency";
 import { VolunteerDossier } from "@/components/game/VolunteerDossier";
-import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap } from "lucide-react";
+import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap, Award } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { securityAction, securityMissionsQuery, securityQuery, volunteerDossierQuery, type SecurityState } from "@/services/game";
+import { cpPresidencyQuery, promotionHistoryQuery, securityAction, securityMissionsQuery, securityQuery, volunteerDossierQuery, type SecurityState } from "@/services/game";
+import { promotionView } from "@/game/promotion-history";
 import { gameMeta } from "@/game/metadata";
 import { OUTCOME_LABELS, SERVICE_INTRO, TEAMS, nextRank, weeklyPay, type SecurityServiceId } from "@/game/security-careers";
 
 export const Route = createFileRoute("/_authenticated/_game/secours")({
   head: () => ({ meta: gameMeta("Police, pompiers et secours", "Concours, formation, horaires d'équipe et missions de police, de sapeur-pompier et de protection civile.") }),
   loader: async ({ context }) => {
-    await Promise.all([context.queryClient.ensureQueryData(securityQuery), context.queryClient.ensureQueryData(securityMissionsQuery), context.queryClient.ensureQueryData(volunteerDossierQuery)]);
+    await Promise.all([context.queryClient.ensureQueryData(securityQuery), context.queryClient.ensureQueryData(securityMissionsQuery), context.queryClient.ensureQueryData(volunteerDossierQuery), context.queryClient.ensureQueryData(cpPresidencyQuery), context.queryClient.ensureQueryData(promotionHistoryQuery)]);
   },
   component: SecurityPage,
 });
@@ -54,12 +56,25 @@ function SecurityPage() {
     {s && (s.career && s.career.status !== "quitte"
       ? <Career s={s} missions={missions} busy={act.isPending} run={act.mutate} />
       : <Recruitment s={s} busy={act.isPending} run={act.mutate} />)}
+    {s?.career?.service === "protection_civile" && <CivilProtectionPresidency />}
     {s && <VolunteerDossier state={s} missions={missions}/>}
+    {s && <PromotionHistory />}
     {s && s.ledger.length > 0 && <Card title="Mon dossier" icon={Wallet}>
       <ul className="space-y-1 text-sm">{s.ledger.map(l => <li key={l.key} className="flex justify-between gap-2">
         <span>{l.label}</span>{l.amount > 0 && <span className="font-semibold">+{eur(l.amount)}</span>}</li>)}</ul>
     </Card>}
   </div>;
+}
+
+function PromotionHistory() {
+  const { data: rows } = useSuspenseQuery(promotionHistoryQuery);
+  return <Card title="Historique de mes grades" icon={Award}>
+    {rows.length === 0 ? <p className="text-sm text-muted-foreground">Aucun changement de grade pour le moment.</p>
+      : <ol className="space-y-2">{rows.map(r => { const v = promotionView(r); return <li key={r.key} className="rounded-lg border border-border p-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-2"><p className="font-semibold">{v.grade}</p><p className="text-xs text-muted-foreground">{when(r.created_at)}</p></div>
+          <p className="text-sm text-muted-foreground">{v.reason}</p></li>; })}</ol>}
+    <p className="mt-2 text-xs text-muted-foreground">Ton historique est privé : les autres membres ne le voient pas.</p>
+  </Card>;
 }
 
 type Run = (v: { fn: Parameters<typeof securityAction>[0]; args?: object; ok?: string }) => void;
