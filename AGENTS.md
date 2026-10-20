@@ -15,7 +15,7 @@
 - Query keys distinguish response shapes to prevent cache collisions.
 - Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
 - In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
-- World hierarchy: cities > districts > locations > location_spaces, loaded progressively; position changes only through move_character; map gestures use react-zoom-pan-pinch.
+- World hierarchy: cities > districts > locations > location_spaces, loaded progressively; move_character controls position; gestures use react-zoom-pan-pinch. Living places reuse public facts, distinguish selected/current place and expected/recorded effects.
 - World clock derives from a DB anchor (game_now); client only animates it. Deadlines settle on reads/reconnect (daily_life_state etc.).
 - Balance values live in config tables (life_rules, life_settings, housing_types, jobs, *_settings); TS helpers are presentation-only with tests.
 - Live regressions use isolated temporary accounts; prefer deadline acceleration; clock-window tests restore the full world_state row in the same transaction.
