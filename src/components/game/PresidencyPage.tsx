@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { SpeechDraftHelper } from '@/components/game/SpeechDraftHelper';
 import { presidencyAction, presidencyQuery, type PrState } from '@/services/game';
 
 const fmt = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -151,6 +152,7 @@ function PowersPanel({ s, pending, run }: { s: PrState; pending: boolean; run: R
       </div>
       <div className="space-y-2">
         <h3 className="font-semibold">Allocution au JT</h3>
+        <SpeechDraftHelper onDraft={setSpeech} />
         <textarea value={speech} maxLength={s.settings.speech_limit} onChange={(e) => setSpeech(e.target.value)} rows={4} aria-label="Texte de l’allocution" className="w-full rounded-md border border-input bg-background p-3 text-base" placeholder="Mes chers compatriotes…" />
         <Button className="min-h-12 w-full" disabled={!speech.trim() || pending} onClick={() => run({ _action: 'speech', _body: speech, _request: req() })}>Diffuser l’allocution</Button>
       </div>

@@ -20,7 +20,7 @@ export const draftPresidentialSpeech = createServerFn({ method: "POST" })
     const st = s as State;
     if (!st.is_president) throw new Error("Réservé au Président de la République.");
 
-    const { data: news } = await sb.from("news_articles").select("title").order("published_at", { ascending: false }).limit(6);
+    const { data: news } = await sb.from("news").select("title").order("published_at", { ascending: false }).limit(6);
     const headlines: string[] = (news ?? []).map((n: { title: string }) => n.title).filter(Boolean);
     const lastSpeeches = st.acts.filter((a) => a.kind === "discours" && a.body).slice(0, 2).map((a) => a.body!.slice(0, 300));
 
