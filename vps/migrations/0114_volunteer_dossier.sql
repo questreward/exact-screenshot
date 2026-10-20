@@ -24,6 +24,7 @@ SELECT id, 'Antenne CIVITAS — ' || name FROM public.cities;
 
 CREATE TABLE public.volunteer_attachments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  ordinal bigint GENERATED ALWAYS AS IDENTITY UNIQUE,
   character_id uuid NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
   city_id text NOT NULL REFERENCES public.volunteer_branches(city_id),
   request_id uuid NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE public.volunteer_attachments (
 );
 GRANT SELECT ON public.volunteer_attachments TO authenticated;
 GRANT ALL ON public.volunteer_attachments TO service_role;
+GRANT USAGE, SELECT ON SEQUENCE public.volunteer_attachments_ordinal_seq TO service_role;
 ALTER TABLE public.volunteer_attachments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY volunteer_attachments_owner ON public.volunteer_attachments FOR SELECT TO authenticated
 USING (EXISTS (SELECT 1 FROM public.characters c WHERE c.id=character_id AND c.user_id=auth.uid()));
@@ -54,7 +56,7 @@ DECLARE cid uuid := public.social_actor(); BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Personnage connecté requis'; END IF;
   RETURN jsonb_build_object(
     'branches', COALESCE((SELECT jsonb_agg(to_jsonb(b) ORDER BY b.label) FROM public.volunteer_branches b),'[]'::jsonb),
-    'attachments', COALESCE((SELECT jsonb_agg(to_jsonb(a) - 'character_id' - 'request_id' ORDER BY a.attached_at DESC,a.id DESC) FROM public.volunteer_attachments a WHERE a.character_id=cid),'[]'::jsonb),
+    'attachments', COALESCE((SELECT jsonb_agg(to_jsonb(a) - 'character_id' - 'request_id' ORDER BY a.ordinal DESC) FROM public.volunteer_attachments a WHERE a.character_id=cid),'[]'::jsonb),
     'notes', COALESCE((SELECT jsonb_agg(to_jsonb(n) - 'character_id' ORDER BY n.created_at DESC) FROM public.volunteer_notes n WHERE n.character_id=cid),'[]'::jsonb)
   );
 END $$;
@@ -74,7 +76,7 @@ DECLARE cid uuid := public.social_actor(); prior public.volunteer_attachments; B
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.volunteer_branches WHERE city_id=_city) THEN RAISE EXCEPTION 'Antenne inconnue'; END IF;
   -- Un même choix répété ne crée pas une nouvelle ligne historique.
-  IF (SELECT city_id FROM public.volunteer_attachments WHERE character_id=cid ORDER BY attached_at DESC,id DESC LIMIT 1) IS DISTINCT FROM _city THEN
+  IF (SELECT city_id FROM public.volunteer_attachments WHERE character_id=cid ORDER BY ordinal DESC LIMIT 1) IS DISTINCT FROM _city THEN
     INSERT INTO public.volunteer_attachments(character_id,city_id,request_id) VALUES(cid,_city,_request);
   END IF;
   RETURN public.volunteer_dossier_state();

@@ -8,6 +8,7 @@ SELECT public.volunteer_attach('paris','00000000-0000-0000-0000-000000001001');
 SELECT public.volunteer_attach('paris','00000000-0000-0000-0000-000000001001');
 SELECT pg_temp.ok((SELECT count(*)=1 FROM public.volunteer_attachments),'Rattachement exactement une fois');
 SELECT public.volunteer_attach('lyon',gen_random_uuid());
+SELECT pg_temp.ok(public.volunteer_dossier_state()->'attachments'->0->>'city_id'='lyon','Dernier rattachement malgré date identique');
 SELECT public.security_quit();
 SELECT pg_temp.ok(jsonb_array_length(public.volunteer_dossier_state()->'attachments')=2,'Historique conservé au départ');
 SELECT pg_temp.refuse($$SELECT public.volunteer_attach('paris',gen_random_uuid())$$);
