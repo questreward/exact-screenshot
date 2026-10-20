@@ -1,5 +1,6 @@
 -- Isolated fixture only (after driving_fixture + 0098), never install on the VPS.
 ALTER TABLE public.personal_assets ADD COLUMN IF NOT EXISTS purchase_price integer NOT NULL DEFAULT 20000;
+ALTER TABLE public.economy_catalog ADD COLUMN IF NOT EXISTS config jsonb NOT NULL DEFAULT '{}';
 CREATE TABLE public.businesses(id uuid PRIMARY KEY, name text, sector_id text, status text, city_id text, owner_id uuid);
 CREATE TABLE public.biz_cash(key text PRIMARY KEY, biz uuid, amount integer);
 CREATE FUNCTION public.service_percent(_b uuid) RETURNS integer LANGUAGE sql AS $$ SELECT 80 $$;
