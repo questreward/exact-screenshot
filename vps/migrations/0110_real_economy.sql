@@ -191,9 +191,9 @@ DO $patch$ DECLARE def text; BEGIN
 END $patch$;
 DO $patch$ DECLARE def text; BEGIN
  def:=pg_get_functiondef('public.start_life_activity(text,uuid,uuid)'::regprocedure);
- IF position('IF a.type=''eat'' THEN a.money_cost:=public.real_economy_price(c.city_id,''food'',a.money_cost); END IF; IF c.energy<a.energy_cost THEN' IN def)=0 THEN
+ IF position('IF a.type=''eat'' THEN a.money_cost:=public.real_economy_price(c.city_id,''food'',a.money_cost); PERFORM public.bank_card_check(cid,a.money_cost::bigint*100); END IF; IF c.energy<a.energy_cost THEN' IN def)=0 THEN
   IF position('IF c.energy<a.energy_cost THEN' IN def)=0 THEN RAISE EXCEPTION '0110: ancre absente : %', 'public.start_life_activity(text,uuid,uuid)'; END IF;
-  EXECUTE replace(def,'IF c.energy<a.energy_cost THEN','IF a.type=''eat'' THEN a.money_cost:=public.real_economy_price(c.city_id,''food'',a.money_cost); END IF; IF c.energy<a.energy_cost THEN');
+  EXECUTE replace(def,'IF c.energy<a.energy_cost THEN','IF a.type=''eat'' THEN a.money_cost:=public.real_economy_price(c.city_id,''food'',a.money_cost); PERFORM public.bank_card_check(cid,a.money_cost::bigint*100); END IF; IF c.energy<a.energy_cost THEN');
  END IF;
 END $patch$;
 DO $patch$ DECLARE def text; BEGIN
@@ -217,6 +217,26 @@ DO $patch$ DECLARE def text; BEGIN
   EXECUTE replace(def,'key:=''rent:''||d;','cost:=public.real_economy_rent(_cid,h.type_id,d); key:=''rent:''||d;');
  END IF;
 END $patch$;
+DO $patch$ DECLARE def text; BEGIN
+ def:=pg_get_functiondef('public.student_settle(uuid)'::regprocedure);
+ IF position('public.real_economy_factor(m::timestamp' IN def)=0 THEN
+  IF position('amount := s.scholarship[p.scholarship_level];' IN def)=0 THEN RAISE EXCEPTION '0110: student_settle anchor missing'; END IF;
+  def:=replace(def,'amount := s.scholarship[p.scholarship_level];','amount := round(s.scholarship[p.scholarship_level]*public.real_economy_factor(m::timestamp AT TIME ZONE ''UTC''))::int;');
+  def:=replace(def,'  SELECT * INTO s FROM public.student_settings','  PERFORM public.economy_settle(); SELECT * INTO s FROM public.student_settings');
+  EXECUTE def;
+ END IF;
+END $patch$;
+DO $patch$ DECLARE def text; BEGIN
+ def:=pg_get_functiondef('public.settle_career(uuid)'::regprocedure);
+ IF position('public.real_economy_factor(wk_start)' IN def)=0 THEN
+  IF position("wk_start := lay.created_at + w * interval '7 days';" IN def)=0 THEN RAISE EXCEPTION '0110: settle_career anchor missing'; END IF;
+  def:=replace(def,"wk_start := lay.created_at + w * interval '7 days';","wk_start := lay.created_at + w * interval '7 days'; amount := round(floor((lay.payload->>'salary')::integer * s.unemployment_rate / 4.33)*public.real_economy_factor(wk_start)/public.real_economy_factor(lay.created_at))::int;");
+  def:=replace(def,'  -- Chômage :','  PERFORM public.economy_settle();
+  -- Chômage :');
+  EXECUTE def;
+ END IF;
+END $patch$;
+
 -- Internal helpers are never player-callable. Existing RPC grants are preserved.
 REVOKE ALL ON FUNCTION public.real_economy_factor(timestamptz),public.real_economy_price(text,text,numeric),
  public.bank_card_check(uuid,bigint),public.real_economy_salary(uuid),public.real_economy_work_pay(uuid,uuid,integer),
