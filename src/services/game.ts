@@ -1714,3 +1714,33 @@ export async function securityAction(fn: 'security_apply' | 'security_set_team' 
   if (error) throw new Error(error.message);
   return data as SecurityState;
 }
+
+// Réalisme France (0095) : médecin traitant, bulletins, permis
+export type MedicalState = {
+  now: string; settings: { refund_with_doctor: number; refund_without_doctor: number; refund_delay_days: number; change_days: number };
+  doctor: null | { id: string; name: string; address: string; chosen_at: string };
+  doctors: { id: string; name: string; address: string }[];
+  refunds: { consult_day: string; cost: number; rate: number; amount: number; with_doctor: boolean; paid_at: string }[];
+  pending: string[];
+};
+export type PayslipMonth = { month: string; employer: string; shifts: number; net: number; holidays: number };
+export type DrivingState = {
+  now: string; age: number; energy: number; balance: number; lessons_today: number;
+  settings: { min_age: number; code_fee: number; code_pass: number; code_questions: number; lesson_price: number; lesson_energy: number; lessons_per_day: number; min_lessons: number; exam_base_pct: number; exam_pct_per_lesson: number; exam_max_pct: number; exam_retry_days: number };
+  questions: { id: string; question: string; choices: string[] }[];
+  license: null | { registered_at: string; code_passed_at: string | null; last_code_day: string | null; lessons: number; last_exam_at: string | null; license_at: string | null };
+  history: { kind: string; result: string | null; amount: number; created_at: string }[];
+};
+const looseState = <T,>(fn: string) => async (): Promise<T | null> => {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn);
+  if (error) { if (error.code === 'PGRST202' || error.code === '42883' || error.message.includes(fn)) return null; throw new Error(error.message); }
+  return data as T;
+};
+export const medicalQuery = queryOptions({ queryKey: ['medical'], staleTime: 0, queryFn: looseState<MedicalState>('medical_state') });
+export const payslipsQuery = queryOptions({ queryKey: ['payslips'], staleTime: 0, queryFn: looseState<{ now: string; months: PayslipMonth[] }>('payslips_state') });
+export const drivingQuery = queryOptions({ queryKey: ['driving'], staleTime: 0, queryFn: looseState<DrivingState>('driving_state') });
+export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_register' | 'driving_code' | 'driving_lesson' | 'driving_exam', args: object = {}) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as T;
+}
