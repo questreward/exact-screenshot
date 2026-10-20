@@ -10,7 +10,6 @@ SELECT pg_temp.ok(public.fr_easter(2026) = '2026-04-05', 'easter 2026');
 SELECT pg_temp.ok(public.fr_is_holiday('2027-03-29') AND public.fr_is_holiday('2027-05-06') AND public.fr_is_holiday('2027-05-17') AND public.fr_is_holiday('2026-07-14'), 'holidays');
 SELECT pg_temp.ok(NOT public.fr_is_holiday('2026-10-20'), 'ordinary day');
 -- Jour férié : cours refusé, travail payé double ; jour normal inchangé
-SELECT pg_temp.err($$INSERT INTO public.activities(character_id,type,title,start_time,end_time,status) VALUES('00000000-0000-0000-0000-0000000000c1','security_shift','x','2026-11-11 09:00+00','2026-11-11 10:00+00','running')$$, 'dummy') WHERE false;
 INSERT INTO public.life_rules VALUES ('course','Cours',60,0,0,0,0,'{}'),('work','Travail',240,0,0,0,0,'{}');
 SELECT pg_temp.err($$INSERT INTO public.activities(character_id,type,title,start_time,end_time,status) VALUES('00000000-0000-0000-0000-0000000000c1','course','Cours','2026-11-11 09:00+00','2026-11-11 10:00+00','running')$$, 'course on holiday');
 INSERT INTO public.activities(character_id,type,title,start_time,end_time,status,reward) VALUES('00000000-0000-0000-0000-0000000000c1','work','Vendeur','2026-11-11 09:00+00','2026-11-11 13:00+00','running',80);
@@ -56,7 +55,6 @@ SELECT public.driving_code('{"c01":1,"c02":1,"c03":0,"c04":1,"c05":1,"c06":1,"c0
 SELECT pg_temp.ok((SELECT code_passed_at IS NOT NULL FROM public.driving_licenses), 'code 7/10 passed');
 SELECT public.driving_lesson(gen_random_uuid()); SELECT public.driving_lesson(gen_random_uuid());
 SELECT pg_temp.err($$SELECT public.driving_lesson(gen_random_uuid())$$, '2 lessons per day');
-SELECT pg_temp.ok((SELECT energy FROM public.characters WHERE id='00000000-0000-0000-0000-0000000000c1') = (SELECT energy FROM public.characters WHERE id='00000000-0000-0000-0000-0000000000c1'), 'energy read');
 SELECT pg_temp.err($$SELECT public.driving_exam(gen_random_uuid())$$, 'exam needs 20 lessons');
 UPDATE public.driving_licenses SET lessons = 30;
 -- 30 leçons : 55 + 3*10 = 85 % ; on boucle jusqu'à réussite en respectant 7 jours
