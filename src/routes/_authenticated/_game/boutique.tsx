@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, shopQuery, shopSell, shopWish, type SecondhandListing, type ShopAsset, type ShopProduct, type ShopState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
+import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
+import { filterHousing } from "@/game/housing-visuals";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -26,6 +28,9 @@ function ShopPage() {
   const [search, setSearch] = useState(""); const [section, setSection] = useState(""); const [brand, setBrand] = useState("");
   const [max, setMax] = useState(""); const [sort, setSort] = useState<ShopSort>("populaire");
   const [confirm, setConfirm] = useState<ShopProduct | null>(null);
+  const [visit, setVisit] = useState<ShopProduct | null>(null);
+  const [housingCity, setHousingCity] = useState("");
+  const [housingRooms, setHousingRooms] = useState("");
   const [sell, setSell] = useState<ShopAsset | null>(null);
   const [used, setUsed] = useState<SecondhandListing | null>(null);
   const refresh = () => KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
@@ -48,7 +53,9 @@ function ShopPage() {
   const cashPrice = (p: ShopProduct) => storePrice(p.price, promo.get(p.id) ?? 0);
 
   const brands = useMemo(() => [...new Set((s?.products ?? []).map(p => p.brand))].sort((a, b) => a.localeCompare(b, "fr")), [s]);
-  const list = useMemo(() => filterProducts((s?.products ?? []).map(p => ({ ...p, price: storePrice(p.price, promo.get(p.id) ?? 0), base: p })), { search, section, brand, maxPrice: max ? Number(max) : null }, sort).map(x => x.base), [s, search, section, brand, max, sort, promo]);
+  const list = useMemo(() => filterProducts(filterHousing((s?.products ?? []).map(p => ({ ...p, price: storePrice(p.price, promo.get(p.id) ?? 0), base: p })), section === "immobilier" ? housingCity : "", section === "immobilier" ? housingRooms : ""), { search, section, brand, maxPrice: max ? Number(max) : null }, sort).map(x => x.base), [s, search, section, brand, max, sort, promo, housingCity, housingRooms]);
+  const housingCities = [...new Set((s?.products ?? []).filter(p => p.details.realestate).flatMap(p => p.details.city ? [p.details.city] : []))].sort();
+  const roomCounts = [...new Set((s?.products ?? []).filter(p => p.details.realestate).flatMap(p => p.details.rooms != null ? [p.details.rooms] : []))].sort((a, b) => a - b);
   const total = (s?.assets ?? []).reduce((n, a) => n + a.value, 0);
   const activeCredits = (s?.credit.list ?? []).filter(c => c.status === "active");
   const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
@@ -83,9 +90,14 @@ function ShopPage() {
           <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
           <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
         </div>
+        {section === "immobilier" && <div className="grid grid-cols-2 gap-2">
+          <select className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</select>
+          <select className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</select>
+        </div>}
+        {list.length === 0 && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
         <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
         <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
-          busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+          busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
       </TabsContent>
 
       <TabsContent value="envies" className="mt-4 space-y-3">
@@ -98,7 +110,7 @@ function ShopPage() {
           : <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Pas d'objectif. Touche la cible sur un produit pour suivre ton épargne.</p>}
         {wishList.length === 0 ? <p className="text-sm text-muted-foreground">Ta liste d'envies est vide. Touche le cœur sur un produit pour l'ajouter.</p> :
           <ul className="grid gap-3 sm:grid-cols-2">{wishList.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished isGoal={!!wished.get(p.id)}
-            busy={wish.isPending} onBuy={() => setConfirm(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
+            busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
         <p className="text-xs text-muted-foreground">Ta liste est privée. Un produit acheté en sort automatiquement.</p>
       </TabsContent>
 
@@ -167,6 +179,7 @@ function ShopPage() {
       </TabsContent>
     </Tabs>}
 
+    {visit && <HousingVisit key={visit.id} p={visit} pct={promo.get(visit.id) ?? 0} onClose={() => setVisit(null)} onBuy={() => { setConfirm(visit); setVisit(null); }} />}
     {confirm && s && <BuyDialog p={confirm} s={s} pct={promo.get(confirm.id) ?? 0} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
       onCash={() => buy.mutate(confirm)} onCredit={(down, months) => buyCredit.mutate({ p: confirm, down, months })} />}
 
@@ -239,12 +252,13 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
   </Dialog>;
 }
 
-function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onWish }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; onBuy: () => void; onWish: (cmd: "wish" | "goal") => void }) {
+function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; onBuy: () => void; onVisit: () => void; onWish: (cmd: "wish" | "goal") => void }) {
   const creditable = p.kind === "vehicle" || !!p.details.realestate;
   const price = storePrice(p.price, pct);
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
   const blocked = p.kind === "vehicle" && !s.license;
-  return <li className="flex flex-col rounded-xl border border-border bg-card p-4">
+  return <li className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-4">
+    {p.details.realestate && <HousingPreview p={p} />}
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
       {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}</div>
@@ -252,6 +266,7 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onWish }: { p: Sh
     <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
     {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
     {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
+    {p.details.realestate && <Button variant="outline" className="mt-3 min-h-11" onClick={onVisit}>Visiter</Button>}
     <div className="mt-3 flex items-center justify-between gap-2"><div>
       {pct > 0 && <p className="text-xs text-muted-foreground line-through">{eur(p.price)}</p>}
       <p className="font-heading text-xl font-bold">{eur(price)}</p>
