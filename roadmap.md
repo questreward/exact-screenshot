@@ -437,6 +437,7 @@
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.
 
 ## Gel demandé par Alex — 20 octobre 18:18 UTC
+- [ ] Reprise explicite 18:27 : terminer les ajouts manquants dans le jeu avant clôture, sans application SQL implicite : catalogue 10 000, reportages JT locaux, camion lié, dossier 0114 et contrôles VPS.
 - [x] Réponse à Alex 18:26 : distinguer améliorations livrées, 0114 préparée non installée, engagements non terminés et essais manquants ; aucun gel assimilé à une réalisation complète.
 - [x] Rapport VPS 18:25 reçu : sauvegarde créée, restauration bloquée par pg_cron avant essai 0114 ; correction du contrôle isolé préparée sans changement du jeu.
 - [ ] Relancer le contrôle corrigé sur VPS : sortie de restauration des données du jeu et essai 0114 requis ; tâches pg_cron exclues du contrôle, sauvegarde complète conservée.
