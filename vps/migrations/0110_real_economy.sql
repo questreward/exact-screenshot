@@ -229,8 +229,8 @@ END $patch$;
 DO $patch$ DECLARE def text; BEGIN
  def:=pg_get_functiondef('public.settle_career(uuid)'::regprocedure);
  IF position('public.real_economy_factor(wk_start)' IN def)=0 THEN
-  IF position("wk_start := lay.created_at + w * interval '7 days';" IN def)=0 THEN RAISE EXCEPTION '0110: settle_career anchor missing'; END IF;
-  def:=replace(def,"wk_start := lay.created_at + w * interval '7 days';","wk_start := lay.created_at + w * interval '7 days'; amount := round(floor((lay.payload->>'salary')::integer * s.unemployment_rate / 4.33)*public.real_economy_factor(wk_start)/public.real_economy_factor(lay.created_at))::int;");
+  IF position($a$wk_start := lay.created_at + w * interval '7 days';$a$ IN def)=0 THEN RAISE EXCEPTION '0110: settle_career anchor missing'; END IF;
+  def:=replace(def,$a$wk_start := lay.created_at + w * interval '7 days';$a$,$a$wk_start := lay.created_at + w * interval '7 days'; amount := round(floor((lay.payload->>'salary')::integer * s.unemployment_rate / 4.33)*public.real_economy_factor(wk_start)/public.real_economy_factor(lay.created_at))::int;$a$);
   def:=replace(def,'  -- Chômage :','  PERFORM public.economy_settle();
   -- Chômage :');
   EXECUTE def;
