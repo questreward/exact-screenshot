@@ -341,7 +341,8 @@
 - [x] Espace « Caisse des aides » (type CAF) : accueil, paiements, droits, messagerie, attestations, simulation
 - [ ] Déclaration trimestrielle de ressources (SQL à valider)
 - [x] Espace Emploi (type France Travail) : offres, candidatures, conseiller
-- [ ] Actualisation mensuelle + allocation chômage (règles + SQL à valider)
+- [x] Actualisation mensuelle préparée : migration 0092 testée sur base jetable
+- [ ] Installer 0092 sur le VPS après accord sur le SQL
 - [ ] Espace Santé (type ameli)
 - [ ] Bloc A métiers sécurité/secours : règles chiffrées à faire valider (concours, école, grades, salaires)
 - [ ] Idées de réalisme France à proposer

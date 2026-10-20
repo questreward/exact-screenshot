@@ -1656,3 +1656,25 @@ export const districtGaugesQuery = (cityId: string) => queryOptions({
     return data as DistrictGauges;
   },
 });
+
+export type UnemploymentState = {
+  now: string; open_day: number; close_day: number; installed_at: string; employed: boolean; registered: boolean;
+  layoff: { at: string; job: string; salary: number } | null; open_period: string | null;
+  declarations: { period: string; still_searching: boolean; worked: boolean; declared_at: string }[];
+  payments: { week: number; amount: number; at: string }[];
+};
+type LooseRpc = (f: string, a?: object) => Promise<{ data: unknown; error: { code?: string; message: string } | null }>;
+/** Monthly actualisation (0092). Null when the VPS function is not installed yet. */
+export const unemploymentQuery = queryOptions({
+  queryKey: ['unemployment'], staleTime: 0, refetchInterval: 30000,
+  queryFn: async (): Promise<UnemploymentState | null> => {
+    const { data, error } = await (supabase.rpc as unknown as LooseRpc)('unemployment_state');
+    if (error) { if (error.code === 'PGRST202' || error.code === '42883' || /unemployment_state/.test(error.message)) return null; throw new Error(error.message); }
+    return data as UnemploymentState;
+  },
+});
+export async function declareUnemployment(input: { requestId: string; stillSearching: boolean; worked: boolean }) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('unemployment_declare', { _request_id: input.requestId, _still_searching: input.stillSearching, _worked: input.worked });
+  if (error) throw new Error(error.message);
+  return data as string;
+}

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Briefcase, CalendarCheck, Check, ChevronRight, FileText, Home, MessageCircle, Search, User } from 'lucide-react';
 import { applyJob, formatMoney, lifeQuery } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
+import { Actualisation } from '@/components/game/Actualisation';
 
 export const Route = createFileRoute('/_authenticated/_game/espace-emploi')({
   head: () => ({ meta: gameMeta('Emploi CIVITAS — Mon espace', 'Espace candidat CIVITAS inspiré de France Travail : offres, candidatures, conseiller et actualisation.') }),
@@ -84,10 +85,7 @@ function JobSpace() {
         </ul>
         <p className="text-xs text-muted-foreground">Conseiller fictif. Rendez-vous avec un conseiller : Disponible dans une prochaine étape.</p>
       </section>}
-      {tab === 'actualisation' && <section className="space-y-2 rounded-xl border border-border bg-card p-4"><h1 className="font-heading text-xl font-bold">M’actualiser</h1>
-        <p className="text-sm">En vrai, chaque mois, un demandeur d’emploi déclare s’il a travaillé, combien d’heures, et s’il est toujours à la recherche d’un emploi. Sans actualisation, il est radié.</p>
-        <p className="rounded-lg border border-dashed border-border p-3 text-sm text-muted-foreground">Actualisation mensuelle et allocation chômage : Disponible dans une prochaine étape</p>
-      </section>}
+      {tab === 'actualisation' && <Actualisation />}
     </main>
   </div>;
 }
