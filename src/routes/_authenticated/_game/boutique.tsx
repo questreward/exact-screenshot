@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { LoaderCircle, ShoppingBag, Search, Check, Wrench, Heart, Target, BadgePercent } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { LoaderCircle, ShoppingBag, Search, Check, Wrench, Heart, Target, BadgePercent, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,6 +31,9 @@ function ShopPage() {
   const [visit, setVisit] = useState<ShopProduct | null>(null);
   const [housingCity, setHousingCity] = useState("");
   const [housingRooms, setHousingRooms] = useState("");
+  const [page, setPage] = useState(0);
+  const pageSize = 24;
+  useEffect(() => { setPage(0); }, [search, section, brand, max, sort, housingCity, housingRooms]);
   const [sell, setSell] = useState<ShopAsset | null>(null);
   const [used, setUsed] = useState<SecondhandListing | null>(null);
   const refresh = () => KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
@@ -61,6 +64,9 @@ function ShopPage() {
   const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
   const wishList = (s?.products ?? []).filter(p => wished.has(p.id));
   const goal = wishList.find(p => wished.get(p.id));
+  const lastPage = Math.max(0, Math.ceil(list.length / pageSize) - 1);
+  const currentPage = Math.min(page, lastPage);
+  const visible = list.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   return <div className="mx-auto max-w-3xl space-y-4 p-4 pb-24">
     <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
@@ -79,8 +85,8 @@ function ShopPage() {
         {promoList.length > 0 && <section className="rounded-xl border border-primary/40 bg-primary/10 p-4">
           <p className="flex items-center gap-2 font-heading font-bold"><BadgePercent className="h-5 w-5 text-primary" />Promos de la semaine</p>
           <p className="text-xs text-muted-foreground">{promoList.length} produits remisés, au comptant{extras.data?.promo_ends ? `, jusqu'au ${day(extras.data.promo_ends)}` : ""}. Nouvelles promos chaque semaine de jeu.</p>
-          <div className="mt-2 flex flex-wrap gap-2">{promoList.map(p => <button key={p.id} type="button" onClick={() => setSearch(p.name)}
-            className="min-h-11 rounded-full bg-card px-3 py-2 text-sm font-semibold">{p.name} <span className="text-primary">−{promo.get(p.id)} %</span></button>)}</div>
+          <div className="mt-2 flex flex-wrap gap-2">{promoList.slice(0, 8).map(p => <Button key={p.id} variant="outline" onClick={() => setSearch(p.name)}
+            className="min-h-11 h-auto whitespace-normal px-3 py-2 text-sm font-semibold">{p.name} <span className="text-primary">−{promo.get(p.id)} %</span></Button>)}</div>
         </section>}
         <label className="relative block"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
           <input className="h-12 w-full rounded-lg border border-input bg-background pl-10 pr-3" placeholder="Rechercher une marque, un produit…" value={search} onChange={e => setSearch(e.target.value)} /></label>
@@ -96,8 +102,13 @@ function ShopPage() {
         </div>}
         {list.length === 0 && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
         <p className="text-xs text-muted-foreground">{list.length} produit{list.length > 1 ? "s" : ""}</p>
-        <ul className="grid gap-3 sm:grid-cols-2">{list.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
+        <ul className="grid gap-3 sm:grid-cols-2">{visible.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
           busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+        {list.length > pageSize && <nav aria-label="Pages du catalogue" className="flex items-center justify-between gap-3">
+          <Button variant="outline" className="h-12 w-12" aria-label="Page précédente" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}><ChevronLeft /></Button>
+          <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
+          <Button variant="outline" className="h-12 w-12" aria-label="Page suivante" disabled={currentPage >= lastPage} onClick={() => setPage(currentPage + 1)}><ChevronRight /></Button>
+        </nav>}
       </TabsContent>
 
       <TabsContent value="envies" className="mt-4 space-y-3">
