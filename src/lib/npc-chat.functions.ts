@@ -14,7 +14,7 @@ export const chatWithNpc = createServerFn({ method: "POST" })
     if (!npc) throw new Error("Habitant inconnu.");
     if (life.position?.location_id !== npc.location_id) throw new Error(`Rejoins ${npc.location?.name ?? "son lieu"} pour discuter.`);
     const rel = (social.relations ?? []).find((r: any) => r.npc_id === npc.id);
-    const { data: events } = await sb.from("events").select("title").eq("city_id", npc.city_id ?? life.position?.city_id).lte("starts_at", social.world_now).gte("ends_at", social.world_now).limit(3);
+    const { data: events } = await sb.from("events").select("title").is("character_id", null).eq("city_id", npc.city_id ?? life.position?.city_id).lte("starts_at", social.world_now).gte("ends_at", social.world_now).limit(3);
 
     const url = process.env["OLLAMA_URL"];
     const model = process.env["OLLAMA_MODEL"] || "qwen2.5:3b";
