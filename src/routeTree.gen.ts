@@ -30,6 +30,7 @@ import { Route as AuthenticatedGameChezMoiRouteImport } from './routes/_authenti
 import { Route as AuthenticatedGameCivitasServicesRouteImport } from './routes/_authenticated/_game/civitas-services'
 import { Route as AuthenticatedGameClassementsRouteImport } from './routes/_authenticated/_game/classements'
 import { Route as AuthenticatedGameConcessionRouteImport } from './routes/_authenticated/_game/concession'
+import { Route as AuthenticatedGameConduiteRouteImport } from './routes/_authenticated/_game/conduite'
 import { Route as AuthenticatedGameConstructionRouteImport } from './routes/_authenticated/_game/construction'
 import { Route as AuthenticatedGameCrisesRouteImport } from './routes/_authenticated/_game/crises'
 import { Route as AuthenticatedGameDebatsRouteImport } from './routes/_authenticated/_game/debats'
@@ -197,6 +198,12 @@ const AuthenticatedGameConcessionRoute =
   AuthenticatedGameConcessionRouteImport.update({
     id: '/concession',
     path: '/concession',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
+const AuthenticatedGameConduiteRoute =
+  AuthenticatedGameConduiteRouteImport.update({
+    id: '/conduite',
+    path: '/conduite',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
 const AuthenticatedGameConstructionRoute =
@@ -541,6 +548,7 @@ export interface FileRoutesByFullPath {
   '/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
+  '/conduite': typeof AuthenticatedGameConduiteRoute
   '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
@@ -618,6 +626,7 @@ export interface FileRoutesByTo {
   '/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/classements': typeof AuthenticatedGameClassementsRoute
   '/concession': typeof AuthenticatedGameConcessionRoute
+  '/conduite': typeof AuthenticatedGameConduiteRoute
   '/construction': typeof AuthenticatedGameConstructionRoute
   '/crises': typeof AuthenticatedGameCrisesRoute
   '/debats': typeof AuthenticatedGameDebatsRoute
@@ -698,6 +707,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/civitas-services': typeof AuthenticatedGameCivitasServicesRoute
   '/_authenticated/_game/classements': typeof AuthenticatedGameClassementsRoute
   '/_authenticated/_game/concession': typeof AuthenticatedGameConcessionRoute
+  '/_authenticated/_game/conduite': typeof AuthenticatedGameConduiteRoute
   '/_authenticated/_game/construction': typeof AuthenticatedGameConstructionRoute
   '/_authenticated/_game/crises': typeof AuthenticatedGameCrisesRoute
   '/_authenticated/_game/debats': typeof AuthenticatedGameDebatsRoute
@@ -777,6 +787,7 @@ export interface FileRouteTypes {
     | '/civitas-services'
     | '/classements'
     | '/concession'
+    | '/conduite'
     | '/construction'
     | '/crises'
     | '/debats'
@@ -854,6 +865,7 @@ export interface FileRouteTypes {
     | '/civitas-services'
     | '/classements'
     | '/concession'
+    | '/conduite'
     | '/construction'
     | '/crises'
     | '/debats'
@@ -933,6 +945,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/civitas-services'
     | '/_authenticated/_game/classements'
     | '/_authenticated/_game/concession'
+    | '/_authenticated/_game/conduite'
     | '/_authenticated/_game/construction'
     | '/_authenticated/_game/crises'
     | '/_authenticated/_game/debats'
@@ -1148,6 +1161,13 @@ declare module '@tanstack/react-router' {
       path: '/concession'
       fullPath: '/concession'
       preLoaderRoute: typeof AuthenticatedGameConcessionRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
+    '/_authenticated/_game/conduite': {
+      id: '/_authenticated/_game/conduite'
+      path: '/conduite'
+      fullPath: '/conduite'
+      preLoaderRoute: typeof AuthenticatedGameConduiteRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
     '/_authenticated/_game/construction': {
@@ -1558,6 +1578,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameCivitasServicesRoute: typeof AuthenticatedGameCivitasServicesRoute
   AuthenticatedGameClassementsRoute: typeof AuthenticatedGameClassementsRoute
   AuthenticatedGameConcessionRoute: typeof AuthenticatedGameConcessionRoute
+  AuthenticatedGameConduiteRoute: typeof AuthenticatedGameConduiteRoute
   AuthenticatedGameConstructionRoute: typeof AuthenticatedGameConstructionRoute
   AuthenticatedGameCrisesRoute: typeof AuthenticatedGameCrisesRoute
   AuthenticatedGameDebatsRoute: typeof AuthenticatedGameDebatsRoute
@@ -1631,6 +1652,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
       AuthenticatedGameCivitasServicesRoute,
     AuthenticatedGameClassementsRoute: AuthenticatedGameClassementsRoute,
     AuthenticatedGameConcessionRoute: AuthenticatedGameConcessionRoute,
+    AuthenticatedGameConduiteRoute: AuthenticatedGameConduiteRoute,
     AuthenticatedGameConstructionRoute: AuthenticatedGameConstructionRoute,
     AuthenticatedGameCrisesRoute: AuthenticatedGameCrisesRoute,
     AuthenticatedGameDebatsRoute: AuthenticatedGameDebatsRoute,

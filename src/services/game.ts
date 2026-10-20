@@ -1766,6 +1766,22 @@ export async function transportAction(fn: 'transit_buy_pass' | 'transport_set_wi
   if (error) throw new Error(error.message);
   return data as TransportState;
 }
+export type DriveState = {
+  now: string; time_speed: number; settings: { tolerance: number; fuel_per_hour: number; duration_pct: number; energy_cost: number };
+  trip: null | { id: string; title: string; status: string; start_time: string; end_time: string; kind: 'voiture' | 'car' | 'train';
+    drive: null | { activity_id: string; from_city: string; to_city: string; segments: { from: number; to: number; limit: number; label: string }[]; radars: { at: number; limit: number }[]; mode: string; speeds: number[] | null; flashes: number; settled: boolean } };
+};
+export const driveQuery = queryOptions({ queryKey: ['drive'], staleTime: 0, queryFn: looseState<DriveState>('drive_state') });
+export async function travelDrive(input: { toCity: string; catalogId: string }) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('travel_drive_intercity', { _to_city: input.toCity, _catalog: input.catalogId });
+  if (error) throw new Error(error.message);
+  return data;
+}
+export async function driveReport(activity: string, speeds: number[] | null, auto = false) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('drive_report', { _activity: activity, _speeds: speeds, _auto: auto });
+  if (error) throw new Error(error.message);
+  return data as DriveState;
+}
 export const drivingQuery = queryOptions({ queryKey: ['driving'], staleTime: 0, queryFn: looseState<DrivingState>('driving_state') });
 export async function realismAction<T>(fn: 'medical_choose_doctor' | 'driving_register' | 'driving_code' | 'driving_lesson' | 'driving_exam', args: object = {}) {
   const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
