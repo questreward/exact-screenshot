@@ -17,7 +17,7 @@ export const PORTALS: Portal[] = [
     keywords: ["emploi", "chomage", "travail", "france travail", "pole emploi", "cv", "entretien"] },
   { id: "sante", name: "Santé CIVITAS", real: "Ameli", about: "Dans la vraie vie, l'Assurance maladie rembourse une partie des soins ; une mutuelle complète.",
     inGame: ["Voir le médecin, suivre son moral et sa forme", "Choisir une assurance"],
-    links: [{ path: "/sante", label: "Ma santé" }, { path: "/assurances", label: "Assurances" }],
+    links: [{ path: "/espace-sante", label: "Ouvrir mon compte assuré" }, { path: "/sante", label: "Ma santé" }, { path: "/assurances", label: "Assurances" }],
     keywords: ["sante", "ameli", "medecin", "mutuelle", "maladie", "soins"] },
   { id: "titres", name: "Titres et papiers", real: "ANTS / préfecture", about: "Dans la vraie vie, on demande sa carte d'identité, son passeport ou son permis en ligne.",
     inGame: ["Carte d'identité fictive avec photo", "Coffre-fort de documents"],
