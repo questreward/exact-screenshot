@@ -39,4 +39,4 @@
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Full-body fingerprints guard patches against incompatible installs.
 
-- Housing visits: read-only, generic images; purchases retain secured RPCs.
+- Housing visits: read-only illustrations; purchases use secured RPCs.
