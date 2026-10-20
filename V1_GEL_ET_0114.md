@@ -25,6 +25,8 @@ bash vps/tools/prepare_v1_freeze.sh
 
 Le script garde une sauvegarde privée dans `/data/civitas-live/backups`, restaure dans une nouvelle base temporaire, teste 0114 avec `ROLLBACK`, puis supprime uniquement cette copie. Il ne redémarre pas le jeu. Prévoir de l’espace pour la sauvegarde et la copie ; en cas d’erreur, ne pas poursuivre.
 
+Correction après le rapport de 18:25 : pg_cron refuse une restauration dans une autre base que celle configurée. Le contrôle exclut donc l’extension pg_cron et son schéma cron uniquement de la copie d’essai, via la liste des objets de l’archive. La sauvegarde reste complète, la configuration du serveur et le jeu restent inchangés. La restauration des données du jeu ne certifie pas la restauration ni l’exécution des tâches pg_cron. Aucun nettoyage manuel de la copie du premier échec n’est effectué ici.
+
 Envoyer la sortie jusqu’à « essai à blanc réussi » et confirmer le SQL joint avant l’installation réelle. Aucune migration 0093–0113 n’est relancée.
 
 ## Éléments vérifiés ici

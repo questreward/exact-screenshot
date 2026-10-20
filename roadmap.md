@@ -437,5 +437,7 @@
 - [ ] Clôturer seulement après essais réels et restauration isolée réussie ; accès à une copie VPS et capacité vidéo locale restent à vérifier.
 
 ## Gel demandé par Alex — 20 octobre 18:18 UTC
+- [x] Rapport VPS 18:25 reçu : sauvegarde créée, restauration bloquée par pg_cron avant essai 0114 ; correction du contrôle isolé préparée sans changement du jeu.
+- [ ] Relancer le contrôle corrigé sur VPS : sortie de restauration des données du jeu et essai 0114 requis ; tâches pg_cron exclues du contrôle, sauvegarde complète conservée.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.
