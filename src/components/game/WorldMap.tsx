@@ -1,5 +1,6 @@
 import { Suspense, useState } from "react";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { BonhommeG } from "./Bonhomme";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -117,6 +118,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
               <rect x="-115" y="-80" width="230" height="160" rx="16" className={`world-district ${st?.main ? `district-${st.main}` : ""} ${d.id === selected?.id ? "district-selected" : ""}`} />
               {!selected && MainIcon && st?.main && <g transform="translate(-95,-62)" aria-label={DISTRICT_BADGE_LABEL[st.main]}><circle r="15" className={`district-icon-bg chip-${st.main}`} /><MainIcon x={-9} y={-9} width={18} height={18} className="district-icon" /></g>}
               {!selected && <MapMarker label={d.name} active={playerHere && position?.district_id === d.id} onClick={() => districtSelect(d.id)} />}
+              {[0, 1, phase === "nuit" ? -1 : 2].filter(i => i >= 0).map(i => <g key={i} className="bh-wander" style={{ animationDelay: `${i * 1.3}s`, animationDuration: `${7 + i * 2}s` }}><g transform={`translate(${-70 + i * 50},${selected ? 40 : 20}) scale(${selected ? 0.9 : 0.55})`}><BonhommeG seed={`${d.id}-${i}`} mood={i === 1 ? "talk" : "walk"} delay={i * 0.3} /></g></g>)}
               {selected && <text y="-210" textAnchor="middle" className="district-label">{d.name}</text>}
             </g>; })}
             {selected && <Suspense fallback={null}><LocationMarkers district={selected} positionId={playerHere ? position?.location_id : undefined} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense>}
