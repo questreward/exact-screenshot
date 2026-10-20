@@ -37,5 +37,5 @@ export const weeklyPay = (monthly: number) => Math.round((monthly * 12) / 52);
 /** Prochain grade : titre et missions réussies restantes, ou null au grade maximal. */
 export function nextRank(titles: string[], needed: number[], rank: number, missionsOk: number) {
   if (rank + 1 >= titles.length) return null;
-  return { title: titles[rank + 1], remaining: Math.max(0, needed[rank + 1] - missionsOk) };
+  return { title: titles[rank + 1], remaining: Math.max(0, (needed[rank + 1] ?? 0) - missionsOk) };
 }

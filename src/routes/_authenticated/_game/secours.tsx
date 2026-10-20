@@ -74,7 +74,7 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
       <p className="font-heading font-bold">{x.label}</p>
       <p className="mt-1 text-sm text-muted-foreground">{SERVICE_INTRO[x.id]}</p>
       <p className="mt-2 text-sm">{x.min_age} à {x.max_age} ans · {x.exam ? "Concours" : "Sans concours"} · {
-        x.hourly_pay ? `${x.hourly_pay} € de l'heure` : x.rank_monthly[1] ? `${eur(x.rank_monthly[1])} par mois au départ` : "Bénévole"}</p>
+        x.hourly_pay ? `${x.hourly_pay} € de l'heure` : (x.rank_monthly[1] ?? 0) ? `${eur(x.rank_monthly[1] ?? 0)} par mois au départ` : "Bénévole"}</p>
       {!eligible && <p className="mt-1 text-sm font-semibold text-destructive">Pas accessible à ton âge ({s.age} ans).</p>}
     </button>;
   })}</div>;
@@ -115,7 +115,7 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
   const next = nextRank(sv.rank_titles, sv.rank_missions, c.rank, c.missions_ok);
   const team = TEAMS[c.service].find(t => t.id === c.team);
   const injured = c.injured_until && new Date(c.injured_until).getTime() > now;
-  const monthly = c.status === "formation" ? sv.training_monthly : sv.rank_monthly[Math.max(c.rank, 1)];
+  const monthly = c.status === "formation" ? sv.training_monthly : (sv.rank_monthly[Math.max(c.rank, 1)] ?? 0);
 
   return <>
     <Card title={sv.label} icon={ShieldCheck}>
