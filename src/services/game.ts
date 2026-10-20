@@ -1678,3 +1678,39 @@ export async function declareUnemployment(input: { requestId: string; stillSearc
   if (error) throw new Error(error.message);
   return data as string;
 }
+
+// Carrières de sécurité et de secours (0093) — état et actions via RPC sécurisées
+export type SecurityService = { id: "police" | "pompier_pro" | "pompier_vol" | "protection_civile"; label: string; min_age: number; max_age: number; exam: boolean; training_days: number; training_monthly: number; rank_titles: string[]; rank_monthly: number[]; rank_missions: number[]; hourly_pay: number; civic_per_shift: number; exclusive_job: boolean };
+export type SecurityMission = { id: string; title: string; situation: string; choices: { id: string; label: string }[] };
+export type SecurityShift = { id: string; service: string; starts_at: string; ends_at: string; hours: number; mission_id: string; choice: string | null; outcome: string | null; settled: boolean };
+export type SecurityState = {
+  now: string; age: number; energy: number; employed: boolean;
+  settings: { exam_retry_days: number; exam_energy: number; exam_pass_total: number; injury_days: number };
+  services: SecurityService[];
+  questions: { id: string; service: string; question: string; choices: string[] }[];
+  career: null | { service: SecurityService["id"]; status: "formation" | "service" | "quitte"; team: string; rank: number; joined_at: string; trained_at: string; missions_ok: number; missions_total: number; commendations: number; complaints: number; injured_until: string | null };
+  exams: { id: string; service: string; written: number; sport: number; oral: number; passed: boolean; taken_at: string }[];
+  shifts: SecurityShift[];
+  ledger: { key: string; kind: string; amount: number; label: string; created_at: string }[];
+};
+export const securityQuery = queryOptions({
+  queryKey: ['security-careers'], staleTime: 0, refetchInterval: 30000,
+  queryFn: async (): Promise<SecurityState | null> => {
+    const { data, error } = await (supabase.rpc as unknown as LooseRpc)('security_state');
+    if (error) { if (error.code === 'PGRST202' || error.code === '42883' || /security_state/.test(error.message)) return null; throw new Error(error.message); }
+    return data as SecurityState;
+  },
+});
+export const securityMissionsQuery = queryOptions({
+  queryKey: ['security-missions'], staleTime: 600000,
+  queryFn: async (): Promise<SecurityMission[]> => {
+    const { data, error } = await (supabase as unknown as { from: (t: string) => { select: (c: string) => Promise<{ data: unknown; error: { message: string } | null }> } }).from('security_missions').select('id,title,situation,choices');
+    if (error) return [];
+    return data as SecurityMission[];
+  },
+});
+export async function securityAction(fn: 'security_apply' | 'security_set_team' | 'security_start_shift' | 'security_choose' | 'security_quit', args: object = {}) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as SecurityState;
+}
