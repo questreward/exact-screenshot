@@ -391,7 +391,7 @@
 - [x] Métiers manquants (0109) installés
 
 ## Lot suivant (choisi par Alex)
-- [ ] 0110 Économie réelle — essai à blanc OK, installation envoyée
+- [x] 0110 Économie réelle installée
 - [ ] 0111 Missions des nouveaux métiers
 - [ ] 0112 Taxe foncière aux mairies
 - [ ] 0113 Voyages à l'étranger
