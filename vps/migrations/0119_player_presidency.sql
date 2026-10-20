@@ -199,6 +199,7 @@ DECLARE cid uuid := public.social_actor(); s public.pr_settings; e public.pr_ele
   IF EXISTS(SELECT 1 FROM public.pr_sponsors WHERE election_id=e.id AND sponsor=cid) THEN RAISE EXCEPTION 'Parrainage unique et définitif déjà donné'; END IF;
   INSERT INTO public.pr_sponsors(election_id,sponsor,candidate) VALUES (e.id,cid,_target);
  ELSIF _action='vote' THEN
+  IF EXISTS(SELECT 1 FROM public.pr_ballots WHERE election_id=e.id AND voter=cid AND round=CASE WHEN e.round1_counted THEN 2 ELSE 1 END) THEN RAISE EXCEPTION 'Vous avez déjà voté à ce tour'; END IF;
   IF t >= e.round1_at AND t < e.round2_at AND NOT e.round1_counted THEN
    IF (SELECT count(*) FROM public.pr_sponsors WHERE election_id=e.id AND candidate=_target) < s.sponsors_required THEN RAISE EXCEPTION 'Ce candidat n''a pas ses parrainages'; END IF;
    INSERT INTO public.pr_ballots(election_id,round,voter,candidate) VALUES (e.id,1,cid,_target);
@@ -259,6 +260,7 @@ DECLARE cid uuid := public.social_actor(); s public.pr_settings; e public.pr_ele
   ELSIF _action='referendum_vote' THEN
    IF coalesce(age,0) < s.min_age THEN RAISE EXCEPTION 'Il faut avoir % ans', s.min_age; END IF;
    IF _yes IS NULL OR NOT EXISTS(SELECT 1 FROM public.pr_referendums WHERE id=_target AND NOT settled AND closes_at>t) THEN RAISE EXCEPTION 'Référendum fermé'; END IF;
+   IF EXISTS(SELECT 1 FROM public.pr_referendum_votes WHERE referendum_id=_target AND voter=cid) THEN RAISE EXCEPTION 'Vous avez déjà voté'; END IF;
    INSERT INTO public.pr_referendum_votes(referendum_id,voter,vote) VALUES (_target,cid,_yes);
   ELSE RAISE EXCEPTION 'Action inconnue'; END IF;
  END IF;

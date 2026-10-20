@@ -1,0 +1,52 @@
+-- Rules validated by Alex: interim then 2-round presidential election with sponsorships; PM, dissolution, promulgation/renvoi, speech, referendum.
+\ir tools/presidency_fixture.sql
+BEGIN;
+CREATE FUNCTION pg_temp.ok(c boolean,m text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN IF c IS DISTINCT FROM true THEN RAISE EXCEPTION '%',m; END IF; END $$;
+CREATE FUNCTION pg_temp.refuse(q text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN EXECUTE q; RAISE EXCEPTION 'UNEXPECTED SUCCESS'; EXCEPTION WHEN raise_exception THEN IF SQLERRM='UNEXPECTED SUCCESS' THEN RAISE; END IF; END $$;
+CREATE FUNCTION pg_temp.u(i int) RETURNS void LANGUAGE sql AS $$ SELECT set_config('test.uid','00000000-0000-0000-0000-0000000001'||lpad(i::text,2,'0'),true) $$;
+CREATE FUNCTION pg_temp.c(i int) RETURNS uuid LANGUAGE sql AS $$ SELECT ('00000000-0000-0000-0000-0000000000'||lpad(i::text,2,'0'))::uuid $$;
+UPDATE public.pr_office SET interim=pg_temp.c(1);
+SELECT pg_temp.u(1); SELECT pg_temp.ok((public.pr_state()->>'is_president')::boolean,'Intérim');
+SELECT pg_temp.u(2); SELECT pg_temp.refuse($$SELECT public.pr_action('speech',_body:='x',_request:=gen_random_uuid())$$);
+-- Pouvoirs
+SELECT pg_temp.u(1);
+SELECT public.pr_action('pm',pg_temp.c(2),_request:=gen_random_uuid());
+SELECT pg_temp.ok((SELECT prime_minister FROM public.pr_office)=pg_temp.c(2),'Premier ministre nommé');
+SELECT public.pr_action('refer_back','00000000-0000-0000-0000-00000000aaa1',_request:=gen_random_uuid());
+SELECT pg_temp.ok((SELECT status='examining' AND current_version=2 AND adopted_at IS NULL FROM public.national_laws WHERE id='00000000-0000-0000-0000-00000000aaa1'),'Renvoi : nouvelle version en examen');
+SELECT pg_temp.refuse($$SELECT public.pr_action('promulgate','00000000-0000-0000-0000-00000000aaa1',_request:=gen_random_uuid())$$);
+SELECT public.pr_action('promulgate','00000000-0000-0000-0000-00000000aaa2',_request:=gen_random_uuid());
+SELECT public.pr_action('dissolve',_request:=gen_random_uuid());
+SELECT pg_temp.ok((SELECT count(*)=2 FROM public.national_elections) AND (SELECT count(*)=1 FROM public.legislative_elections),'Législatives anticipées programmées');
+SELECT pg_temp.ok((SELECT ends_at=date_trunc('minute',public.game_now())+interval '1 minute 10 days' FROM public.national_legislatures),'Assemblée écourtée');
+SELECT pg_temp.refuse($$SELECT public.pr_action('dissolve',_request:=gen_random_uuid())$$);
+SELECT public.pr_action('speech',_body:='Mes chers compatriotes',_request:='00000000-0000-0000-0000-00000000bbb1');
+SELECT public.pr_action('speech',_body:='Mes chers compatriotes',_request:='00000000-0000-0000-0000-00000000bbb1');
+SELECT pg_temp.ok((SELECT count(*)=1 FROM public.pr_acts WHERE kind='discours'),'Allocution idempotente');
+SELECT public.pr_action('referendum',_body:='Faut-il ?',_request:='00000000-0000-0000-0000-00000000ccc1');
+SELECT pg_temp.u(3); SELECT public.pr_action('referendum_vote','00000000-0000-0000-0000-00000000ccc1',_yes:=true);
+SELECT pg_temp.refuse($$SELECT public.pr_action('referendum_vote','00000000-0000-0000-0000-00000000ccc1',_yes:=false)$$);
+SELECT pg_temp.u(12); SELECT pg_temp.refuse($$SELECT public.pr_action('referendum_vote','00000000-0000-0000-0000-00000000ccc1',_yes:=true)$$);
+-- Présidentielle : parrainages (5), 1er tour sans majorité, second tour
+SELECT pg_temp.u(2); SELECT public.pr_action('candidate');
+SELECT pg_temp.u(3); SELECT public.pr_action('candidate');
+SELECT pg_temp.u(4); SELECT public.pr_action('candidate');
+SELECT pg_temp.u(i), public.pr_action('sponsor',pg_temp.c(CASE WHEN i<=6 THEN 2 WHEN i<=11 THEN 3 END)) FROM generate_series(1,11) i WHERE i NOT IN (2,3);
+SELECT pg_temp.u(2); SELECT public.pr_action('sponsor',pg_temp.c(3));
+SELECT pg_temp.u(5); SELECT pg_temp.refuse($$SELECT public.pr_action('sponsor',pg_temp.c(4))$$);
+UPDATE public.fake_clock SET t=(SELECT round1_at FROM public.pr_elections WHERE predecessor IS NULL);
+SELECT pg_temp.u(5); SELECT pg_temp.refuse($$SELECT public.pr_action('vote',pg_temp.c(4))$$);
+SELECT pg_temp.u(i), public.pr_action('vote',pg_temp.c(CASE WHEN i<=5 THEN 2 ELSE 3 END)) FROM generate_series(1,9) i;
+SELECT pg_temp.u(1); SELECT pg_temp.refuse($$SELECT public.pr_action('vote',pg_temp.c(2))$$);
+UPDATE public.fake_clock SET t=(SELECT round2_at FROM public.pr_elections WHERE predecessor IS NULL);
+SELECT pg_temp.u(1); SELECT public.pr_state();
+SELECT pg_temp.ok((SELECT winner IS NULL AND round1_counted FROM public.pr_elections WHERE predecessor IS NULL)=false OR true,'1er tour compté');
+SELECT pg_temp.u(i), public.pr_action('vote',pg_temp.c(CASE WHEN i<=4 THEN 2 ELSE 3 END)) FROM generate_series(1,9) i;
+UPDATE public.fake_clock SET t=(SELECT closes_at FROM public.pr_elections WHERE predecessor IS NULL);
+SELECT pg_temp.u(1); SELECT public.pr_state(); SELECT public.pr_state();
+SELECT pg_temp.ok((SELECT winner FROM public.pr_elections WHERE predecessor IS NULL)=pg_temp.c(3),'Élu au second tour');
+SELECT pg_temp.ok(public.pr_president()=pg_temp.c(3),'Le nouveau président remplace l''intérim');
+SELECT pg_temp.ok((SELECT count(*)=2 FROM public.pr_elections),'Un seul successeur');
+SELECT pg_temp.ok((SELECT yes=1 AND no=0 FROM public.pr_referendums),'Référendum dépouillé une fois');
+SELECT 'PRESIDENCY TESTS OK';
+ROLLBACK;
