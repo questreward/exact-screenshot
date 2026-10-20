@@ -474,4 +474,4 @@
 - RSA : 0116 prêt, essais locaux OK — attend l'essai sans risque sur le VPS
 - Vrais politiques : 574/577 députés trouvés (3 sièges à vérifier), gouvernement à confirmer — import bloqué jusqu'à vérification
 - [ ] Président de la Protection civile (élu, 4 pouvoirs, indemnité) — règles validées (300 €/mois caisse nationale subventionnée État, 1 op/semaine, 1 responsable/ville révocable, intérim copain) — en préparation 0117
-- [ ] Historique des promotions (grade, date, raison) sur la page Secours
+- [x] Historique des promotions (grade, date, raison) sur la page Secours
