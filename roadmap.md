@@ -235,6 +235,7 @@
 
 - [x] Menu par rubriques + accueil personnel (affichage seulement)
 - [ ] CIVITAS Services (annuaire + parcours)
+- [ ] Logements visuels : chantier choisi par Alex après la Ville vivante ; préparer catalogue illustré et visites à partir des biens existants, puis soumettre le découpage.
 - [ ] Monde mis en scène
 
 - [x] Agence immobilière (0082) prête, à installer sur le VPS
