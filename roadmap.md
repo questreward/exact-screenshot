@@ -459,3 +459,8 @@
 - [ ] Mise à jour du site et parcours connectés antenne/note/boutique : non vérifiés ; accès serveur et session du jeu absents ici, procédure de déploiement VPS à confirmer.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.
+
+## Vérification de clôture — 20 octobre 18:56 UTC
+- [ ] Mettre à jour le site VPS sans réappliquer 0114/0115 ; procédure et accès serveur à vérifier.
+- [ ] Vérifier les parcours connectés Protection civile, boutique et confort téléphone sur le site réel ; session du jeu requise.
+- [ ] Conclure explicitement sur chaque critère de clôture à partir des preuves, sans assimiler les tests locaux aux essais VPS.
