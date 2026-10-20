@@ -73,6 +73,7 @@ import { Route as AuthenticatedGameSondagesRouteImport } from './routes/_authent
 import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
+import { Route as AuthenticatedGameTransportsRouteImport } from './routes/_authenticated/_game/transports'
 import { Route as AuthenticatedGameTropheesRouteImport } from './routes/_authenticated/_game/trophees'
 import { Route as AuthenticatedGameVerificationRouteImport } from './routes/_authenticated/_game/verification'
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
@@ -442,6 +443,12 @@ const AuthenticatedGameTelephoneRoute =
     path: '/telephone',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameTransportsRoute =
+  AuthenticatedGameTransportsRouteImport.update({
+    id: '/transports',
+    path: '/transports',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameTropheesRoute =
   AuthenticatedGameTropheesRouteImport.update({
     id: '/trophees',
@@ -577,6 +584,7 @@ export interface FileRoutesByFullPath {
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/transports': typeof AuthenticatedGameTransportsRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
   '/verification': typeof AuthenticatedGameVerificationRoute
   '/vie': typeof AuthenticatedGameVieRoute
@@ -653,6 +661,7 @@ export interface FileRoutesByTo {
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/transports': typeof AuthenticatedGameTransportsRoute
   '/trophees': typeof AuthenticatedGameTropheesRoute
   '/verification': typeof AuthenticatedGameVerificationRoute
   '/vie': typeof AuthenticatedGameVieRoute
@@ -732,6 +741,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
+  '/_authenticated/_game/transports': typeof AuthenticatedGameTransportsRoute
   '/_authenticated/_game/trophees': typeof AuthenticatedGameTropheesRoute
   '/_authenticated/_game/verification': typeof AuthenticatedGameVerificationRoute
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
@@ -810,6 +820,7 @@ export interface FileRouteTypes {
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
+    | '/transports'
     | '/trophees'
     | '/verification'
     | '/vie'
@@ -886,6 +897,7 @@ export interface FileRouteTypes {
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
+    | '/transports'
     | '/trophees'
     | '/verification'
     | '/vie'
@@ -964,6 +976,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/syndicats'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
+    | '/_authenticated/_game/transports'
     | '/_authenticated/_game/trophees'
     | '/_authenticated/_game/verification'
     | '/_authenticated/_game/vie'
@@ -1438,6 +1451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameTelephoneRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/transports': {
+      id: '/_authenticated/_game/transports'
+      path: '/transports'
+      fullPath: '/transports'
+      preLoaderRoute: typeof AuthenticatedGameTransportsRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/trophees': {
       id: '/_authenticated/_game/trophees'
       path: '/trophees'
@@ -1581,6 +1601,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
+  AuthenticatedGameTransportsRoute: typeof AuthenticatedGameTransportsRoute
   AuthenticatedGameTropheesRoute: typeof AuthenticatedGameTropheesRoute
   AuthenticatedGameVerificationRoute: typeof AuthenticatedGameVerificationRoute
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
@@ -1653,6 +1674,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
+    AuthenticatedGameTransportsRoute: AuthenticatedGameTransportsRoute,
     AuthenticatedGameTropheesRoute: AuthenticatedGameTropheesRoute,
     AuthenticatedGameVerificationRoute: AuthenticatedGameVerificationRoute,
     AuthenticatedGameVieRoute: AuthenticatedGameVieRoute,

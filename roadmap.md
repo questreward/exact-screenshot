@@ -362,6 +362,15 @@
 ## Réalisme France — lot suivant (choisi par Alex, dans cet ordre)
 - [x] Impôts réalistes : 0096 prête et testée, page Impôts
 - [x] 0096 installée sur le VPS (déclaré par Alex)
-- [ ] Transports du quotidien (abonnements, contrôles, amendes, voiture : assurance, essence, contrôle technique)
+- [x] Transports du quotidien : 0097 prête et testée, page Transports
+- [ ] Installer 0097 sur le VPS (accord d’Alex)
 - [ ] Vie étudiante (orientation fictive, bourses, logement étudiant, examens, diplômes)
 - [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
+
+## Demandes d'Alex (20/10) — à découper et valider
+- [ ] Simulation de conduite entre villes (voiture : route, limitations de vitesse ; bus : trajet vécu)
+- [ ] Économie unique sur tout le jeu (vérifier/unifier)
+- [ ] Interactions plus développées, IA locale au maximum (facultative)
+- [ ] Tous les documents et espaces français
+- [ ] Une centaine de lois supplémentaires
+- [ ] Animations de personnages qui rappellent qu'on est dans un jeu
