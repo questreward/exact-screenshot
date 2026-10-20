@@ -333,3 +333,9 @@
 - [ ] Mise à jour du site VPS (git pull + docker build)
 - [x] Étape 2 préparée : migration 0091 (jauges) testée sur base jetable
 - [ ] Installer 0091 sur le VPS après accord d'Alex sur le SQL, puis mettre le site à jour
+
+## Demandes d'Alex (20/10)
+- [ ] Installation 0091 (jauges de quartier) — résultat VPS attendu
+- [ ] Métiers de la sécurité et des secours : police, pompiers, protection civile… (vraie carrière jouable)
+- [ ] Espaces publics réalistes façon CAF / France Travail / ameli (aujourd'hui : simple page « Vie administrative » pédagogique, pas d'interface ressemblante)
+- [ ] Idées de réalisme France à proposer
