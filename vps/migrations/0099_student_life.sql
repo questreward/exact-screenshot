@@ -126,7 +126,7 @@ CREATE FUNCTION public.student_grade(_cid uuid, _key text, _delta integer) RETUR
 
 CREATE FUNCTION public.student_settle(_cid uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE s public.student_settings; p public.student_profiles; pr public.higher_ed_programs; t timestamptz := public.game_now();
-  m date; now_m date; prog int; y int; sess date; key text; g numeric; avg numeric; n int; amount int; BEGIN
+  m date; now_m date; prog int; y int; sess date; k text; g numeric; avg numeric; n int; amount int; BEGIN
   SELECT * INTO s FROM public.student_settings WHERE id = 1;
   p := public.student_profile(_cid);
   SELECT * INTO p FROM public.student_profiles WHERE character_id = _cid FOR UPDATE;
@@ -140,9 +140,7 @@ DECLARE s public.student_settings; p public.student_profiles; pr public.higher_e
   SELECT * INTO pr FROM public.higher_ed_programs WHERE id = p.program_id;
   now_m := date_trunc('month', t AT TIME ZONE 'UTC')::date;
   -- Bourse (septembre à juin) et loyer de résidence, mois entamés après l'installation et l'entrée en formation.
-  m := greatest(date_trunc('month', s.installed_at AT TIME ZONE 'UTC')::date + 1, date_trunc('month', p.year_started_at AT TIME ZONE 'UTC')::date);
-  m := date_trunc('month', m)::date;
-  IF m < date_trunc('month', s.installed_at AT TIME ZONE 'UTC')::date + interval '1 month' THEN m := (date_trunc('month', s.installed_at AT TIME ZONE 'UTC') + interval '1 month')::date; END IF;
+  m := greatest((date_trunc('month', s.installed_at AT TIME ZONE 'UTC') + interval '1 month')::date, date_trunc('month', p.year_started_at AT TIME ZONE 'UTC')::date);
   WHILE m <= now_m LOOP
     IF p.scholarship_level > 0 AND extract(month FROM m) NOT IN (7, 8) THEN
       amount := s.scholarship[p.scholarship_level];
@@ -166,10 +164,10 @@ DECLARE s public.student_settings; p public.student_profiles; pr public.higher_e
   FOR y IN extract(year FROM p.year_started_at)::int .. extract(year FROM t)::int LOOP
     FOREACH sess IN ARRAY ARRAY[make_date(y, 1, 15), make_date(y, 5, 15)] LOOP
       IF sess > (p.year_started_at AT TIME ZONE 'UTC')::date AND sess > (s.installed_at AT TIME ZONE 'UTC')::date AND sess <= (t AT TIME ZONE 'UTC')::date THEN
-        key := 'partiel:' || to_char(sess, 'YYYY-MM');
-        IF NOT EXISTS (SELECT 1 FROM public.student_ledger WHERE character_id = _cid AND key = key) THEN
-          g := public.student_grade(_cid, key, prog - p.session_progress);
-          INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, key, 'partiel', g,
+        k := 'partiel:' || to_char(sess, 'YYYY-MM');
+        IF NOT EXISTS (SELECT 1 FROM public.student_ledger l WHERE l.character_id = _cid AND l.key = k) THEN
+          g := public.student_grade(_cid, k, prog - p.session_progress);
+          INSERT INTO public.student_ledger (character_id, key, kind, grade, label) VALUES (_cid, k, 'partiel', g,
             'Partiels de ' || CASE extract(month FROM sess) WHEN 1 THEN 'janvier' ELSE 'mai' END || ' ' || y || ' — année ' || p.year);
           UPDATE public.student_profiles SET session_progress = prog WHERE character_id = _cid;
           p.session_progress := prog;
