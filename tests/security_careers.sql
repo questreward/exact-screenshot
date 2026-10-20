@@ -64,6 +64,7 @@ SELECT pg_temp.ok((SELECT amount FROM public.cash WHERE key LIKE 'security-paie:
 
 -- Volontaire : en journée de semaine refusé
 SET LOCAL test.uid = '00000000-0000-0000-0000-000000000002';
+UPDATE public.fake_clock SET t = '2026-12-29 10:00:00+00';
 SELECT public.security_state();
 SELECT pg_temp.err($$SELECT public.security_start_shift(gen_random_uuid())$$, 'volunteer weekday daytime');
 UPDATE public.fake_clock SET t = '2026-12-29 19:00:00+00';
