@@ -9,6 +9,7 @@ SELECT pg_temp.ok((public.income_tax_compute(12000)->>'tax')::int = 0, 'no tax u
 SELECT pg_temp.ok((public.income_tax_compute(3000)->>'abatement')::int = 495, 'min abatement');
 SELECT pg_temp.ok((public.income_tax_compute(60000)->>'tax')::int = round((29315-11497)*0.11 + (54000-29315)*0.30)::int, 'tax 60000');
 -- Octobre (mois d'installation) jamais imposé ; novembre : 2 000 € -> taux neutre sur 24 000
+INSERT INTO public.life_rules VALUES ('work','Travail',240,0,0,0,0,'{}') ON CONFLICT DO NOTHING;
 DELETE FROM public.activities; DELETE FROM public.security_ledger;
 INSERT INTO public.activities(character_id,type,title,start_time,end_time,status,reward) VALUES
  ('00000000-0000-0000-0000-0000000000c1','work','Vendeur','2026-10-21 09:00+00','2026-10-21 13:00+00','completed',5000),
