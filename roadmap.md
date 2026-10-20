@@ -366,7 +366,7 @@
 - [x] 0097 installée sur le VPS (déclaré par Alex)
 - [x] Vie étudiante : 0099 prête et testée, page Études supérieures
 - [x] Installer 0099 sur le VPS (installée)
-- [ ] Retraite et cotisations (relevé de carrière, trimestres, simulation)
+- [x] Retraite et cotisations (relevé de carrière, trimestres, simulation)
   - Règles validées : trimestres réels (4/an max), pension 50 % × trimestres/172 + points, départ à 64 ans
   - [x] Vieillissement : 0100 prête et testée (bandeau anniversaire)
   - [x] 0100 installée sur le VPS (déclaré par Alex)
@@ -374,7 +374,7 @@
 - [x] 0101 installée sur le VPS (déclaré par Alex)
 - [x] Conduite entre villes : choix du véhicule, vitesses, radars, amendes déjà en 0098 ; usure ajoutée en 0101
   - [x] Retraite 0102 prête et testée (page Ma retraite)
-  - [ ] Installer 0102 sur le VPS (accord d’Alex)
+  - [x] 0102 installée sur le VPS (déclaré par Alex)
 
 ## Demandes d'Alex (20/10) — à découper et valider
 - [x] Simulation de conduite entre villes : 0098 prête et testée, page En route
