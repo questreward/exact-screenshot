@@ -15,7 +15,7 @@
 - Query keys separate shapes.
 - Money tables, characters, positions and stats are SELECT-only (owner) for players; writes only via secured RPCs that lock the character and use unique operation keys.
 - In-game pages live under `src/routes/_authenticated/_game/` (layout redirects to `/creation` without character); unavailable sections are `available: false` in `src/game/navigation.ts` and render via `/section/$id`.
-- World hierarchy: cities > districts > locations > location_spaces, move_character controls position; gestures use react-zoom-pan-pinch. Living places reuse public facts, distinguish selected/current place and expected/recorded effects.
+- World: cities > districts > locations > location_spaces; move_character controls position; react-zoom-pan-pinch. Living places/district badges derive read-only from public facts via plain SELECTs (never *_state RPCs), distinguishing current/selected place and expected/recorded effects.
 - World clock derives from a DB anchor (game_now); client only animates it. Deadlines settle on reads/reconnect (daily_life_state etc.).
 - Balance values live in config tables (life_rules, life_settings, housing_types, jobs, *_settings); TS helpers are presentation-only with tests.
 - Live regressions use isolated temporary accounts; prefer deadline acceleration; clock-window tests restore the full world_state row in the same transaction.
@@ -34,10 +34,7 @@
 - Protests are social activities settled on read with a unique effects ledger; TV broadcasts are generated once per day on read from news.
 - Overdraft and insurance debt are separate debts (bank_profiles.overdraft_used, insurance_profiles.debt); balances never go negative. Loans and incidents (hashtext per character/week) settle on read with unique keys.
 - Player network data is exposed only through network_card/network_profile RPCs, never by widening characters RLS; one block guard (guard_player_block); 'live' updates use polling (no realtime server on VPS).
-- France map: local public/geo data, maplibre-gl v4; no tiles or v6.
-- Rent retries log failures under a distinct key.
+- France map: local geo data, maplibre-gl v4, no tiles. Rent retries log failures under a distinct key.
 - Deferred consequences go through scheduled_effects (schedule_effect / apply_due_effects), applied once on read; projects and crises never write indicators, budget or reputation directly, and pay municipal costs only via treasury effects.
 - Services reuse payments/weekly ledgers; agency rent settles on tenant reads, shares on owner reads. Recruitment wraps hires with opt-in/unique placements; fees move between treasuries, never candidates. Insurance uses anonymous funding/fictive shortfalls, never personal credits; pricing only via insurer_set_price. Body fingerprints guard patches.
-
 - Housing: read-only visits; secured buys. Private asset/lease layouts, versioned saves; cascades and inactive leases release furniture without money changes.
-- District badges (src/game/districts-state.ts) are derived read-only from public records via plain SELECTs, never via *_state RPCs; persistent district gauges would need a separate VPS migration.
