@@ -3,3 +3,4 @@
 - [Économie réelle](mem://features/real-economy.md) — 0110 installée : indices ville, plancher SMIC, carte bloquante, pourboires
 - [Missions des métiers](mem://features/job-missions.md) — 0111 : 1/jour, sans argent, interventions réalistes en étapes (feu, arrestation)
 - [Taxe foncière municipale](mem://features/municipal-property-tax.md) — 0112 : vers la mairie du logement, taux conseil 80–120 %, non rétroactif
+- [Voyages à l étranger](mem://features/foreign-travel.md) — 0113 : 12 pays, CNI/passeport, congés 25 j, imprévus 5 %
