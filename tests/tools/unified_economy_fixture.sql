@@ -1,0 +1,20 @@
+-- Disposable PostgreSQL only. Run this, 0104, then tests/unified_economy.sql.
+CREATE SCHEMA auth;
+CREATE ROLE authenticated; CREATE ROLE anon; CREATE ROLE service_role;
+CREATE TABLE fake_clock(t timestamptz); INSERT INTO fake_clock VALUES('2026-10-01+00');
+CREATE FUNCTION game_now() RETURNS timestamptz LANGUAGE sql AS $$ SELECT t FROM fake_clock $$;
+CREATE TABLE cities(id text PRIMARY KEY,name text,population integer);
+INSERT INTO cities VALUES('paris','Paris',1000);
+CREATE TABLE characters(id uuid PRIMARY KEY);
+INSERT INTO characters VALUES('00000000-0000-0000-0000-000000000001');
+CREATE TABLE character_positions(character_id uuid,city_id text);
+CREATE TABLE employments(character_id uuid);
+CREATE TABLE income_tax_profiles(character_id uuid PRIMARY KEY,paid_total integer DEFAULT 0);
+CREATE TABLE transport_ledger(character_id uuid,key text,kind text,amount integer,unpaid integer DEFAULT 0,PRIMARY KEY(character_id,key));
+CREATE TABLE security_ledger(character_id uuid,key text,kind text,amount integer,PRIMARY KEY(character_id,key));
+CREATE TABLE student_ledger(LIKE security_ledger INCLUDING ALL);
+CREATE TABLE career_ledger(character_id uuid,key text,kind text,payload jsonb,PRIMARY KEY(character_id,key));
+CREATE TABLE retirement_payments(character_id uuid,month text,amount integer,PRIMARY KEY(character_id,month));
+CREATE TABLE events(id uuid PRIMARY KEY DEFAULT gen_random_uuid(), event_key text UNIQUE,title text,description text,news_body text,starts_at timestamptz,ends_at timestamptz,scope text,category text,game_category text,importance integer,source_id text,target_kind text,city_id text,status text DEFAULT 'scheduled');
+CREATE TABLE news(event_id uuid UNIQUE);
+CREATE FUNCTION publish_world_event(e uuid) RETURNS uuid LANGUAGE plpgsql AS $$ BEGIN INSERT INTO news VALUES(e) ON CONFLICT DO NOTHING; RETURN e; END $$;

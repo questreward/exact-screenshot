@@ -13,6 +13,7 @@ export type Section = {
 
 // Sections not yet available route to /section/$id and show a "coming soon" screen.
 export const SECTIONS: Section[] = [
+  { id: "conjoncture", label: "Conjoncture", icon: BarChart3, description: "Inflation, SMIC, prix des villes et finances publiques.", available: true },
   { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
   { id: "france", label: "France", icon: Map, description: "La vraie carte de France, communes et circonscriptions.", available: true },
