@@ -6,6 +6,8 @@ import { weatherQuery, worldEventsQuery } from '@/services/game';
 import { PHASE_LABELS } from '@/game/world';
 import { publicPlaceEvents } from '@/game/living-city';
 import { useWorldClock } from './WorldClock';
+import { Crowd } from './Bonhomme';
+import { crowdSize } from '@/game/people';
 
 export function PlaceAtmosphere({ cityId }: { cityId: string }) {
   const { data: weather } = useSuspenseQuery(weatherQuery(cityId));
@@ -20,8 +22,11 @@ export function PlaceAtmosphere({ cityId }: { cityId: string }) {
 export function PublicPlaceLife({ cityId, locationId }: { cityId: string; locationId: string }) {
   const { data } = useSuspenseQuery(worldEventsQuery);
   const events = publicPlaceEvents(data.events, cityId, locationId, data.now);
+  const { phase } = useWorldClock();
   return <section aria-label="Vie du lieu" className="space-y-3 border-t border-border pt-4">
     <h4 className="flex items-center gap-2 font-semibold"><Radio className="h-4 w-4 text-primary" />La vie du lieu</h4>
+    <Crowd seedBase={locationId} count={crowdSize(phase) + (events.length ? 2 : 0)} moods={['walk', 'talk', 'walk', 'wave', 'idle', 'walk', 'talk', 'walk']} className="h-20 rounded-xl bg-muted/50 px-2 pb-1" />
+    <p className="text-xs text-muted-foreground">Passants et habitants fictifs, animés pour l’ambiance.</p>
     {events.length ? <ul className="divide-y divide-border">{events.map(e => <li key={e.id} className="py-3">
       <p className="mb-1 flex items-center gap-1 text-xs text-primary"><MapPin className="h-3 w-3" />{e.location_id === locationId ? 'Dans ce lieu' : 'Dans la ville · lieu non précisé'}</p>
       <p className="break-words text-sm font-semibold">{e.title}</p>

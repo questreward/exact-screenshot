@@ -18,6 +18,7 @@ export function CharacterAvatar({ appearance, className, photo }: { appearance: 
         </radialGradient>
       </defs>
       <rect width="120" height="140" rx="22" fill="url(#av-bg)" />
+      <g className="avatar-alive">
       {/* body */}
       <path d={`M${60 - shoulder} 140 Q${60 - shoulder} 98 60 96 Q${60 + shoulder} 98 ${60 + shoulder} 140 Z`} fill={outfit} />
       {appearance.style === "chic" && <path d="M54 97 L60 116 L66 97 Z" fill="var(--foreground)" opacity="0.85" />}
@@ -41,8 +42,8 @@ export function CharacterAvatar({ appearance, className, photo }: { appearance: 
         </g>
       )}
       {/* face */}
-      <circle cx="52" cy="60" r="2.2" fill="var(--background)" />
-      <circle cx="68" cy="60" r="2.2" fill="var(--background)" />
+      <g className="avatar-eyes"><circle cx="52" cy="60" r="2.2" fill="var(--background)" />
+      <circle cx="68" cy="60" r="2.2" fill="var(--background)" /></g>
       <path d="M54 71 Q60 75 66 71" stroke="var(--background)" strokeWidth="2" fill="none" strokeLinecap="round" />
       {/* accessory */}
       {(appearance.accessory === "glasses" || appearance.accessory === "sunglasses") && (
@@ -53,6 +54,7 @@ export function CharacterAvatar({ appearance, className, photo }: { appearance: 
       {appearance.accessory === "earrings" && <g fill="var(--primary)"><circle cx="37" cy="68" r="2.5" /><circle cx="83" cy="68" r="2.5" /></g>}
       {appearance.accessory === "cap" && <path d="M36 46 Q36 26 60 26 Q84 26 84 46 Z M80 44 H98 Q96 50 84 48 Z" fill="var(--primary)" />}
       {appearance.accessory === "scarf" && <path d="M44 92 Q60 102 76 92 L78 100 Q60 110 42 100 Z" fill="var(--primary)" />}
+      </g>
     </svg>
   );
 }

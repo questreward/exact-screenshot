@@ -232,3 +232,33 @@
   .world-map-viewport { height: 420px !important; }
   .world-svg { min-width: 540px; }
 }
+
+/* Animated bonshommes (presentation only) */
+.bh-shadow { fill: var(--foreground); opacity: 0.12; }
+.bh-body, .bh-leg, .bh-arm, .bh-eyes, .bh-mouth { transform-box: fill-box; }
+.bh-leg, .bh-arm { transform-origin: 50% 8%; }
+.bh-eyes { transform-origin: 50% 50%; animation: bh-blink 4.2s infinite; }
+.bh-idle .bh-body { animation: bh-breathe 3s ease-in-out infinite; transform-origin: 50% 100%; }
+.bh-walk .bh-body { animation: bh-bob 0.6s ease-in-out infinite; }
+.bh-walk .bh-leg-l, .bh-walk .bh-arm-r { animation: bh-swing 0.6s ease-in-out infinite; }
+.bh-walk .bh-leg-r, .bh-walk .bh-arm-l { animation: bh-swing 0.6s ease-in-out infinite reverse; }
+.bh-wave .bh-arm-r { animation: bh-wave 0.9s ease-in-out infinite; transform-origin: 50% 10%; }
+.bh-talk .bh-mouth { animation: bh-talk 0.35s steps(2) infinite; transform-origin: 50% 0%; }
+.bh-talk .bh-arm-r { animation: bh-swing 1.4s ease-in-out infinite; }
+.bh-cheer .bh-body { animation: bh-jump 0.8s ease-in-out infinite; }
+.bh-cheer .bh-arm { transform: rotate(180deg); }
+.bh-tired .bh-body { animation: bh-breathe 5s ease-in-out infinite; transform: rotate(4deg); transform-origin: 50% 100%; }
+.bh-wander { animation: bh-wander 9s ease-in-out infinite alternate; }
+@keyframes bh-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
+@keyframes bh-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.025); } }
+@keyframes bh-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes bh-swing { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+@keyframes bh-wave { 0%, 100% { transform: rotate(150deg); } 50% { transform: rotate(190deg); } }
+@keyframes bh-talk { 0% { transform: scaleY(1); } 100% { transform: scaleY(2.2); } }
+@keyframes bh-jump { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-8px); } }
+@keyframes bh-wander { 0% { transform: translateX(-18px); } 100% { transform: translateX(18px); } }
+.avatar-alive { animation: bh-breathe 3.5s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+.avatar-eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: bh-blink 4.5s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .bh *, .bh-wander, .avatar-alive, .avatar-eyes { animation: none !important; }
+}
