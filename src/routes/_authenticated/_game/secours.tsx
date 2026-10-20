@@ -1,17 +1,20 @@
 import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { VolunteerDossier } from "@/components/game/VolunteerDossier";
 import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { securityAction, securityMissionsQuery, securityQuery, type SecurityState } from "@/services/game";
+import { securityAction, securityMissionsQuery, securityQuery, volunteerDossierQuery, type SecurityState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { OUTCOME_LABELS, SERVICE_INTRO, TEAMS, nextRank, weeklyPay, type SecurityServiceId } from "@/game/security-careers";
 
 export const Route = createFileRoute("/_authenticated/_game/secours")({
   head: () => ({ meta: gameMeta("Police, pompiers et secours", "Concours, formation, horaires d'équipe et missions de police, de sapeur-pompier et de protection civile.") }),
+  loader: async ({ context }) => {
+    await Promise.all([context.queryClient.ensureQueryData(securityQuery), context.queryClient.ensureQueryData(securityMissionsQuery), context.queryClient.ensureQueryData(volunteerDossierQuery)]);
+  },
   component: SecurityPage,
 });
 
@@ -26,8 +29,8 @@ function Card({ title, icon: Icon, children }: { title: string; icon: typeof Sir
 
 function SecurityPage() {
   const qc = useQueryClient();
-  const { data: s, isLoading, isError, error } = useQuery(securityQuery);
-  const { data: missions = [] } = useQuery(securityMissionsQuery);
+  const { data: s } = useSuspenseQuery(securityQuery);
+  const { data: missions } = useSuspenseQuery(securityMissionsQuery);
   const act = useMutation({
     mutationFn: (v: { fn: Parameters<typeof securityAction>[0]; args?: object; ok?: string }) => securityAction(v.fn, v.args),
     onSuccess: (r, v) => {
@@ -47,9 +50,7 @@ function SecurityPage() {
     <header className="flex min-w-0 items-center gap-3"><Siren className="h-8 w-8 shrink-0 text-primary" />
       <div className="min-w-0 break-words"><h1 className="font-heading text-2xl font-bold">Police, pompiers, secours</h1>
         <p className="text-sm text-muted-foreground">Recrutement, formation, horaires et missions tirées de ce qui se passe dans ta ville.</p></div></header>
-    {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
-    {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">{String((error as Error)?.message ?? "")}</p>}
-    {!isLoading && !isError && !s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
+    {!s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
     {s && (s.career && s.career.status !== "quitte"
       ? <Career s={s} missions={missions} busy={act.isPending} run={act.mutate} />
       : <Recruitment s={s} busy={act.isPending} run={act.mutate} />)}
