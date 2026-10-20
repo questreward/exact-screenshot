@@ -10,6 +10,7 @@ import { WorldClock } from "@/components/game/WorldClock";
 import { gameMeta } from "@/game/metadata";
 import { lifeQuery } from "@/services/game";
 import { LifeSummary } from "@/components/game/LifeSummary";
+import { FranceDay } from "@/components/game/FranceDay";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
@@ -50,6 +51,8 @@ function Dashboard() {
         <p className="flex items-center gap-2 text-sm text-muted-foreground"><Briefcase className="h-4 w-4 text-primary" /> Situation actuelle</p>
         <p className="mt-1 text-lg font-semibold">{character.situation}</p>
       </div>
+
+      <FranceDay />
 
       <LifeSummary />
 

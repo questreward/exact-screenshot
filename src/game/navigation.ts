@@ -24,6 +24,7 @@ export const SECTIONS: Section[] = [
   { id: "ma-vie", label: "Ma vie", icon: BookOpenText, description: "Journal de vie, réputations et compétences.", available: true },
   { id: "mon-parcours", label: "Mon parcours", icon: ScrollText, description: "Ton CV citoyen : études, emplois, engagements, mandats.", available: true },
   { id: "secours", label: "Police, pompiers, secours", icon: Siren, description: "Police, gendarmerie, pompiers, SAMU, protection civile : concours, horaires, missions.", available: true },
+  { id: "permis", label: "Permis de conduire", icon: Car, description: "Code, leçons et examen, dès 17 ans.", available: true },
   { id: "carriere", label: "Ma carrière", icon: Briefcase, description: "Entretiens d'embauche, promotions, chômage et salaire.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "boutique", label: "Boutique", icon: ShoppingBag, description: "Vrais produits : téléphones, maison, mode, loisirs.", available: true },
@@ -94,7 +95,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 // Big menu headings: every section belongs to exactly one group.
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
-  { id: "quotidien", label: "Quotidien", ids: ["civitas-services", "vie", "carriere", "secours", "logement", "telephone", "demarches", "vie-administrative"] },
+  { id: "quotidien", label: "Quotidien", ids: ["civitas-services", "vie", "carriere", "secours", "permis", "logement", "telephone", "demarches", "vie-administrative"] },
   { id: "argent", label: "Argent et achats", ids: ["patrimoine", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
   { id: "monde", label: "Monde", ids: ["monde", "carte", "france", "evenements", "crises", "actualites", "jt", "presse"] },
   { id: "societe", label: "Société", ids: ["reseau", "organisations", "syndicats", "justice", "classements"] },
