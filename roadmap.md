@@ -321,3 +321,5 @@
 
 - [x] Logements suite : locations aménageables (0090) installées par Alex ; essai en jeu réel à confirmer.
 - [x] CIVITAS Services : page d'entrée commune (aucun SQL) prête ; mise à jour du site VPS à faire.
+
+- [x] IA locale : discussion avec les habitants (Ollama du VPS, sans enregistrement ni récompense, aucun SQL) prête ; mise à jour du site VPS à faire.
