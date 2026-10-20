@@ -373,7 +373,8 @@
 - [x] Usure des véhicules + réparations : 0101 prête et testée (page Transports)
 - [x] 0101 installée sur le VPS (déclaré par Alex)
 - [x] Conduite entre villes : choix du véhicule, vitesses, radars, amendes déjà en 0098 ; usure ajoutée en 0101
-  - [ ] Retraite 0102 (trimestres, pension, départ 64 ans)
+  - [x] Retraite 0102 prête et testée (page Ma retraite)
+  - [ ] Installer 0102 sur le VPS (accord d’Alex)
 
 ## Demandes d'Alex (20/10) — à découper et valider
 - [x] Simulation de conduite entre villes : 0098 prête et testée, page En route

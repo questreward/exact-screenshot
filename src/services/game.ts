@@ -1818,3 +1818,16 @@ export async function repairVehicle(catalogId: string, businessId: string | null
   if (error) throw new Error(error.message);
   return data as VehicleWearState;
 }
+export type RetirementState = {
+  age: number; employed: boolean; retired_at: string | null; monthly_pension: number | null;
+  settings: { legal_age: number; quarter_gross: number; full_quarters: number; base_rate: number; best_years: number };
+  estimate: { quarters: number; points: number; average_salary: number; base_monthly: number; compl_monthly: number; monthly: number };
+  years: { age: number; gross_annual: number; quarters: number; points: number }[];
+  payments: { month: string; amount: number }[];
+};
+export const retirementQuery = queryOptions({ queryKey: ['retirement'], staleTime: 0, retry: false, queryFn: looseState<RetirementState>('retirement_state') });
+export async function claimRetirement() {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('retirement_claim', {});
+  if (error) throw new Error(error.message);
+  return data as RetirementState;
+}
