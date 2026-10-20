@@ -408,7 +408,7 @@
 
 ## Clôture V1 et communauté — demande d’Alex
 - [x] Première livraison terminée ; contrôles locaux réussis distingués des contrôles réels manquants
-- [x] Nouveautés non essentielles réservées à V2 ; aucune extension supplémentaire de V1
+- [x] Principe initial de gel enregistré ; élargi ensuite explicitement par Alex pour Protection civile, vidéo, intérieurs et catalogue avant clôture.
 - [x] Brouillon d’annonce V2 et structure Discord préparés dans V1_CONTROLES_ET_SUITE.md
 - [ ] Publication de l’annonce et ouverture de Discord : après contrôle V1 et accès au serveur Discord fourni par Alex
 - [x] Réseaux conseillés : Discord prioritaire, TikTok/Instagram pour gameplay, YouTube ensuite
@@ -417,7 +417,9 @@
 - [x] Contrôle de présence et protections 0110–0113 sur VPS reçu : objets présents, RLS et déclencheurs actifs, services démarrés ; ne vaut pas validation des parcours.
 - [x] Auditer les écrans et accès sur téléphone ; corrections navigation, champs, fenêtres, carte, onglets et noms longs sans changer les règles.
 - [x] Contrôles visuels ciblés 320/390/430/1280 px et 24 essais réussis ; composants en mission simulée, pas parcours VPS.
+- [x] Suite complète : 310 essais réussis, compilation automatique sans erreur.
 - [ ] Vérifier les parcours téléphone avec personnage réel sur VPS : accès/session disponible requis ; navigation du montage temporaire non validée.
 - [x] Comparer les engagements aux fonctions présentes ; priorités de clôture et limites documentées dans V1_CONTROLES_ET_SUITE.md.
-- [ ] Protection civile : demande explicite avant clôture V1 ; examiner interventions, paperasse, recrutement et antennes, préparer une extension réaliste réutilisant les secours ; SQL exact et accord distinct requis avant toute application.
-- [ ] Nouvelle extension explicitement demandée avant clôture V1 : JT avec vidéos alimentées par IA locale, personnages/interventions/manifestations plus réalistes, intérieurs logement et véhicules, boutique de 10 000 produits répartis entre magasins ; préparer lots et limites VPS avant développement, aucun service externe ni migration implicite.
+- [x] Protection civile : existant audité ; recrutement immédiat, formation courte, bénévolat, missions et progression présents ; antennes/dossier/qualifications détaillées absents.
+- [ ] Extension Protection civile : périmètre et nouvelles règles à valider avant préparation SQL exact ; aucune application autorisée.
+- [ ] Nouvelle extension V1 vidéo/scènes/intérieurs/catalogue : arbitrage de clôture demandé par Alex à 17:56 ; ressources VPS pour vidéo à mesurer, périmètre détaillé et règles à valider, aucun service externe ni migration implicite.

@@ -38,6 +38,7 @@ Le rapport transmis par Alex le 20 octobre confirme les huit objets et onze fonc
 - 24 essais ciblés passent. Accueil, Découvrir et connexion contrôlés au navigateur à 320/390/430 px sans débordement. Vrais composants navigation/scène/dossier contrôlés avec une mission simulée à 320/390/430/1280 px sans débordement ni erreur JavaScript ; fermeture du dossier vérifiée. La navigation entre pages dans ce montage isolé n’a pas été validée (conflit entre routeurs de contrôle et application) ; aucune preuve de parcours connecté.
 - Audit : les destinations Banque, Poste, Monde, etc. existent bien ; l’alerte initiale issue de la lecture partielle du fichier généré était infondée. Un essai vérifie désormais chaque destination disponible contre le fichier de page.
 - Connexion de contrôle de l’aperçu indisponible pour le compte Lovable d’Alex ; les parcours VPS réels restent nécessaires. Tous les fichiers d’écran temporaire ont été retirés.
+- Suite complète relancée après corrections : 310 essais réussis dans 68 fichiers, compilation automatique sans erreur ; ce sont des contrôles locaux, pas les essais financiers de la copie VPS.
 
 ## Conditions nécessaires pour fermer V1
 1. Aucune action essentielle inaccessible sur téléphone ; parcours métier, déplacement, achat, document, message et retour au jeu vérifiés avec un vrai personnage.
