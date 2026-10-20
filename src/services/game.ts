@@ -1958,3 +1958,27 @@ export async function departForeignTravel(args: { _country: string; _days: numbe
   const { data, error } = await untyped.rpc('foreign_travel_depart', args);
   if (error) throw error; return data as import('@/game/foreign-travel').ForeignTravelState;
 }
+
+// Dossier bénévole 0114 : lecture séparée sans règlement supplémentaire.
+export type VolunteerDossierState = {
+  branches: { city_id: string; label: string }[];
+  attachments: { id: string; city_id: string; attached_at: string }[];
+  notes: { shift_id: string; note: string; created_at: string }[];
+};
+type Rpc = (fn: string, args?: object) => Promise<{ data: unknown; error: { code?: string; message: string } | null }>;
+export const volunteerDossierQuery = queryOptions({
+  queryKey: ['volunteer-dossier'], staleTime: 0,
+  queryFn: async (): Promise<VolunteerDossierState | null> => {
+    const { data, error } = await (supabase.rpc as unknown as Rpc)('volunteer_dossier_state');
+    if (error) {
+      if (error.code === 'PGRST202' || error.code === '42883') return null;
+      throw new Error(error.message);
+    }
+    return data as VolunteerDossierState;
+  },
+});
+export async function volunteerAction(fn: 'volunteer_attach' | 'volunteer_save_note', args: object) {
+  const { data, error } = await (supabase.rpc as unknown as Rpc)(fn, args);
+  if (error) throw new Error(error.message);
+  return data as VolunteerDossierState;
+}

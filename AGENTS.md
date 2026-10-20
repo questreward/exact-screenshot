@@ -42,6 +42,7 @@
 - Jobs reuse secured career/application hiring; diploma gates use student_ledger, missions have no separate money rewards.
 - Mission scenes/dossiers use only server snapshots, no invented incidents, progress or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
-- Shared controls provide touch-sized targets and viewport-bounded scrollable dialogs; game navigation catalogs only real routes, tested against leaf files, so phone access never relies on hidden cross-links.
+- Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
 - Interior views and volunteer reports project recorded trips, placements and shifts only; no decorative state may imply a paid ticket, certification, casualty or settled outcome.
-- TV playback captions quote stored editions and uses only device-local French voices; clips pause with playback and fall back to bundled images to remain independent of external services.
+- TV captions quote stored editions; device-local French voices, paused clips and bundled-image fallback preserve independence.
+- Volunteer history and completed-shift notes use separate private snapshots and character-locked RPCs; append-only records never alter career rewards.
