@@ -3,7 +3,7 @@ export type DriveSegment = { from: number; to: number; limit: number; label: str
 export type DriveRadar = { at: number; limit: number };
 
 export const limitAt = (segments: DriveSegment[], pct: number) =>
-  segments.find(s => pct >= s.from && pct < s.to) ?? segments[segments.length - 1];
+  segments.find(s => pct >= s.from && pct < s.to) ?? segments[segments.length - 1]!;
 
 export const isFlashed = (speed: number, limit: number, tolerance = 5) => speed > limit + tolerance;
 
