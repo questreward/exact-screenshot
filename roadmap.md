@@ -477,8 +477,8 @@
 - [x] Historique des promotions (grade, date, raison) sur la page Secours
 
 # V2 — Réseaux sociaux et préparation
-- [ ] Civi vrai réseau (0118) — en attente des chiffres validés par Alex (publications/jour, seuil de signalements, plafond de buzz)
+- [ ] Civi vrai réseau (0118) — règles validées, SQL à préparer
 - [x] Kit de communication réelle (docs/communication/kit-reseaux.md)
 - [x] Feuille de route V2 (V2_FEUILLE_DE_ROUTE.md)
 - [ ] Liens vers les réseaux en bas du site — en attente des adresses des comptes
-- [ ] Président de la République jouable — en attente des règles validées par Alex (aujourd'hui, seul un PNJ peut l'être)
+- [ ] Président de la République jouable — règles validées, SQL à préparer après 0118
