@@ -3,6 +3,7 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type NpcPersona = { first_name: string; last_name: string; age: number; profession: string; description: string; traits: string[]; place: string; city: string; relation: string; hour: string; events: string[] };
 
 export const MAX_MESSAGE = 300;
+export const MAX_REPLY = 600;
 export const MAX_TURNS = 8;
 export const NPC_CHAT_STARTERS = ["Comment ça va ?", "Quoi de neuf en ville ?", "Tu fais quoi dans la vie ?"];
 
@@ -15,10 +16,11 @@ export function validateChat(input: unknown): { npcId: string; history: ChatTurn
     if ((x.role !== "user" && x.role !== "assistant") || typeof x.content !== "string") throw new Error("Message invalide.");
     const content = x.content.trim();
     if (!content) throw new Error("Message vide.");
-    if (content.length > MAX_MESSAGE) throw new Error(`Message trop long (${MAX_MESSAGE} caractères maximum).`);
+    const limit = x.role === "user" ? MAX_MESSAGE : MAX_REPLY;
+    if (content.length > limit) throw new Error(`Message trop long (${limit} caractères maximum).`);
     return { role: x.role, content } as ChatTurn;
   });
-  if (history[history.length - 1]!.role !== "user") throw new Error("Message invalide.");
+  if (history.at(-1)?.role !== "user") throw new Error("Message invalide.");
   return { npcId: d.npcId, history };
 }
 
@@ -38,5 +40,5 @@ export function npcSystemPrompt(p: NpcPersona): string {
 export function cleanReply(text: unknown): string {
   const s = typeof text === "string" ? text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim() : "";
   if (!s) throw new Error("L'habitant ne peut pas répondre pour le moment.");
-  return s.length > 600 ? s.slice(0, 597).trimEnd() + "…" : s;
+  return s.length > MAX_REPLY ? s.slice(0, MAX_REPLY - 3).trimEnd() + "…" : s;
 }

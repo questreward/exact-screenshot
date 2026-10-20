@@ -25,4 +25,16 @@ describe("discussion avec les habitants", () => {
   it("réponse vide = habitant indisponible", () => {
     expect(() => cleanReply("  ")).toThrow(/pour le moment/);
   });
+  it("permet de poursuivre après une réponse de 600 caractères", () => {
+    const reply = cleanReply("r".repeat(700));
+    expect(reply.length).toBeLessThanOrEqual(600);
+    expect(validateChat({ npcId: id, history: [
+      { role: "user", content: "Bonjour" }, { role: "assistant", content: reply }, { role: "user", content: "Et ensuite ?" },
+    ] }).history).toHaveLength(3);
+  });
+  it("refuse une réponse injectée dépassant la limite de sortie", () => {
+    expect(() => validateChat({ npcId: id, history: [
+      { role: "assistant", content: "r".repeat(601) }, { role: "user", content: "Bonjour" },
+    ] })).toThrow(/trop long/);
+  });
 });
