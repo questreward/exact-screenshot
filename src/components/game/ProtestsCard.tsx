@@ -1,3 +1,4 @@
+import { ProtestScene } from "./ProtestScene";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Megaphone, LoaderCircle, Users, MapPin } from "lucide-react";
@@ -66,6 +67,7 @@ export function ProtestsCard() {
       <div className="space-y-3">{s.protests.map(p => <article key={p.id} className="space-y-2 border-t border-border pt-3">
         <p className="text-xs text-primary">{PROTEST_STATUS[p.status]} · {newsDate(p.starts_at)}</p>
         <h3 className="font-semibold">{p.cause}</h3>
+        <ProtestScene cause={p.cause} participants={p.status === "planned" ? p.registered : p.player_count + p.npc_count} city={p.location.name} />
         {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
         <p className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{p.location.name} · Organisée par {p.organizer}</p>
         {p.option && <p className="text-xs">Soutient « {p.option} » ({p.consultation}){p.effects.includes("consultation_pressure") ? ` · pression +${s.settings.pressure_percent} % obtenue` : ""}</p>}
