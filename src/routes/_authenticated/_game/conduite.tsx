@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { driveQuery, driveReport, type DriveState } from "@/services/game";
 import { isFlashed, limitAt, tripProgress } from "@/game/driving";
+import { VehicleInterior } from "@/components/game/VehicleInterior";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/conduite")({
@@ -32,16 +33,15 @@ function TripPage() {
     <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Aucun voyage en cours. Pars depuis la Gare, la Station de transport, ou avec ta voiture.</p>
     <Button asChild className="min-h-12 w-full"><Link to="/carte">Ouvrir la carte</Link></Button></div>;
   const pct = tripProgress(trip.start_time, trip.end_time, now || Date.parse(s.now));
-  return trip.kind === "voiture" && trip.drive ? <DriveSim s={s} pct={pct} /> : <RideView kind={trip.kind} title={trip.title} pct={pct} />;
+  return trip.kind === "voiture" && trip.drive ? <DriveSim s={s} d={trip.drive} pct={pct} /> : <RideView kind={trip.kind} title={trip.title} pct={pct} />;
 }
 
 function Progress({ pct }: { pct: number }) {
   return <div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} /></div>;
 }
 
-function DriveSim({ s, pct }: { s: DriveState; pct: number }) {
+function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<DriveState['trip']>['drive']>; pct: number }) {
   const qc = useQueryClient();
-  const d = s.trip!.drive!;
   const [speed, setSpeed] = useState(0);
   const speeds = useRef<(number | null)[]>(d.radars.map(() => null));
   const [flash, setFlash] = useState(false);
@@ -67,17 +67,10 @@ function DriveSim({ s, pct }: { s: DriveState; pct: number }) {
   const over = speed > seg.limit + s.settings.tolerance;
 
   return <div className="mx-auto max-w-2xl space-y-3 p-4 pb-24">
-    <header className="flex items-center gap-2"><Car className="h-7 w-7 text-primary" /><h1 className="font-heading text-xl font-bold">{s.trip!.title}</h1></header>
+    <header className="flex min-w-0 items-center gap-2"><Car className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{s.trip?.title}</h1></header>
     <Progress pct={pct} />
-    <div className={`relative h-72 overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-secondary to-muted ${flash ? "ring-8 ring-primary" : ""}`}>
-      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-muted-foreground/20" style={{ clipPath: "polygon(42% 0, 58% 0, 100% 100%, 0 100%)" }} />
-      <div className="absolute inset-x-0 bottom-0 h-2/3" style={{ clipPath: "polygon(49.5% 0, 50.5% 0, 52% 100%, 48% 100%)",
-        background: "repeating-linear-gradient(to bottom, hsl(var(--background)) 0 18px, transparent 18px 36px)", backgroundPositionY: `${(pct * 900 * Math.max(speed, 1) / 100) % 36}px` }} />
-      <div className="absolute left-3 top-3 flex h-16 w-16 items-center justify-center rounded-full border-[6px] border-destructive bg-background font-heading text-xl font-bold">{seg.limit}</div>
-      <p className="absolute right-3 top-3 rounded-lg bg-background/80 px-2 py-1 text-xs font-semibold">{seg.label}</p>
-      {next && next.at - pct < 4 && <p className="absolute left-1/2 top-14 flex -translate-x-1/2 items-center gap-1 rounded-lg bg-background px-3 py-2 text-sm font-bold"><Camera className="h-4 w-4" />Radar {next.limit} !</p>}
-      <div className="absolute bottom-4 left-1/2 h-14 w-24 -translate-x-1/2 rounded-t-3xl rounded-b-lg bg-primary shadow-lg"><div className="mx-auto mt-2 h-4 w-16 rounded bg-background/60" /></div>
-    </div>
+    <div className={flash ? "ring-4 ring-primary" : ""}><VehicleInterior kind="voiture" speed={speed} limit={seg.limit} label={seg.label}/></div>
+    {next && next.at - pct < 4 && <p className="flex items-center gap-2 text-sm text-primary"><Camera className="h-5 w-5"/>Radar · {next.limit} km/h</p>}
     {d.settled ? <p className="rounded-xl border border-border bg-card p-4 text-center text-sm">{d.mode === "automatique" ? "Conduite automatique activée." : `Radars passés · ${d.flashes} flash${d.flashes > 1 ? "s" : ""}.`} Arrivée à {Math.round(100 - pct)} % du trajet restant.</p> : <>
       <div className={`flex items-center justify-center gap-3 rounded-xl border bg-card p-3 ${over ? "border-destructive text-destructive" : "border-border"}`}>
         <Gauge className="h-7 w-7" /><span className="font-heading text-4xl font-bold">{speed}</span><span>km/h</span></div>
@@ -91,22 +84,13 @@ function DriveSim({ s, pct }: { s: DriveState; pct: number }) {
   </div>;
 }
 
-const PASSENGERS = ["👩‍💼", "🧑‍🎓", "👴", "👨‍🔧", "👩‍🍼", "🧔"];
 function RideView({ kind, title, pct }: { kind: string; title: string; pct: number }) {
   const Icon = kind === "train" ? TrainFront : BusFront;
-  const control = pct > 40 && pct < 55;
   return <div className="mx-auto max-w-2xl space-y-3 p-4 pb-24">
-    <header className="flex items-center gap-2"><Icon className="h-7 w-7 text-primary" /><h1 className="font-heading text-xl font-bold">{title}</h1></header>
+    <header className="flex min-w-0 items-center gap-2"><Icon className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{title}</h1></header>
     <Progress pct={pct} />
-    <div className="relative h-56 overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-secondary to-muted">
-      <div className="absolute inset-x-0 top-1/2 flex gap-16 text-4xl" style={{ transform: `translateX(-${(pct * 40) % 400}px)` }}>
-        {Array.from({ length: 20 }, (_, i) => <span key={i}>{["🌳", "🏡", "🌲", "🐄", "⛪", "🌾"][i % 6]}</span>)}
-      </div>
-      <div className="absolute inset-x-3 bottom-3 flex justify-around rounded-xl bg-background/90 p-2 text-2xl">{PASSENGERS.map((p, i) => <span key={i} className={i === Math.floor(pct / 17) % 6 ? "animate-bounce" : ""}>{p}</span>)}</div>
-    </div>
-    <p className="rounded-xl border border-border bg-card p-3 text-sm">{control ? "🎫 Le contrôleur passe : « Billets, s'il vous plaît ! » Ton billet est en règle."
-      : pct < 10 ? (kind === "train" ? "« Mesdames et messieurs, bienvenue à bord. »" : "Le chauffeur ferme les portes, départ !")
-      : pct > 90 ? "« Prochain arrêt : terminus. Pensez à ne rien oublier. »" : "Tu regardes le paysage défiler. Tes voisins discutent tranquillement."}</p>
+    <VehicleInterior kind={kind === "train" ? "train" : "car"} label={title}/>
+    <p className="border-y border-border py-3 text-sm">{pct < 10 ? "Départ du trajet." : pct > 90 ? "Arrivée proche." : "Trajet en cours."}</p>
     <p className="text-xs text-muted-foreground">Rien à faire : tu arrives à l'heure prévue.</p>
   </div>;
 }
