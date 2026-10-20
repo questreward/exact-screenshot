@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ShieldCheck, LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLifeMutation } from "@/components/game/LifeControls";
@@ -29,6 +30,7 @@ export function InsuranceCard({ compact = false }: { compact?: boolean }) {
         <Button className="h-12 w-full" disabled={sub.isPending} onClick={() => sub.mutate(p.id)}>{sub.isPending ? <LoaderCircle className="animate-spin" /> : <ShieldCheck />} Souscrire</Button>
       </div>)}</div>}
     <p className="text-xs text-muted-foreground">Couverture {s.settings.waiting_days} jours après la souscription · résiliable à tout moment, sans remboursement du mois en cours.</p>
+    <Button asChild variant="outline" className="min-h-12 w-full"><Link to="/assurances"><ShieldCheck />Choisir mon assureur</Link></Button>
 
     {!compact && <div className="space-y-1 border-t border-border pt-4"><h3 className="font-semibold">Mes imprévus</h3>
       {s.incidents.length === 0 ? <p className="text-sm text-muted-foreground">Aucun imprévu pour l'instant.</p> : s.incidents.map(i => <p key={i.id} className="text-sm">{newsDate(i.occurred_at)} · {i.type_label} : {i.label} · {formatMoney(i.cost)}<span className="block text-xs text-muted-foreground">Assurance {formatMoney(i.insurer_paid)} · vous {formatMoney(i.player_paid)}{i.unpaid > 0 ? ` · reste dû ${formatMoney(i.unpaid)}` : ""}</span></p>)}
