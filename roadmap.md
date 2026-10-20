@@ -257,3 +257,17 @@
 - [ ] Nouveau document écosystème : comparer les portails proposés aux fonctions existantes et préparer CIVITAS Services comme entrée commune (administration, logement, emploi, études, mobilité, finances, assurances, santé, entreprises, citoyenneté, documents) ; proposer les manques sans doubler les systèmes.
 - [ ] Demander la suite des deux documents si nécessaire : immobilier reçu jusqu’à « [Louer] », écosystème jusqu’à « Mes documents » ; les blocs de code finaux ne sont pas fermés.
 - Aucun travail ni installation ne continue pendant la pause ; relations internationales et voyages restent des propositions à arbitrer, pas des développements automatiquement autorisés.
+
+## Atelier gameplay ambitieux — idées à discuter à la reprise
+- [ ] Choisir avec Alex les idées prioritaires ci-dessous : propositions seulement, pas de règles validées ni de développement autorisé. Comparer à l’existant pour enrichir sans créer de doublons ; préserver les blocs validés.
+- [ ] **Histoires de vie à embranchements** : des rencontres et occasions liées au métier, aux relations et à la ville ; plusieurs choix crédibles, conséquences différées, aucun chemin présenté comme le seul bon.
+- [ ] **Quartiers qui se transforment visiblement** : montrer dans les lieux et leurs scènes les effets des projets, de l’activité économique et des décisions déjà simulés ; faire ressentir concrètement les choix collectifs.
+- [ ] **Grands projets coopératifs** : habitants, entreprises, associations et élus contribuent à un même objectif local, avec rôles complémentaires, étapes et résultat visible ; garder toutes les caisses séparées.
+- [ ] **Habitants fictifs avec mémoire** : approfondir les relations existantes par des promesses, services rendus, désaccords et retrouvailles qui influencent les futures rencontres, sans IA décisionnaire.
+- [ ] **Carrières vraiment jouables** : ajouter des missions propres aux métiers, des spécialisations, du mentorat et des dilemmes professionnels plutôt que seulement attendre un salaire ; réutiliser carrière et agenda.
+- [ ] **Une ville avec des rendez-vous marquants** : festivals, compétitions, inaugurations et rendez-vous de quartier reliés aux événements et médias existants ; les activités restent facultatives.
+- [ ] **Des crises à plusieurs points de vue** : un même événement vécu par un citoyen, un soignant, un entrepreneur, un journaliste ou un élu, chacun disposant d’actions différentes ; étendre les crises existantes, pas les remplacer.
+- [ ] **Enquêtes journalistiques jouables** : rechercher des indices fictifs, interroger des habitants et confronter des sources avant de publier ; prolonger médias et vérification des faits, sans exposer les données privées des joueurs.
+- [ ] **Moins de menus, davantage d’actions dans les lieux** : rencontrer, acheter, postuler ou entreprendre une démarche directement depuis une scène ; conserver les accès rapides et de grandes zones tactiles.
+- [ ] **Retour au jeu plus vivant et serein** : un résumé des changements pertinents, des histoires à retrouver et des objectifs personnels facultatifs ; aucune nouvelle punition liée à l’absence ni série de connexions obligatoire.
+- [ ] Après sélection : proposer pour chaque idée le parcours joueur, ses liens avec l’existant, les risques et un découpage progressif ; toute modification de règle ou installation reste soumise à accord.
