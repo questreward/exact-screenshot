@@ -25,12 +25,13 @@ export function TaxSpace() {
     <nav aria-label="Espace fiscal" className="grid grid-cols-2 gap-2 print:hidden">
       {['Avis', 'Taxe foncière', 'Paiements', 'Messagerie'].map(t => <Button key={t} variant={tab === t ? 'default' : 'outline'} className="min-h-12" aria-pressed={tab === t} onClick={() => setTab(t)}>{t}</Button>)}
     </nav>
-    {tab === 'Taxe foncière' && <p className="text-sm text-muted-foreground">Un avis par bien détenu et par année. Montant : coût quotidien du type de logement × 30, sinon prix catalogue ÷ 240 (loyer théorique sur 20 ans). Recettes versées à l’État fictif.</p>}
+    {tab === 'Taxe foncière' && <p className="text-sm text-muted-foreground">Un avis par bien détenu et par année. Montant : coût quotidien du type de logement × 30, sinon prix catalogue ÷ 240 (loyer théorique sur 20 ans). Base multipliée par le taux communal de l’année (100 % par défaut). Les futurs règlements vont à la commune du logement ; les paiements passés restent à l’État.</p>}
     {tab !== 'Messagerie' ? <>
       {notices.length === 0 && <p className="text-sm text-muted-foreground">Aucun avis disponible.</p>}
       {notices.map(n => <article key={n.id} className="space-y-2 rounded-lg border border-border p-3 break-inside-avoid">
         <h3 className="font-semibold">{n.label} · {n.year}</h3>
         <p className="text-sm">Avis FICTIF · {n.notice_key}</p>
+        {n.kind === 'foncier' && <p className="text-sm">Commune : {n.city_id ?? 'Historique non renseigné'} · Taux : {n.rate_pct ?? 100} % {n.base_amount != null && <>· Base : {euros(n.base_amount)}</>}</p>}
         <p>Montant : {euros(n.amount)} · Réglé : {euros(n.paid)} · Reste : {euros(n.amount - n.paid)}</p>
         {n.instalments === 10 && <p className="text-sm">10 mensualités : {taxInstalments(n.amount).map(euros).join(' / ')}. Première échéance au choix, puis chaque mois du jeu.</p>}
         {n.amount > n.paid && n.instalments === null && <div className="grid gap-2 sm:grid-cols-2 print:hidden">
