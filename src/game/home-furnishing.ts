@@ -1,7 +1,14 @@
 export type Furniture = { asset_id: string; name: string; visual: string; width: number; height: number; placed_home: string | null };
 export type Placement = { asset_id: string; room: number; x: number; y: number; rotation: number };
-export type FurnishingHome = { id: string; name: string; rooms: number; version: number; room_names: string[]; placements: Placement[] };
-export type FurnishingState = { available: boolean; homes: FurnishingHome[]; furniture: Furniture[]; grid: number };
+export type FurnishingHome = { id: string; kind?: 'propriete' | 'location'; lease_id?: string; name: string; rooms: number; version: number; room_names: string[]; placements: Placement[] };
+export type FurnishingState = { available: boolean; rentals_available?: boolean; homes: FurnishingHome[]; furniture: Furniture[]; grid: number };
+export function furnishingTarget(home: FurnishingHome): { rpc: 'home_furnishing_save' | 'rental_furnishing_save'; id: string; key: '_home_id' | '_lease_id' } {
+  if (home.kind === 'location') {
+    if (!home.lease_id) throw new Error('Bail introuvable');
+    return { rpc: 'rental_furnishing_save', id: home.lease_id, key: '_lease_id' };
+  }
+  return { rpc: 'home_furnishing_save', id: home.id, key: '_home_id' };
+}
 export function footprint(item: Pick<Furniture, 'width' | 'height'>, rotation: number) {
   return rotation % 180 === 0 ? { width: item.width, height: item.height } : { width: item.height, height: item.width };
 }

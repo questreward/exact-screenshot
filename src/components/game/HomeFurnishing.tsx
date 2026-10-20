@@ -13,7 +13,7 @@ export function HomeFurnishing({ data }: { data: FurnishingState }) {
   const [homeId, setHomeId] = useState(data.homes[0]?.id ?? '');
   const home = data.homes.find(h => h.id === homeId) ?? data.homes[0];
   if (!data.available) return <p className="p-4 text-muted-foreground">Chez moi : Disponible dans une prochaine étape.</p>;
-  if (!home) return <section className="space-y-4 py-6"><p className="text-muted-foreground">Aucun bien immobilier possédé à aménager.</p><Button asChild><Link to="/boutique"><ShoppingBag/>Immobilier</Link></Button></section>;
+  if (!home) return <section className="space-y-4 py-6"><p className="text-muted-foreground">Aucun logement disponible à aménager.</p>{!data.rentals_available && <p className="text-sm text-muted-foreground">Aménagement des locations : Disponible dans une prochaine étape.</p>}<Button asChild><Link to="/logement"><Home/>Logement</Link></Button></section>;
   return <Editor key={`${home.id}:${home.version}:${JSON.stringify(home.placements)}`} home={home} data={data} onHomeChange={setHomeId}/>;
 }
 function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
@@ -28,7 +28,7 @@ function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: Furn
   const leave = () => !dirty || window.confirm('Quitter sans enregistrer les changements ?');
   useBlocker({ shouldBlockFn: () => !leave(), enableBeforeUnload: dirty });
   const save = useMutation({
-    mutationFn: () => furnishingSave(home.id, home.version, names, placements, crypto.randomUUID()),
+    mutationFn: () => furnishingSave(home, home.version, names, placements, crypto.randomUUID()),
     onSuccess: () => { toast.success('Aménagement enregistré.'); qc.invalidateQueries({ queryKey: ['furnishing'] }); },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -51,8 +51,9 @@ function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: Furn
     setRotation(next);
   };
   return <div className="space-y-5">
-    <label className="block text-sm font-semibold">Mon logement<select aria-label="Mon logement" value={home.id} disabled={save.isPending} onChange={e => { if (leave()) onHomeChange(e.target.value); }} className="mt-2 min-h-12 w-full rounded-lg border border-input bg-background px-3">{data.homes.map(h=><option key={h.id} value={h.id}>{h.name}</option>)}</select></label>
-    <div className="flex gap-2 overflow-x-auto pb-1" aria-label="Pièces">{names.map((name,i)=><Button key={i} variant={room===i?'default':'outline'} className="min-h-11 shrink-0" onClick={()=>setRoom(i)}>{name}</Button>)}</div>
+    <label className="block text-sm font-semibold">Mon logement<select aria-label="Mon logement" value={home.id} disabled={save.isPending} onChange={e => { if (leave()) onHomeChange(e.target.value); }} className="mt-2 min-h-12 w-full rounded-lg border border-input bg-background px-3">{data.homes.map(h=><option key={h.id} value={h.id}>{h.name} · {h.kind==='location'?'Location':'Propriété'}</option>)}</select></label>
+    <div className="flex items-center justify-between gap-3 border-b border-border pb-3"><span className="text-sm font-semibold">{home.kind==='location'?'Ma location':'Ma propriété'}</span><span className="text-xs text-muted-foreground">{names.length} {names.length===1?'pièce':'pièces'} · {placements.length} {placements.length===1?'objet':'objets'}</span></div>
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Pièces">{names.map((name,i)=><Button key={i} variant={room===i?'default':'outline'} aria-pressed={room===i} className="h-auto min-h-16 min-w-0 justify-start whitespace-normal p-3 text-left" onClick={()=>setRoom(i)}><span className="min-w-0"><span className="block break-words">{name}</span><span className="block text-xs opacity-80">{placements.filter(p=>p.room===i).length} objet(s)</span></span></Button>)}</div>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <section className="min-w-0 space-y-3" aria-label="Aménagement de la pièce">
         <Input aria-label="Nom de la pièce" maxLength={40} className="h-12" value={names[room] ?? ''} disabled={save.isPending} onChange={e=>setNames(old=>old.map((n,i)=>i===room?e.target.value:n))}/>

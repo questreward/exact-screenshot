@@ -1459,6 +1459,10 @@ export async function housingAction(command: "rent" | "move_in", input: Record<s
 export const furnishingQuery = queryOptions({
   queryKey: ["furnishing", "state"], retry: false,
   queryFn: async (): Promise<import("@/game/home-furnishing").FurnishingState> => {
+    const updated = await untyped.rpc("furnishing_state_v2", {});
+    if (!updated.error) return updated.data as import("@/game/home-furnishing").FurnishingState;
+    const missingCode = "code" in updated.error ? updated.error.code : undefined;
+    if (missingCode !== "PGRST202" && missingCode !== "42883" && !updated.error.message.includes("Could not find the function public.furnishing_state_v2")) throw new Error(updated.error.message);
     const { data, error } = await untyped.rpc("home_furnishing_state", {});
     if (error) {
       const code = "code" in error ? error.code : undefined;
@@ -1468,8 +1472,10 @@ export const furnishingQuery = queryOptions({
     return data as import("@/game/home-furnishing").FurnishingState;
   },
 });
-export async function furnishingSave(homeId: string, version: number, roomNames: string[], placements: import("@/game/home-furnishing").Placement[], requestId: string) {
-  const { data, error } = await untyped.rpc("home_furnishing_save", { _home_id: homeId, _version: version, _room_names: roomNames, _placements: placements, _request_id: requestId });
+export async function furnishingSave(home: import("@/game/home-furnishing").FurnishingHome, version: number, roomNames: string[], placements: import("@/game/home-furnishing").Placement[], requestId: string) {
+  const { furnishingTarget } = await import("@/game/home-furnishing");
+  const target = furnishingTarget(home);
+  const { data, error } = await untyped.rpc(target.rpc, { [target.key]: target.id, _version: version, _room_names: roomNames, _placements: placements, _request_id: requestId });
   if (error) throw new Error(error.message);
   return data as { version: number; already: boolean };
 }
