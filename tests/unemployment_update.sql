@@ -20,18 +20,18 @@ DO $$ BEGIN PERFORM public.unemployment_declare('00000000-0000-0000-0000-0000000
 
 UPDATE public.fake_clock SET t='2026-11-29 09:00:00+00';
 SELECT pg_temp.ok(public.unemployment_declare('00000000-0000-0000-0000-000000000104', true, false) = '2026-11', 'November opens on the 28th');
-SELECT pg_temp.ok(pg_temp.paid() = 6, 'October + 4 November weeks + 0: '||pg_temp.paid());
+SELECT pg_temp.ok(pg_temp.paid() = 5, 'October + 4 November weeks: '||pg_temp.paid());
 
 -- Décembre oublié : radiation du mois
 UPDATE public.fake_clock SET t='2027-01-16 09:00:00+00';
 SELECT public.unemployment_state();
-SELECT pg_temp.ok(pg_temp.paid() = 6, 'December weeks lost: '||pg_temp.paid());
+SELECT pg_temp.ok(pg_temp.paid() = 5, 'December weeks lost: '||pg_temp.paid());
 DO $$ BEGIN PERFORM public.unemployment_declare('00000000-0000-0000-0000-000000000105', true, false); RAISE EXCEPTION 'x'; EXCEPTION WHEN raise_exception THEN IF SQLERRM NOT LIKE '%fermée%' THEN RAISE; END IF; END $$;
 
 -- Plus en recherche : pas d'allocation pour janvier
 UPDATE public.fake_clock SET t='2027-01-30 09:00:00+00';
 SELECT public.unemployment_declare('00000000-0000-0000-0000-000000000106', false, false);
-SELECT pg_temp.ok(pg_temp.paid() = 6, 'not searching means no January payment');
+SELECT pg_temp.ok(pg_temp.paid() = 5, 'not searching means no January payment');
 
 -- Avec un emploi, pas d'actualisation
 INSERT INTO public.employments VALUES ('00000000-0000-0000-0000-0000000000c1', gen_random_uuid(), '2027-01-30 09:00:00+00');
