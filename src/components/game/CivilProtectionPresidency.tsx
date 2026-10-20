@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { cpAction, cpPresidencyQuery, securityQuery } from '@/services/game';
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { cpAction, cpNamesQuery, cpPresidencyQuery, securityQuery } from '@/services/game';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -10,6 +10,9 @@ export function CivilProtectionPresidency() {
  const [city, setCity] = useState('');
  const [target, setTarget] = useState('');
  const [body, setBody] = useState('');
+ const ids = [...new Set([s.president, ...s.candidates.map(c => c.character_id), ...s.heads.map(h => h.character_id), ...s.nominees.map(n => n.character_id)].filter((x): x is string => !!x))];
+ const { data: names = {} } = useQuery(cpNamesQuery(ids));
+ const who = (id: string) => id === s.actor ? `${names[id] ?? 'Vous'} (vous)` : names[id] ?? 'Bénévole';
  const act = useMutation({ mutationFn: cpAction, onSuccess: data => {
   qc.setQueryData(cpPresidencyQuery.queryKey, data);
   void qc.invalidateQueries({ queryKey: securityQuery.queryKey });

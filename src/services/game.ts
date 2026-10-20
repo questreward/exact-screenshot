@@ -2049,6 +2049,15 @@ export const cpPresidencyQuery = queryOptions({ queryKey: ['cp-presidency'], sta
   return data as CpState;
  },
 });
+// Prénom + nom des personnes liées à la Protection civile ; vide tant que 0117b n'est pas installée.
+export const cpNamesQuery = (ids: string[]) => queryOptions({ queryKey: ['cp-names', [...ids].sort().join(',')], staleTime: 60000,
+ queryFn: async (): Promise<Record<string, string>> => {
+  if (ids.length === 0) return {};
+  const { data, error } = await (supabase.rpc as unknown as Rpc)('cp_names', { _ids: ids });
+  if (error) return {};
+  return (data ?? {}) as Record<string, string>;
+ },
+});
 export async function cpAction(args: { _action: 'candidate' | 'vote' | 'head' | 'operation' | 'message' | 'join'; _election?: string; _target?: string | null; _city?: string | null; _body?: string; _request?: string }) {
  const { data, error } = await (supabase.rpc as unknown as Rpc)('cp_action', args);
  if (error) throw new Error(error.message);
