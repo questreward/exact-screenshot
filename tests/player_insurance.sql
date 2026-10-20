@@ -21,6 +21,7 @@ SELECT public.insurer_set_price(70);
 SELECT public.test_assert((SELECT percent=70 FROM service_prices),'Borne 70 % acceptée');
 SELECT public.insurer_set_price(150);
 SELECT public.test_assert((SELECT percent=150 FROM service_prices),'Borne 150 % acceptée');
+SELECT public.test_assert(position('''assurance''' IN pg_get_functiondef('public.service_set_price(integer)'::regprocedure))=0,'Tarif assurance inaccessible par le réglage partagé');
 DO $$ BEGIN BEGIN PERFORM public.insurer_set_price(69); RAISE EXCEPTION 'Tarif 69 accepté'; EXCEPTION WHEN OTHERS THEN IF SQLERRM='Tarif 69 accepté' THEN RAISE; END IF; END;
  BEGIN PERFORM public.insurer_set_price(151); RAISE EXCEPTION 'Tarif 151 accepté'; EXCEPTION WHEN OTHERS THEN IF SQLERRM='Tarif 151 accepté' THEN RAISE; END IF; END; END $$;
 SELECT set_config('test.user','10000000-0000-0000-0000-000000000002',true);
