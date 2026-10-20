@@ -402,3 +402,9 @@
 - [ ] Interventions plus immersives : enrichir les scènes des missions existantes sans modifier leurs règles
 - [ ] Documents français : inventorier les manques et compléter sans dupliquer les espaces existants
 - Toute nouvelle migration doit être présentée exactement et approuvée avant application ; aucune installation VPS présumée.
+
+## Clôture V1 et communauté — demande d’Alex
+- [ ] Terminer le lot en cours et distinguer les contrôles réussis des contrôles VPS restant à faire
+- [ ] Réserver les nouvelles fonctionnalités non essentielles à une V2 ; aucune extension supplémentaire de V1
+- [ ] Préparer l’annonce V2 dans les actualités, sans annoncer une date ni des fonctions non validées
+- [ ] Préparer Discord, puis recommander les autres réseaux utiles ; création/publication à traiter ensuite
