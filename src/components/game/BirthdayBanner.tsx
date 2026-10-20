@@ -15,7 +15,7 @@ export function BirthdayBanner() {
     <div className="mb-6 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/10 p-4">
       <Cake className="h-7 w-7 shrink-0 text-primary animate-bounce" />
       <div className="flex-1">
-        <p className="font-heading font-semibold">Joyeux anniversaire ! Tu as {data.age} ans.</p>
+        <p className="font-display font-semibold">Joyeux anniversaire ! Tu as {data.age} ans.</p>
         {next && <p className="text-sm text-muted-foreground">Prochain anniversaire le {next} (1 an de jeu = 1 mois réel).</p>}
       </div>
       <button onClick={() => setHidden(true)} aria-label="Fermer" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground"><X className="h-5 w-5" /></button>
