@@ -340,7 +340,8 @@
 - [ ] Métiers de la sécurité et des secours : police, pompiers, protection civile… (vraie carrière jouable)
 - [x] Espace « Caisse des aides » (type CAF) : accueil, paiements, droits, messagerie, attestations, simulation
 - [ ] Déclaration trimestrielle de ressources (SQL à valider)
-- [ ] Espace Emploi (type France Travail) avec actualisation mensuelle (SQL à valider)
+- [x] Espace Emploi (type France Travail) : offres, candidatures, conseiller
+- [ ] Actualisation mensuelle + allocation chômage (règles + SQL à valider)
 - [ ] Espace Santé (type ameli)
 - [ ] Bloc A métiers sécurité/secours : règles chiffrées à faire valider (concours, école, grades, salaires)
 - [ ] Idées de réalisme France à proposer

@@ -13,7 +13,7 @@ export const PORTALS: Portal[] = [
     keywords: ["impot", "impots", "declaration", "revenus", "taxe", "avis"] },
   { id: "emploi", name: "Emploi CIVITAS", real: "France Travail", about: "Dans la vraie vie, France Travail aide à chercher un emploi et verse l'allocation chômage.",
     inGame: ["Postuler et passer des entretiens", "Trouver un emploi via une agence de recrutement", "Suivre son chômage et son salaire"],
-    links: [{ path: "/carriere", label: "Ma carrière" }, { path: "/recrutement", label: "Agences de recrutement" }, { path: "/mon-parcours", label: "Mon CV" }],
+    links: [{ path: "/espace-emploi", label: "Ouvrir mon espace candidat" }, { path: "/carriere", label: "Ma carrière" }, { path: "/recrutement", label: "Agences de recrutement" }, { path: "/mon-parcours", label: "Mon CV" }],
     keywords: ["emploi", "chomage", "travail", "france travail", "pole emploi", "cv", "entretien"] },
   { id: "sante", name: "Santé CIVITAS", real: "Ameli", about: "Dans la vraie vie, l'Assurance maladie rembourse une partie des soins ; une mutuelle complète.",
     inGame: ["Voir le médecin, suivre son moral et sa forme", "Choisir une assurance"],
