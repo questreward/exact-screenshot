@@ -253,4 +253,7 @@
 - [ ] Confirmer l’installation 0086 et tester le parcours réel : candidat volontaire → proposition → embauche → prime → relecture.
 - [ ] Préparer l’assurance joueur 0087, proposer ses règles et son SQL avant toute installation.
 - [ ] Après les quatre entreprises : commencer les étapes 1–3 du Monde mis en scène selon le plan validé.
-- Aucun travail ni installation ne continue pendant la pause ; annuaire CIVITAS Services et relations internationales restent pour plus tard.
+- [ ] Nouveau document immobilier : préparer un découpage pour logements variés, catalogue visuel (photos, plans, pièces), visites et maisons personnalisables avec objets ; réutiliser logement, agence et boutique existants. Aucun développement autorisé cette nuit.
+- [ ] Nouveau document écosystème : comparer les portails proposés aux fonctions existantes et préparer CIVITAS Services comme entrée commune (administration, logement, emploi, études, mobilité, finances, assurances, santé, entreprises, citoyenneté, documents) ; proposer les manques sans doubler les systèmes.
+- [ ] Demander la suite des deux documents si nécessaire : immobilier reçu jusqu’à « [Louer] », écosystème jusqu’à « Mes documents » ; les blocs de code finaux ne sont pas fermés.
+- Aucun travail ni installation ne continue pendant la pause ; relations internationales et voyages restent des propositions à arbitrer, pas des développements automatiquement autorisés.
