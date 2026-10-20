@@ -199,6 +199,18 @@
 .world-park { fill: var(--map-park); }
 .world-district { fill: var(--map-district); stroke: var(--border); stroke-width: 2; }
 .district-selected { stroke: var(--primary); stroke-dasharray: 8 5; }
+.district-crise { stroke: var(--destructive); stroke-width: 4; fill: color-mix(in oklch, var(--destructive) 18%, var(--map-district)); }
+.district-chantier { stroke: var(--primary-glow); stroke-width: 4; stroke-dasharray: 14 6; fill: color-mix(in oklch, var(--primary-glow) 14%, var(--map-district)); }
+.district-anime { stroke: var(--primary); stroke-width: 4; fill: color-mix(in oklch, var(--primary) 14%, var(--map-district)); }
+.district-renove { stroke: var(--success); stroke-width: 4; fill: color-mix(in oklch, var(--success) 16%, var(--map-district)); }
+.district-delaisse { stroke: var(--muted-foreground); stroke-width: 3; stroke-dasharray: 4 6; fill: color-mix(in oklch, var(--muted) 60%, var(--map-district)); }
+.district-icon { color: var(--background); }
+.district-icon-bg.chip-crise { fill: var(--destructive); } .district-icon-bg.chip-chantier { fill: var(--primary-glow); } .district-icon-bg.chip-anime { fill: var(--primary); } .district-icon-bg.chip-renove { fill: var(--success); } .district-icon-bg.chip-delaisse { fill: var(--muted-foreground); }
+.district-chip.chip-crise { background: color-mix(in oklch, var(--destructive) 22%, transparent); color: var(--foreground); }
+.district-chip.chip-chantier { background: color-mix(in oklch, var(--primary-glow) 22%, transparent); color: var(--foreground); }
+.district-chip.chip-anime { background: color-mix(in oklch, var(--primary) 22%, transparent); color: var(--foreground); }
+.district-chip.chip-renove { background: color-mix(in oklch, var(--success) 22%, transparent); color: var(--foreground); }
+.district-chip.chip-delaisse { background: var(--muted); color: var(--muted-foreground); }
 .world-marker { cursor: pointer; outline: none; }
 .marker-hit { fill: transparent; }
 .marker-body { fill: var(--surface); stroke: var(--muted-foreground); stroke-width: 2; }
