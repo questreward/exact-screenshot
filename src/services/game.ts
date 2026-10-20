@@ -1914,3 +1914,21 @@ export async function sendTaxQuestion(input: { category: string; body: string })
   if (error) throw error;
   return data as unknown as import('@/game/tax-space').TaxSpaceState;
 }
+
+export type JobMissionState = {
+  mission: null | { day: string; title: string; job: string; city_id: string | null; status: 'active' | 'success' | 'failure' | 'expired'; step_index: number; step_count: number; step: null | { text: string; choices: { label: string }[] }; reputation_delta: number | null; energy_cost: number | null };
+  progress?: { successes: number; milestone: number };
+};
+export const jobMissionsQuery = queryOptions({
+  queryKey: ['job-missions', 'daily'], staleTime: 0, refetchInterval: 30000,
+  queryFn: async (): Promise<JobMissionState> => {
+    const { data, error } = await untyped.rpc('job_mission_state', {});
+    if (error) throw new Error(error.message);
+    return data as JobMissionState;
+  },
+});
+export async function chooseJobMission(day: string, step: number, choice: number): Promise<JobMissionState> {
+  const { data, error } = await untyped.rpc('job_mission_choose', { _day: day, _step: step, _choice: choice });
+  if (error) throw new Error(error.message);
+  return data as JobMissionState;
+}
