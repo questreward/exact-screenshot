@@ -245,7 +245,8 @@
 - [x] Recrutement (0086) : règles chiffrées validées par Alex le 20 octobre 2026.
 - [x] Recrutement (0086) : installation VPS confirmée par le résultat transmis par Alex le 20 octobre 2026 (contrôles et COMMIT sans erreur).
 - [ ] Recrutement (0086) : vérifier le parcours réel sur le site VPS ; publication de la page à confirmer.
-- [ ] Assurance joueur (0087) : reprise demandée par Alex le 20 octobre 2026 ; préparer le fonctionnement et les règles à valider, sans installation.
+- [x] Assurance joueur (0087) : règles validées le 20 octobre 2026 — ouverture 5 000 €, cotisations 70–150 %, caisse puis secours fictif sans pénalité ; garanties existantes seulement, franchises et plafonds inchangés.
+- [ ] Assurance joueur (0087) : préparer et tester le fichier SQL exact et les écrans ; présenter les changements avant accord d’installation VPS.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
 
 ## Checklist de reprise — pause du 20 octobre 2026
