@@ -1850,7 +1850,7 @@ export const postQuery = queryOptions({
   queryFn: async (): Promise<import('@/game/post').PostState> => {
     const { data, error } = await untyped.rpc('post_state', {});
     if (error) throw new Error(error.message);
-    return data;
+    return data as import('@/game/post').PostState;
   },
 });
 export async function postAction(fn: 'post_send' | 'post_update', args: Record<string, unknown>) {
@@ -1864,7 +1864,7 @@ export const onlineBankQuery = queryOptions({
   queryFn: async (): Promise<import('@/game/online-bank').OnlineBankState> => {
     const { data, error } = await untyped.rpc('online_bank_state', {});
     if (error) throw new Error(error.message);
-    return data;
+    return data as import('@/game/online-bank').OnlineBankState;
   },
 });
 export async function onlineBankAction(fn: 'online_bank_card' | 'online_bank_transfer', args: Record<string, unknown>) {
