@@ -1680,7 +1680,7 @@ export async function declareUnemployment(input: { requestId: string; stillSearc
 }
 
 // Carrières de sécurité et de secours (0093) — état et actions via RPC sécurisées
-export type SecurityService = { id: "police" | "pompier_pro" | "pompier_vol" | "protection_civile"; label: string; min_age: number; max_age: number; exam: boolean; training_days: number; training_monthly: number; rank_titles: string[]; rank_monthly: number[]; rank_missions: number[]; hourly_pay: number; civic_per_shift: number; exclusive_job: boolean };
+export type SecurityService = { id: "police" | "gendarmerie" | "pompier_pro" | "pompier_vol" | "protection_civile" | "samu_ambulancier" | "samu_infirmier"; label: string; min_age: number; max_age: number; exam: boolean; training_days: number; training_monthly: number; rank_titles: string[]; rank_monthly: number[]; rank_missions: number[]; hourly_pay: number; civic_per_shift: number; exclusive_job: boolean };
 export type SecurityMission = { id: string; title: string; situation: string; choices: { id: string; label: string }[] };
 export type SecurityShift = { id: string; service: string; starts_at: string; ends_at: string; hours: number; mission_id: string; choice: string | null; outcome: string | null; settled: boolean };
 export type SecurityState = {

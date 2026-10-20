@@ -23,7 +23,7 @@ export const SECTIONS: Section[] = [
   { id: "orientation", label: "Mon orientation", icon: Compass, description: "Parti soutenu ou indépendant, positionnement et historique.", available: true },
   { id: "ma-vie", label: "Ma vie", icon: BookOpenText, description: "Journal de vie, réputations et compétences.", available: true },
   { id: "mon-parcours", label: "Mon parcours", icon: ScrollText, description: "Ton CV citoyen : études, emplois, engagements, mandats.", available: true },
-  { id: "secours", label: "Police, pompiers, secours", icon: Siren, description: "Concours, formation, horaires et missions dans ta ville.", available: true },
+  { id: "secours", label: "Police, pompiers, secours", icon: Siren, description: "Police, gendarmerie, pompiers, SAMU, protection civile : concours, horaires, missions.", available: true },
   { id: "carriere", label: "Ma carrière", icon: Briefcase, description: "Entretiens d'embauche, promotions, chômage et salaire.", available: true },
   { id: "vie", label: "Vie", icon: Briefcase, description: "Études, travail et vie quotidienne.", available: true },
   { id: "boutique", label: "Boutique", icon: ShoppingBag, description: "Vrais produits : téléphones, maison, mode, loisirs.", available: true },

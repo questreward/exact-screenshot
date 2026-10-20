@@ -1,11 +1,24 @@
 // Affichage seulement : les règles (âge, concours, horaires, paie, résultats) sont appliquées par la base.
-export type SecurityServiceId = "police" | "pompier_pro" | "pompier_vol" | "protection_civile";
+export type SecurityServiceId = "police" | "gendarmerie" | "pompier_pro" | "pompier_vol" | "protection_civile" | "samu_ambulancier" | "samu_infirmier";
 
 export const TEAMS: Record<SecurityServiceId, { id: string; label: string; hours: string }[]> = {
   police: [
     { id: "matin", label: "Brigade du matin", hours: "5h – 13h" },
     { id: "apres_midi", label: "Brigade d'après-midi", hours: "13h – 21h" },
     { id: "nuit", label: "Brigade de nuit", hours: "21h – 5h" },
+  ],
+  gendarmerie: [
+    { id: "matin", label: "Service du matin", hours: "5h – 13h" },
+    { id: "apres_midi", label: "Service d'après-midi", hours: "13h – 21h" },
+    { id: "nuit", label: "Service de nuit", hours: "21h – 5h" },
+  ],
+  samu_ambulancier: [
+    { id: "garde_jour", label: "Garde de jour", hours: "7h – 19h, puis 24 h de repos" },
+    { id: "garde_nuit", label: "Garde de nuit", hours: "19h – 7h, puis 24 h de repos" },
+  ],
+  samu_infirmier: [
+    { id: "garde_jour", label: "Garde de jour", hours: "7h – 19h, puis 24 h de repos" },
+    { id: "garde_nuit", label: "Garde de nuit", hours: "19h – 7h, puis 24 h de repos" },
   ],
   pompier_pro: [
     { id: "garde12", label: "Garde de 12 h", hours: "7h – 19h, puis 24 h de repos" },
@@ -17,6 +30,9 @@ export const TEAMS: Record<SecurityServiceId, { id: string; label: string; hours
 
 export const SERVICE_INTRO: Record<SecurityServiceId, string> = {
   police: "Concours de gardien de la paix, école de police de 4 semaines, cycle de 4 jours de travail puis 2 jours de repos.",
+  gendarmerie: "Concours de sous-officier, école de gendarmerie de 4 semaines, cycle de 5 jours de travail puis 2 jours de repos, logé en caserne.",
+  samu_ambulancier: "Sans concours, dès 18 ans, 2 semaines de formation. Gardes de 12 h de jour ou de nuit.",
+  samu_infirmier: "Dès 21 ans, sélection sur dossier et entretien, 3 semaines de formation aux urgences. Gardes de 12 h.",
   pompier_pro: "Concours avec épreuve sportive, 2 semaines de formation, gardes de 12 h ou 24 h.",
   pompier_vol: "Sans concours, dès 16 ans, 3 jours de formation. Compatible avec tes études ou ton travail. Payé à l'heure.",
   protection_civile: "Bénévole, dès 16 ans, une journée de formation aux premiers secours. Pas de salaire, mais de l'engagement citoyen.",

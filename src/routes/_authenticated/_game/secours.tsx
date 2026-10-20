@@ -64,7 +64,7 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
   const [team, setTeam] = useState<string>("");
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const sv = s.services.find(x => x.id === pick);
-  const qs = sv ? s.questions.filter(q => q.service === (sv.id === "police" ? "police" : "pompier_pro")) : [];
+  const qs = sv ? s.questions.filter(q => q.service === sv.id) : [];
   const ready = sv && team && (!sv.exam || qs.every(q => answers[q.id] !== undefined));
 
   if (!sv) return <div className="space-y-3">{s.services.map(x => {
@@ -89,7 +89,7 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
       className={`min-h-12 rounded-lg border p-3 text-left text-sm ${team === t.id ? "border-primary bg-primary/10" : "border-border"}`}>
       <span className="font-semibold">{t.label}</span> · {t.hours}</button>)}</div>
     {sv.exam && <>
-      <p className="mb-1 font-semibold">Épreuve écrite</p>
+      <p className="mb-1 font-semibold">{sv.id === "samu_infirmier" ? "Questions de soins" : "Épreuve écrite"}</p>
       <p className="mb-3 text-sm text-muted-foreground">5 points par bonne réponse. Le sport dépend de ta santé et de ton énergie (coûte {s.settings.exam_energy} d'énergie), puis vient l'entretien oral. Il faut {s.settings.exam_pass_total} / 60.</p>
       <div className="mb-4 space-y-4">{qs.map((q, i) => <div key={q.id}>
         <p className="mb-2 text-sm font-semibold">{i + 1}. {q.question}</p>
@@ -133,6 +133,7 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
     <Card title="Horaires" icon={Clock}>
       <p className="mb-2 text-sm">{team?.label} · {team?.hours}</p>
       {c.service === "police" && <p className="mb-2 text-sm text-muted-foreground">Cycle : 4 jours de travail, puis 2 jours de repos.</p>}
+      {c.service === "gendarmerie" && <p className="mb-2 text-sm text-muted-foreground">Cycle : 5 jours de travail, puis 2 jours de repos.</p>}
       {TEAMS[c.service].length > 1 && <div className="grid gap-2">{TEAMS[c.service].filter(t => t.id !== c.team).map(t =>
         <Button key={t.id} variant="outline" className="min-h-12 justify-start" disabled={busy}
           onClick={() => run({ fn: "security_set_team", args: { _team: t.id }, ok: `Équipe changée : ${t.label}` })}>Passer en {t.label.toLowerCase()} ({t.hours})</Button>)}</div>}
