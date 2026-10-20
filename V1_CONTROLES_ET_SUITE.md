@@ -1,5 +1,17 @@
 # CIVITAS — clôture de V1
 
+## Bilan actualisé — 20 octobre 2026, après 18:56 UTC
+Ce bilan remplace les états historiques « préparé » ou « non installé » ci-dessous. Alex demandait si la V1 était terminée ; il n’a pas confirmé sa clôture.
+
+- Installation 0114/0115 confirmée par le rapport VPS : 5 antennes, notes privées et 10 000 produits distincts. Ne pas réexécuter ces migrations.
+- Sauvegarde complète et restauration isolée du jeu confirmées par le rapport préalable ; cron exclu de la copie uniquement.
+- Site public réel vérifié : HTTP 200, accueil et connexion à 390/1280 px sans débordement ni erreur JavaScript. Boutique redirige normalement vers la connexion en l’absence de session ; cela ne vérifie pas son catalogue connecté.
+- 32 tests locaux ciblés boutique, dossiers bénévoles, conversations et JT relancés avec succès ; aucun essai réel VPS supplémentaire prétendu.
+- Mise à jour finale non confirmée : aucun accès VPS utilisable dans cette session. La procédure historique reconstruit uniquement civitas-web sur civitas-net avec .env et le port local 3000 ; elle ne réapplique aucune migration et ne redémarre pas Ollama.
+- Critères encore ouverts : parcours téléphone avec vrai personnage, antenne/note relues après retour, recherche/pagination/achat boutique, régressions financières et confidentialité sur copie indépendante, première partie et fonctionnement sans IA locale. Une session du jeu et une application de test reliée à une copie indépendante restent nécessaires.
+
+**Conclusion : tous les critères de clôture ne sont pas confirmés.**
+
 ## Première livraison après 0113
 - Conversations : reprise dans la page, fermeture, remise à zéro et nouvelle tentative du même message après erreur. Correction de la poursuite d’un échange après une réponse de plus de 300 caractères : le joueur reste limité à 300, la réponse à 600 comme auparavant.
 - Missions : scènes de patrouille/incendie/secours ou de travail, véhicules et petits bonshommes ; dossier fictif consultable. Tout dérive de la mission enregistrée, sans nouvelle règle ni récompense.

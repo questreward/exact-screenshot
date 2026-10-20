@@ -459,3 +459,10 @@
 - [ ] Mise à jour du site et parcours connectés antenne/note/boutique : non vérifiés ; accès serveur et session du jeu absents ici, procédure de déploiement VPS à confirmer.
 - [x] Livrer 0114 dossier Protection civile et codes de sauvegarde/essai à blanc ; aucune migration appliquée ici. Essais SQL isolés réussis, 316 tests locaux réussis ; parcours connecté VPS non vérifié.
 - [x] Nouveaux ajouts V1 gelés ; engagements non livrés et contrôles bloqués conservés dans V1_GEL_ET_0114.md.
+
+## Vérification de clôture — 20 octobre 18:56 UTC
+- [x] Procédure de mise à jour civitas-web retrouvée dans les rapports ; réseau civitas-net, .env, port local 3000, sans migration ni modification d’Ollama.
+- [x] Site public réel contrôlé à 390/1280 px : HTTP 200, accueil et connexion sans débordement ni erreur JavaScript ; 32 tests locaux ciblés réussis.
+- [ ] Mettre à jour le site VPS sans réappliquer 0114/0115 ; aucun accès serveur utilisable disponible ici, exécution par Alex et sortie nécessaires.
+- [ ] Vérifier les parcours connectés Protection civile, boutique et confort téléphone sur le site réel ; accès boutique redirigé vers connexion, session du jeu non disponible ici.
+- [x] Bilan établi : installation des données et restauration confirmées par rapports, site public accessible ; mise à jour finale, parcours réels, régressions indépendantes et fonctionnement sans IA restent non confirmés. V1 non clôturable comme entièrement vérifiée.
