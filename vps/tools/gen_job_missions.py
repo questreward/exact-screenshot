@@ -191,7 +191,7 @@ for key, scens in SEC.items():
         rows.append((f"{key}:{i}", key, title, st))
 
 def q(s): return "$data$" + s + "$data$"
-out = ["DELETE FROM public.job_mission_scripts s WHERE NOT EXISTS (SELECT 1 FROM public.job_mission_runs r WHERE r.script_id=s.id);",
+out = [
        "INSERT INTO public.job_mission_scripts(id,job_key,title,steps) VALUES"]
 out.append(",\n".join(f"({q(a)},{q(b)},{q(c)},{q(json.dumps(d, ensure_ascii=False))}::jsonb)" for a, b, c, d in rows))
 out.append("ON CONFLICT(id) DO UPDATE SET job_key=excluded.job_key,title=excluded.title,steps=excluded.steps;")
