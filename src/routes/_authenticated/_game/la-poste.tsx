@@ -26,7 +26,7 @@ function PostPage() {
   const button = 'min-h-11 rounded-md border border-border bg-background px-4 py-2 text-foreground disabled:opacity-50';
   return <div className="-mx-4 -mt-4 min-h-screen bg-background pb-24 sm:mx-0 sm:mt-0">
     <header className="border-b-4 border-primary bg-secondary px-4 py-5 text-secondary-foreground"><div className="mx-auto max-w-3xl"><h1 className="font-heading text-2xl font-bold">La Poste</h1><p className="text-sm">Mon espace courrier · FICTIF · Aucun service postal réel</p>
-      <nav aria-label="Courrier" className="mt-4 flex flex-wrap gap-2">{[['inbox','Boîte aux lettres'],['archive','Archives'],['send','Écrire']].map(([id,label]) => <button className={button} key={id} aria-pressed={tab===id} onClick={() => setTab(id)}>{label}</button>)}</nav></div></header>
+      <nav aria-label="Courrier" className="mt-4 flex flex-wrap gap-2">{[['inbox','Boîte aux lettres'],['archive','Archives'],['send','Écrire']].map(([id,label]) => <button className={button} key={id} aria-pressed={tab===id} onClick={() => setTab(id ?? "")}>{label}</button>)}</nav></div></header>
     <main className="mx-auto max-w-3xl space-y-4 px-4 py-5"><p className="text-sm text-muted-foreground">Recommandés : retrait sous 15 jours du jeu. La première présentation vaut réception, même sans retrait.</p>
       <p role="status" className="text-sm">{message}</p>
       {tab==='send' ? <form className="space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground" onSubmit={e => { e.preventDefault(); void act('post_send', { _target: target, _subject: subject, _body: body, _registered: registered, _request_id: request }); }}>
