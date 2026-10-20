@@ -140,14 +140,14 @@ DECLARE s public.pr_settings; e public.pr_elections; total integer; top record; 
 END $$;
 
 CREATE FUNCTION public.pr_state() RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE cid uuid := public.social_actor(); s public.pr_settings; p uuid; e public.pr_elections; age integer; BEGIN
+DECLARE cid uuid := public.social_actor(); s public.pr_settings; p uuid; e public.pr_elections; my_age integer; BEGIN
  IF cid IS NULL THEN RAISE EXCEPTION 'Personnage connecté requis'; END IF;
  PERFORM 1 FROM public.characters WHERE id=cid FOR UPDATE;
  PERFORM public.pr_settle();
  SELECT * INTO s FROM public.pr_settings WHERE id; p := public.pr_president();
- SELECT c.age INTO age FROM public.characters c WHERE c.id=cid;
+ SELECT c.age INTO my_age FROM public.characters c WHERE c.id=cid;
  SELECT * INTO e FROM public.pr_elections WHERE NOT settled ORDER BY closes_at LIMIT 1;
- RETURN jsonb_build_object('now',public.game_now(),'actor',cid,'eligible',coalesce(age,0)>=s.min_age,
+ RETURN jsonb_build_object('now',public.game_now(),'actor',cid,'eligible',coalesce(my_age,0)>=s.min_age,
   'president',p,'president_name',public.pr_name(p),'is_president',p=cid,
   'interim',(SELECT interim FROM public.pr_office) IS NOT DISTINCT FROM p AND NOT EXISTS(SELECT 1 FROM public.pr_elections WHERE settled AND winner=p AND ends_at>public.game_now()),
   'prime_minister',(SELECT public.pr_name(prime_minister) FROM public.pr_office),
@@ -177,16 +177,16 @@ END $$;
 -- Actions : candidate, sponsor, vote, pm, promulgate, refer_back, dissolve, speech, referendum, referendum_vote.
 CREATE FUNCTION public.pr_action(_action text, _target uuid DEFAULT NULL, _body text DEFAULT NULL, _yes boolean DEFAULT NULL, _request uuid DEFAULT NULL)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE cid uuid := public.social_actor(); s public.pr_settings; e public.pr_elections; p uuid; age integer; b text := btrim(coalesce(_body,''));
+DECLARE cid uuid := public.social_actor(); s public.pr_settings; e public.pr_elections; p uuid; my_age integer; b text := btrim(coalesce(_body,''));
  l public.national_laws; prev public.national_elections; st timestamptz; neid uuid; v_rules jsonb; t timestamptz := public.game_now(); BEGIN
  IF cid IS NULL THEN RAISE EXCEPTION 'Personnage connecté requis'; END IF;
  PERFORM 1 FROM public.characters WHERE id=cid FOR UPDATE;
  PERFORM public.pr_settle();
  SELECT * INTO s FROM public.pr_settings WHERE id; p := public.pr_president();
- SELECT c.age INTO age FROM public.characters c WHERE c.id=cid;
+ SELECT c.age INTO my_age FROM public.characters c WHERE c.id=cid;
  SELECT * INTO e FROM public.pr_elections WHERE NOT settled ORDER BY closes_at LIMIT 1;
  IF _action IN ('candidate','sponsor','vote') THEN
-  IF coalesce(age,0) < s.min_age THEN RAISE EXCEPTION 'Il faut avoir % ans', s.min_age; END IF;
+  IF coalesce(my_age,0) < s.min_age THEN RAISE EXCEPTION 'Il faut avoir % ans', s.min_age; END IF;
   IF e.id IS NULL OR t < e.opens_at THEN RAISE EXCEPTION 'Aucune présidentielle ouverte'; END IF;
  END IF;
  IF _action='candidate' THEN
@@ -258,7 +258,7 @@ DECLARE cid uuid := public.social_actor(); s public.pr_settings; e public.pr_ele
    INSERT INTO public.pr_acts(id,kind,president,body) VALUES (_request,'referendum',cid,b);
    PERFORM public.national_publish('pr-referendum-open:'||_request,'Référendum national',b||' — vote ouvert à tous les citoyens pendant '||s.referendum_days||' jours.');
   ELSIF _action='referendum_vote' THEN
-   IF coalesce(age,0) < s.min_age THEN RAISE EXCEPTION 'Il faut avoir % ans', s.min_age; END IF;
+   IF coalesce(my_age,0) < s.min_age THEN RAISE EXCEPTION 'Il faut avoir % ans', s.min_age; END IF;
    IF _yes IS NULL OR NOT EXISTS(SELECT 1 FROM public.pr_referendums WHERE id=_target AND NOT settled AND closes_at>t) THEN RAISE EXCEPTION 'Référendum fermé'; END IF;
    IF EXISTS(SELECT 1 FROM public.pr_referendum_votes WHERE referendum_id=_target AND voter=cid) THEN RAISE EXCEPTION 'Vous avez déjà voté'; END IF;
    INSERT INTO public.pr_referendum_votes(referendum_id,voter,vote) VALUES (_target,cid,_yes);
