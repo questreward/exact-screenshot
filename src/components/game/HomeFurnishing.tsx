@@ -61,7 +61,7 @@ function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: Furn
           {placements.filter(p=>p.room===room).map(p=>{
             const f=data.furniture.find(item=>item.asset_id===p.asset_id); if(!f)return null;
             const box=footprint(f,p.rotation);
-            return <Button key={p.asset_id} variant="ghost" aria-label={`Sélectionner ${f.name}`} disabled={save.isPending} onClick={()=>pick(p.asset_id)} className={`absolute z-10 h-auto rounded-sm border-2 bg-secondary p-1 ${selected===p.asset_id?'border-primary ring-2 ring-ring':'border-border'}`} style={{ left:`${p.x/data.grid*100}%`, top:`${p.y/data.grid*100}%`, width:`${box.width/data.grid*100}%`, height:`${box.height/data.grid*100}%` }}><span className="block h-full w-full" style={{transform:`rotate(${p.rotation}deg)`}}><FurnitureVisual kind={f.visual}/></span></Button>;
+            return <Button key={p.asset_id} variant="ghost" aria-label={`Sélectionner ${f.name}`} disabled={save.isPending} onClick={()=>pick(p.asset_id)} className={`absolute z-10 h-auto overflow-hidden rounded-sm border-2 bg-secondary p-1 ${selected===p.asset_id?'border-primary ring-2 ring-ring':'border-border'}`} style={{ left:`${p.x/data.grid*100}%`, top:`${p.y/data.grid*100}%`, width:`${box.width/data.grid*100}%`, height:`${box.height/data.grid*100}%` }}><span className="absolute left-1/2 top-1/2 block" style={{width:`${f.width/box.width*100}%`,height:`${f.height/box.height*100}%`,transform:`translate(-50%, -50%) rotate(${p.rotation}deg)`}}><FurnitureVisual kind={f.visual}/></span></Button>;
           })}
         </div>
         <p className="text-xs text-muted-foreground">Disposition de jeu · sans dimensions immobilières contractuelles</p>
