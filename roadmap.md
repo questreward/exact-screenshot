@@ -250,8 +250,10 @@
 - [x] Audit des anciens contrats 0087 : tests/player_insurance_legacy.sql compare deux bases neuves avant/après migration, avec cinq contrats préexistants (habitation, santé, accident, pack, auto). 14 assertions après migration et résultats de règlement strictement identiques ; 30 essais assurance joueur relancés avec succès. Aucun accès VPS, aucune modification du SQL 0087.
 - [x] Avant installation 0087 : signatures des corps complets assurance vérifiées avant tout ajout ; service_set_price laissé inchangé, tarifs assurance uniquement via insurer_set_price. 31 tests assurance + 14 tests anciens contrats passent ; divergence volontaire refusée et aucun ajout persistant. Version renforcée livrée séparément (v2), pas installée sur VPS.
 - [ ] Limite d’audit : banque et règlement entreprise simulés ; comportement hérité de 0050 évaluant les sinistres passés avec le statut courant conservé, pas corrigé dans 0087. Validation sur copie complète du VPS non effectuée.
-- [ ] Assurance joueur (0087) : accord d’installation VPS après présentation du SQL exact ; aucun changement appliqué au VPS.
-- [ ] Assurance joueur (0087) : installer et vérifier le parcours réel sur le site VPS après mise à jour du site ; non vérifiable avant installation.
+- [x] Assurance joueur (0087) : installation VPS confirmée le 20 octobre 2026 par le compte rendu complet jusqu’à COMMIT, après sauvegarde et accord.
+- [x] Assurance joueur (0087) : mise à jour du site déclarée installée par Alex ; ne pas relancer la migration.
+- [ ] Assurance joueur (0087) : vérifier le parcours réel sur le site VPS ; installation confirmée ne vaut pas essai en jeu.
+- [ ] Reprise demandée après 0087 : préparer Monde mis en scène étapes 1–3, puis présenter le SQL exact avant toute installation ; commandes directes sans téléchargement séparé.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
 
 ## Checklist de reprise — pause du 20 octobre 2026
