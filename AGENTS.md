@@ -24,7 +24,7 @@
 - News reuses events/news/notifications via one hourly SQL job with unique event keys; reads/bookmarks stay private.
 - Parties/movements are organization kinds extended 1:1 (political_profiles/branches); political stats are separate from social stats; affinity in src/game/politics.ts is a hint only.
 - Elections: character-first RPCs, row locks, private immutable ballots; fictional electorates simulated separately; candidacies own campaign budget without new accounts.
-- Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never touching personal accounts; one calendar successor per city election.
+- Governance extends public_decisions; council approval and unique municipal-ledger funding precede effects, never personal accounts; one calendar successor per city election.
 - World events extend `events` with config in world_event_templates/settings; rewards use unique ledgers and economy_cash. Staging preserves importance and uses a separate public-event TV projection, never headline guesses.
 - Travel delays from world events are computed once at public-transport start and frozen on the activity; national per-city effects use a unique (event, city) ledger — idempotent, no retroactive effects.
 - National politics proposals isolate calendars, ledgers and permissions from municipal systems; undecided operations stay disabled so preparation cannot alter the established game.
