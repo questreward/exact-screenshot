@@ -247,6 +247,9 @@
 - [ ] Recrutement (0086) : vérifier le parcours réel sur le site VPS ; publication de la page à confirmer.
 - [x] Assurance joueur (0087) : règles validées le 20 octobre 2026 — ouverture 5 000 €, cotisations 70–150 %, caisse puis secours fictif sans pénalité ; garanties existantes seulement, franchises et plafonds inchangés.
 - [x] Assurance joueur (0087) : fichier SQL exact et écran préparés ; migration passée sur base temporaire, 30 assertions SQL et 193 tests frontend réussis. Fixture conservée dans tests/tools/player_insurance_fixture.sql ; moteur banque et règlement entreprise simulés dans la fixture, pas de régression VPS complète prétendue.
+- [x] Audit des anciens contrats 0087 : tests/player_insurance_legacy.sql compare deux bases neuves avant/après migration, avec cinq contrats préexistants (habitation, santé, accident, pack, auto). 14 assertions après migration et résultats de règlement strictement identiques ; 30 essais assurance joueur relancés avec succès. Aucun accès VPS, aucune modification du SQL 0087.
+- [ ] Avant installation 0087 : renforcer les remplacements de fonctions (présence d’une chaîne insuffisante pour garantir une définition attendue) et contrôler le réglage partagé service_set_price, qui pourrait dépasser les bornes propres à l’assurance si les configurations divergent ; changements SQL à présenter avant accord.
+- [ ] Limite d’audit : banque et règlement entreprise simulés ; comportement hérité de 0050 évaluant les sinistres passés avec le statut courant conservé, pas corrigé dans 0087. Validation sur copie complète du VPS non effectuée.
 - [ ] Assurance joueur (0087) : accord d’installation VPS après présentation du SQL exact ; aucun changement appliqué au VPS.
 - [ ] Assurance joueur (0087) : installer et vérifier le parcours réel sur le site VPS après mise à jour du site ; non vérifiable avant installation.
 - [ ] Monde mis en scène : étapes 1–3 (plan validé)
