@@ -2,3 +2,4 @@
 - [Espaces français](mem://features/french-spaces.md) — 0105 Poste, 0106 Banque, 0107 ANTS, 0108 Impôts ; tarifs validés
 - [Économie réelle](mem://features/real-economy.md) — 0110 installée : indices ville, plancher SMIC, carte bloquante, pourboires
 - [Missions des métiers](mem://features/job-missions.md) — 0111 : 1/jour, sans argent, interventions réalistes en étapes (feu, arrestation)
+- [Taxe foncière municipale](mem://features/municipal-property-tax.md) — 0112 : vers la mairie du logement, taux conseil 80–120 %, non rétroactif
