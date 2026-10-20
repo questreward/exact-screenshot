@@ -392,6 +392,6 @@
 
 ## Lot suivant (choisi par Alex)
 - [x] 0110 Économie réelle installée
-- [ ] 0111 Missions des nouveaux métiers
+- [x] 0111 Missions des nouveaux métiers (installée)
 - [ ] 0112 Taxe foncière aux mairies
 - [ ] 0113 Voyages à l'étranger
