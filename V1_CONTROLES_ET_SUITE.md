@@ -28,6 +28,8 @@ Point à contrôler : 0113 crée ses trois politiques sous une seule condition. 
 
 Le VPS et Ollama n’ont pas été testés directement depuis cette session ; leur configuration et les parcours complets restent à vérifier à partir des résultats du contrôle. Les essais locaux utilisent des données contrôlées et ne sont pas présentés comme un essai de production.
 
+21 essais ciblés réussis, dont nouvelle tentative sans double message, reprise/remise à zéro et transmission du choix de mission suivie du résultat serveur simulé. Compilation automatique sans erreur. La vérification visuelle par navigateur n’a pas abouti : la page temporaire de contrôle n’était pas servie. Les fichiers temporaires ont été retirés ; l’affichage dans une vraie mission et Ollama restent non vérifiés.
+
 ## Inventaire des documents
 Déjà présents : carte fictive, contrat, paie, bail, quittance mensuelle, relevé bancaire, avis d’impôt, échéancier, assurance, consultation, mandat, candidature, décisions d’aide et formulaires. CAF/emploi/santé/banque/impôts/titres ont déjà leurs espaces : pas de doublon à créer.
 
@@ -44,3 +46,15 @@ Le dossier de mission est la seule nouvelle présentation de document de ce lot 
 - V2 : mémoire durable IA, documents supplémentaires et nouvelles fonctions restant à valider. Préparer une annonce dans les actualités sans date promise ; aucune annonce publiée à ce stade.
 - Discord en priorité : accueil/règlement, annonces, aide, bugs, suggestions, discussions, rôles et modération. Demander l’accès ou l’invitation du serveur au démarrage de ce chantier.
 - TikTok et Instagram : courtes séquences de gameplay pour découvrir CIVITAS ; YouTube ensuite pour tutoriels et présentations plus longues. Ne pas disperser le lancement sur tous les réseaux.
+
+### Brouillon d’annonce — non publié
+**CIVITAS : cap sur la V2**
+
+Nous préparons la suite de CIVITAS. La priorité reste de stabiliser la V1 et de corriger les problèmes importants. Les prochaines grandes nouveautés seront regroupées dans une V2 ; leur contenu et leur calendrier seront annoncés une fois confirmés. Merci pour vos retours et vos idées !
+
+### Discord — structure proposée, non créée
+- Informations : accueil, règlement, annonces (écriture réservée à l’équipe).
+- Joueurs : discussion, présentation des personnages, captures du jeu.
+- Assistance : aide, signalements de bugs, suggestions V2.
+- Équipe : modération et suivi privés ; rôles administrateur/modérateur/membre sans permissions inutiles.
+- Aucun lien d’invitation fictif, bot installé ni message publié sans accès et validation.
