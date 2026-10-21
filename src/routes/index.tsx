@@ -22,9 +22,9 @@ import cLille from "@/assets/v2/ville-lille.webp";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CIVITAS — Votre vie. Votre pouvoir." },
+      { title: "CIVITAS — Votre vie. Votre ville. Votre histoire." },
       { name: "description", content: "Étudiez, travaillez, entreprenez, entrez en politique : vivez une vie entière dans une France contemporaine vivante." },
-      { property: "og:title", content: "CIVITAS — Votre vie. Votre pouvoir." },
+      { property: "og:title", content: "CIVITAS — Votre vie. Votre ville. Votre histoire." },
       { property: "og:description", content: "Commence à 16 ans, finis à l'Élysée. Le jeu gratuit où tu vis une vie entière dans 5 vraies villes françaises." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -94,7 +94,7 @@ function Home() {
             CIVITAS
           </h1>
           <p className="mt-4 text-xl text-foreground/90 sm:text-2xl animate-rise" style={{ animationDelay: "0.2s" }}>
-            Votre vie. <span className="text-primary">Votre pouvoir.</span>
+            Votre vie. Votre ville. <span className="text-primary">Votre histoire.</span>
           </p>
           <div className="mt-10 flex w-full max-w-md flex-col gap-3 animate-rise" style={{ animationDelay: "0.3s" }}>
             <Button asChild variant="hero" size="lg"><Link to="/auth" search={{ mode: "signup" }}>Commencer</Link></Button>
