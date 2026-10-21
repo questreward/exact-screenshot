@@ -29,7 +29,7 @@ import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
 import { BADGE_ICON, DistrictBadges, DistrictReasons, useDistrictStatuses } from './DistrictStatus';
 import { DISTRICT_BADGE_LABEL } from '@/game/districts-state';
 import { DistrictGauges } from './DistrictGauges';
-import { openState, placeDoor, searchPlaces } from "@/game/place-doors";
+import { openState, placeDoor, searchPlaces, distanceKm } from "@/game/place-doors";
 import { Link } from "@tanstack/react-router";
 import { Search, DoorOpen } from "lucide-react";
 import { MAP_LAYERS, placeLayer, showPlace, type MapLayer } from "@/game/map-layers";
@@ -216,10 +216,11 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { data: p } = useSuspenseQuery(positionQuery);
   const { data: spaces } = useSuspenseQuery(spacesQuery(l.id));
   const q = useQueryClient();
-  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] }), q.invalidateQueries({ queryKey: ["location-presence"] })]); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
+  const move = useMutation({ mutationFn: () => moveCharacter(l.id), onSuccess: async () => { await Promise.all([q.invalidateQueries({ queryKey: ["position"] }), q.invalidateQueries({ queryKey: ["daily-life"] }), q.invalidateQueries({ queryKey: ["social"] }), q.invalidateQueries({ queryKey: ["location-presence"] })]); setArrived(true); toast.success(`Vous êtes arrivé : ${l.name}`); }, onError: (error: Error) => toast.error(error.message) });
   const here = isCurrentPlace(p?.location_id, l.id);
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
+  const [arrived, setArrived] = useState(false);
   const { time } = useWorldClock();
   const open = openState(l.opening_hours, time);
   const door = placeDoor(l.kind);
@@ -232,6 +233,8 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
       {open && <p className={`inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold ${open.open ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>{open.open ? "🟢 Ouvert" : `🔴 Fermé · ouvre ${open.opensAt?.startsWith("demain") ? open.opensAt : `à ${open.opensAt}`}`}</p>}
       <p className="text-sm text-muted-foreground">{l.description}</p>
+      {here && arrived && <div role="status" className="animate-rise rounded-xl border border-primary/50 bg-primary/10 p-4 text-center"><p className="text-lg font-bold">📍 Vous êtes arrivé.</p><p className="text-sm text-muted-foreground">{placeLayer(l.kind).emoji} {l.name}</p></div>}
+      {!here && p?.city_id === city.id && allowed && <Suspense fallback={<p className="text-xs text-muted-foreground">Calcul du trajet…</p>}><TripPlanner target={l} cityId={city.id} from={{ locationId: p.location_id, districtId: p.district_id }} onWalk={() => move.mutate()} walking={move.isPending} /></Suspense>}
       {door && <div className="space-y-1">
         {here && open?.open !== false ? <Button asChild className="min-h-12 w-full text-base"><Link to={door.to}><DoorOpen /> {door.label}</Link></Button> :
           <Button disabled className="min-h-12 w-full text-base"><DoorOpen /> {door.label}</Button>}
@@ -297,4 +300,19 @@ function PlaceSearch({ districts, onPick }: { districts: Tables<"districts">[]; 
         </span>
       </li>)}</ul>)}
   </div>;
+}
+
+function TripPlanner({ target, cityId, from, onWalk, walking }: { target: Tables<"locations">; cityId: string; from: { locationId: string | null; districtId: string | null }; onWalk: () => void; walking: boolean }) {
+  const { data: locs } = useSuspenseQuery(locationsQuery(from.districtId ?? ""));
+  const origin = locs.find(x => x.id === from.locationId);
+  const a = origin ? realPlace(cityId, origin.kind, origin.name)?.at : undefined;
+  const b = realPlace(cityId, target.kind, target.name)?.at;
+  const km = a && b ? distanceKm(a, b) : null;
+  return <section className="space-y-3 rounded-xl border border-border bg-surface p-3" aria-label="Itinéraire">
+    <p className="text-xs uppercase tracking-wider text-primary">Itinéraire</p>
+    <p className="text-sm"><strong>{origin?.name ?? "Votre position"}</strong> → <strong>{target.name}</strong>{km != null && <span className="text-muted-foreground"> · {km.toLocaleString("fr-FR")} km</span>}</p>
+    <Button variant="outline" className="min-h-12 w-full text-base" disabled={walking} onClick={onWalk}>{walking ? <LoaderCircle className="animate-spin" /> : <Footprints />} À pied · gratuit</Button>
+    {origin && <TransportControl location={origin} preset={{ id: target.id, name: target.name, districtId: target.district_id ?? "" }} />}
+    <p className="text-xs text-muted-foreground">Durées et prix selon les règles du jeu. En voiture, le trajet se joue ; en bus, vous suivez le trajet sur la carte.</p>
+  </section>;
 }

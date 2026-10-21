@@ -50,3 +50,11 @@ export function searchPlaces<T extends { name: string; kindLabel: string; distri
   if (q.length < 2) return [];
   return list.filter(p => norm(`${p.name} ${p.kindLabel} ${p.district}`).includes(q)).slice(0, max);
 }
+
+/** Distance à vol d'oiseau entre deux points réels de la carte, en km (affichage seul). */
+export function distanceKm(a: [number, number], b: [number, number]): number {
+  const R = 6371, rad = (d: number) => (d * Math.PI) / 180;
+  const dLat = rad(b[1] - a[1]), dLon = rad(b[0] - a[0]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLon / 2) ** 2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(h)) * 10) / 10;
+}
