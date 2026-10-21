@@ -10,3 +10,4 @@
 - [Président joueur](mem://features/player-president.md) — Intérim pour Alex puis présidentielle 2 tours ; PM, dissolution, lois, discours/référendum
 - [Vraie carte](mem://features/real-map.md) — Carte réelle sur le VPS, lieux aux vraies adresses, pas de service extérieur
 - [Boutique cosmétique](mem://features/cosmetic-shop.md) — Objets de style seuls, Stripe d'Alex sur le VPS, accord parental + 30 €/mois pour 16–17 ans
+- [Décisions des institutions](mem://features/institution-decisions.md) — Maire ±8 quartier/jour, loi +3 partout, président ±5 ville/jour ; boutique 0,49–2,99 €

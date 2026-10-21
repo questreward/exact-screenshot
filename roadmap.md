@@ -22,4 +22,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
 - [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
 - [x] E. Magasins sur la carte (0120 installée) : fiche, intérieur avec rayons, accès Boutique
-- [~] F. Décors des 3 institutions + changements réels en ville affichés ; nouvelles décisions = changement serveur à proposer
+- [x] F. Décisions Mairie/Assemblée/Élysée (0121 prête, attend installation par Alex)
