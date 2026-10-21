@@ -1,6 +1,8 @@
 // Chargé uniquement dans le navigateur (import dynamique depuis la page France).
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
+import { Protocol } from "pmtiles";
+import { layers as baseLayers, namedFlavor } from "@protomaps/basemaps";
 type GeoJSONSource = maplibregl.GeoJSONSource; type MLMap = maplibregl.Map;
 import "maplibre-gl/dist/maplibre-gl.css";
 import { PLAYABLE_INSEE, type CommuneRow } from "@/game/france";
@@ -28,16 +30,25 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
   const selectRef = useRef(onSelect); selectRef.current = onSelect;
 
   useEffect(() => {
-    if (!box.current) return;
+    let cancelled = false; let created: MLMap | null = null;
+    // Vraie carte (serveur de carte du VPS) si installée, sinon fond uni.
+    void fetch("/tiles/france.pmtiles", { headers: { range: "bytes=0-15" } }).then(r => r.status === 206 || r.status === 200).catch(() => false).then(real => {
+    if (cancelled || !box.current) return;
+    const origin = window.location.origin;
+    if (real && !(maplibregl as unknown as { __pm?: boolean }).__pm) { maplibregl.addProtocol("pmtiles", new Protocol().tile); (maplibregl as unknown as { __pm?: boolean }).__pm = true; }
     const bg = cssColor("--background"), card = cssColor("--card"), fg = cssColor("--foreground"), primary = cssColor("--primary"), muted = cssColor("--muted-foreground"), sec = cssColor("--accent");
     const m = new maplibregl.Map({
       container: box.current,
-      style: { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": bg } }]},
+      style: real ? {
+        version: 8, glyphs: `${origin}/tiles/fonts/{fontstack}/{range}.pbf`, sprite: `${origin}/tiles/sprites/v4/dark`,
+        sources: { protomaps: { type: "vector", url: `pmtiles://${origin}/tiles/france.pmtiles`, attribution: "© OpenStreetMap" } },
+        layers: baseLayers("protomaps", namedFlavor("dark"), { lang: "fr" }),
+      } : { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": bg } }]},
       center: [2.4, 46.6], zoom: 4.6, minZoom: 4, maxZoom: 13, attributionControl: false, dragRotate: false, pitchWithRotate: false,
     });
     m.touchZoomRotate.disableRotation();
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    map.current = m;
+    map.current = m; created = m;
 
     const loadDep = async (dep: string) => {
       if (loaded.current.has(dep)) return; loaded.current.add(dep);
@@ -62,7 +73,7 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
       m.addSource("circos", { type: "geojson", data: "/geo/circonscriptions.json" });
       m.addSource("communes", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       m.addSource("playable", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      m.addLayer({ id: "dep-fill", type: "fill", source: "deps", paint: { "fill-color": card, "fill-opacity": 1 } });
+      m.addLayer({ id: "dep-fill", type: "fill", source: "deps", paint: { "fill-color": card, "fill-opacity": real ? 0.01 : 1 } });
       m.addLayer({ id: "circo-line", type: "line", source: "circos", minzoom: 6, layout: { visibility: showCircos ? "visible" : "none" }, paint: { "line-color": primary, "line-opacity": 0.45, "line-width": 0.8 } });
       m.addLayer({ id: "circo-fill", type: "fill", source: "circos", layout: { visibility: showCircos ? "visible" : "none" }, paint: { "fill-color": primary, "fill-opacity": 0.02 } });
       // Couleur du parti du député (base : législatives 2024)
@@ -98,7 +109,8 @@ export default function FranceMap({ onSelect, focus, showCircos }: Props) {
         if (d) selectRef.current({ kind: "departement", code: d["code"], name: d["nom"] });
       });
     });
-    return () => { m.remove(); map.current = null; };
+    });
+    return () => { cancelled = true; created?.remove(); map.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

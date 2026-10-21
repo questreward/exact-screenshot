@@ -157,7 +157,8 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
     center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
     markers = locs.flatMap(l => { const r = realPlace(city.id, l.kind); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, onClick: () => onLocation(l.id) }] : []; });
   } else {
-    markers = districts.flatMap(d => { const c = districtCenter(city.id, (byDistrict.get(d.id) ?? []).map(l => l.kind)); return c && d.available ? [{ id: d.id, at: c, label: d.name, active: positionDistrict === d.id, onClick: () => onDistrict(d.id) }] : []; });
+    // Tous les lieux (parcs, commerces, gare…) accessibles directement depuis la carte de la ville.
+    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).flatMap(l => { const r = realPlace(city.id, l.kind); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
   }
   return <RealMapBox viewKey={selected?.id ?? city.id} center={center} zoom={zoom} markers={markers} />;
 }
