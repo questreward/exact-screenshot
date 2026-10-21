@@ -11,7 +11,7 @@ export function MoneyAlerts() {
   if (!bank) return null;
   const next = loans?.loan?.installments.find(i => i.status === "pending" || i.status === "late");
   const salary = bank.transactions.find(t => t.amount > 0 && opKind(t.label, t.amount).place === "Salaire");
-  const list = moneyAlerts({ balance: bank.balance, now: time, nextDue: next ? { due_at: next.due_at, amount: next.principal_part + next.interest_part + next.late_fee, late: next.status === "late" } : null, lastSalaryAt: salary?.created_at });
+  const list = moneyAlerts({ balance: bank.balance, now: time, nextDue: next ? { due_at: next.due_at, amount: next.principal_part + next.interest_part + next.late_fee, late: next.status === "late" } : null, lastSalaryAt: salary?.created_at ?? null });
   if (list.length === 0) return null;
   return <ul className="space-y-2">{list.map(a => <li key={a.id} className="flex items-start gap-2 rounded-xl bg-accent/60 p-3 text-sm"><span aria-hidden>{a.emoji}</span>{a.text}</li>)}</ul>;
 }
