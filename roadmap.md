@@ -23,3 +23,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
 - [x] E. Magasins sur la carte (0120 installée) : fiche, intérieur avec rayons, accès Boutique
 - [x] F. Décisions Mairie/Assemblée/Élysée (0121 prête, attend installation par Alex)
+- [x] G. Planificateur IA : le joueur décrit son envie, l'IA locale propose activités + itinéraire parmi les vrais lieux
+- [x] H. Tenues et cadres portés visibles sur le profil public des autres joueurs (0123 prête, attend installation)
+- [ ] I. Faire découvrir le jeu (réseaux sociaux) — après G et H
