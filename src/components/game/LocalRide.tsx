@@ -5,6 +5,7 @@ import { midView } from "@/game/trip-map";
 import { VehicleInterior } from "./VehicleInterior";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
 import { useWorldClock } from "./WorldClock";
+import { daylight } from "@/game/daylight";
 import type { LifeActivity } from "@/game/life-state";
 
 // Trajet en bus dans la ville : intérieur + bus qui avance sur la vraie carte (animation seulement).
@@ -19,7 +20,8 @@ export function LocalRide({ activity }: { activity: LifeActivity }) {
   const b = to?.district ? realPlace(to.district.city_id, to.kind) : null;
   const v = a && b ? midView(a.at, b.at) : null;
   return <div className="space-y-2">
-    <VehicleInterior kind="bus" label={to ? `Vers ${to.name}` : "Transport public"} />
+    <div className="relative overflow-hidden rounded-xl"><VehicleInterior kind="bus" label={to ? `Vers ${to.name}` : "Transport public"} /><div className={`pointer-events-none absolute inset-0 ${daylight(new Date(now).getUTCHours()).overlay}`} /></div>
+    <p role="status" className="text-sm">{pct >= 1 ? `🛑 Arrivée${to ? ` : ${to.name}` : ""} — descendez du bus` : `${daylight(new Date(now).getUTCHours()).emoji} En route · ${Math.round(pct * 100)} %`}</p>
     {ready && a && b && v && <RealMapBox viewKey={`${activity.id}`} center={v.at} zoom={v.zoom} height="h-52 w-full"
       markers={[]} route={{ from: a.at, to: b.at, pct, icon: "🚌" }} />}
   </div>;
