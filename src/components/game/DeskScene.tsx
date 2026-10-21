@@ -16,13 +16,13 @@ import prefecture from "@/assets/v2/desk-prefecture.webp";
 const IMG: Record<DeskService, string> = { caf, emploi, sante, banque, poste, impots, prefecture };
 
 // Décor d'entrée : guichet ou ordinateur, et courriers qui arrivent (lus depuis la vraie boîte aux lettres).
-export function DeskScene({ service }: { service: DeskService }) {
+export function DeskScene({ service, flush = false }: { service: DeskService; flush?: boolean }) {
   const d = DESK[service];
   const [online, setOnline] = useState(false);
   const { data } = useQuery({ ...postQuery, retry: false });
   const mail = unreadFor(service, data?.letters ?? []);
   return (
-    <section className="relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-3xl">
+    <section className={cn("relative overflow-hidden sm:rounded-3xl", !flush && "-mx-4 sm:mx-0")}>
       <div className={cn("relative transition-all duration-500", online && "desk-online")}>
         <img src={IMG[service]} alt={`${d.title} — ${d.place}`} width={1024} height={576}
           className={cn("h-56 w-full object-cover sm:h-72", online && "scale-90 rounded-xl")} />

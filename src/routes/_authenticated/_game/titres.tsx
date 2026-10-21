@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { gameMeta } from '@/game/metadata';
@@ -28,6 +29,7 @@ function TitlesPage() {
     } catch (e) { setMessage(e instanceof Error ? e.message : 'Opération impossible.'); } finally { setBusy(false); }
   }
   return <main className="mx-auto max-w-3xl space-y-5 pb-24">
+    <DeskScene service="prefecture" />
     <header className="rounded-xl border-b-4 border-primary bg-secondary p-5 text-secondary-foreground"><h1 className="text-2xl font-bold">Titres sécurisés</h1><p>FICTIF · Aucun document ni service officiel</p></header>
     <p>Traitement : 7 à 21 jours du jeu. CNI et passeport deviennent valides au retrait du recommandé à La Poste. Carte grise : activation à la distribution du courrier. Frais arrondis à l’euro supérieur par demande.</p>
     <nav className="flex flex-wrap gap-4"><Link className={button} to="/la-poste">La Poste</Link><Link className={button} to="/mes-documents">Mes documents</Link><Link className={button} to="/mon-profil">Ma carte d’identité</Link></nav>
