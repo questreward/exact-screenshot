@@ -2,20 +2,8 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
 import type { RealMarker } from "./RealMap";
-const RealMap = lazy(() => import("./RealMap"));
+import { RealMapBox, useRealMapReady } from "./RealMapBox";
 
-// La vraie carte s'affiche seulement si le serveur de carte est installé ; sinon l'ancienne carte dessinée.
-function useRealMapReady() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const { data } = useQuery({ queryKey: ["real-map-ready"], enabled: mounted, staleTime: Infinity, retry: false,
-    queryFn: async () => { const r = await fetch("/tiles/france.pmtiles", { headers: { range: "bytes=0-15" } }).catch(() => null); return !!r && (r.status === 206 || r.status === 200); } });
-  return mounted && data === true;
-}
-
-function RealMapBox(props: React.ComponentProps<typeof RealMap>) {
-  return <div className="relative min-w-0 overflow-hidden rounded-lg border border-border"><Suspense fallback={<MapLoading />}><RealMap {...props} /></Suspense></div>;
-}
 import { BonhommeG } from "./Bonhomme";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
