@@ -13,7 +13,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] 3. Travail : décor et journée jouée pour chaque métier ; relier le matériel du véhicule aux choix d'intervention
 - [x] 4. Véhicules perso, bus, train, car : intérieurs réalistes, trajet animé
 - [x] 5. Espaces CAF / France Travail / ameli / Banque / Poste / Impôts / Préfecture : guichet ou ordinateur, courriers animés
-- [ ] 6. Ville, logements, Mairie / Assemblée / Élysée, JT façon chaîne d'info, accueil du site pour la promo
+- [x] 6. Ville, logements, Mairie / Assemblée / Élysée, JT façon chaîne d'info, accueil du site pour la promo
 - [ ] 7. Boutique cosmétique en argent réel (paiement sécurisé + confirmation adaptée aux mineurs) — après l'étape 6 ; choix du moyen de paiement à valider avec Alex (indépendance VPS)
 - [x] Discussion avec un habitant : réponse IA locale adaptée au métier et à la situation
 - [x] Vraie carte des villes et de la France (à installer sur le VPS avec setup-map.sh)
@@ -22,4 +22,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
 - [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
 - [x] E. Magasins sur la carte (0120 installée) : fiche, intérieur avec rayons, accès Boutique
-- [ ] F. Décisions interactives Mairie / Assemblée / Élysée avec conséquences visibles en ville (s'appuie sur les décisions déjà sécurisées)
+- [~] F. Décors des 3 institutions + changements réels en ville affichés ; nouvelles décisions = changement serveur à proposer
