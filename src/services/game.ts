@@ -2159,3 +2159,14 @@ export async function institutionDecree(input: { kind: 'mairie' | 'elysee'; city
   const { error } = await (supabase.rpc as unknown as LooseRpc)('institution_decree', { _kind: input.kind, _city: input.city, _district: input.district, _gauge: input.gauge, _delta: input.delta, _title: input.title });
   if (error) throw new Error(error.message);
 }
+export type FuelState = {
+  settings: { tank_liters: number; liter_price: number; charge_price: number; city_trip_pct: number; road_pct_per_hour: number };
+  cars: { catalog_id: string; name: string; electric: boolean; level: number; fill_price: number }[];
+  history: { delta: number; amount: number; label: string; at: string }[];
+};
+export const fuelQuery = queryOptions({ queryKey: ['fuel'], staleTime: 0, retry: false, queryFn: looseState<FuelState>('fuel_state') });
+export async function fillFuel(catalogId: string) {
+  const { data, error } = await (supabase.rpc as unknown as LooseRpc)('fuel_fill', { _catalog: catalogId, _request: crypto.randomUUID() });
+  if (error) throw new Error(error.message);
+  return data as FuelState;
+}
