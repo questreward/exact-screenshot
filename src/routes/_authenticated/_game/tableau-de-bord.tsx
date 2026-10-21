@@ -63,6 +63,11 @@ function Dashboard() {
         </div>
       </div>
 
+      <h2 className="pt-2 font-display text-lg font-bold">Ma situation en détail</h2>
+      <WorldClock />
+      <FranceDay />
+      <LifeSummary />
+      <PositionBlock />
     </div>
   );
 }
