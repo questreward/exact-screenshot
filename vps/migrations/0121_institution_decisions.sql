@@ -68,7 +68,7 @@ END $$;
 
 CREATE FUNCTION public.institution_decree(_kind text, _city text, _district text, _gauge text, _delta integer, _title text)
 RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid := social_actor(); s institution_settings; did uuid; t text := btrim(coalesce(_title, '')); dd record; day integer := institution_game_day();
+DECLARE cid uuid := social_actor(); s institution_settings; did uuid; t text := btrim(coalesce(_title, '')); dd record; _day integer := institution_game_day();
 BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Personnage connecté requis'; END IF;
   PERFORM 1 FROM characters WHERE id = cid FOR UPDATE;
@@ -76,7 +76,7 @@ BEGIN
   IF _gauge NOT IN ('cadre','tranquillite','animation') THEN RAISE EXCEPTION 'Jauge inconnue'; END IF;
   IF char_length(t) < 5 OR char_length(t) > 80 THEN RAISE EXCEPTION 'Titre de 5 à 80 caractères'; END IF;
   IF NOT EXISTS (SELECT 1 FROM cities WHERE id = _city) THEN RAISE EXCEPTION 'Ville inconnue'; END IF;
-  IF EXISTS (SELECT 1 FROM institution_decrees WHERE kind = _kind AND character_id = cid AND game_day = day) THEN
+  IF EXISTS (SELECT 1 FROM institution_decrees WHERE kind = _kind AND character_id = cid AND game_day = _day) THEN
     RAISE EXCEPTION 'Une seule décision par jour de jeu'; END IF;
   IF _kind = 'mairie' THEN
     IF NOT EXISTS (SELECT 1 FROM municipal_mandates m JOIN candidacies c ON c.id = m.candidacy_id
@@ -92,7 +92,7 @@ BEGIN
 
   PERFORM district_gauges_settle(_city);
   INSERT INTO institution_decrees(kind, character_id, city_id, district_id, gauge, delta, title, game_day)
-    VALUES (_kind, cid, _city, _district, _gauge, _delta, t, day) RETURNING id INTO did;
+    VALUES (_kind, cid, _city, _district, _gauge, _delta, t, _day) RETURNING id INTO did;
   FOR dd IN SELECT id FROM districts WHERE city_id = _city AND (_district IS NULL OR id = _district) LOOP
     PERFORM district_gauge_apply('decree:' || did || ':' || dd.id, dd.id, _gauge, district_gauge_week(game_now()), _delta,
       CASE _kind WHEN 'mairie' THEN 'Arrêté municipal : ' ELSE 'Décret présidentiel : ' END || t);
@@ -101,7 +101,7 @@ BEGIN
 END $$;
 
 CREATE FUNCTION public.institution_state(_city text) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE cid uuid := social_actor(); s institution_settings; day integer := institution_game_day();
+DECLARE cid uuid := social_actor(); s institution_settings; _day integer := institution_game_day();
 BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Personnage connecté requis'; END IF;
   IF NOT EXISTS (SELECT 1 FROM cities WHERE id = _city) THEN RAISE EXCEPTION 'Ville inconnue'; END IF;
@@ -113,7 +113,7 @@ BEGIN
                      WHERE m.city_id = _city AND m.status = 'active' AND m.ends_at > game_now() AND c.character_id = cid),
     'president', pr_president() IS NOT DISTINCT FROM cid AND cid IS NOT NULL,
     'mayor_max', s.mayor_max, 'president_max', s.president_max, 'law_gain', s.law_gain,
-    'used', coalesce((SELECT jsonb_agg(kind) FROM institution_decrees WHERE character_id = cid AND game_day = day), '[]'),
+    'used', coalesce((SELECT jsonb_agg(kind) FROM institution_decrees WHERE character_id = cid AND game_day = _day), '[]'),
     'decrees', coalesce((SELECT jsonb_agg(x ORDER BY x.created_at DESC) FROM (
       SELECT d.kind, d.title, d.gauge, d.delta, d.district_id, d.created_at FROM institution_decrees d
       WHERE d.city_id = _city ORDER BY d.created_at DESC LIMIT 10) x), '[]'));
