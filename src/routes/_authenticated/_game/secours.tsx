@@ -1,5 +1,6 @@
 import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { EmergencyRide } from "@/components/game/EmergencyRide";
+import { ShiftPrep, ShiftLive, ReturnToBase, ShiftSummary } from "@/components/game/SecurityShift";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
@@ -166,18 +167,23 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
       {current ? <>
         <p className="text-sm text-muted-foreground">Jusqu'au {when(current.ends_at)}</p>
         {mission && <div className="mt-3">
+          <ShiftLive service={c.service} startsAt={current.starts_at} endsAt={current.ends_at} decided={!!current.choice}>
           {!current.choice && <EmergencyRide service={c.service} missionId={mission.id} title={mission.title} />}
           <p className="font-semibold">{mission.title}</p>
           <p className="mb-3 text-sm">{mission.situation}</p>
-          {current.choice ? <p className="rounded-lg bg-muted p-3 text-sm">Ton choix : {mission.choices.find(x => x.id === current.choice)?.label}. Le bilan arrive à la fin du service.</p>
+          {current.choice ? <div className="space-y-3"><p className="rounded-lg bg-muted p-3 text-sm">Ton choix : {mission.choices.find(x => x.id === current.choice)?.label}. Le bilan arrive à la fin du service.</p><ReturnToBase service={c.service} /></div>
             : <div className="grid gap-2">{mission.choices.map(ch => <Button key={ch.id} variant="outline" className="min-h-12 h-auto justify-start whitespace-normal text-left" disabled={busy}
               onClick={() => run({ fn: "security_choose", args: { _shift: current.id, _choice: ch.id }, ok: "Décision prise." })}>{ch.label}</Button>)}
               <p className="text-xs text-muted-foreground">Aucun choix n'est parfait. Sans décision, l'équipe gère la mission sans toi.</p></div>}
+          </ShiftLive>
         </div>}
       </> : <>
+        {(() => { const last = s.shifts.filter(x => x.settled).sort((a, b) => b.ends_at.localeCompare(a.ends_at))[0];
+          return last && now - new Date(last.ends_at).getTime() < 3 * 3600_000
+            ? <div className="mb-3"><ShiftSummary service={c.service} endsAt={last.ends_at} hours={last.hours} outcome={OUTCOME_LABELS[last.outcome ?? "equipe"] ?? ""} pay={(sv.hourly_pay ?? 0) * last.hours} /></div> : null; })()}
         <p className="mb-3 text-sm text-muted-foreground">Un service coûte environ 30 d'énergie pour 8 heures. Tu as {s.energy} d'énergie.</p>
-        <Button className="min-h-12 w-full" disabled={busy || c.status === "formation" || !!injured}
-          onClick={() => run({ fn: "security_start_shift", args: { _request: crypto.randomUUID() }, ok: "Service commencé." })}>Prendre mon service</Button>
+        <ShiftPrep service={c.service} start={ready => <Button className="min-h-14 w-full" disabled={!ready || busy || c.status === "formation" || !!injured}
+          onClick={() => run({ fn: "security_start_shift", args: { _request: crypto.randomUUID() }, ok: "Service commencé." })}>{ready ? "Prendre mon service" : "Termine la préparation"}</Button>} />
       </>}
     </Card>
 
