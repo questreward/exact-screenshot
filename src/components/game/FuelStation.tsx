@@ -56,8 +56,22 @@ function Pump({ catalogId, onClose }: { catalogId: string; onClose: () => void }
         <span>{car.electric ? "🔌" : "⛽"}</span><span className={fill.isPending ? "animate-pulse" : ""}>🚗</span>
       </div>
       <div className="mt-3"><FuelGauge level={car.level} electric={car.electric} /></div>
+      {data && <FillQuote car={car} tank={data.settings.tank_liters} />}
       {filled ? <Button className="mt-4 min-h-14 w-full" onClick={onClose}>Repartir</Button>
         : <Button className="mt-4 min-h-14 w-full text-base" disabled={fill.isPending} onClick={() => fill.mutate()}>{fill.isPending ? "Remplissage…" : `Payer ${car.fill_price} € et remplir`}</Button>}
     </SheetContent>
   </Sheet>;
+}
+
+/** Estimation affichée avant confirmation ; le montant final est celui calculé par le serveur. */
+function FillQuote({ car, tank }: { car: { electric: boolean; level: number; fill_price: number }; tank: number }) {
+  const missing = 100 - car.level;
+  const liters = Math.round(tank * missing) / 100;
+  const perLiter = liters > 0 ? car.fill_price / liters : 0;
+  return <dl className="mt-3 grid grid-cols-2 gap-2 rounded-lg border border-border p-3 text-sm">
+    {car.electric ? <><dt className="text-muted-foreground">Batterie à recharger</dt><dd className="text-right font-semibold">{missing} %</dd></>
+      : <><dt className="text-muted-foreground">Prix au litre</dt><dd className="text-right font-semibold">{perLiter.toFixed(2).replace(".", ",")} €</dd>
+        <dt className="text-muted-foreground">Litres à mettre</dt><dd className="text-right font-semibold">≈ {liters.toFixed(1).replace(".", ",")} L</dd></>}
+    <dt className="text-muted-foreground">Coût estimé</dt><dd className="text-right font-display text-lg font-bold text-primary">{car.fill_price} €</dd>
+  </dl>;
 }
