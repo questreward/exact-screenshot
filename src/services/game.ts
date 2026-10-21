@@ -2238,3 +2238,12 @@ export const activePromosQuery = queryOptions({ queryKey: ['business-promos-acti
   const { data, error } = await (supabase as any).from('business_promos').select('business_id,percent,ends_at').gt('ends_at', new Date().toISOString()).limit(200);
   if (error) return {} as Record<string, number>;
   return Object.fromEntries((data ?? []).map((r: { business_id: string; percent: number }) => [r.business_id, r.percent])) as Record<string, number>; } });
+
+export type CafAppointment = { id: string; starts_at: string; motive: string; status: 'prevu' | 'annule' };
+export const cafAppointmentsQuery = queryOptions({ queryKey: ['caf-appointments'], queryFn: async () => {
+  const { data, error } = await (supabase as any).from('caf_appointments').select('id,starts_at,motive,status').order('starts_at', { ascending: false }).limit(20);
+  if (error) return [] as CafAppointment[]; return (data ?? []) as CafAppointment[]; } });
+export async function cafBook(startsAt: string, motive: string) {
+  const { error } = await (supabase as any).rpc('caf_book', { _starts_at: startsAt, _motive: motive }); if (error) throw new Error(error.message); }
+export async function cafCancel(id: string) {
+  const { error } = await (supabase as any).rpc('caf_cancel', { _id: id }); if (error) throw new Error(error.message); }
