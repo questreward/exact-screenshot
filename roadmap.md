@@ -28,3 +28,8 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] I. Faire découvrir le jeu (réseaux sociaux) — après G et H
 - [x] J. Page publique « Découvrir » + lien d'invitation à partager
 - [x] K. Grand prompt récapitulatif pour ChatGPT (fichier dans Files)
+
+## V3 Chantier 3 — compléments
+- [ ] L. Jauge d'essence liée aux trajets voiture + stations-service pour faire le plein
+- [ ] M. Scène de contrôle technique : vérifier le véhicule, régler les défauts
+- [ ] N. Trajets jouables pompiers / police / SAMU avec véhicules et destinations de mission
