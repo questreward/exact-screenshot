@@ -1,3 +1,4 @@
+import { lifeQuery } from '@/services/game';
 import { Suspense, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
@@ -161,11 +162,13 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   const [layers, setLayers] = useState<Set<MapLayer>>(() => new Set<MapLayer>(["vie", "transport", "politique", "evenements"]));
   const { data: ev } = useQuery(worldEventsQuery);
   const evMap = markersByLocation(ev?.events ?? []);
+  const { data: life } = useQuery(lifeQuery);
+  const workId = life?.employment?.location?.id;
   const toggle = (id: MapLayer) => setLayers(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const view = CITY_CENTER[city.id] ?? { at: FRANCE_VIEW.at, zoom: 12 };
   let markers: RealMarker[]; let center = view.at; let zoom = view.zoom;
-  const deco = (kind: string, id: string) => { const p = placeLayer(kind); const e = evMap.get(id); return e?.length ? { emoji: eventEmoji(e[0]!.title), important: true } : { emoji: p.emoji, important: !!p.important || positionId === id }; };
-  const show = (kind: string, id: string, keep: boolean) => keep || showPlace(kind, layers, false) || (layers.has("evenements") && evMap.has(id));
+  const deco = (kind: string, id: string) => { if (id === workId && positionId !== id) return { emoji: "💼", important: true, work: true }; const p = placeLayer(kind); const e = evMap.get(id); return e?.length ? { emoji: eventEmoji(e[0]!.title), important: true } : { emoji: p.emoji, important: !!p.important || positionId === id }; };
+  const show = (kind: string, id: string, keep: boolean) => keep || id === workId || showPlace(kind, layers, false) || (layers.has("evenements") && evMap.has(id));
   if (selected) {
     const locs = byDistrict.get(selected.id) ?? [];
     center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
