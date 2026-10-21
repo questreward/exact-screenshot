@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { netWorth, goalProgress, monthlyTotals, spentByCategory } from './economy';
 describe('Économie personnelle', () => {
+  it('un retrait de 50 € conserve le patrimoine compte + espèces', () => { expect(netWorth(950, 0, 0, 50)).toBe(1000); });
+  it('les retraits et dépôts ne sont ni revenus ni dépenses', () => { expect(monthlyTotals([{amount:-50,category:'especes'},{amount:10,category:'especes'},{amount:-20,category:'logement'}])).toEqual({income:0,expenses:20}); });
   it('100 € épargnés ne créent pas d’argent', () => { expect(netWorth(900, 100, 0)).toBe(1000); expect(netWorth(1000, 0, 0)).toBe(1000); });
   it('650 € sur 1 000 € = 65 %', () => { expect(goalProgress(650, 1000)).toBe(65); });
   it('patrimoine = disponible + épargne + biens sans plus-value', () => { expect(netWorth(2140, 620, 650)).toBe(3410); });

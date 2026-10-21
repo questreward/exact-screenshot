@@ -16,6 +16,7 @@ import { durationLabel } from '@/game/life';
 import { useLifeMutation, LocationLink } from './LifeControls';
 import { WorldClock, useWorldClock } from './WorldClock';
 import { FinancialDesk, GameDocument, QuickAmounts, GoalDatePicker } from './FinancialTools';
+import { FinancialAdviser } from './FinancialAdviser';
 
 export function EconomyPage() {
   const { time } = useWorldClock();
@@ -31,6 +32,7 @@ export function EconomyPage() {
   const [housingLocation, setHousingLocation] = useState(life.housing?.location.id ?? '');
   const [planned, setPlanned] = useState<Record<string, number>>(state.budget.planned);
   const totals = monthlyTotals(state.month_transactions);
+  const totalWealth = netWorth(state.available, state.saved, state.asset_value, state.cash_on_hand ?? 0);
   const busy = life.activities.some(a => a.status === 'running');
   function run(command: string, input: Record<string, unknown> = {}) { action.mutate({ command, input, requestId: crypto.randomUUID() }); }
   function catalog(kind: string) { return state.catalog.filter(c => c.kind === kind && String(c.config?.['shop'] ?? '') !== 'true'); }
@@ -49,11 +51,12 @@ export function EconomyPage() {
     </article>;
   }
   return <div className="space-y-6 animate-rise">
+    <FinancialAdviser />
     <FinancialDesk title="Votre rendez-vous patrimoine" comment={state.saved > 0 ? `Vous avez déjà mis ${formatMoney(state.saved)} de côté. Vos biens représentent ${formatMoney(state.asset_value)} : nous pouvons faire le point sur vos projets sans déplacer votre argent.` : `Vous disposez de ${formatMoney(state.available)}. Un objectif d’épargne vous permet de préparer un projet à votre rythme, sans récompense automatique.`} />
-    <GameDocument title="Situation patrimoniale" reference={time.toISOString().slice(0,10)} text={`Disponible : ${state.available} €\nÉpargne : ${state.saved} €\nBiens : ${state.asset_value} €\nTotal avant crédits : ${netWorth(state.available,state.saved,state.asset_value)} €`}><dl className="grid grid-cols-2 gap-4 text-sm">{[["Disponible",state.available],["Épargne",state.saved],["Biens",state.asset_value],["Total avant crédits",netWorth(state.available,state.saved,state.asset_value)]].map(([label,value]) => <div key={label}><dt className="text-muted-foreground">{label}</dt><dd className="font-semibold">{formatMoney(Number(value))}</dd></div>)}</dl></GameDocument>
+    <GameDocument title="Situation patrimoniale" reference={time.toISOString().slice(0,10)} text={`Compte : ${state.available} €\nEspèces : ${state.cash_on_hand ?? 0} €\nÉpargne : ${state.saved} €\nBiens : ${state.asset_value} €\nTotal avant crédits : ${totalWealth} €`}><dl className="grid grid-cols-2 gap-4 text-sm">{[["Compte",state.available],["Espèces",state.cash_on_hand ?? 0],["Épargne",state.saved],["Biens",state.asset_value],["Total avant crédits",totalWealth]].map(([label,value]) => <div key={label}><dt className="text-muted-foreground">{label}</dt><dd className="font-semibold">{formatMoney(Number(value))}</dd></div>)}</dl></GameDocument>
     <header className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs uppercase text-primary">CIVITAS · Ma trajectoire</p><h1 className="mt-1 text-3xl font-bold">Mon patrimoine</h1></div><Button variant="outline" asChild><Link to="/telephone" search={{ app: 'banque' }}><Wallet/>Banque</Link></Button></header>
     <WorldClock/>
-    <dl className="grid grid-cols-2 gap-4 border-y border-border py-5 lg:grid-cols-4">{[['Disponible', state.available], ['Épargne', state.saved], ['Valeur des biens', state.asset_value], ['Patrimoine total', netWorth(state.available, state.saved, state.asset_value)]].map(([label, value]) => <div key={label}><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 font-display text-xl font-semibold">{formatMoney(Number(value))}</dd></div>)}</dl>
+    <dl className="grid grid-cols-2 gap-4 border-y border-border py-5 lg:grid-cols-4">{[['Compte', state.available], ['Espèces', state.cash_on_hand ?? 0], ['Épargne', state.saved], ['Valeur des biens', state.asset_value], ['Patrimoine total', totalWealth]].map(([label, value]) => <div key={label}><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 font-display text-xl font-semibold">{formatMoney(Number(value))}</dd></div>)}</dl>
     <Tabs value={tab} onValueChange={setTab}><TabsList className="flex h-auto flex-wrap justify-start gap-1 bg-transparent p-0">{([['savings','Épargne'],['projects','Projets de vie'],['assets','Biens'],['training','Formation'],['housing','Logement'],['budget','Budget']] as const).map(([id,label]) => <TabsTrigger key={id} value={id} className="min-h-11 border border-border px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{label}</TabsTrigger>)}</TabsList>
       {['savings','projects'].map(id => <TabsContent key={id} value={id} className="mt-6 space-y-4"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-semibold">{id === 'savings' ? 'Mes objectifs d’épargne' : 'Mes projets de vie'}</h2><Button onClick={() => { setCreate(id === 'savings' ? 'saving' : 'project'); setName(''); }}><Plus/>Créer un objectif</Button></div>
         {goals.length === 0 && <p className="border-y border-border py-8 text-muted-foreground">Aucun objectif pour le moment.</p>}

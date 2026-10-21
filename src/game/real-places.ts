@@ -1,6 +1,7 @@
 // Présentation seulement : vraies positions (longitude, latitude) des lieux du jeu.
 // Le jeu (déplacements, présence) reste décidé côté serveur.
 export type LonLat = [number, number];
+import { BANK_BRANCHES } from './bank-branches';
 
 export const CITY_CENTER: Record<string, { at: LonLat; zoom: number }> = {
   paris: { at: [2.345, 48.866], zoom: 12.3 },
@@ -110,6 +111,8 @@ export const REAL_STATIONS: Record<string, Record<string, { at: LonLat; real: st
 };
 
 export function realPlace(cityId: string, kind: string, name?: string) {
+  const bank = BANK_BRANCHES[cityId];
+  if (bank && (name === bank.name || name === `Distributeur CIVITAS · ${bank.name}`)) return { at: bank.at, real: bank.address };
   if (kind === "station_service") return name ? REAL_STATIONS[cityId]?.[name] ?? null : null;
   if (kind === "magasin") { const sec = name ? SHOP_SECTION[name] : undefined; return sec ? REAL_SHOPS[cityId]?.[sec] ?? null : null; }
   return REAL_PLACES[cityId]?.[kind] ?? null;

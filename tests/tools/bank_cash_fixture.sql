@@ -1,0 +1,41 @@
+-- Base locale jetable uniquement. Colonnes projetées depuis les migrations existantes.
+CREATE SCHEMA auth;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('test.uid',true),'')::uuid $$;
+CREATE FUNCTION public.game_now() RETURNS timestamptz LANGUAGE sql STABLE AS $$ SELECT '2026-10-22 10:00Z'::timestamptz $$;
+CREATE TABLE public.characters(id uuid PRIMARY KEY,user_id uuid UNIQUE NOT NULL,age integer);
+CREATE TABLE public.accounts(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),character_id uuid UNIQUE REFERENCES characters(id),balance integer CHECK(balance>=0));
+CREATE TABLE public.transactions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),account_id uuid,amount integer,label text,category text,operation_key text,world_at timestamptz);
+CREATE TABLE public.economy_operations(character_id uuid,operation_key text,kind text,amount integer,status text DEFAULT 'done',payload jsonb,occurred_at timestamptz DEFAULT public.game_now(),PRIMARY KEY(character_id,operation_key));
+CREATE FUNCTION public.economy_cash(_cid uuid,_key text,_amount integer,_label text,_category text,_payload jsonb DEFAULT '{}') RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE acc public.accounts; BEGIN
+IF NOT EXISTS(SELECT 1 FROM public.characters WHERE id=_cid AND user_id=auth.uid()) THEN RAISE EXCEPTION 'Non autorisé'; END IF;
+IF EXISTS(SELECT 1 FROM public.economy_operations WHERE character_id=_cid AND operation_key=_key) THEN RETURN false; END IF;
+SELECT * INTO acc FROM public.accounts WHERE character_id=_cid FOR UPDATE;
+IF NOT FOUND OR acc.balance+_amount<0 THEN RAISE EXCEPTION 'Solde insuffisant'; END IF;
+INSERT INTO public.economy_operations(character_id,operation_key,kind,amount,payload) VALUES(_cid,_key,_category,_amount,_payload);
+UPDATE public.accounts SET balance=balance+_amount WHERE id=acc.id;
+IF _amount<>0 THEN INSERT INTO public.transactions(account_id,amount,label,category,operation_key,world_at) VALUES(acc.id,_amount,_label,_category,_key,public.game_now()); END IF;
+RETURN true; END $$;
+REVOKE ALL ON FUNCTION public.economy_cash(uuid,text,integer,text,text,jsonb) FROM PUBLIC;
+CREATE TABLE public.districts(id text PRIMARY KEY);
+INSERT INTO public.districts VALUES('paris-centre'),('lyon-centre'),('marseille-centre'),('bordeaux-centre'),('lille-centre');
+CREATE TABLE public.locations(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),city_id text,district_id text,name text,kind text,description text,accessible boolean,opening_hours text);
+CREATE TABLE public.character_positions(character_id uuid PRIMARY KEY,location_id uuid);
+CREATE TABLE public.bank_profiles(character_id uuid PRIMARY KEY,overdraft_used integer);
+CREATE TABLE public.loans(id uuid PRIMARY KEY,character_id uuid);
+CREATE TABLE public.loan_installments(loan_id uuid,due_at timestamptz,principal_part integer,interest_part integer,late_fee integer,status text);
+CREATE TABLE public.retirement_settings(id integer PRIMARY KEY,legal_age integer);
+CREATE TABLE public.retirement_profiles(character_id uuid PRIMARY KEY,monthly_pension integer,retired_at timestamptz);
+CREATE FUNCTION public.retirement_estimate(uuid) RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{"monthly":100}'::jsonb $$;
+CREATE TABLE public.economy_goals(character_id uuid,kind text,saved integer,target integer,target_date date);
+CREATE TABLE public.personal_assets(character_id uuid,purchase_price integer,next_maintenance timestamptz,condition text);
+CREATE TABLE public.personal_budgets(character_id uuid PRIMARY KEY,next_rent date,auto_rent boolean);
+CREATE TABLE public.character_housing(character_id uuid PRIMARY KEY,type_id text);
+CREATE TABLE public.housing_types(id text PRIMARY KEY,daily_cost integer);
+CREATE FUNCTION public.personal_economy_state() RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE cid uuid; BEGIN
+SELECT id INTO cid FROM public.characters WHERE user_id=auth.uid();
+RETURN jsonb_build_object('available',(SELECT balance FROM public.accounts WHERE character_id=cid),'world_now',public.game_now()); END $$;
+GRANT USAGE ON SCHEMA public,auth TO authenticated;
+GRANT SELECT ON public.characters TO authenticated;
+INSERT INTO public.characters VALUES('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000001',25),('00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002',25);
+INSERT INTO public.accounts(character_id,balance) SELECT id,1000 FROM public.characters;
+INSERT INTO public.retirement_settings VALUES(1,64);

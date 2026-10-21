@@ -229,6 +229,29 @@ export const clockQuery = queryOptions({
   },
 });
 
+export const gameSpeedQuery = queryOptions({
+  queryKey: ['game-speed'], staleTime: 15000, refetchInterval: 30000, retry: false,
+  queryFn: async () => {
+    const { data, error } = await untyped.rpc('game_speed_status', {});
+    if (error) throw new Error(error.message);
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Vitesse indisponible');
+    const value = data as Record<string, unknown>;
+    return { speed: Number(value['speed']), vipActive: value['vip_active'] === true, travelFactor: Number(value['travel_factor']) };
+  },
+});
+
+export type BankCashState = { balance: number; cash: number; here: boolean; history: { operation_key: string; amount: number; occurred_at: string }[] };
+export const bankCashQuery = queryOptions({ queryKey: ['bank','cash'], staleTime: 0, retry: false, queryFn: async () => {
+  const { data,error } = await untyped.rpc('bank_cash_state',{});
+  if(error) throw new Error(error.message);
+  return data as BankCashState;
+} });
+export async function bankCashAction(input: { direction: 'withdraw'|'deposit'; amount: number; request: string }) {
+  const { data,error } = await untyped.rpc('bank_cash_action',{_direction:input.direction,_amount:input.amount,_request:input.request});
+  if(error) throw new Error(error.message);
+  return data as BankCashState;
+}
+
 export async function moveCharacter(locationId: string) {
   const { data, error } = await supabase.rpc("move_character", { _location_id: locationId });
   if (error) throw new Error(error.message);
