@@ -77,6 +77,7 @@ function ShopPage() {
     <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
       <div className="flex-1"><h1 className="font-heading text-2xl font-bold">Boutique</h1><p className="text-sm text-muted-foreground">Vrais produits, prix indicatifs, comptant ou à crédit.</p></div>
       {s && <div className="rounded-lg bg-secondary px-3 py-2 text-right text-secondary-foreground"><p className="text-xs opacity-80">Solde</p><p className="font-heading font-bold">{eur(s.balance)}</p></div>}</header>
+    <Link to="/style" className="flex min-h-12 items-center justify-between rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-semibold">✨ Objets de style (argent réel, sans avantage) <ChevronRight className="h-5 w-5" /></Link>
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Boutique : Disponible dans une prochaine étape.</p>}
     {s && <Tabs defaultValue="catalogue">
