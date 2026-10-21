@@ -61,4 +61,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Espace CAF à onglets (paiements, droits, documents, messages, rendez-vous) + suivi des demandes
 - [x] Bloc final V3 : tests complets + contrôle sécurité, V3 fermée, idées dans V4-BACKLOG.md
 - [x] Rendez-vous CAF (créneau, confirmation, à venir)
-- [ ] Bloc 17 boutique officielle + VIP en V3 (demande explicite)
+- [x] Bloc 17 : abonnement VIP 2,99 €/mois (badge, objets exclusifs, thèmes, 24 favoris, accord parental, résiliation)

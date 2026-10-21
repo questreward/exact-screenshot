@@ -6,7 +6,7 @@ export const favorites = () => read(FAV);
 export const recents = () => read(REC);
 export function toggleFavorite(p: SavedPlace) {
   const list = favorites(); const has = list.some((x) => x.id === p.id);
-  const next = has ? list.filter((x) => x.id !== p.id) : [p, ...list].slice(0, 12);
+  const next = has ? list.filter((x) => x.id !== p.id) : [p, ...list].slice(0, favoriteLimit());
   localStorage.setItem(FAV, JSON.stringify(next)); return !has;
 }
 export function pushRecent(p: SavedPlace) {
@@ -21,3 +21,6 @@ export function crowdLevel(kind: string, hour: number, open: boolean | undefined
   if (p.some((h) => Math.abs(h - hour) === 1)) return { emoji: "🟠", label: "Assez fréquenté" };
   return hour < 7 || hour > 22 ? { emoji: "🟢", label: "Très calme" } : { emoji: "🟢", label: "Calme" };
 }
+/** VIP : 24 favoris au lieu de 12 (confort seulement, mémorisé sur cet appareil après lecture du statut VIP). */
+export const VIP_FLAG = "civitas-vip-perks";
+export function favoriteLimit() { try { return localStorage.getItem(VIP_FLAG) === "1" ? 24 : 12; } catch { return 12; } }
