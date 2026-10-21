@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { DeskScene } from "@/components/game/DeskScene";
 import { TaxSpace } from "@/components/game/tax-space";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ function TaxPage() {
   });
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
+    <DeskScene service="impots" />
     <header className="flex items-center gap-3"><Landmark className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Impôts</h1><p className="text-sm text-muted-foreground">Espace particulier · FICTIF</p></div></header>
     <Suspense fallback={<p>Chargement de l’espace fiscal…</p>}><TaxSpace /></Suspense>

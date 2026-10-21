@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useQueryClient, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { Bell, Calculator, ChevronRight, FileCheck2, FileText, Home, Mail, User, Wallet } from 'lucide-react';
@@ -31,6 +32,7 @@ function AidSpace() {
   const allocataire = c ? `${c.first_name} ${c.last_name}` : 'Allocataire';
   const number = c ? c.id.replace(/-/g, '').slice(0, 7).toUpperCase() : '—';
   return <div className="-mx-4 -mt-4 min-h-screen bg-background pb-24 sm:mx-0 sm:mt-0">
+    <DeskScene service="caf" flush />
     <header className="border-b-4 border-primary bg-secondary text-secondary-foreground">
       <div className="mx-auto grid max-w-3xl gap-3 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
         <div className="flex min-w-0 items-center gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary font-heading text-lg font-bold text-primary-foreground">CA</span>

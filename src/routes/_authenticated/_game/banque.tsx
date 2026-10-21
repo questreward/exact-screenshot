@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute } from '@tanstack/react-router';
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { gameMeta } from '@/game/metadata';
@@ -31,6 +32,7 @@ function BankPage() {
     const a = document.createElement('a'); a.href = url; a.download = `releve-fictif-${selected.month}.txt`; a.click(); URL.revokeObjectURL(url);
   }
   return <div className="mx-auto max-w-3xl space-y-5 pb-24">
+    <DeskScene service="banque" />
     <header className="rounded-xl border-b-4 border-primary bg-secondary p-5 text-secondary-foreground"><h1 className="font-heading text-2xl font-bold">Banque Horizon</h1><p>FICTIF · Aucun service bancaire réel</p><p className="mt-3 text-3xl font-semibold">{data.balance.toLocaleString('fr-FR')} €</p></header>
     <p role="status">{message}</p>
     <section className={panel}><h2 className="text-lg font-semibold">Mon RIB fictif</h2><p className="break-all font-mono">{data.iban}</p><p>BIC : {data.bic} · Code banque inventé 00000</p><p className="text-sm text-muted-foreground">Ne pas utiliser pour un paiement réel. Votre carte et votre RIB sont aussi dans La Poste.</p></section>

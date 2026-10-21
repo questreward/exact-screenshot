@@ -300,3 +300,13 @@
 .real-pin.is-player .real-pin-dot { background: var(--primary); box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 35%, transparent); }
 .real-pin.is-selected .real-pin-dot { width: 26px; height: 26px; background: var(--primary); }
 .real-pin-label { padding: 2px 8px; border-radius: 8px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .35); }
+
+/* Guichets : arrivée des courriers */
+@keyframes mail-arrive { 0% { transform: translateY(-140%) rotate(-12deg); opacity: 0; } 60% { transform: translateY(8%) rotate(3deg); opacity: 1; } 100% { transform: none; } }
+.mail-arrive { animation: mail-arrive .9s cubic-bezier(.2,.8,.3,1.2) both; }
+.desk-online { background: var(--muted); padding: 1.25rem 0 .5rem; }
+@media (prefers-reduced-motion: reduce) { .mail-arrive { animation: none; } }
+@keyframes ride-sway { 0%,100% { transform: scale(1.04) translate(0,0); } 50% { transform: scale(1.04) translate(-.4%, .3%); } }
+.ride-sway { animation: ride-sway 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .ride-sway { animation: none; } }
+.trip-mover { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 9999px; background: var(--primary); color: var(--primary-foreground); font-size: 22px; box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 30%, transparent); transition: transform .3s linear; }

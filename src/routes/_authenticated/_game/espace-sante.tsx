@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CalendarCheck, FileText, HeartPulse, Home, Shield, Stethoscope, User, Wallet } from 'lucide-react';
@@ -47,6 +48,7 @@ function HealthSpace() {
   const ill = h?.illness && h.ill_until && new Date(h.ill_until) > new Date(h.now);
 
   return <div className="-mx-4 -mt-4 min-h-screen bg-background pb-24 sm:mx-0 sm:mt-0">
+    <DeskScene service="sante" flush />
     <header className="border-b-4 border-primary bg-secondary text-secondary-foreground">
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
         <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-md bg-primary font-heading text-lg font-bold text-primary-foreground">SC</span>

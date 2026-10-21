@@ -1,7 +1,31 @@
 import { BonhommeG } from './Bonhomme';
+import voiture from '@/assets/v2/int-voiture.webp';
+import bus from '@/assets/v2/int-bus.webp';
+import train from '@/assets/v2/int-train.webp';
+import car from '@/assets/v2/int-car.webp';
+
+const PHOTO = { voiture, bus, train, car } as const;
+type Kind = 'voiture' | 'car' | 'train' | 'camion' | 'bus';
+
+/** Intérieur réaliste (photo) ; vitesse et panneau affichés par-dessus. Rien n'est décidé ici. */
+export function VehicleInterior(props: { kind: Kind; speed?: number; limit?: number; label: string }) {
+  const { kind, speed, limit, label } = props;
+  if (kind === 'camion') return <SvgInterior {...props} kind="camion" />;
+  const moving = speed === undefined || speed > 0;
+  return <figure className="relative overflow-hidden rounded-2xl border border-border bg-surface" aria-label={`Intérieur ${kind} · ${label}`}>
+    <img src={PHOTO[kind]} alt={kind === 'voiture' ? 'Vue du poste de conduite' : 'Vue de la cabine voyageurs'} width={1024} height={576}
+      className={`block aspect-video w-full object-cover ${moving ? 'ride-sway' : ''}`} />
+    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+    {limit !== undefined && <div className="absolute right-3 top-3 flex h-14 w-14 items-center justify-center rounded-full border-[5px] border-destructive bg-card font-display text-lg font-bold">{limit}</div>}
+    {speed !== undefined && <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-2xl bg-card/90 px-4 py-1 text-center shadow-card">
+      <span className="font-display text-3xl font-bold text-primary">{Math.round(speed)}</span> <span className="text-xs text-muted-foreground">km/h</span></div>}
+    <figcaption className="absolute bottom-3 left-3 max-w-[45%] truncate rounded-lg bg-card/90 px-2 py-1 text-xs font-semibold">{label}</figcaption>
+  </figure>;
+}
+
 
 /** Scenic cabin only. Speed, route and trip outcomes stay with the existing server state. */
-export function VehicleInterior({ kind, speed, limit, label }: { kind: 'voiture' | 'car' | 'train' | 'camion'; speed?: number; limit?: number; label: string }) {
+function SvgInterior({ kind, speed, limit, label }: { kind: 'voiture' | 'car' | 'train' | 'camion'; speed?: number; limit?: number; label: string }) {
   const driving = kind === 'voiture' || kind === 'camion';
   return <figure className="overflow-hidden border-y border-border bg-surface" aria-label={`Intérieur ${kind} · ${label}`}>
     <svg viewBox="0 0 600 330" className="block aspect-[20/11] w-full" role="img" aria-label={driving ? 'Vue du poste de conduite' : 'Vue de la cabine voyageurs'}>

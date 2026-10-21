@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -34,6 +35,7 @@ function JobSpace() {
   const lastApp = (jobId: string) => life.applications.filter(a => a.job_id === jobId).sort((x, y) => y.applied_at.localeCompare(x.applied_at))[0];
   const tooYoung = life.offers.filter(o => o.min_age > c.age).length;
   return <div className="-mx-4 -mt-4 min-h-screen pb-24 sm:mx-0 sm:mt-0">
+    <DeskScene service="emploi" flush />
     <header className="border-b-4 border-primary bg-secondary text-secondary-foreground">
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
         <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-full bg-primary font-heading font-bold text-primary-foreground">EC</span>

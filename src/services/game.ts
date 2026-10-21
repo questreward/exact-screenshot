@@ -162,6 +162,15 @@ export const districtsQuery = (cityId: string) => queryOptions({
   },
 });
 
+export const locationPlaceQuery = (id: string) => queryOptions({
+  queryKey: ["location-place", id], staleTime: Infinity, enabled: !!id,
+  queryFn: async () => {
+    const { data, error } = await supabase.from("locations").select("id,kind,name,district:districts(city_id)").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data as null | { id: string; kind: string; name: string; district: { city_id: string } | null };
+  },
+});
+
 export const locationsQuery = (districtId: string) => queryOptions({
   queryKey: ["locations", districtId], staleTime: 60000,
   queryFn: async () => {

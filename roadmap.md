@@ -17,3 +17,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] 7. Boutique en argent réel — en attente : décider avec Alex quoi vendre (cosmétique seulement ?), comment payer sans dépendre de Lovable (le jeu tourne sur le VPS), et vérifier les règles légales (jeu gratuit, mineurs dès 16 ans)
 - [x] Discussion avec un habitant : réponse IA locale adaptée au métier et à la situation
 - [x] Vraie carte des villes et de la France (à installer sur le VPS avec setup-map.sh)
+- [x] A. Guichets/ordinateurs CAF, France Travail, ameli, Banque, Poste, Impôts, Préfecture + arrivée des courriers
+- [x] B. Intérieurs voiture/bus/train/car + trajet animé sur la vraie carte
+- [x] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
+- [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
