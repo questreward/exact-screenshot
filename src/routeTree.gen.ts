@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AccordParentalRouteImport } from './routes/accord-parental'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as DecouvrirRouteImport } from './routes/decouvrir'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as PaiementStyleRouteImport } from './routes/paiement-style'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
@@ -79,6 +81,7 @@ import { Route as AuthenticatedGameSanteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedGameSecoursRouteImport } from './routes/_authenticated/_game/secours'
 import { Route as AuthenticatedGameServicesRouteImport } from './routes/_authenticated/_game/services'
 import { Route as AuthenticatedGameSondagesRouteImport } from './routes/_authenticated/_game/sondages'
+import { Route as AuthenticatedGameStyleRouteImport } from './routes/_authenticated/_game/style'
 import { Route as AuthenticatedGameSyndicatsRouteImport } from './routes/_authenticated/_game/syndicats'
 import { Route as AuthenticatedGameTableauDeBordRouteImport } from './routes/_authenticated/_game/tableau-de-bord'
 import { Route as AuthenticatedGameTelephoneRouteImport } from './routes/_authenticated/_game/telephone'
@@ -107,6 +110,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccordParentalRoute = AccordParentalRouteImport.update({
+  id: '/accord-parental',
+  path: '/accord-parental',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -125,6 +133,11 @@ const DecouvrirRoute = DecouvrirRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaiementStyleRoute = PaiementStyleRouteImport.update({
+  id: '/paiement-style',
+  path: '/paiement-style',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -486,6 +499,11 @@ const AuthenticatedGameSondagesRoute =
     path: '/sondages',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameStyleRoute = AuthenticatedGameStyleRouteImport.update({
+  id: '/style',
+  path: '/style',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameSyndicatsRoute =
   AuthenticatedGameSyndicatsRouteImport.update({
     id: '/syndicats',
@@ -595,10 +613,12 @@ const AuthenticatedGameSectionIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accord-parental': typeof AccordParentalRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/paiement-style': typeof PaiementStyleRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -662,6 +682,7 @@ export interface FileRoutesByFullPath {
   '/secours': typeof AuthenticatedGameSecoursRoute
   '/services': typeof AuthenticatedGameServicesRoute
   '/sondages': typeof AuthenticatedGameSondagesRoute
+  '/style': typeof AuthenticatedGameStyleRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -683,10 +704,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accord-parental': typeof AccordParentalRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/paiement-style': typeof PaiementStyleRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -750,6 +773,7 @@ export interface FileRoutesByTo {
   '/secours': typeof AuthenticatedGameSecoursRoute
   '/services': typeof AuthenticatedGameServicesRoute
   '/sondages': typeof AuthenticatedGameSondagesRoute
+  '/style': typeof AuthenticatedGameStyleRoute
   '/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -773,10 +797,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/accord-parental': typeof AccordParentalRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/paiement-style': typeof PaiementStyleRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
@@ -841,6 +867,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/secours': typeof AuthenticatedGameSecoursRoute
   '/_authenticated/_game/services': typeof AuthenticatedGameServicesRoute
   '/_authenticated/_game/sondages': typeof AuthenticatedGameSondagesRoute
+  '/_authenticated/_game/style': typeof AuthenticatedGameStyleRoute
   '/_authenticated/_game/syndicats': typeof AuthenticatedGameSyndicatsRoute
   '/_authenticated/_game/tableau-de-bord': typeof AuthenticatedGameTableauDeBordRoute
   '/_authenticated/_game/telephone': typeof AuthenticatedGameTelephoneRoute
@@ -864,10 +891,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accord-parental'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
+    | '/paiement-style'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -931,6 +960,7 @@ export interface FileRouteTypes {
     | '/secours'
     | '/services'
     | '/sondages'
+    | '/style'
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
@@ -952,10 +982,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accord-parental'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
+    | '/paiement-style'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -1019,6 +1051,7 @@ export interface FileRouteTypes {
     | '/secours'
     | '/services'
     | '/sondages'
+    | '/style'
     | '/syndicats'
     | '/tableau-de-bord'
     | '/telephone'
@@ -1041,10 +1074,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/accord-parental'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
+    | '/paiement-style'
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
@@ -1109,6 +1144,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/secours'
     | '/_authenticated/_game/services'
     | '/_authenticated/_game/sondages'
+    | '/_authenticated/_game/style'
     | '/_authenticated/_game/syndicats'
     | '/_authenticated/_game/tableau-de-bord'
     | '/_authenticated/_game/telephone'
@@ -1132,10 +1168,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AccordParentalRoute: typeof AccordParentalRoute
   AuthRoute: typeof AuthRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   DecouvrirRoute: typeof DecouvrirRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  PaiementStyleRoute: typeof PaiementStyleRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TilesSplatRoute: typeof TilesSplatRoute
 }
@@ -1154,6 +1192,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accord-parental': {
+      id: '/accord-parental'
+      path: '/accord-parental'
+      fullPath: '/accord-parental'
+      preLoaderRoute: typeof AccordParentalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1182,6 +1227,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paiement-style': {
+      id: '/paiement-style'
+      path: '/paiement-style'
+      fullPath: '/paiement-style'
+      preLoaderRoute: typeof PaiementStyleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1632,6 +1684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameSondagesRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/style': {
+      id: '/_authenticated/_game/style'
+      path: '/style'
+      fullPath: '/style'
+      preLoaderRoute: typeof AuthenticatedGameStyleRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/syndicats': {
       id: '/_authenticated/_game/syndicats'
       path: '/syndicats'
@@ -1822,6 +1881,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameSecoursRoute: typeof AuthenticatedGameSecoursRoute
   AuthenticatedGameServicesRoute: typeof AuthenticatedGameServicesRoute
   AuthenticatedGameSondagesRoute: typeof AuthenticatedGameSondagesRoute
+  AuthenticatedGameStyleRoute: typeof AuthenticatedGameStyleRoute
   AuthenticatedGameSyndicatsRoute: typeof AuthenticatedGameSyndicatsRoute
   AuthenticatedGameTableauDeBordRoute: typeof AuthenticatedGameTableauDeBordRoute
   AuthenticatedGameTelephoneRoute: typeof AuthenticatedGameTelephoneRoute
@@ -1905,6 +1965,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameSecoursRoute: AuthenticatedGameSecoursRoute,
     AuthenticatedGameServicesRoute: AuthenticatedGameServicesRoute,
     AuthenticatedGameSondagesRoute: AuthenticatedGameSondagesRoute,
+    AuthenticatedGameStyleRoute: AuthenticatedGameStyleRoute,
     AuthenticatedGameSyndicatsRoute: AuthenticatedGameSyndicatsRoute,
     AuthenticatedGameTableauDeBordRoute: AuthenticatedGameTableauDeBordRoute,
     AuthenticatedGameTelephoneRoute: AuthenticatedGameTelephoneRoute,
@@ -1948,10 +2009,12 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AccordParentalRoute: AccordParentalRoute,
   AuthRoute: AuthRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   DecouvrirRoute: DecouvrirRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  PaiementStyleRoute: PaiementStyleRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TilesSplatRoute: TilesSplatRoute,
 }
