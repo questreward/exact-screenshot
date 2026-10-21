@@ -21,3 +21,10 @@ describe("prochaine étape", () => {
     expect(notificationTarget({ title: "Salaire reçu", body: "", news_id: null })).toBe("/banque");
   });
 });
+
+describe("fin d'activité", () => {
+  it("an activity ended less than an hour ago shows the recap", () => {
+    const s = nextStep({ ...base, activities: [{ title: "Service", start_time: "2026-10-21T00:00:00Z", end_time: "2026-10-21T07:30:00Z", status: "completed_pending" }] });
+    expect(s.endOfDay).toBe(true);
+  });
+});
