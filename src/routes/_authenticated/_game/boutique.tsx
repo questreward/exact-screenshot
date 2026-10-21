@@ -9,6 +9,7 @@ import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, 
 import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
+import { ShopHall, AisleHeader } from "@/components/game/ShopAisles";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -35,6 +36,7 @@ function ShopPage() {
   const [housingCity, setHousingCity] = useState("");
   const [housingRooms, setHousingRooms] = useState("");
   const [page, setPage] = useState(0);
+  const [showSearch, setShowSearch] = useState(!!entry.q);
   const pageSize = 24;
   useEffect(() => { setPage(0); }, [search, section, brand, max, sort, housingCity, housingRooms]);
   const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s });
@@ -112,7 +114,7 @@ function ShopPage() {
             </div>
           </details>
         </>}
-        {(section || search || showSearch) && <></>}
+        {(section || search || showSearch) && <>
         {section === "immobilier" && <div className="grid grid-cols-2 gap-2">
           <select className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</select>
           <select className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</select>
@@ -127,6 +129,7 @@ function ShopPage() {
           <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
           <Button variant="outline" className="h-12 w-12" aria-label="Page suivante" disabled={currentPage >= lastPage || catalog.isFetching} onClick={() => setPage(currentPage + 1)}><ChevronRight /></Button>
         </nav>}
+        </>}
       </TabsContent>
 
       <TabsContent value="envies" className="mt-4 space-y-3">
