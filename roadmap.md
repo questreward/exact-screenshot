@@ -68,6 +68,9 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Frise pour relevés bancaires/date cible ; montants rapides 10 €, 50 €, 100 € pour virements, épargne et découvert. Tests réussis.
 - [x] Signalement mairie : « Choisir un lieu » rétabli ; transmission de l’identifiant testée.
 - [ ] Contrôle visuel des trois espaces avec personnage et signalement réel : connexion dans l’aperçu nécessaire, accès actuel redirigé vers auth.
-- [ ] Dernière demande : corriger la vitesse commune à ×4, préciser la portée du ×8 VIP et afficher les vitesses réellement actives.
-- [ ] Conseillère financière avec notre IA locale : questions libres, données privées Banque/Retraite/Patrimoine, explications seulement, aucune opération automatique.
-- [ ] Banque immersive : agences réelles sur la carte, conseillers fictifs interactifs, distributeurs reliés aux retraits/dépôts sécurisés déjà existants (aucune connexion à une vraie banque).
+- [x] Vitesse commune ×4 et trajets VIP ÷8 : indicateur réel ajouté, 0135 préparée ; tests SQL isolés réussis, heure existante préservée.
+- [x] Conseillère financière IA locale : trois espaces intégrés, instantané privé sans règlement automatique (0136), validation testée.
+- [x] Banque immersive : cinq agences à adresses vérifiées et distributeurs fictifs, retraits/dépôts conservant compte + espèces (0137), confidentialité et rejeu testés dans une base isolée.
+- [ ] Installation VPS 0135 → 0136 → 0137 : attend exécution par Alex, après les prérequis 0133/0134 déjà fournis.
+- [ ] Vérification avec personnage : connexion dans l’aperçu nécessaire ; aucune identité correspondante disponible pour la vérification automatique.
+- [ ] Réponse IA réelle : Ollama absent de l’aperçu ; attend installation puis essai sur le VPS.
