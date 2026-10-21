@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { citiesQuery, clockQuery, positionQuery } from "@/services/game";
 import { WorldMap } from "@/components/game/WorldMap";
 
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/_authenticated/_game/carte")({
 });
 function MapPage() {
   const { city, district, location, view } = Route.useSearch();
-  return <WorldMap key={`${city ?? ''}:${district ?? ''}:${location ?? ''}:${view ?? ''}`} initialCity={city} initialDistrict={district} initialLocation={location} initialFrance={view === "france"} />;
+  return <><Link to="/guide" className="mx-4 mt-3 flex min-h-12 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 px-4 text-sm font-semibold">🧭 Je ne sais pas quoi faire : demander au guide</Link><WorldMap key={`${city ?? ''}:${district ?? ''}:${location ?? ''}:${view ?? ''}`} initialCity={city} initialDistrict={district} initialLocation={location} initialFrance={view === "france"} /></>;
 }

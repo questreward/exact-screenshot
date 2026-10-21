@@ -37,7 +37,7 @@ function GuidePage() {
       <p className="text-sm">{res.intro}</p>
       <ol className="space-y-2">{res.steps.map((s, n) => <li key={s.locationId} className="flex gap-3 rounded-xl border border-border bg-card p-4">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">{n + 1}</span>
-        <div><p className="font-heading font-semibold">{s.name}</p><p className="text-xs text-muted-foreground">{s.kind}{s.district ? ` · ${s.district}` : ""}</p><p className="mt-1 text-sm">{s.activity}</p></div>
+        <div><p className="font-heading font-semibold">{s.name}</p><p className="text-xs text-muted-foreground">{s.kind}{s.district ? ` · ${s.district}` : ""}</p><p className="mt-1 text-sm">{s.activity}</p><Link to="/carte" search={{ location: s.locationId }} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline">Voir ce lieu sur la carte</Link></div>
       </li>)}</ol>
       <p className="text-xs text-muted-foreground">Ce sont des idées : rien n'est fait automatiquement. Va sur la carte pour te rendre à chaque lieu.</p>
       <Button asChild className="min-h-12 w-full"><Link to="/carte"><MapPin className="mr-2 h-4 w-4" />Ouvrir la carte</Link></Button>
