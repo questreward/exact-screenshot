@@ -78,3 +78,28 @@ export function remaining(nowMs: number, endIso: string) {
   const m = Math.max(0, Math.round((Date.parse(endIso) - nowMs) / 60000));
   return m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} restantes` : `${m} min restantes`;
 }
+
+/** Level from the number of completed shifts already recorded (presentation only, no pay effect). */
+export function workLevel(shifts: number) {
+  if (shifts >= 30) return { label: "Expert", emoji: "🏆", next: null as number | null, shifts };
+  if (shifts >= 10) return { label: "Confirmé", emoji: "⭐", next: 30, shifts };
+  return { label: "Débutant", emoji: "🌱", next: 10, shifts };
+}
+
+const TASKS: Record<string, string[]> = {
+  banque: ["Ouverture d'un compte", "Rendez-vous crédit", "Question sur une carte bloquée"],
+  admin: ["Renseignement au guichet", "Dossier complété", "Courrier traité"],
+  facteur: ["Tournée distribuée", "Colis remis en main propre", "Recommandé signé"],
+  soin: ["Patients reçus", "Transmissions écrites", "Soin délicat réalisé"],
+  ecole: ["Cours donné", "Copies corrigées", "Échange avec un élève"],
+  commerce: ["Clients servis", "Rayon remis en ordre", "Caisse fermée juste"],
+  chantier: ["Mur avancé", "Contrôle sécurité", "Outils rangés"],
+  conduite: ["Départs assurés", "Voyageurs renseignés", "Véhicule rendu propre"],
+  avocat: ["Dossier relu", "Rendez-vous client", "Conclusions préparées"],
+};
+const TASKS_DEFAULT = ["Tâches du jour avancées", "Point avec un collègue", "Poste rangé"];
+
+/** Three recap lines for the end-of-shift summary, picked from the job. */
+export function shiftHighlights(key: string) {
+  return TASKS[key] ?? TASKS_DEFAULT;
+}
