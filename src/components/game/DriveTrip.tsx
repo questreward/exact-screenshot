@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VehicleHealth, BreakdownStory } from "./VehicleHealth";
+import { CarFuel } from "./FuelStation";
 import { Fuel, Gauge, Clock, FastForward, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -52,7 +53,7 @@ export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minute
   const go = async () => {
     setError(null); setPhase("boarding");
     startedAt.current = Date.now();
-    try { await onStart(); qc.invalidateQueries({ queryKey: ["vehicle-wear"] }); setTimeout(() => setPhase("driving"), fast ? 0 : 1200); }
+    try { await onStart(); qc.invalidateQueries({ queryKey: ["vehicle-wear"] }); qc.invalidateQueries({ queryKey: ["fuel"] }); setTimeout(() => setPhase("driving"), fast ? 0 : 1200); }
     catch (e) { setError((e as Error).message); setPhase("ready"); }
   };
   const speed = phase === "driving" ? 38 + Math.round(12 * Math.sin(pct * 20)) : 0;
@@ -71,7 +72,7 @@ export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minute
             <li className="rounded-2xl bg-card p-3"><Clock className="mb-1 h-4 w-4 text-primary" />Départ {hm} · {minutes} min</li>
             <li className="col-span-2 rounded-2xl bg-card p-3"><MapPin className="mb-1 h-4 w-4 text-primary" />Destination : <b>{toName}</b></li>
           </ul>
-          <VehicleHealth catalogId={catalogId} />
+          <VehicleHealth catalogId={catalogId} /><CarFuel catalogId={catalogId} />
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5" checked={fast} onChange={(e) => setFast(e.target.checked)} /><FastForward className="h-4 w-4" />Mode rapide</label>
           <Button className="min-h-14 w-full text-base" onClick={go}>Prendre la route</Button>

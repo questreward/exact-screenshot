@@ -1,4 +1,5 @@
 import { JobMissionCard } from "@/components/game/JobMissionCard";
+import { EmergencyRide } from "@/components/game/EmergencyRide";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
@@ -165,6 +166,7 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
       {current ? <>
         <p className="text-sm text-muted-foreground">Jusqu'au {when(current.ends_at)}</p>
         {mission && <div className="mt-3">
+          {!current.choice && <EmergencyRide service={c.service} missionId={mission.id} title={mission.title} />}
           <p className="font-semibold">{mission.title}</p>
           <p className="mb-3 text-sm">{mission.situation}</p>
           {current.choice ? <p className="rounded-lg bg-muted p-3 text-sm">Ton choix : {mission.choices.find(x => x.id === current.choice)?.label}. Le bilan arrive à la fin du service.</p>
