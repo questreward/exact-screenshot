@@ -2223,6 +2223,17 @@ export const businessPromoQuery = (businessId: string) => queryOptions({ queryKe
   return p && new Date(p.ends_at).getTime() > Date.now() - 86400000 * 0 ? p : null; } });
 export async function startBusinessPromo(percent: number) {
   const { data, error } = await (supabase as any).rpc('business_start_promo', { _percent: percent }); if (error) throw new Error(error.message); return data; }
+export const promoHistoryQuery = (businessId: string) => queryOptions({ queryKey: ['business-promo-history', businessId], queryFn: async () => {
+  const sb = supabase as any;
+  const { data: promos } = await sb.from('business_promos').select('percent,starts_at,ends_at').eq('business_id', businessId).order('starts_at', { ascending: false }).limit(6);
+  const list = (promos ?? []) as { percent: number; starts_at: string; ends_at: string }[];
+  if (!list.length) return { promos: list, orders: [], reviews: [] };
+  const since = new Date(Math.min(...list.map((p) => 2 * new Date(p.starts_at).getTime() - new Date(p.ends_at).getTime()))).toISOString();
+  const [o, r] = await Promise.all([
+    sb.from('service_orders').select('amount,created_at').eq('business_id', businessId).gte('created_at', since).limit(1000),
+    sb.from('service_reviews').select('stars,created_at').eq('business_id', businessId).gte('created_at', since).limit(1000),
+  ]);
+  return { promos: list, orders: (o.data ?? []) as { amount: number; created_at: string }[], reviews: (r.data ?? []) as { stars: number; created_at: string }[] }; } });
 export const activePromosQuery = queryOptions({ queryKey: ['business-promos-active'], queryFn: async () => {
   const { data, error } = await (supabase as any).from('business_promos').select('business_id,percent,ends_at').gt('ends_at', new Date().toISOString()).limit(200);
   if (error) return {} as Record<string, number>;
