@@ -48,3 +48,11 @@ export function nextStep(i: Input): NextStep {
   if (i.age >= 18) return { emoji: "🔎", title: "Trouver un emploi", detail: "Des offres t'attendent.", to: "/espace-emploi", cta: "Voir les offres" };
   return { emoji: "🗺️", title: "Explorer ta ville", detail: "Découvre les lieux autour de toi.", to: "/carte", cta: "Ouvrir la carte" };
 }
+
+/** Prochaine destination : lieu de l'activité en cours ou à venir (jamais inventé). */
+export function nextDestination<A extends { status: string; start_time: string; end_time: string; title: string; location?: { id: string; name: string; city_id: string; district_id: string | null } | null }>(activities: A[], now: Date, currentLocationId?: string | null) {
+  const t = now.getTime();
+  const a = activities.filter(x => x.status !== "cancelled" && x.status !== "completed" && Date.parse(x.end_time) > t && x.location && x.location.id !== currentLocationId)
+    .sort((x, y) => Date.parse(x.start_time) - Date.parse(y.start_time))[0];
+  return a?.location ? { title: a.title, place: a.location } : null;
+}

@@ -13,3 +13,7 @@ describe("couches de la carte", () => {
     expect(showPlace("magasin", new Set(), true)).toBe(true);
   });
 });
+import { eventEmoji } from "./map-layers";
+describe("pictos d'événements", () => {
+  it("travaux → 🚧, manifestation → 📢", () => { expect(eventEmoji("Travaux rue Nationale")).toBe("🚧"); expect(eventEmoji("Manifestation devant la mairie")).toBe("📢"); });
+});
