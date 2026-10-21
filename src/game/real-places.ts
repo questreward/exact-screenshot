@@ -100,7 +100,17 @@ export const REAL_SHOPS: Record<string, Record<string, { at: LonLat; real: strin
   lille: { tech: { at: [3.0750, 50.6365], real: "Euralille" }, mode: { at: [3.0630, 50.6355], real: "Rue Neuve" }, maison: { at: [3.0600, 50.6345], real: "Rue Nationale" }, electromenager: { at: [3.0760, 50.6375], real: "Euralille" }, loisirs: { at: [3.0640, 50.6340], real: "Rue de Béthune" }, auto: { at: [3.0900, 50.6250], real: "Fives" } },
 };
 
+// Stations-service (0125) : vraies grandes avenues de chaque ville.
+export const REAL_STATIONS: Record<string, Record<string, { at: LonLat; real: string }>> = {
+  paris: { "Station-service du centre": { at: [2.3590, 48.8640], real: "Boulevard de Sébastopol" }, "Station-service de la rocade": { at: [2.3900, 48.8330], real: "Quai de Bercy" } },
+  lyon: { "Station-service du centre": { at: [4.8420, 45.7520], real: "Avenue Berthelot" }, "Station-service de la rocade": { at: [4.8700, 45.7650], real: "Boulevard des Belges" } },
+  marseille: { "Station-service du centre": { at: [5.3880, 43.2900], real: "Boulevard Baille" }, "Station-service de la rocade": { at: [5.3950, 43.3050], real: "Boulevard National" } },
+  bordeaux: { "Station-service du centre": { at: [-0.5800, 44.8300], real: "Cours de la Marne" }, "Station-service de la rocade": { at: [-0.5600, 44.8550], real: "Quai de Bacalan" } },
+  lille: { "Station-service du centre": { at: [3.0700, 50.6280], real: "Boulevard de la Liberté" }, "Station-service de la rocade": { at: [3.0850, 50.6400], real: "Avenue Willy-Brandt" } },
+};
+
 export function realPlace(cityId: string, kind: string, name?: string) {
+  if (kind === "station_service") return name ? REAL_STATIONS[cityId]?.[name] ?? null : null;
   if (kind === "magasin") { const sec = name ? SHOP_SECTION[name] : undefined; return sec ? REAL_SHOPS[cityId]?.[sec] ?? null : null; }
   return REAL_PLACES[cityId]?.[kind] ?? null;
 }

@@ -7,6 +7,7 @@ export const LOCATION_TYPES: Record<string, { label: string; icon: typeof MapPin
   entreprise: { label: "Entreprise", icon: Briefcase }, commerce: { label: "Commerce", icon: Store },
   cafe: { label: "Café", icon: Coffee }, parc: { label: "Parc", icon: Trees },
   magasin: { label: "Magasin", icon: ShoppingBag },
+  station_service: { label: "Station-service", icon: Fuel },
   gare: { label: "Gare", icon: TrainFront }, station: { label: "Station", icon: TrainFront },
 };
 export const locationType = (kind: string) => LOCATION_TYPES[kind] ?? { label: kind, icon: MapPin };

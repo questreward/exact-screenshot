@@ -7,6 +7,7 @@ const MAP: Record<string, Arrival> = {
   administration: { to: "/demarches", label: "Aller au guichet", emoji: "📋" },
   gare: { to: "/voyages", label: "Entrer dans la gare", emoji: "🚉" },
   station: { to: "/transports", label: "Aller à la station", emoji: "🚇" },
+  station_service: { to: "/transports", label: "Aller à la pompe", emoji: "⛽" },
   commerce: { to: "/boutique", label: "Entrer dans le magasin", emoji: "🛒" },
   cafe: { to: "/reseau", label: "S'installer au café", emoji: "☕" },
   logement: { to: "/chez-moi", label: "Rentrer chez moi", emoji: "🏠" },
