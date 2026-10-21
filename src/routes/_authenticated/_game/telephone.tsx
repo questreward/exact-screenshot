@@ -1,3 +1,4 @@
+import { PoliticsApp } from "@/components/game/PoliticsApp";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { MoneyAlerts, PersonalVsBusiness } from "@/components/game/MoneyAlerts";
 import { WealthCard } from "@/components/game/WealthCard";
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/_game/telephone")({
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => id === "politique" ? navigate({ to: "/politique" }) : id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
+  const open = (id?: string) => id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
   const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : app === "vie-sociale" ? { id: "vie-sociale", label: "Vie sociale", icon: Bell, available: true } : PHONE_APPS.find((a) => a.id === app);
 
   return (
@@ -53,7 +54,7 @@ function PhonePage() {
                 <ChevronLeft className="h-4 w-4" /> Accueil
               </button>
               <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
-              {current.id === "notifications" ? <NotificationsApp /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : (
+              {current.id === "notifications" ? <NotificationsApp /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : current.id === "politique" ? <PoliticsApp /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
                   <p className="mt-6 font-semibold">{COMING_SOON}</p>
