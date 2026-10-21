@@ -1,3 +1,4 @@
+import { favorites, recents, toggleFavorite, pushRecent, crowdLevel, type SavedPlace } from "@/game/place-memory";
 import { lifeQuery } from '@/services/game';
 import { Suspense, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -120,6 +121,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, r
         {playerHere && <Button variant="ghost" onClick={() => { districtSelect(position.district_id); setSelectedLocation(position.location_id); }}><LocateFixed /> Ma position</Button>}
       </div>
     </div>
+    <SavedPlaces cityId={city.id} onPick={(d, l) => { onDistrict(d); setSelectedLocation(l); setTimeout(() => document.getElementById("fiche-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 450); }} />
     <PlaceSearch districts={districts} onPick={(d, l, go) => { onDistrict(d); setSelectedLocation(l); if (go) setTimeout(() => document.getElementById("fiche-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 450); }} />
     <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0">
@@ -230,14 +232,19 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const { time } = useWorldClock();
   const open = openState(l.opening_hours, time);
   const door = placeDoor(l.kind);
+  const saved: SavedPlace = { id: l.id, name: l.name, districtId: district.id, cityId: city.id };
+  const [fav, setFav] = useState(false);
+  useEffect(() => { setFav(favorites().some(x => x.id === l.id)); pushRecent(saved); }, [l.id]);
+  const crowd = crowdLevel(l.kind, time.getUTCHours(), open?.open);
   return <article id="fiche-lieu" className="min-w-0 scroll-mt-20 border-t border-border pt-4">
     <figure className="relative overflow-hidden rounded-lg">
       <img src={l.illustration ?? worldSquare} alt={`Ambiance illustrée · ${l.name}`} loading="lazy" width={1536} height={768} className="aspect-[2/1] w-full object-cover" />
       <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-2 bg-overlay px-3 py-2 text-xs text-foreground"><span>Illustration · CIVITAS</span><span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{here ? 'Vous êtes ici' : 'Lieu consulté'}</span></figcaption>
     </figure>
     <div className="space-y-4 py-4">
-      <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
+      <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><div className="flex items-start justify-between gap-2"><h3 className="text-xl font-semibold">{l.name}</h3><button type="button" aria-label={fav ? "Retirer des favoris" : "Ajouter aux favoris"} onClick={() => setFav(toggleFavorite(saved))} className="min-h-11 min-w-11 rounded-full border border-border text-xl">{fav ? "⭐" : "☆"}</button></div><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
       {open && <p className={`inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold ${open.open ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>{open.open ? "🟢 Ouvert" : `🔴 Fermé · ouvre ${open.opensAt?.startsWith("demain") ? open.opensAt : `à ${open.opensAt}`}`}</p>}
+      <p className="text-sm">{crowd.emoji} {crowd.label} <span className="text-xs text-muted-foreground">(estimation)</span></p>
       <p className="text-sm text-muted-foreground">{l.description}</p>
       {here && arrived && <div role="status" className="animate-rise rounded-xl border border-primary/50 bg-primary/10 p-4 text-center"><p className="text-lg font-bold">📍 Vous êtes arrivé.</p><p className="text-sm text-muted-foreground">{placeLayer(l.kind).emoji} {l.name}</p></div>}
       {!here && p?.city_id === city.id && allowed && <Suspense fallback={<p className="text-xs text-muted-foreground">Calcul du trajet…</p>}><TripPlanner target={l} cityId={city.id} from={{ locationId: p.location_id, districtId: p.district_id }} onWalk={() => move.mutate()} walking={move.isPending} /></Suspense>}
@@ -321,4 +328,12 @@ function TripPlanner({ target, cityId, from, onWalk, walking }: { target: Tables
     {origin && <TransportControl location={origin} preset={{ id: target.id, name: target.name, districtId: target.district_id ?? "" }} />}
     <p className="text-xs text-muted-foreground">Durées et prix selon les règles du jeu. En voiture, le trajet se joue ; en bus, vous suivez le trajet sur la carte.</p>
   </section>;
+}
+
+function SavedPlaces({ cityId, onPick }: { cityId: string; onPick: (districtId: string, locationId: string) => void }) {
+  const [lists, setLists] = useState<{ f: SavedPlace[]; r: SavedPlace[] }>({ f: [], r: [] });
+  useEffect(() => { setLists({ f: favorites().filter(x => x.cityId === cityId), r: recents().filter(x => x.cityId === cityId) }); }, [cityId]);
+  const chip = (x: SavedPlace, e: string) => <button key={e + x.id} type="button" onClick={() => onPick(x.districtId, x.id)} className="min-h-11 shrink-0 rounded-full border border-border bg-card px-3 text-sm">{e} {x.name}</button>;
+  if (!lists.f.length && !lists.r.length) return null;
+  return <div className="flex gap-2 overflow-x-auto pb-1">{lists.f.map(x => chip(x, "⭐"))}{lists.r.filter(x => !lists.f.some(f => f.id === x.id)).map(x => chip(x, "🕘"))}</div>;
 }
