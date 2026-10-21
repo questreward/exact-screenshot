@@ -27,6 +27,6 @@ export function PersonalVsBusiness() {
       <div className="rounded-2xl bg-card p-3"><p className="text-xs text-muted-foreground">💶 Argent personnel</p><p className="font-bold">{formatMoney(bank.balance)}</p></div>
       <div className="rounded-2xl bg-card p-3"><p className="text-xs text-muted-foreground">🏢 Caisse de {biz.business.name}</p><p className="font-bold">{formatMoney(biz.business.treasury)}</p></div>
     </div>
-    <p className="text-xs text-muted-foreground">La caisse appartient à l'entreprise : tu ne touches que ton salaire de gérant ({formatMoney(biz.business.owner_salary)}).</p>
+    <p className="text-xs text-muted-foreground">La caisse appartient à l'entreprise, pas à toi : tu touches seulement ton salaire de gérant.</p>
   </section>;
 }

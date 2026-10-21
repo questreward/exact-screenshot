@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { MoneyAlerts, PersonalVsBusiness } from "@/components/game/MoneyAlerts";
 import { WealthCard } from "@/components/game/WealthCard";
 import { MoneyMonth } from "@/components/game/MoneyMonth";
 import { opKind, opTitle } from "@/game/money-labels";
@@ -92,6 +93,7 @@ function BankApp() {
         <p className="text-sm opacity-80">Mon compte · solde disponible</p>
         <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
       </div>
+      <MoneyAlerts />
       <section className="space-y-2">
         <h2 className="text-sm font-bold">🏦 Mes comptes</h2>
         <div className="grid grid-cols-2 gap-2">
@@ -100,6 +102,7 @@ function BankApp() {
         </div>
       </section>
       <section className="space-y-2"><h2 className="text-sm font-bold">💳 Mes crédits</h2><BankLoans compact /></section>
+      <PersonalVsBusiness />
       <MoneyMonth />
       <WealthCard />
       <EconomyBankLinks/>
