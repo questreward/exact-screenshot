@@ -51,3 +51,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] N. Meetings de campagne au lieu choisi sur la carte + invitation des habitants
 - [x] O. Annonces de campagne publiées dans les actualités politiques
 - [x] P. Vérifier sur téléphone : app Politique, pages de partis, calendrier électoral, bandeau d'accueil
+
+- [ ] Badge promo dans la liste des entreprises (clients)
+- [ ] Réputation par domaine dans le profil
