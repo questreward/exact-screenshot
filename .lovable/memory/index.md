@@ -9,3 +9,4 @@
 - [Réseau Civi V2](mem://features/civi-network.md) — 10 posts/jour, 3 signalements masquent, buzz +5 influence/sem max
 - [Président joueur](mem://features/player-president.md) — Intérim pour Alex puis présidentielle 2 tours ; PM, dissolution, lois, discours/référendum
 - [Vraie carte](mem://features/real-map.md) — Carte réelle sur le VPS, lieux aux vraies adresses, pas de service extérieur
+- [Boutique cosmétique](mem://features/cosmetic-shop.md) — Objets de style seuls, Stripe d'Alex sur le VPS, accord parental + 30 €/mois pour 16–17 ans
