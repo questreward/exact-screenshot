@@ -7,7 +7,7 @@ export type PageIntro = {
   /** What this place is for in the game. */
   purpose: string;
   /** Optional big shortcut tiles (only real routes). */
-  actions?: { label: string; to: string }[];
+  actions?: { label: string; to: string }[] | undefined;
 };
 
 /** Hand-written, immersive intros for the main places. */

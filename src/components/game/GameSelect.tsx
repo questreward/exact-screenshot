@@ -3,9 +3,9 @@ import { Check, ChevronRight, Search } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 
-export type Choice = { value: string; label: string; disabled?: boolean };
+export type Choice = { value: string; label: string; disabled?: boolean | undefined };
 
-type OptionProps = { value?: string | number; children?: ReactNode; disabled?: boolean };
+type OptionProps = { value?: string | number; children?: ReactNode; disabled?: boolean | undefined };
 
 function text(node: ReactNode): string {
   if (node == null || typeof node === "boolean") return "";
@@ -75,7 +75,7 @@ export function GameSelect({ value, onChange, children, disabled, required, name
   return <SheetPicker id={id} label={label} options={options} current={current} disabled={disabled} onPick={pick} hidden={hidden} />;
 }
 
-function SheetPicker({ id, label, options, current, disabled, onPick, hidden }: { id?: string; label?: string; options: Choice[]; current: string; disabled?: boolean; onPick: (v: string) => void; hidden: ReactNode }) {
+function SheetPicker({ id, label, options, current, disabled, onPick, hidden }: { id?: string | undefined; label?: string | undefined; options: Choice[]; current: string; disabled?: boolean | undefined; onPick: (v: string) => void; hidden: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const selected = options.find((o) => o.value === current);
