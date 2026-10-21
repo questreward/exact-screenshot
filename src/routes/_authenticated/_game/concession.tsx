@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { dealerQuery, dealerRpc, type DealerState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
+import { ShowroomDay } from "@/components/game/ShowroomDay";
 
 export const Route = createFileRoute("/_authenticated/_game/concession")({
   head: () => ({ meta: gameMeta("Concessionnaire", "Acheter une voiture neuve ou d'occasion chez un joueur, faire reprendre la tienne, tenir ta concession.") }),
@@ -113,6 +114,7 @@ function MyDealer({ s, busy, run }: { s: DealerState; busy: boolean; run: (fn: P
   const [qty, setQty] = useState("1");
   const chosen = s.catalog.find(c => c.id === car);
   return <>
+    <ShowroomDay stock={me?.stock ?? []} />
     <div className="grid grid-cols-2 gap-3">
       <div className="rounded-xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Caisse</p><p className="font-heading text-2xl font-bold">{eur(mine.balance ?? 0)}</p></div>
       <div className="rounded-xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Stock</p><p className="font-heading text-2xl font-bold">{mine.stock_count} / {s.settings.max_stock}</p></div>
