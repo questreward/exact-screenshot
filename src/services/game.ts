@@ -2190,3 +2190,17 @@ export async function dealerShowroomSell(catalogId: string) {
   if (error) throw new Error(error.message);
   return data as { amount: number; name: string };
 }
+
+// 0128 — campaign meetings at a chosen place and campaign announcements in political news.
+export const campaignMeetingsQuery = (electionId: string) => queryOptions({ queryKey: ['campaign-meetings', electionId], queryFn: async () => {
+  const { data, error } = await (supabase as any).from('campaign_meetings').select('id,candidacy_id,location_id,starts_at,title,invited').eq('election_id', electionId).order('starts_at', { ascending: false }).limit(20);
+  if (error) throw new Error(error.message); return (data ?? []) as { id: string; candidacy_id: string; location_id: string; starts_at: string; title: string; invited: number }[];
+} });
+export async function planCampaignMeeting(input: { candidacyId: string; locationId: string; hoursAhead: number }) {
+  const { data, error } = await (supabase as any).rpc('plan_campaign_meeting', { _candidacy_id: input.candidacyId, _location_id: input.locationId, _hours_ahead: input.hoursAhead });
+  if (error) throw new Error(error.message); return data as { invited: number; starts_at: string };
+}
+export async function publishCampaignAnnouncement(input: { candidacyId: string; text: string }) {
+  const { error } = await (supabase as any).rpc('publish_campaign_announcement', { _candidacy_id: input.candidacyId, _text: input.text });
+  if (error) throw new Error(error.message);
+}
