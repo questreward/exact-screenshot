@@ -38,17 +38,21 @@ function AuthPage() {
 
   useEffect(() => { setMode(search.mode ?? "signin"); }, [search.mode]);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/tableau-de-bord", replace: true }); });
+    // Lecture locale instantanée (pas d'appel réseau) pour éviter une course avec le bouton.
+    supabase.auth.getSession().then(({ data }) => { if (data.session) navigate({ to: "/tableau-de-bord", replace: true }); });
   }, [navigate]);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
-        navigate({ to: "/tableau-de-bord", replace: true });
+        if (!data.session) throw new Error("Connexion incomplète, réessayez.");
+        await navigate({ to: "/tableau-de-bord", replace: true });
+        return; // garde « Patientez… » jusqu'à l'arrivée sur le tableau de bord
       } else if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/auth" } });
         if (error) throw error;

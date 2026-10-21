@@ -76,3 +76,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] Réponse IA réelle : Ollama absent de l’aperçu ; attend installation puis essai sur le VPS.
 - [x] Historique bancaire : filtres de dates et types, reçus enregistrés consultables après dépôt/retrait ; 14 tests réussis, aucune nouvelle installation SQL.
 - [ ] Vérification des reçus avec personnage : aucun compte correspondant dans l’aperçu ; essai dépôt/retrait sur VPS après mise à jour.
+
+## Lancement
+- [x] Connexion iPhone : plusieurs appuis sur « Se connecter » nécessaires + lenteur des pages
+- [ ] Bot Discord (plan approuvé) : accueil, actualités, commandes, annonces
