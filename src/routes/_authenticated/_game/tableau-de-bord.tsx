@@ -13,8 +13,6 @@ import { LifeSummary } from "@/components/game/LifeSummary";
 import { FranceDay } from "@/components/game/FranceDay";
 import { NextStepCard } from "@/components/game/NextStepCard";
 import { notificationTarget } from "@/game/next-step";
-import { NextStepCard } from "@/components/game/NextStepCard";
-import { notificationTarget } from "@/game/next-step";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
