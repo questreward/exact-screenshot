@@ -78,5 +78,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] Vérification des reçus avec personnage : aucun compte correspondant dans l’aperçu ; essai dépôt/retrait sur VPS après mise à jour.
 
 ## Lancement
-- [ ] Connexion iPhone : plusieurs appuis sur « Se connecter » nécessaires + lenteur des pages
+- [x] Connexion iPhone : plusieurs appuis sur « Se connecter » nécessaires + lenteur des pages
 - [ ] Bot Discord (plan approuvé) : accueil, actualités, commandes, annonces
