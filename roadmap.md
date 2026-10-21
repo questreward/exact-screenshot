@@ -70,3 +70,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] Contrôle visuel des trois espaces avec personnage et signalement réel : connexion dans l’aperçu nécessaire, accès actuel redirigé vers auth.
 - [ ] Dernière demande : corriger la vitesse commune à ×4, préciser la portée du ×8 VIP et afficher les vitesses réellement actives.
 - [ ] Conseillère financière avec notre IA locale : questions libres, données privées Banque/Retraite/Patrimoine, explications seulement, aucune opération automatique.
+- [ ] Banque immersive : agences réelles sur la carte, conseillers fictifs interactifs, distributeurs reliés aux retraits/dépôts sécurisés déjà existants (aucune connexion à une vraie banque).

@@ -15,6 +15,7 @@ const BY_KIND: Record<string, { layer: MapLayer; emoji: string; important?: bool
   logement: { layer: "vie", emoji: "🏠", important: true },
   universite: { layer: "vie", emoji: "🎓", important: true },
   banque: { layer: "vie", emoji: "🏦" },
+  distributeur: { layer: "vie", emoji: "🏧" },
   entreprise: { layer: "travail", emoji: "💼" },
   administration: { layer: "travail", emoji: "🏢" },
   commerce: { layer: "commerces", emoji: "🏪" },

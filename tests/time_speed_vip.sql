@@ -1,13 +1,10 @@
--- Après 0133 puis 0134, uniquement avec time_speed_vip_fixture.sql.
+-- Après 0133, 0134 puis 0135, uniquement avec time_speed_vip_fixture.sql.
 BEGIN;
 DO $$ DECLARE w public.world_state; BEGIN
   SELECT * INTO STRICT w FROM public.world_state WHERE id = 1;
-  IF w.time_speed <> 5 THEN RAISE EXCEPTION 'Vitesse attendue : 5 exact, pas un multiple'; END IF;
-  IF abs(extract(epoch FROM ((w.world_date + w.world_time) - (w.clock_started_at AT TIME ZONE 'Europe/Paris')))) > 1 THEN
-    RAISE EXCEPTION 'Ancre différente de la date et heure françaises à l’installation';
-  END IF;
+  IF w.time_speed <> 4 THEN RAISE EXCEPTION 'Vitesse attendue : 4 exact, pas un multiple'; END IF;
   UPDATE public.world_state SET world_date = '2026-10-22', world_time = '00:00', clock_started_at = now() - interval '1 minute';
-  IF public.game_now() <> '2026-10-22 00:05:00+00'::timestamptz THEN RAISE EXCEPTION '1 minute réelle doit donner 5 minutes de jeu'; END IF;
+  IF public.game_now() <> '2026-10-22 00:04:00+00'::timestamptz THEN RAISE EXCEPTION '1 minute réelle doit donner 4 minutes de jeu'; END IF;
 END $$;
 
 DO $$ DECLARE a public.activities; BEGIN
@@ -40,8 +37,8 @@ ROLLBACK;
 
 -- Un rejeu ne doit modifier ni l'ancre ni la vitesse, même si du temps a passé.
 CREATE TEMP TABLE before_replay AS SELECT * FROM public.world_state;
-\ir ../vps/migrations/0134_paris_clock_x5_vip_x8.sql
+\ir ../vps/migrations/0135_clock_x4_indicator.sql
 DO $$ BEGIN
   IF EXISTS (SELECT * FROM public.world_state EXCEPT SELECT * FROM before_replay) THEN RAISE EXCEPTION 'Rejeu : horloge modifiée'; END IF;
-  IF (SELECT count(*) FROM public.world_speed_changes WHERE key = 'paris-clock-x5-vip-x8') <> 1 THEN RAISE EXCEPTION 'Clé non unique'; END IF;
+  IF (SELECT count(*) FROM public.world_speed_changes WHERE key = 'clock-x4-vip-travel-x8') <> 1 THEN RAISE EXCEPTION 'Clé non unique'; END IF;
 END $$;

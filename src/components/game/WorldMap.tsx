@@ -6,6 +6,8 @@ import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real
 import type { RealMarker } from "./RealMap";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
 import { FuelStation } from "./FuelStation";
+import { BankTerminal } from './BankTerminal';
+import { FinancialAdviser } from './FinancialAdviser';
 import { ShopInterior } from "./ShopInterior";
 import { SHOP_SECTION } from "@/game/real-places";
 
@@ -261,6 +263,8 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
       {l.kind === "magasin" && SHOP_SECTION[l.name] && <ShopInterior section={SHOP_SECTION[l.name]!} name={l.name} here={here} />}
       {l.kind === "station_service" && <FuelStation here={here} />}
+      {here && ['banque','distributeur'].includes(l.kind) && <BankTerminal />}
+      {here && l.kind === 'banque' && <FinancialAdviser />}
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
       {spaces.map(s => <SpaceRow key={s.id} space={s} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />)}

@@ -11,8 +11,8 @@ export function WealthCard() {
   const { data: acc } = useQuery(bankQuery);
   const { time } = useWorldClock();
   if (!eco) return null;
-  const hist = acc ? wealthHistory({ txs: acc.transactions, assets: eco.assets, cash: acc.balance, saved: eco.saved, now: time }) : [];
-  const w = wealthBreakdown({ assets: eco.assets, assetValue: eco.asset_value, saved: eco.saved, cash: eco.available, debt: bank?.loan?.remaining_principal ?? 0 });
+  const hist = acc ? wealthHistory({ txs: acc.transactions.filter(t=>!t.label.includes('d’espèces')), assets: eco.assets, cash: acc.balance + (eco.cash_on_hand ?? 0), saved: eco.saved, now: time }) : [];
+  const w = wealthBreakdown({ assets: eco.assets, assetValue: eco.asset_value, saved: eco.saved, cash: eco.available + (eco.cash_on_hand ?? 0), debt: bank?.loan?.remaining_principal ?? 0 });
   const parts = [
     { k: "🏠 Immobilier", v: w.home, c: "bg-primary" },
     { k: "🚗 Véhicules", v: w.vehicles, c: "bg-accent-foreground" },

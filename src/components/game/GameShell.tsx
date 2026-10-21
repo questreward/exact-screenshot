@@ -12,6 +12,7 @@ import { Logo } from "./Logo";
 import { BirthdayBanner } from "./BirthdayBanner";
 import { cn } from "@/lib/utils";
 import { SalaryMoment } from "./MoneyMonth";
+import { GameSpeed } from "./GameSpeed";
 
 function sectionLink(s: Section) {
   // Every available section has its own page at /<id>; others show the "coming soon" screen.
@@ -134,6 +135,7 @@ export function GameShell() {
       </header>
 
       <main className="game-content mx-auto min-w-0 max-w-6xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">
+        <GameSpeed />
         <BirthdayBanner />
         <div key={path} className="animate-page"><PageIntro path={path} /><Outlet /></div>
         <SalaryMoment />
