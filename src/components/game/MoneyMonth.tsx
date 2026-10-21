@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { bankQuery, formatMoney } from "@/services/game";
 import { monthSummary, newSalary } from "@/game/month-budget";
@@ -29,7 +30,9 @@ export function MoneyMonth() {
 
 const SEEN = "civitas:salary-seen";
 /** Fenêtre « Salaire reçu », montrée une fois par salaire. */
-export function SalaryMoment({ onOpenBank }: { onOpenBank: () => void }) {
+export function SalaryMoment() {
+  const navigate = useNavigate();
+  const onOpenBank = () => navigate({ to: "/telephone", search: { app: "banque" } });
   const { data: bank } = useQuery(bankQuery);
   const [seen, setSeen] = useState<string | null | undefined>(undefined);
   useEffect(() => { setSeen(localStorage.getItem(SEEN)); }, []);
