@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { driveQuery, driveReport, type DriveState } from "@/services/game";
 import { isFlashed, limitAt, tripProgress } from "@/game/driving";
 import { VehicleInterior } from "@/components/game/VehicleInterior";
+import { TripMap } from "@/components/game/TripMap";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/conduite")({
@@ -69,6 +70,7 @@ function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<Dri
   return <div className="mx-auto max-w-2xl space-y-3 p-4 pb-24">
     <header className="flex min-w-0 items-center gap-2"><Car className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{s.trip?.title}</h1></header>
     <Progress pct={pct} />
+    <TripMap kind="voiture" pct={pct} from={d.from_city} to={d.to_city} title={s.trip?.title ?? ""} />
     <div className={flash ? "ring-4 ring-primary" : ""}><VehicleInterior kind="voiture" speed={speed} limit={seg.limit} label={seg.label}/></div>
     {next && next.at - pct < 4 && <p className="flex items-center gap-2 text-sm text-primary"><Camera className="h-5 w-5"/>Radar · {next.limit} km/h</p>}
     {d.settled ? <p className="rounded-xl border border-border bg-card p-4 text-center text-sm">{d.mode === "automatique" ? "Conduite automatique activée." : `Radars passés · ${d.flashes} flash${d.flashes > 1 ? "s" : ""}.`} Arrivée à {Math.round(100 - pct)} % du trajet restant.</p> : <>
@@ -89,6 +91,7 @@ function RideView({ kind, title, pct }: { kind: string; title: string; pct: numb
   return <div className="mx-auto max-w-2xl space-y-3 p-4 pb-24">
     <header className="flex min-w-0 items-center gap-2"><Icon className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{title}</h1></header>
     <Progress pct={pct} />
+    <TripMap kind={kind} pct={pct} title={title} />
     <VehicleInterior kind={kind === "train" ? "train" : "car"} label={title}/>
     <p className="border-y border-border py-3 text-sm">{pct < 10 ? "Départ du trajet." : pct > 90 ? "Arrivée proche." : "Trajet en cours."}</p>
     <p className="text-xs text-muted-foreground">Rien à faire : tu arrives à l'heure prévue.</p>
