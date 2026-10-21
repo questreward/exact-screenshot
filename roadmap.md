@@ -62,3 +62,9 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Bloc final V3 : tests complets + contrôle sécurité, V3 fermée, idées dans V4-BACKLOG.md
 - [x] Rendez-vous CAF (créneau, confirmation, à venir)
 - [x] Bloc 17 : abonnement VIP 2,99 €/mois (badge, objets exclusifs, thèmes, 24 favoris, accord parental, résiliation)
+- [x] Horloge : 0134 préparée ; date/heure françaises à l’installation, ×5 exact, voyages VIP ×8 ; tests isolés réussis. Activation sur VPS attend installation par Alex.
+- [ ] Achat : réparation privée VPS préparée et testée ; attend exécution par Alex puis vérification jusqu’à l’ouverture du paiement (aucun achat réel testé).
+- [x] Banque, Retraite, Patrimoine : guichets, commentaires adaptés et documents fictifs réalistes.
+- [x] Frise pour relevés bancaires/date cible ; montants rapides 10 €, 50 €, 100 € pour virements, épargne et découvert. Tests réussis.
+- [x] Signalement mairie : « Choisir un lieu » rétabli ; transmission de l’identifiant testée.
+- [ ] Contrôle visuel des trois espaces avec personnage et signalement réel : connexion dans l’aperçu nécessaire, accès actuel redirigé vers auth.

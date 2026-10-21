@@ -8,6 +8,7 @@ import { useLifeMutation } from "@/components/game/LifeControls";
 import { bankLoansQuery, drawOverdraft, formatMoney, repayLoanEarly, requestLoan } from "@/services/game";
 import { monthlyPayment, scoreLabel } from "@/game/bank";
 import { newsDate } from "@/game/news";
+import { QuickAmounts } from './FinancialTools';
 
 const fieldClass = "h-12 w-full rounded-md border border-input bg-background px-3 text-sm";
 const STATUS: Record<string, string> = { pending: "À venir", late: "En retard", paid: "Payée", seized: "Couverte par saisie", cancelled: "Annulée" };
@@ -60,6 +61,7 @@ export function BankLoans({ compact = false }: { compact?: boolean }) {
       <h3 className="font-semibold">Avance sur découvert</h3>
       <p className="text-xs text-muted-foreground">Disponible : {formatMoney(odLeft)} · frais {formatMoney(s.overdraft_daily_fee)} par jour tant que le découvert n'est pas remboursé. Remboursement automatique dès que votre compte le permet. Le découvert sert aussi à payer vos mensualités si votre compte est vide.</p>
       <div className="flex gap-2"><Input className="h-12" type="number" inputMode="numeric" min={1} max={odLeft} value={od} onChange={e => setOd(Number(e.target.value))} /><Button className="h-12 shrink-0" variant="outline" disabled={od < 1 || od > odLeft || draw.isPending} onClick={() => draw.mutate(od)}>Recevoir</Button></div>
+      <QuickAmounts value={String(od)} max={odLeft} onChange={v => setOd(Number(v))} />
     </div>}
 
     {!compact && b.seizures.length > 0 && <div className="space-y-1 border-t border-border pt-4 text-sm"><h3 className="font-semibold">Saisies</h3>{b.seizures.map((z, k) => <p key={k}>{newsDate(z.world_at)} · {z.asset_name ? `${z.asset_name} vendu ${formatMoney(z.asset_value)}` : "Aucun bien saisissable, compte bloqué"}</p>)}</div>}

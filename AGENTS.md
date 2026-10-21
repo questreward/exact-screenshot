@@ -16,6 +16,7 @@
 - Game routes belong under _authenticated/_game; missing characters redirect to creation, unavailable navigation uses section/$id.
 - World hierarchy: cities/districts/locations/spaces; move_character controls location. Map badges use public SELECT facts, never state RPCs; distinguish selected/current and expected/recorded effects.
 - game_now derives from DB anchor; clients animate only. Reads/reconnect settle deadlines.
+- World-clock resets use a locked, uniquely keyed VPS migration and an explicit Europe/Paris wall-time anchor; VIP acceleration replaces the existing travel trigger so speed factors never stack.
 - Isolated temporary accounts for regressions; accelerated deadlines preferred, world-clock tests restore the entire world_state in one transaction.
 - Social/civic/political/campaign/governance/events share activities and exactly-once energy/reward ledgers.
 - Fictional NPCs remain separate from players; local Ollama narrative never writes gameplay or reveals private player data. Membership history is immutable; reactivation keeps identity.
@@ -43,7 +44,9 @@
 - Mission scenes/dossiers/vehicle entry use server snapshots only, no invented trips, incidents or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
+- Financial presentation reuses recorded state in FinancialTools documents/adviser comments; amount shortcuts only populate inputs and date milestones derive from the shared game clock, never execute payments.
 - Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
 - VPS test restores omit cron via TOC; full backups retain production cron.
+- Self-hosted payment-key recovery verifies matching auth/PostgREST JWT secrets locally, writes only the server environment atomically with owner-only permissions, and never exposes private keys to browser config or output.
