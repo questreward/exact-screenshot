@@ -1,5 +1,4 @@
 import { CreditRecap } from "@/components/game/CreditRecap";
-import { useQuery } from "@tanstack/react-query";
 import { shopQuery } from "@/services/game";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
