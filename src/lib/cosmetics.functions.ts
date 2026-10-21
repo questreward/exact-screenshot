@@ -1,18 +1,18 @@
-import { createServerFn } from "@tanstack/react-start";
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Boutique d'objets de style : paiement Stripe (compte du propriétaire, clé dans .env du serveur),
 // accord parental par email pour les 16–17 ans. Le parent valide et paie lui-même.
 
-export async function siteOrigin() {
+export const siteOrigin = createServerOnlyFn(async () => {
   const fixed = process.env["PUBLIC_SITE_URL"];
   if (fixed) return fixed.replace(/\/+$/, "");
-  const { getRequest } = await import("@tanstack/react-start/server");
   const h = getRequest()?.headers;
   const host = h?.get("x-forwarded-host") ?? h?.get("host") ?? "localhost:3000";
   const proto = h?.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   return `${proto}://${host}`;
-}
+});
 
 export async function sha256(s: string) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
