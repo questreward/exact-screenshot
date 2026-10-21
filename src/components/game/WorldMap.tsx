@@ -3,6 +3,8 @@ import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } f
 import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
 import type { RealMarker } from "./RealMap";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
+import { ShopInterior } from "./ShopInterior";
+import { SHOP_SECTION } from "@/game/real-places";
 
 import { BonhommeG } from "./Bonhomme";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -155,10 +157,10 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   if (selected) {
     const locs = byDistrict.get(selected.id) ?? [];
     center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
-    markers = locs.flatMap(l => { const r = realPlace(city.id, l.kind); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, onClick: () => onLocation(l.id) }] : []; });
+    markers = locs.flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, onClick: () => onLocation(l.id) }] : []; });
   } else {
     // Tous les lieux (parcs, commerces, gare…) accessibles directement depuis la carte de la ville.
-    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).flatMap(l => { const r = realPlace(city.id, l.kind); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
+    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
   }
   return <RealMapBox viewKey={selected?.id ?? city.id} center={center} zoom={zoom} markers={markers} />;
 }
@@ -209,6 +211,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <Suspense fallback={null}><LocationEvents locationId={l.id} full/></Suspense>
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
+      {l.kind === "magasin" && SHOP_SECTION[l.name] && <ShopInterior section={SHOP_SECTION[l.name]!} name={l.name} here={here} />}
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
       {spaces.map(s => <SpaceRow key={s.id} space={s} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />)}

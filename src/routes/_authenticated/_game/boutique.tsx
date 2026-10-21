@@ -13,6 +13,8 @@ import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, nota
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
   head: () => ({ meta: gameMeta("Boutique", "Achetez de vrais produits comptant ou à crédit, revendez vos biens et trouvez des occasions de seconde main.") }),
+  validateSearch: (s: Record<string, unknown>): { rayon?: string; q?: string } => ({
+    ...(typeof s["rayon"] === "string" ? { rayon: s["rayon"] } : {}), ...(typeof s["q"] === "string" ? { q: s["q"] } : {}) }),
   component: ShopPage,
 });
 
@@ -25,7 +27,8 @@ const KEYS = ["shop", "economy", "character", "life", "housing"];
 function ShopPage() {
   const qc = useQueryClient();
   const { data: s, isLoading, isError } = useQuery(shopQuery);
-  const [search, setSearch] = useState(""); const [section, setSection] = useState(""); const [brand, setBrand] = useState("");
+  const entry = Route.useSearch();
+  const [search, setSearch] = useState(entry.q ?? ""); const [section, setSection] = useState(entry.rayon && entry.rayon in SECTIONS ? entry.rayon : ""); const [brand, setBrand] = useState("");
   const [max, setMax] = useState(""); const [sort, setSort] = useState<ShopSort>("populaire");
   const [confirm, setConfirm] = useState<ShopProduct | null>(null);
   const [visit, setVisit] = useState<ShopProduct | null>(null);
