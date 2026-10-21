@@ -9,7 +9,7 @@ describe("promoResults", () => {
       { amount: 80, created_at: "2026-10-11T10:00:00Z" },
       { amount: 80, created_at: "2026-10-12T10:00:00Z" },
     ];
-    const [r] = promoResults([promo], orders, [{ stars: 4, created_at: "2026-10-11T12:00:00Z" }]);
+    const r = promoResults([promo], orders, [{ stars: 4, created_at: "2026-10-11T12:00:00Z" }])[0]!;
     expect(r.during).toEqual({ clients: 2, revenue: 160, stars: 4 });
     expect(r.before.clients).toBe(1);
     expect(r.clientsChange).toBe(100);
