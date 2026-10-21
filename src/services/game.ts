@@ -2161,6 +2161,7 @@ export async function institutionDecree(input: { kind: 'mairie' | 'elysee'; city
 }
 export type FuelState = {
   settings: { tank_liters: number; liter_price: number; charge_price: number; city_trip_pct: number; road_pct_per_hour: number };
+  liter_local?: number;
   cars: { catalog_id: string; name: string; electric: boolean; level: number; fill_price: number }[];
   history: { delta: number; amount: number; label: string; at: string }[];
 };

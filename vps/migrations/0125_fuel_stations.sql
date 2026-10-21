@@ -32,4 +32,12 @@ DO $$ DECLARE def text; a text := $a$IF EXISTS (SELECT 1 FROM public.vehicle_fue
     RAISE EXCEPTION 'Rendez-vous dans une station-service (carte de la ville) pour faire le plein.'; END IF;$r$);
 END $$;
 
+-- Prix local au litre affiché avant le plein (en centimes / 100).
+DO $$ DECLARE def text; a text := $a$'settings', to_jsonb(s),$a$; BEGIN
+  def := pg_get_functiondef('public.fuel_state()'::regprocedure);
+  IF position('liter_local' IN def) > 0 THEN RETURN; END IF;
+  IF position(a IN def) = 0 THEN RAISE EXCEPTION '0125: ancre absente (fuel_state)'; END IF;
+  EXECUTE replace(def, a, a || $r$ 'liter_local', public.real_economy_price(COALESCE(city, 'paris'), 'fuel', s.liter_price * 100) / 100.0,$r$);
+END $$;
+
 COMMIT;
