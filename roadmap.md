@@ -19,5 +19,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Vraie carte des villes et de la France (à installer sur le VPS avec setup-map.sh)
 - [x] A. Guichets/ordinateurs CAF, France Travail, ameli, Banque, Poste, Impôts, Préfecture + arrivée des courriers
 - [x] B. Intérieurs voiture/bus/train/car + trajet animé sur la vraie carte
-- [ ] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
-- [ ] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
+- [x] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
+- [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
