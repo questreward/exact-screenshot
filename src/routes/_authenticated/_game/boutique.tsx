@@ -10,6 +10,7 @@ import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
 import { ShopHall, AisleHeader } from "@/components/game/ShopAisles";
+import { ShopCart } from "@/components/game/ShopCart";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -44,6 +45,14 @@ function ShopPage() {
   const [used, setUsed] = useState<SecondhandListing | null>(null);
   const refresh = () => KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
   const onError = (e: Error) => toast.error(e.message);
+  const [cart, setCart] = useState<ShopProduct[]>([]);
+  const [bump, setBump] = useState(0);
+  const isCreditable = (p: ShopProduct) => p.kind === "vehicle" || !!p.details.realestate;
+  const addOrConfirm = (p: ShopProduct) => {
+    if (isCreditable(p)) return setConfirm(p);
+    setCart(c => c.some(x => x.id === p.id) ? c.filter(x => x.id !== p.id) : [...c, p]);
+    setBump(b => b + 1);
+  };
   const buy = useMutation({ mutationFn: (p: ShopProduct) => shopBuy(p.id, crypto.randomUUID()),
     onSuccess: (r, p) => { toast.success(`Commande ${r.reference} : ${p.brand} ${p.name} livré.`); setConfirm(null); refresh(); }, onError });
   const buyCredit = useMutation({ mutationFn: (v: { p: ShopProduct; down: number; months: number }) => shopBuyCredit(v.p.id, v.down, v.months, crypto.randomUUID()),
@@ -123,7 +132,7 @@ function ShopPage() {
         {count === 0 && !catalog.isFetching && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
         <p className="text-xs text-muted-foreground" aria-live="polite">{catalog.isFetching ? 'Chargement…' : `${count.toLocaleString('fr-FR')} produit${count > 1 ? 's' : ''}${catalog.data ? ` sur ${catalog.data.catalog_total.toLocaleString('fr-FR')}` : ''}`}</p>
         <ul className="grid gap-3 sm:grid-cols-2">{visible.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
-          busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+          busy={wish.isPending} onBuy={() => addOrConfirm(p)} inCart={cart.some(c => c.id === p.id)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
         {count > pageSize && <nav aria-label="Pages du catalogue" className="flex items-center justify-between gap-3">
           <Button variant="outline" className="h-12 w-12" aria-label="Page précédente" disabled={currentPage === 0 || catalog.isFetching} onClick={() => setPage(currentPage - 1)}><ChevronLeft /></Button>
           <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
@@ -142,7 +151,7 @@ function ShopPage() {
           : <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Pas d'objectif. Touche la cible sur un produit pour suivre ton épargne.</p>}
         {wishList.length === 0 ? <p className="text-sm text-muted-foreground">Ta liste d'envies est vide. Touche le cœur sur un produit pour l'ajouter.</p> :
           <ul className="grid gap-3 sm:grid-cols-2">{wishList.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished isGoal={!!wished.get(p.id)}
-            busy={wish.isPending} onBuy={() => setConfirm(p)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
+            busy={wish.isPending} onBuy={() => addOrConfirm(p)} inCart={cart.some(c => c.id === p.id)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
         <p className="text-xs text-muted-foreground">Ta liste est privée. Un produit acheté en sort automatiquement.</p>
       </TabsContent>
 
@@ -211,6 +220,8 @@ function ShopPage() {
       </TabsContent>
     </Tabs>}
 
+    {s && <ShopCart items={cart} balance={s.balance} price={cashPrice} bump={bump}
+      onRemove={(id) => setCart(c => c.filter(x => x.id !== id))} onDone={() => { setCart([]); refresh(); }} />}
     {visit && <HousingVisit key={visit.id} p={visit} pct={promo.get(visit.id) ?? 0} onClose={() => setVisit(null)} onBuy={() => { setConfirm(visit); setVisit(null); }} />}
     {confirm && s && <BuyDialog p={confirm} s={s} pct={promo.get(confirm.id) ?? 0} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
       onCash={() => buy.mutate(confirm)} onCredit={(down, months) => buyCredit.mutate({ p: confirm, down, months })} />}
@@ -284,7 +295,7 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
   </Dialog>;
 }
 
-function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; onBuy: () => void; onVisit: () => void; onWish: (cmd: "wish" | "goal") => void }) {
+function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, inCart }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; inCart: boolean; onBuy: () => void; onVisit: () => void; onWish: (cmd: "wish" | "goal") => void }) {
   const creditable = p.kind === "vehicle" || !!p.details.realestate;
   const price = storePrice(p.price, pct);
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
@@ -304,8 +315,8 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish }
       <p className="font-heading text-xl font-bold">{eur(price)}</p>
       {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
       {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
-        : <Button className="h-11" disabled={blocked || (!creditable && cash > s.balance)} onClick={onBuy}>
-          {blocked ? "Permis requis" : !creditable && cash > s.balance ? "Solde insuffisant" : "Acheter"}</Button>}</div>
+        : <Button className="h-11" variant={inCart ? "outline" : "default"} disabled={blocked || (!creditable && !inCart && cash > s.balance)} onClick={onBuy}>
+          {blocked ? "Permis requis" : creditable ? "Acheter" : inCart ? <><Check className="h-4 w-4" />Dans le panier</> : cash > s.balance ? "Solde insuffisant" : <><ShoppingBag className="h-4 w-4" />Au panier</>}</Button>}</div>
     {!p.owned && <div className="mt-2 grid grid-cols-2 gap-2">
       <Button variant="outline" className="h-11" disabled={busy} aria-pressed={wished} onClick={() => onWish("wish")}>
         <Heart className={`h-4 w-4 ${wished ? "fill-primary text-primary" : ""}`} />{wished ? "Dans mes envies" : "Envie"}</Button>
