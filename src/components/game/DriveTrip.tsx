@@ -12,6 +12,7 @@ import { VehicleInterior } from "./VehicleInterior";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
 import { useWorldClock } from "./WorldClock";
 import { daylight } from "@/game/daylight";
+import { arrivalFor } from "@/game/arrival";
 
 // Presentation only: the trip itself is recorded by the existing secured travel action.
 type Phase = "ready" | "boarding" | "driving" | "light" | "arriving" | "parked";
@@ -111,11 +112,13 @@ export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minute
         </div>}
 
         {phase === "parked" && <div className="mt-6 space-y-3 text-center animate-page">
-          <p className="text-5xl">🅿️ → 🧍</p>
+          <p className="text-5xl">🅿️</p>
           <p className="font-display text-lg font-bold">Moteur coupé.</p>
           <p className="text-muted-foreground">Vous êtes arrivé : {toName}.</p>
           <BreakdownStory since={startedAt.current} />
-          <Link to="/carte" onClick={onClose} className="flex min-h-14 items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground active:scale-95">Entrer dans le lieu</Link>
+          <p className="text-3xl">🚗 → 🧍 → {arrivalFor(to?.kind).emoji}</p>
+          <Link to={arrivalFor(to?.kind).to} onClick={onClose} className="flex min-h-14 items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground active:scale-95">{arrivalFor(to?.kind).label}</Link>
+          <Link to="/carte" onClick={onClose} className="flex min-h-12 items-center justify-center rounded-2xl border border-border font-semibold active:scale-95">Voir la carte</Link>
         </div>}
       </SheetContent>
     </Sheet>
