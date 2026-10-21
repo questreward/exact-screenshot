@@ -3,14 +3,14 @@ import { footprint } from '@/game/home-furnishing';
 import { FurnitureVisual } from './FurnitureVisual';
 
 /** Projection of actual placed possessions, not a seeded decorative room. */
-export function RoomInterior({ name, placements, furniture, room, grid }: { name: string; placements: Placement[]; furniture: Furniture[]; room: number; grid: number }) {
+export function RoomInterior({ name, placements, furniture, room, grid, light }: { name: string; placements: Placement[]; furniture: Furniture[]; room: number; grid: number; light?: 'night' | 'morning' | 'day' | 'sunset' }) {
   return <figure className="overflow-hidden border-y border-border bg-surface" aria-label={`Intérieur : ${name}`}>
     <svg viewBox="0 0 600 390" className="block aspect-[20/13] w-full" aria-hidden="true">
       <rect width="600" height="390" fill="var(--surface)" />
       <path d="M50 60H550V280H50Z" fill="var(--secondary)" />
       <path d="M50 280H550L590 365H10Z" fill="var(--muted)" />
       <path d="M50 60V280L10 365M550 60V280L590 365M50 280H550" fill="none" stroke="var(--border)" strokeWidth="4" />
-      <rect x="84" y="91" width="106" height="82" fill="var(--chart-3)" opacity=".45" />
+      <rect x="84" y="91" width="106" height="82" fill={light === "night" ? "var(--foreground)" : light === "sunset" ? "var(--primary)" : "var(--chart-3)"} opacity={light === "night" ? .8 : .45} />
       <path d="M137 91V173M84 132H190" stroke="var(--foreground)" strokeWidth="4" />
       <rect x="475" y="152" width="49" height="128" fill="var(--surface)" />
       <circle cx="486" cy="221" r="3" fill="var(--primary)" />
@@ -20,6 +20,9 @@ export function RoomInterior({ name, placements, furniture, room, grid }: { name
         const box = footprint(item,p.rotation);
         return <foreignObject key={p.asset_id} x={60+p.x/grid*465} y={190+p.y/grid*95} width={box.width/grid*465} height={Math.max(32,box.height/grid*145)}><div className="h-full w-full" title={item.name}><FurnitureVisual kind={item.visual}/></div></foreignObject>;
       })}
+      {light === "night" && <><rect width="600" height="390" fill="var(--foreground)" opacity=".35" /><circle cx="300" cy="70" r="60" fill="var(--accent)" opacity=".35" /></>}
+      {light === "sunset" && <rect width="600" height="390" fill="var(--primary)" opacity=".12" />}
+      {light === "morning" && <rect width="600" height="390" fill="var(--accent)" opacity=".1" />}
     </svg>
     <figcaption className="px-3 py-2 text-sm font-semibold break-words">{name}</figcaption>
   </figure>;

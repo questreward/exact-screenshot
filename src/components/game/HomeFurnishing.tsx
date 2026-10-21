@@ -9,13 +9,19 @@ import { furnishingSave } from '@/services/game';
 import { canPlace, footprint, type FurnishingState, type FurnishingHome, type Placement } from '@/game/home-furnishing';
 import { RoomInterior } from './RoomInterior';
 import { FurnitureVisual } from './FurnitureVisual';
+import { HomeOverview } from './HomeOverview';
 
 export function HomeFurnishing({ data }: { data: FurnishingState }) {
   const [homeId, setHomeId] = useState(data.homes[0]?.id ?? '');
   const home = data.homes.find(h => h.id === homeId) ?? data.homes[0];
   if (!data.available) return <p className="p-4 text-muted-foreground">Chez moi : Disponible dans une prochaine étape.</p>;
   if (!home) return <section className="space-y-4 py-6"><p className="text-muted-foreground">Aucun logement disponible à aménager.</p>{!data.rentals_available && <p className="text-sm text-muted-foreground">Aménagement des locations : Disponible dans une prochaine étape.</p>}<Button asChild><Link to="/logement"><Home/>Logement</Link></Button></section>;
-  return <Editor key={`${home.id}:${home.version}:${JSON.stringify(home.placements)}`} home={home} data={data} onHomeChange={setHomeId}/>;
+  return <HomeSwitch key={`${home.id}:${home.version}:${JSON.stringify(home.placements)}`} home={home} data={data} onHomeChange={setHomeId}/>;
+}
+function HomeSwitch(props: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
+  const [edit, setEdit] = useState(false);
+  return edit ? <div className="space-y-3"><Button variant="outline" className="min-h-12 w-full" onClick={() => setEdit(false)}>🏠 Revenir à la vue de mon logement</Button><Editor {...props}/></div>
+    : <HomeOverview home={props.home} data={props.data} onHomeChange={props.onHomeChange} onEdit={() => setEdit(true)}/>;
 }
 function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
   const qc = useQueryClient();
