@@ -10,3 +10,11 @@ describe("workday", () => {
     expect(t.find(x => x.label === "Pause")!.at.toISOString()).toBe("2026-10-21T12:30:00.000Z");
   });
 });
+
+import { workMood as wm, remaining as rem, workProfile as wp } from "./workday";
+describe("other jobs", () => {
+  it("teacher works at school", () => expect(wp("Professeur des écoles").key).toBe("ecole"));
+  it("mason is on a site", () => expect(wp("Maçon").key).toBe("chantier"));
+  it("same day same mood", () => expect(wm("2026-10-21", "commerce")).toEqual(wm("2026-10-21", "commerce")));
+  it("remaining time label", () => expect(rem(0, new Date(252 * 60000).toISOString())).toBe("4 h 12 restantes"));
+});
