@@ -1,3 +1,4 @@
+import { InstitutionScene } from "@/components/game/InstitutionScene";
 import { MunicipalPropertyTaxCard } from '@/components/game/MunicipalPropertyTaxCard';
 import { createFileRoute } from '@tanstack/react-router';
 import { civicQuery,civicLocationsQuery,governanceQuery } from '@/services/game';
@@ -9,4 +10,4 @@ export const Route=createFileRoute('/_authenticated/_game/ma-ville')({
  loader:async({context:{queryClient:q}})=>{const s=await q.ensureQueryData(civicQuery);await Promise.all([q.ensureQueryData(civicLocationsQuery(s.city_id)),q.ensureQueryData(governanceQuery)]);},
  component:MaVille,
 });
-function MaVille(){return <div className="space-y-6"><CivicPage/><MunicipalPropertyTaxCard/><ProtestsCard/></div>;}
+function MaVille(){return <div className="space-y-6"><InstitutionScene kind="mairie"/><CivicPage/><MunicipalPropertyTaxCard/><ProtestsCard/></div>;}

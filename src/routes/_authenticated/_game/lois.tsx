@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { gameMeta } from "@/game/metadata";
+import { InstitutionScene } from "@/components/game/InstitutionScene";
 
 type Law = { id: string; title: string; category: string; effects: Record<string, number>; kind: "vigueur" | "reforme"; reference: string; summary: string };
 type Position = { template_id: string; party_key: string; vote: "yes" | "no" };
@@ -68,6 +69,7 @@ function LawsPage() {
     && (!q || `${l.title} ${l.summary} ${l.reference}`.toLowerCase().includes(q.toLowerCase())));
 
   return <div className="space-y-5 animate-rise">
+    <InstitutionScene kind="assemblee" />
     <div className="flex items-center gap-3"><BookOpen className="h-8 w-8 text-primary" /><div><h1 className="text-3xl font-bold">Bibliothèque des lois</h1><p className="text-sm text-muted-foreground">{data.laws.length} vraies lois françaises et réformes débattues</p></div></div>
     <p className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground">{data.deputy ? "Vous êtes parlementaire : ouvrez une loi pour la déposer au Parlement." : "Seuls les parlementaires peuvent déposer une loi. Tout le monde peut consulter la bibliothèque."}</p>
     <div className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" /><Input className="h-12 pl-10" value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher une loi (SRU, retraites, SMIC…)" /></div>
