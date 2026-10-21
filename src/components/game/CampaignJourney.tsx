@@ -12,8 +12,8 @@ export function CampaignJourney({ e, s }: { e: Election; s: ElectionState }) {
   const reasons = mine ? supportReasons(s, mine.id) : [];
   return <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
     <h2 className="font-semibold">📅 Calendrier de l'élection</h2>
-    <ol className="grid grid-cols-5 gap-1 text-center text-[11px]">{cal.steps.map((st, i) =>
-      <li key={st.label} className={`rounded-lg p-1 ${i === cal.current ? "bg-primary text-primary-foreground font-semibold" : i < cal.current ? "bg-muted text-muted-foreground" : "bg-muted/40"}`}>
+    <ol className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 text-center text-xs">{cal.steps.map((st, i) =>
+      <li key={st.label} className={`min-w-[5.5rem] shrink-0 rounded-lg p-2 ${i === cal.current ? "bg-primary text-primary-foreground font-semibold" : i < cal.current ? "bg-muted text-muted-foreground" : "bg-muted/40"}`}>
         <span className="block text-lg">{st.emoji}</span>{st.label}<span className="block">{day(st.at)}</span></li>)}</ol>
     {mine && <div className="rounded-xl bg-muted p-3 text-sm">
       <p className="font-semibold">📈 Ton soutien : {mine.support} %</p>
