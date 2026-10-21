@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { CreditRecap } from "@/components/game/CreditRecap";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -117,17 +118,17 @@ function ShopPage() {
           <details className="rounded-xl border border-border bg-card px-3">
             <summary className="flex min-h-12 cursor-pointer items-center text-sm font-semibold">Filtres et tri</summary>
             <div className="grid grid-cols-2 gap-2 pb-3 sm:grid-cols-4">
-              <select className={select} value={section} onChange={e => setSection(e.target.value)} aria-label="Rayon"><option value="">Tous les rayons</option>{Object.entries(SECTIONS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-              <select className={select} value={brand} onChange={e => setBrand(e.target.value)} aria-label="Marque"><option value="">Toutes marques</option>{brands.map(b => <option key={b}>{b}</option>)}</select>
-              <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
-              <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
+              <GameSelect className={select} value={section} onChange={e => setSection(e.target.value)} aria-label="Rayon"><option value="">Tous les rayons</option>{Object.entries(SECTIONS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</GameSelect>
+              <GameSelect className={select} value={brand} onChange={e => setBrand(e.target.value)} aria-label="Marque"><option value="">Toutes marques</option>{brands.map(b => <option key={b}>{b}</option>)}</GameSelect>
+              <GameSelect className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</GameSelect>
+              <GameSelect className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></GameSelect>
             </div>
           </details>
         </>}
         {(section || search || showSearch) && <>
         {section === "immobilier" && <div className="grid grid-cols-2 gap-2">
-          <select className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</select>
-          <select className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</select>
+          <GameSelect className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</GameSelect>
+          <GameSelect className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</GameSelect>
         </div>}
         {catalog.isError && <p role="alert" className="text-sm text-destructive">Le catalogue ne peut pas être chargé pour le moment.</p>}
         {count === 0 && !catalog.isFetching && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
@@ -288,8 +289,8 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
     </> : <>
       <div className="my-3 space-y-2">
         <label className="block text-sm">Apport (min. {eur(minDown)})<input type="number" inputMode="numeric" className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={down} onChange={e => setDown(e.target.value)} /></label>
-        <label className="block text-sm">Durée<select className={`${select} mt-1`} value={months} onChange={e => setMonths(Number(e.target.value))}>
-          {durations.map(m => <option key={m} value={m}>{immo ? `${m / 12} ans` : `${m} mois`}</option>)}</select></label></div>
+        <label className="block text-sm">Durée<GameSelect className={`${select} mt-1`} value={months} onChange={e => setMonths(Number(e.target.value))}>
+          {durations.map(m => <option key={m} value={m}>{immo ? `${m / 12} ans` : `${m} mois`}</option>)}</GameSelect></label></div>
       {pct > 0 && <p className="mb-2 text-xs text-muted-foreground">La promo s'applique seulement au comptant.</p>}
       <div className="mb-3"><CreditRecap kind={immo ? "immo" : "auto"} price={p.price} down={d} fees={immo ? fees : 0} rate={rate} months={months} balance={s.balance} income={s.credit.income} burden={s.credit.burden} /></div>
       <p className="mb-2 text-xs text-muted-foreground">Taux {rate} %.</p>

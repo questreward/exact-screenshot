@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -245,8 +246,8 @@ function FormEditor({ type, vault, onBack }: { type: FormType; vault: DocumentVa
             {f.prefill ? <p className="rounded-lg bg-muted px-3 py-2 text-sm">{known ?? "Non connu du jeu"} <span className="text-xs text-muted-foreground">· rempli par le jeu</span></p>
               : f.type === "checkbox" ? <label className="flex min-h-11 items-center gap-3"><input type="checkbox" className="h-6 w-6 accent-[hsl(var(--primary))]" checked={data[f.key] === true} onChange={e => set(f.key, e.target.checked)} /><span className="text-sm">Oui</span></label>
               : f.type === "radio" ? <div className="grid grid-cols-2 gap-2">{f.options!.map(([v, l]) => <Button key={v} type="button" variant={data[f.key] === v ? "default" : "outline"} className="h-11" onClick={() => set(f.key, v)}>{l}</Button>)}</div>
-              : f.type === "select" ? <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={String(data[f.key] ?? "")} onChange={e => set(f.key, e.target.value || null)}>
-                  <option value="">Choisir…</option>{f.options!.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+              : f.type === "select" ? <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={String(data[f.key] ?? "")} onChange={e => set(f.key, e.target.value || null)}>
+                  <option value="">Choisir…</option>{f.options!.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</GameSelect>
               : <Input className="h-11 text-base" type={f.type} inputMode={f.type === "number" ? "numeric" : undefined} min={f.min} max={f.max}
                   value={String(data[f.key] ?? "")} onChange={e => set(f.key, f.type === "number" ? (e.target.value === "" ? null : Number(e.target.value)) : e.target.value)} />}
           </div>

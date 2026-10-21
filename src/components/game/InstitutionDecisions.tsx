@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gavel, LoaderCircle } from "lucide-react";
@@ -37,9 +38,9 @@ export function InstitutionDecisions({ kind, cityId }: { kind: "mairie" | "elyse
     : used ? <p className="text-sm text-muted-foreground">Tu as déjà signé ta décision du jour. Reviens demain (jour de jeu).</p>
     : <div className="space-y-2">
         <Input className="h-12" maxLength={80} placeholder="Titre (ex. : Rénovation de la place)" value={title} onChange={e => setTitle(e.target.value)} />
-        {kind === "elysee" && <select className={sel} value={city} onChange={e => setCity(e.target.value)} aria-label="Ville">{(cities ?? []).filter(c => c.available).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>}
-        {kind === "mairie" && <select className={sel} value={district} onChange={e => setDistrict(e.target.value)} aria-label="Quartier"><option value="">Choisir un quartier</option>{(districts ?? []).map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select>}
-        <select className={sel} value={gauge} onChange={e => setGauge(e.target.value)} aria-label="Jauge">{GAUGES.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}</select>
+        {kind === "elysee" && <GameSelect className={sel} value={city} onChange={e => setCity(e.target.value)} aria-label="Ville">{(cities ?? []).filter(c => c.available).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</GameSelect>}
+        {kind === "mairie" && <GameSelect className={sel} value={district} onChange={e => setDistrict(e.target.value)} aria-label="Quartier"><option value="">Choisir un quartier</option>{(districts ?? []).map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</GameSelect>}
+        <GameSelect className={sel} value={gauge} onChange={e => setGauge(e.target.value)} aria-label="Jauge">{GAUGES.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}</GameSelect>
         <label className="block text-sm">Effet : <strong>{delta > 0 ? "+" : ""}{delta}</strong>
           <input type="range" min={-max} max={max} step={1} value={delta} onChange={e => setDelta(Number(e.target.value) || (delta > 0 ? -1 : 1))} className="mt-2 h-10 w-full accent-primary" /></label>
         <p className="text-xs text-muted-foreground">Une décision par jour de jeu · {kind === "mairie" ? "un quartier" : "tous les quartiers de la ville"} · retour progressif à 50.</p>

@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute } from '@tanstack/react-router';
@@ -32,7 +33,7 @@ function PostPage() {
     <main className="mx-auto max-w-3xl space-y-4 px-4 py-5"><p className="text-sm text-muted-foreground">Recommandés : retrait sous 15 jours du jeu. La première présentation vaut réception, même sans retrait.</p>
       <p role="status" className="text-sm">{message}</p>
       {tab==='send' ? <form className="space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground" onSubmit={e => { e.preventDefault(); void act('post_send', { _target: target, _subject: subject, _body: body, _registered: registered, _request_id: request }); }}>
-        <h2 className="text-lg font-semibold">Envoyer un courrier</h2><label className="block">Contact<select required value={target} onChange={e=>setTarget(e.target.value)} className="mt-1 min-h-11 w-full rounded border border-input bg-background p-2"><option value="">Choisir un contact</option>{network.contacts.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+        <h2 className="text-lg font-semibold">Envoyer un courrier</h2><label className="block">Contact<GameSelect required value={target} onChange={e=>setTarget(e.target.value)} className="mt-1 min-h-11 w-full rounded border border-input bg-background p-2"><option value="">Choisir un contact</option>{network.contacts.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</GameSelect></label>
         <label className="block">Objet<input required maxLength={120} value={subject} onChange={e=>setSubject(e.target.value)} className="mt-1 min-h-11 w-full rounded border border-input bg-background p-2" /></label>
         <label className="block">Message<textarea required maxLength={4000} value={body} onChange={e=>setBody(e.target.value)} className="mt-1 min-h-40 w-full rounded border border-input bg-background p-2" /></label>
         <label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={registered} onChange={e=>setRegistered(e.target.checked)} />Recommandé</label>

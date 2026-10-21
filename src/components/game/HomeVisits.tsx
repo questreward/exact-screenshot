@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,8 +24,8 @@ export function InviteHomeButton({ guest }: { guest: string }) {
   if (!inv || homes.length === 0) return null;
   if (invited) return <Button variant="outline" className="h-12" disabled={revoke.isPending} onClick={() => revoke.mutate(guest)}>🏠 Invité chez moi · retirer</Button>;
   return <div className="flex w-full flex-wrap gap-2">
-    {homes.length > 1 && <select aria-label="Logement à faire visiter" className="h-12 flex-1 rounded-lg border border-input bg-background px-3" value={home} onChange={e => setHome(e.target.value)}>
-      {homes.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}</select>}
+    {homes.length > 1 && <GameSelect aria-label="Logement à faire visiter" className="h-12 flex-1 rounded-lg border border-input bg-background px-3" value={home} onChange={e => setHome(e.target.value)}>
+      {homes.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}</GameSelect>}
     <Button className="h-12" disabled={send.isPending} onClick={() => send.mutate({ guest, home: home || homes[0]!.id })}>🏠 Inviter chez moi</Button>
   </div>;
 }

@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
@@ -105,14 +106,14 @@ function Writer({ media }: { media: MediaState }) {
     <details className="rounded-lg bg-muted/50 p-3">
       <summary className="cursor-pointer py-1 text-sm font-semibold">Citer quelqu'un ou un sujet de ville (facultatif)</summary>
       <div className="mt-3 space-y-2">
-        <select className={selectCls} value={cited} onChange={e => setCited(e.target.value)} aria-label="Personne citée">
+        <GameSelect className={selectCls} value={cited} onChange={e => setCited(e.target.value)} aria-label="Personne citée">
           <option value="">Personne citée : aucune</option>
           {media.people.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select>
-        <select className={selectCls} value={indicator} onChange={e => setIndicator(e.target.value)} aria-label="Sujet de la ville">
+        </GameSelect>
+        <GameSelect className={selectCls} value={indicator} onChange={e => setIndicator(e.target.value)} aria-label="Sujet de la ville">
           <option value="">Sujet de la ville : aucun</option>
           {media.indicators.map(i => <option key={i} value={i}>{indicatorLabel(i)}</option>)}
-        </select>
+        </GameSelect>
         <div className="grid grid-cols-3 gap-2">
           {TONES.map(t => <Button key={t.id} type="button" variant={tone === t.id ? "default" : "outline"} className="h-11" onClick={() => setTone(t.id)}>{t.label}</Button>)}
         </div>

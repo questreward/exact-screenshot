@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -49,7 +50,7 @@ function RecruitmentPage() {
       </TabsContent>
       <TabsContent value="employeur" className="space-y-4">
         <label htmlFor="agency" className="block font-semibold">Agence choisie</label>
-        <select id="agency" value={agency} onChange={e => setAgency(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground"><option value="">Agence fictive CIVITAS · {eur(s.fee)}</option>{s.agencies.map(a => <option key={a.id} value={a.id}>{a.name} · {eur(serviceAmount(s.fee,a.percent))}</option>)}</select>
+        <GameSelect id="agency" value={agency} onChange={e => setAgency(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground"><option value="">Agence fictive CIVITAS · {eur(s.fee)}</option>{s.agencies.map(a => <option key={a.id} value={a.id}>{a.name} · {eur(serviceAmount(s.fee,a.percent))}</option>)}</GameSelect>
         {!myOffers.length && <p className="text-muted-foreground">Aucune offre ouverte dans ton entreprise.</p>}
         {myOffers.map(o => <article key={o.id} className="space-y-3 rounded-lg border border-border bg-card p-4"><h2 className="font-heading font-bold">{o.title}</h2><p className="text-sm text-muted-foreground">{eur(o.salary)} / semaine</p>{o.delegated ? <><p className="text-sm">{o.agency} · prime {eur(o.fee ?? 0)}</p><Button variant="outline" className="min-h-12 w-full" disabled={act.isPending} onClick={() => run("recruit_hire_npc", { _offer: o.id }, "Habitant fictif embauché, prime versée.")}><UserPlus />Embaucher un habitant fictif</Button></> : <Button className="min-h-12 w-full" disabled={act.isPending} onClick={() => run("recruit_mandate", { _offer: o.id, _agency: agency || null }, "Offre confiée à l’agence.")}>Confier cette offre</Button>}</article>)}
         <Button asChild variant="outline" className="min-h-12"><Link to="/patrimoine"><Store />Mon entreprise</Link></Button>
@@ -58,7 +59,7 @@ function RecruitmentPage() {
         {s.mine ? <>
           <h2 className="font-heading text-xl font-bold">{s.mine.name}</h2><p>Caisse : {eur(s.mine.balance)}</p>
           <label htmlFor="fee" className="block text-sm">Mon tarif · {percent} %</label><input id="fee" type="range" min="70" max="150" step="5" value={percent} onChange={e => setPercent(Number(e.target.value))} className="h-12 w-full accent-primary" /><Button className="min-h-12" disabled={price.isPending || percent===s.mine.percent} onClick={() => price.mutate()}>Enregistrer le tarif</Button>
-          <label htmlFor="candidate" className="block font-semibold">Candidat volontaire</label><select id="candidate" className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground" value={candidate} onChange={e => setCandidate(e.target.value)}><option value="">Choisir un candidat</option>{s.mine.candidates.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+          <label htmlFor="candidate" className="block font-semibold">Candidat volontaire</label><GameSelect id="candidate" className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground" value={candidate} onChange={e => setCandidate(e.target.value)}><option value="">Choisir un candidat</option>{s.mine.candidates.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</GameSelect>
           {!s.mine.mandates.length && <p className="text-muted-foreground">Aucune offre confiée pour le moment.</p>}
           {s.mine.mandates.map(m => <article key={m.id} className="space-y-3 rounded-lg border border-border bg-card p-4"><h3 className="font-heading font-bold">{m.title} · {m.business}</h3><p className="text-sm">Prime convenue : {eur(m.fee)}</p><Button variant="outline" className="min-h-12 w-full" disabled={act.isPending || !candidate} onClick={() => run("recruit_propose", { _offer: m.id, _candidate: candidate }, "Proposition envoyée au candidat.")}>Proposer ce candidat</Button></article>)}
           {s.mine.weeks.map(w => <div key={w.week} className="flex justify-between gap-3 border-b border-border py-3 text-sm"><span>{w.clients} clients fictifs · semaine {w.week}</span><span>{eur(w.revenue)}</span></div>)}

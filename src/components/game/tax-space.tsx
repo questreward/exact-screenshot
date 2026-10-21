@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { useMutation, useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -44,7 +45,7 @@ export function TaxSpace() {
       <p className="text-xs text-muted-foreground">Les anciens avis de revenus restent détaillés ci-dessus et sont réglés par le système historique. Le prélèvement mensuel continue ; seule la déclaration automatique entraîne une majoration de 10 %.</p>
     </> : <div className="space-y-4">
       <form className="space-y-3" onSubmit={e => { e.preventDefault(); question.mutate({ category, body }); }}>
-        <label className="block text-sm">Catégorie<select className="mt-1 min-h-12 w-full rounded-lg border border-input bg-background px-3" value={category} onChange={e => setCategory(e.target.value)}><option value="revenu">Revenus</option><option value="foncier">Taxe foncière</option><option value="paiement">Paiement</option></select></label>
+        <label className="block text-sm">Catégorie<GameSelect className="mt-1 min-h-12 w-full rounded-lg border border-input bg-background px-3" value={category} onChange={e => setCategory(e.target.value)}><option value="revenu">Revenus</option><option value="foncier">Taxe foncière</option><option value="paiement">Paiement</option></GameSelect></label>
         <label className="block text-sm">Votre question<textarea className="mt-1 min-h-32 w-full rounded-lg border border-input bg-background p-3" minLength={10} maxLength={2000} required value={body} onChange={e => setBody(e.target.value)} /></label>
         <p className="text-xs text-muted-foreground">10–2000 caractères · 3 questions par jour du jeu · Réponse automatique sous 2 jours du jeu, sans IA.</p>
         <Button className="min-h-12 w-full" disabled={question.isPending || body.trim().length < 10}>Envoyer en messagerie sécurisée</Button>

@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -60,10 +61,10 @@ function Coalitions({ s }: { s: PartyLifeState }) {
     </section>}
     {s.led.length > 0 ? (form ? <div className="space-y-3 rounded-xl border border-border bg-card p-4">
       <p className="font-semibold">Proposer un accord</p>
-      <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={org} onChange={e => setOrg(e.target.value)}>
-        {s.parties.filter(p => s.led.includes(p.id)).map(p => <option key={p.id} value={p.id}>De : {p.name}</option>)}</select>
-      <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={partner} onChange={e => setPartner(e.target.value)}>
-        <option value="">À : choisir un partenaire…</option>{s.parties.filter(p => p.id !== org).map(p => <option key={p.id} value={p.id}>{p.name}{p.seats ? ` · ${p.seats} sièges` : ""}</option>)}</select>
+      <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={org} onChange={e => setOrg(e.target.value)}>
+        {s.parties.filter(p => s.led.includes(p.id)).map(p => <option key={p.id} value={p.id}>De : {p.name}</option>)}</GameSelect>
+      <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={partner} onChange={e => setPartner(e.target.value)}>
+        <option value="">À : choisir un partenaire…</option>{s.parties.filter(p => p.id !== org).map(p => <option key={p.id} value={p.id}>{p.name}{p.seats ? ` · ${p.seats} sièges` : ""}</option>)}</GameSelect>
       {partner && total > 0 && (() => { const m = coalitionMajority(seats(org), seats(partner), total); return <p className="text-sm">{m.seats} sièges ensemble · {m.majority ? "majorité atteinte" : "pas de majorité"}</p>; })()}
       <Textarea maxLength={600} placeholder="Propositions et concessions (ex. : maintien du tramway, pas de hausse d'impôt)" value={concessions} onChange={e => setConcessions(e.target.value)} />
       <Input className="h-11 text-base" maxLength={400} placeholder="Répartition des responsabilités (ex. : adjoint aux transports)" value={resp} onChange={e => setResp(e.target.value)} />
@@ -117,8 +118,8 @@ function Internal({ s }: { s: PartyLifeState }) {
   const coalitions = s.coalitions.filter(c => o && (c.proposer.id === o.id || c.partner.id === o.id));
   const open = async () => { if (await act("open_vote", { org_id: orgId, kind, title, body, candidates: cands, coalition_id: coal || null }, "Vote ouvert aux membres")) { setTitle(""); setBody(""); setCands([]); } };
   return <div className="space-y-3">
-    {s.my_orgs.length > 1 && <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={orgId} onChange={e => setOrgId(e.target.value)}>
-      {s.my_orgs.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}
+    {s.my_orgs.length > 1 && <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={orgId} onChange={e => setOrgId(e.target.value)}>
+      {s.my_orgs.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</GameSelect>}
     {o && <>
       <section className="rounded-xl border border-border bg-card p-4 text-sm">
         <p className="font-heading text-lg font-bold">{o.name}</p>
@@ -132,8 +133,8 @@ function Internal({ s }: { s: PartyLifeState }) {
         {kind !== "president" && <Textarea maxLength={1200} placeholder={kind === "programme" ? "Nouveau programme (20 caractères minimum)" : "Texte soumis au vote"} value={body} onChange={e => setBody(e.target.value)} />}
         {kind === "president" && <div className="space-y-1"><p className="text-sm">Candidats (membres) :</p>{(o.members ?? []).map(m => <label key={m.id} className="flex min-h-11 items-center gap-3 text-sm">
           <input type="checkbox" className="h-5 w-5" checked={cands.includes(m.id)} onChange={e => setCands(e.target.checked ? [...cands, m.id] : cands.filter(x => x !== m.id))} />{m.name}</label>)}</div>}
-        {kind === "alliance" && <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={coal} onChange={e => setCoal(e.target.value)}>
-          <option value="">Choisir l'accord concerné…</option>{coalitions.map(c => <option key={c.id} value={c.id}>{c.proposer.name} + {c.partner.name} · {COALITION_STATUS[c.status]}</option>)}</select>}
+        {kind === "alliance" && <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={coal} onChange={e => setCoal(e.target.value)}>
+          <option value="">Choisir l'accord concerné…</option>{coalitions.map(c => <option key={c.id} value={c.id}>{c.proposer.name} + {c.partner.name} · {COALITION_STATUS[c.status]}</option>)}</GameSelect>}
         <Button className="h-12 w-full" disabled={title.trim().length < 5 || (kind === "president" && !cands.length) || (kind === "alliance" && !coal)} onClick={open}>Ouvrir le vote ({s.settings.vote_hours} h)</Button>
       </section>}
       {(o.votes ?? []).length === 0 ? <p className="text-sm text-muted-foreground">Aucun vote pour l'instant.</p> : o.votes!.map(v => <VoteCard key={v.id} v={v} members={o.members ?? []} />)}

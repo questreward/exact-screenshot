@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -60,8 +61,8 @@ function FactCheckPage() {
       <p className="font-semibold">Quelle affirmation veux-tu vérifier ?</p>
       <div className="grid grid-cols-3 gap-2">{([["evolution", "Une évolution"], ["niveau", "Un niveau"], ["budget", "Le budget"]] as const).map(([k, l]) =>
         <Button key={k} className="h-11" variant={kind === k ? "default" : "outline"} onClick={() => pickKind(k)}>{l}</Button>)}</div>
-      {kind !== "budget" ? <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={ind} onChange={e => setIndicator(e.target.value)}>
-        {data.indicators.map(i => <option key={i} value={i}>{INDICATOR_LABELS[i] ?? i}</option>)}</select>
+      {kind !== "budget" ? <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={ind} onChange={e => setIndicator(e.target.value)}>
+        {data.indicators.map(i => <option key={i} value={i}>{INDICATOR_LABELS[i] ?? i}</option>)}</GameSelect>
         : <p className="text-sm">La caisse de la ville…</p>}
       <div className="grid grid-cols-2 gap-2">{dirs.map(([k, l]) => <Button key={k} className="h-11" variant={direction === k ? "default" : "outline"} onClick={() => setDirection(k!)}>{l}</Button>)}</div>
       <Input className="h-11 text-base" type="number" inputMode="numeric" min={0} placeholder={kind === "budget" ? "Montant en €" : "Nombre de points (0 à 100)"} value={amount} onChange={e => setAmount(e.target.value)} />

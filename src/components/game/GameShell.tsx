@@ -1,3 +1,4 @@
+import { PageIntro } from "@/components/game/PageIntro";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";

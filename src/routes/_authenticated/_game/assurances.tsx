@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -47,7 +48,7 @@ function InsurancePage() {
           <Button variant="outline" className="min-h-12" disabled={busy} onClick={() => cancel.mutate(c.id)}><X />Résilier</Button>
         </article>)}
         <label htmlFor="insurer" className="block font-semibold">Mon assureur</label>
-        <select id="insurer" value={provider} onChange={e => setProvider(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground"><option value="">Assureur fictif CIVITAS · tarif de référence</option>{s.providers.map(p => <option key={p.id} value={p.id}>{p.name} · {p.percent} %</option>)}</select>
+        <GameSelect id="insurer" value={provider} onChange={e => setProvider(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3 text-foreground"><option value="">Assureur fictif CIVITAS · tarif de référence</option>{s.providers.map(p => <option key={p.id} value={p.id}>{p.name} · {p.percent} %</option>)}</GameSelect>
         {selected && <p className="text-sm text-muted-foreground">Si la caisse ne suffit pas, l’assureur fictif complète sans frais supplémentaires pour toi.</p>}
         {ins.age < ins.settings.min_age ? <p>Assurance possible dès {ins.settings.min_age} ans.</p> : <div className="grid gap-3 sm:grid-cols-2">{ins.products.filter(p => !p.covers.some(t => covered.has(t))).map(p => {
           const auto = !["home", "health", "accident", "pack"].includes(p.id);

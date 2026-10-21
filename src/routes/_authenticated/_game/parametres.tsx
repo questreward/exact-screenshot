@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -51,11 +52,11 @@ function SettingsPage() {
       <section className="rounded-3xl border border-border bg-gradient-card px-5 py-2 shadow-card">
         <div className={row}>
           <div><p className="font-semibold">Langue</p><p className="text-sm text-muted-foreground">Langue de l'interface</p></div>
-          <select value={settings?.language ?? "fr"} onChange={(e) => update({ language: e.target.value })}
+          <GameSelect value={settings?.language ?? "fr"} onChange={(e) => update({ language: e.target.value })}
             className="h-11 rounded-xl border border-input bg-background px-3 text-sm">
             <option value="fr">Français</option>
             <option value="en">English (bientôt)</option>
-          </select>
+          </GameSelect>
         </div>
         <div className={row}>
           <div><p className="font-semibold">Notifications</p><p className="text-sm text-muted-foreground">Recevoir les alertes du jeu</p></div>

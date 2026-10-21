@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, LoaderCircle, Vote } from "lucide-react";
@@ -54,10 +55,10 @@ export function CircoElection({ leg, code }: { leg: LegData; code: string }) {
           <Button variant="outline" className="h-12 w-full" disabled={withdraw.isPending} onClick={() => withdraw.mutate({ command: "withdraw" })}>Retirer ma candidature</Button></div>
       : st.eligible
         ? <div className="space-y-2">
-            <select className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm" value={party} onChange={e => setParty(e.target.value)} aria-label="Étiquette politique">
+            <GameSelect className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm" value={party} onChange={e => setParty(e.target.value)} aria-label="Étiquette politique">
               <option value="">Choisir une étiquette…</option>
               {Object.entries(leg.parties).map(([c, p]) => <option key={c} value={c}>{p.label}</option>)}
-            </select>
+            </GameSelect>
             <Button className="h-12 w-full" disabled={!party || act.isPending} onClick={() => act.mutate({ command: "candidacy", constituency_code: code, party_code: party })}>{act.isPending && <LoaderCircle className="animate-spin" />}{mine ? "Me présenter ici à la place" : "Me présenter ici"}</Button>
             <p className="text-xs text-muted-foreground">Vous remplacez le candidat simulé de votre étiquette et reprenez ses électeurs de 2024.</p>
           </div>

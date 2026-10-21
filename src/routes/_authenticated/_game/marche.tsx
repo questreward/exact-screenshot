@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -141,7 +142,7 @@ function SellForm({ s, busy, onList }: { s: MarketState; busy: boolean; onList: 
   const asset = free.find(a => a.id === id);
   return <section className="space-y-2 rounded-xl border border-border bg-card p-4"><h2 className="font-heading font-bold">Mettre un bien en vente</h2>
     {free.length === 0 ? <p className="text-sm text-muted-foreground">Aucun objet ou voiture à vendre (les biens à crédit ou déjà en vente sont exclus).</p> : <>
-      <select className={input} value={id} onChange={e => setId(e.target.value)} aria-label="Bien"><option value="">Choisir un bien</option>{free.map(a => <option key={a.id} value={a.id}>{a.brand} {a.name}</option>)}</select>
+      <GameSelect className={input} value={id} onChange={e => setId(e.target.value)} aria-label="Bien"><option value="">Choisir un bien</option>{free.map(a => <option key={a.id} value={a.id}>{a.brand} {a.name}</option>)}</GameSelect>
       <input type="number" inputMode="numeric" className={input} placeholder={asset ? `Prix (neuf ${eur(asset.new_price)})` : "Prix"} value={price} onChange={e => setPrice(e.target.value)} />
       <input className={input} maxLength={200} placeholder="Petit mot (facultatif)" value={note} onChange={e => setNote(e.target.value)} />
       {Number(price) > 0 && <p className="text-xs text-muted-foreground">Tu recevras {eur(marketNet(Number(price), s.settings.fee_percent))} après {s.settings.fee_percent} % de frais, au prochain passage sur le Marché.</p>}
@@ -161,8 +162,8 @@ function MyShop({ s, busy, onRestock }: { s: MarketState; busy: boolean; onResto
       <div><p className="font-semibold">{i.name}</p><p className="text-xs text-muted-foreground">{i.quantity} en stock · vendu {eur(i.price)} (coût {eur(i.unit_cost)}) · {i.sold_npc} clients, {i.sold_players} joueurs</p></div>
       <Button variant="outline" className="h-10" onClick={() => { setId(i.catalog_id); setPrice(String(i.price)); setQty("0"); }}>Modifier</Button></li>)}</ul>}
     <section className="space-y-2 rounded-xl border border-border bg-card p-4"><h2 className="font-heading font-bold">Commander du stock / changer un prix</h2>
-      <select className={input} value={id} onChange={e => { setId(e.target.value); const w = b.wholesale.find(x => x.id === e.target.value); if (w) setPrice(String(w.price)); }} aria-label="Produit">
-        <option value="">Choisir un produit</option>{b.wholesale.map(w => <option key={w.id} value={w.id}>{w.brand} {w.name} — gros {eur(w.unit_cost)}</option>)}</select>
+      <GameSelect className={input} value={id} onChange={e => { setId(e.target.value); const w = b.wholesale.find(x => x.id === e.target.value); if (w) setPrice(String(w.price)); }} aria-label="Produit">
+        <option value="">Choisir un produit</option>{b.wholesale.map(w => <option key={w.id} value={w.id}>{w.brand} {w.name} — gros {eur(w.unit_cost)}</option>)}</GameSelect>
       <div className="grid grid-cols-2 gap-2">
         <label className="text-sm">Quantité<input type="number" inputMode="numeric" className={input} value={qty} onChange={e => setQty(e.target.value)} /></label>
         <label className="text-sm">Prix de vente<input type="number" inputMode="numeric" className={input} value={price} onChange={e => setPrice(e.target.value)} /></label></div>

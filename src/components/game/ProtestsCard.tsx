@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { ProtestScene } from "./ProtestScene";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -30,17 +31,17 @@ function CallForm({ s, onClose }: { s: ProtestsState; onClose: () => void }) {
   return <div className="space-y-3 rounded-lg border border-border bg-background p-4">
     <label className="block space-y-1 text-sm">Cause défendue<Input className="h-12" value={cause} maxLength={120} placeholder="Ex. : Plus de pistes cyclables" onChange={e => setCause(e.target.value)} /></label>
     <label className="block space-y-1 text-sm">Message (facultatif)<Textarea value={description} maxLength={500} onChange={e => setDescription(e.target.value)} /></label>
-    <label className="block space-y-1 text-sm">Lieu<select className={fieldClass} value={locationId} onChange={e => setLocationId(e.target.value)}><option value="">Choisir une place, un parc ou la mairie…</option>{s.locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
+    <label className="block space-y-1 text-sm">Lieu<GameSelect className={fieldClass} value={locationId} onChange={e => setLocationId(e.target.value)}><option value="">Choisir une place, un parc ou la mairie…</option>{s.locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</GameSelect></label>
     <div className="grid grid-cols-2 gap-2">
-      <label className="block space-y-1 text-sm">Jour<select className={fieldClass} value={day} onChange={e => { setDay(Number(e.target.value)); setHour(""); }}>{DAYS.map((d, i) => <option key={i} value={i}>{d}</option>)}</select></label>
-      <label className="block space-y-1 text-sm">Heure<select className={fieldClass} value={hour} onChange={e => setHour(e.target.value === "" ? "" : Number(e.target.value))}><option value="">—</option>{hours.map(h => <option key={h} value={h}>{h} h</option>)}</select></label>
+      <label className="block space-y-1 text-sm">Jour<GameSelect className={fieldClass} value={day} onChange={e => { setDay(Number(e.target.value)); setHour(""); }}>{DAYS.map((d, i) => <option key={i} value={i}>{d}</option>)}</GameSelect></label>
+      <label className="block space-y-1 text-sm">Heure<GameSelect className={fieldClass} value={hour} onChange={e => setHour(e.target.value === "" ? "" : Number(e.target.value))}><option value="">—</option>{hours.map(h => <option key={h} value={h}>{h} h</option>)}</GameSelect></label>
     </div>
-    <label className="block space-y-1 text-sm">Faire pression sur…<select className={fieldClass} value={link} onChange={e => setLink(e.target.value as typeof link)}><option value="none">Rien de précis</option><option value="consultation" disabled={!s.consultations.length}>Une consultation en cours</option><option value="decision" disabled={!s.decisions.length}>Une décision de la mairie (la contester)</option></select></label>
+    <label className="block space-y-1 text-sm">Faire pression sur…<GameSelect className={fieldClass} value={link} onChange={e => setLink(e.target.value as typeof link)}><option value="none">Rien de précis</option><option value="consultation" disabled={!s.consultations.length}>Une consultation en cours</option><option value="decision" disabled={!s.decisions.length}>Une décision de la mairie (la contester)</option></GameSelect></label>
     {link === "consultation" && <>
-      <select className={fieldClass} aria-label="Consultation" value={consultationId} onChange={e => { setConsultationId(e.target.value); setOptionId(""); }}><option value="">Choisir la consultation…</option>{s.consultations.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select>
-      {consultation && <select className={fieldClass} aria-label="Option défendue" value={optionId} onChange={e => setOptionId(e.target.value)}><option value="">Option que vous défendez…</option>{consultation.options.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}</select>}
+      <GameSelect className={fieldClass} aria-label="Consultation" value={consultationId} onChange={e => { setConsultationId(e.target.value); setOptionId(""); }}><option value="">Choisir la consultation…</option>{s.consultations.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</GameSelect>
+      {consultation && <GameSelect className={fieldClass} aria-label="Option défendue" value={optionId} onChange={e => setOptionId(e.target.value)}><option value="">Option que vous défendez…</option>{consultation.options.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}</GameSelect>}
     </>}
-    {link === "decision" && <select className={fieldClass} aria-label="Décision contestée" value={decisionId} onChange={e => setDecisionId(e.target.value)}><option value="">Choisir la décision…</option>{s.decisions.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}</select>}
+    {link === "decision" && <GameSelect className={fieldClass} aria-label="Décision contestée" value={decisionId} onChange={e => setDecisionId(e.target.value)}><option value="">Choisir la décision…</option>{s.decisions.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}</GameSelect>}
     <p className="text-xs text-muted-foreground">Durée {s.settings.duration_minutes} min · −{s.settings.energy_cost} énergie · Réussite à partir de {s.settings.success_threshold} participants. Vous êtes inscrit automatiquement.</p>
     <div className="flex flex-wrap gap-2">
       <Button className="h-12" disabled={!ready || call.isPending} onClick={() => call.mutate({ cause: cause.trim(), description: description.trim(), locationId, dayOffset: day, hour: Number(hour), consultationId: link === "consultation" ? consultationId : undefined, optionId: link === "consultation" ? optionId : undefined, decisionId: link === "decision" ? decisionId : undefined }, { onSuccess: onClose })}>{call.isPending ? <LoaderCircle className="animate-spin" /> : <Megaphone />} Publier l'appel</Button>

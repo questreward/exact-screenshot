@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { PlayerFace } from '@/components/game/CivicProfileCard';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
@@ -113,10 +114,10 @@ export function CiviApp() {
       <Link to="/civi" className="flex min-h-12 items-center justify-center rounded-xl bg-primary px-4 font-semibold text-primary-foreground">Ouvrir Civi : écrire librement, suivre, commenter</Link>
       <section className="rounded-xl border border-border bg-card p-3">
         <label htmlFor="civi-template" className="text-sm font-semibold">Publier</label>
-        <select id="civi-template" value={choice} onChange={(e) => setChoice(e.target.value)} className="mt-2 h-12 w-full rounded-md border border-input bg-background px-3 text-sm">
+        <GameSelect id="civi-template" value={choice} onChange={(e) => setChoice(e.target.value)} className="mt-2 h-12 w-full rounded-md border border-input bg-background px-3 text-sm">
           <option value="">Choisir un message…</option>
           {tpl.posts.map((p) => <option key={p.id} value={p.id}>{p.body.replace('{city}', 'ma ville').replace('{place}', '')}</option>)}
-        </select>
+        </GameSelect>
         <Button className="mt-2 min-h-12 w-full" disabled={!choice || !canPost(s) || post.isPending} onClick={() => post.mutate({ templateId: choice, requestId })}><Send />Publier</Button>
         <p className="mt-2 text-xs text-muted-foreground">{postsLeft(s)} publication(s) restante(s) aujourd’hui · purement sociale, sans gain</p>
       </section>
