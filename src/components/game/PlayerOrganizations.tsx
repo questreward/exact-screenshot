@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -34,7 +35,7 @@ export function FoundOrganizationCard({ cityId }: { cityId: string }) {
     <label className="block space-y-1 text-sm">Nom<Input className="h-12" value={name} maxLength={60} onChange={e => setName(e.target.value)} /></label>
     <label className="block space-y-1 text-sm">Symbole (1 à 4 caractères, ex. un emoji)<Input className="h-12" value={symbol} maxLength={4} onChange={e => setSymbol(e.target.value)} /></label>
     <label className="block space-y-1 text-sm">Description<Textarea value={description} maxLength={500} onChange={e => setDescription(e.target.value)} /></label>
-    <label className="block space-y-1 text-sm">Siège<select className={fieldClass} value={locationId} onChange={e => setLocationId(e.target.value)}><option value="">Choisir un lieu…</option>{locations?.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
+    <label className="block space-y-1 text-sm">Siège<GameSelect className={fieldClass} value={locationId} onChange={e => setLocationId(e.target.value)}><option value="">Choisir un lieu…</option>{locations?.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</GameSelect></label>
     <div className="flex flex-wrap gap-2">
       <Button className="h-12" disabled={found.isPending || name.trim().length < 3 || !locationId} onClick={() => found.mutate({ kind, name: name.trim(), symbol, description, locationId }, { onSuccess: id => navigate({ to: "/organisations/$id", params: { id: String(id) }, search: { city: cityId } }) })}>{found.isPending ? <LoaderCircle className="animate-spin" /> : <Flag />} Fonder (200 crédits)</Button>
       <Button variant="ghost" className="h-12" onClick={() => setOpen(false)}>Annuler</Button>
@@ -68,8 +69,8 @@ export function PlayerOrgPanel({ orgId }: { orgId: string }) {
       <h3 className="font-semibold">Organiser un événement ({st.settings.event_cost} crédits pris dans la caisse)</h3>
       <Input className="h-12" placeholder="Titre (ex. Réunion publique)" value={title} maxLength={80} onChange={e => setTitle(e.target.value)} />
       <div className="grid gap-2 sm:grid-cols-2">
-        <select className={fieldClass} value={loc} onChange={e => setLoc(e.target.value)}><option value="">Lieu…</option>{locations?.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select>
-        <select className={fieldClass} value={hour} onChange={e => setHour(e.target.value)}>{Array.from({ length: 14 }, (_, i) => i + 8).map(h => <option key={h} value={h}>{h} h</option>)}</select>
+        <GameSelect className={fieldClass} value={loc} onChange={e => setLoc(e.target.value)}><option value="">Lieu…</option>{locations?.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</GameSelect>
+        <GameSelect className={fieldClass} value={hour} onChange={e => setHour(e.target.value)}>{Array.from({ length: 14 }, (_, i) => i + 8).map(h => <option key={h} value={h}>{h} h</option>)}</GameSelect>
       </div>
       <Button className="h-12" disabled={event.isPending || title.trim().length < 3 || !loc} onClick={() => event.mutate({ orgId, title: title.trim(), locationId: loc, startHour: Number(hour) }, { onSuccess: () => setTitle("") })}><CalendarPlus /> Créer l'événement</Button>
     </div>}

@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,8 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
   const items = home.placements.filter(p => p.room === room).map(p => data.furniture.find(f => f.asset_id === p.asset_id)?.name).filter(Boolean);
 
   return <div className="space-y-4 animate-page">
-    {data.homes.length > 1 && <select aria-label="Mon logement" value={home.id} onChange={e => onHomeChange(e.target.value)} className="min-h-12 w-full rounded-lg border border-input bg-background px-3">
-      {data.homes.map(h => <option key={h.id} value={h.id}>{h.name} · {h.kind === "location" ? "Location" : "Propriété"}</option>)}</select>}
+    {data.homes.length > 1 && <GameSelect aria-label="Mon logement" value={home.id} onChange={e => onHomeChange(e.target.value)} className="min-h-12 w-full rounded-lg border border-input bg-background px-3">
+      {data.homes.map(h => <option key={h.id} value={h.id}>{h.name} · {h.kind === "location" ? "Location" : "Propriété"}</option>)}</GameSelect>}
     <div className="rounded-2xl bg-card p-4 shadow-sm">
       <p className="text-xs text-primary">{light.emoji} {time.toISOString().slice(11, 16)} · {home.kind === "location" ? "Ma location" : "Ma propriété"}</p>
       <h2 className="font-heading text-xl font-bold">{home.name}</h2>

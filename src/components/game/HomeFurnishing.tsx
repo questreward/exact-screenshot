@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { Link, useBlocker } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -64,7 +65,7 @@ function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; dat
     setRotation(next);
   };
   return <div className="space-y-5">
-    <label className="block text-sm font-semibold">Mon logement<select aria-label="Mon logement" value={home.id} disabled={save.isPending} onChange={e => { if (leave()) onHomeChange(e.target.value); }} className="mt-2 min-h-12 w-full rounded-lg border border-input bg-background px-3">{data.homes.map(h=><option key={h.id} value={h.id}>{h.name} · {h.kind==='location'?'Location':'Propriété'}</option>)}</select></label>
+    <label className="block text-sm font-semibold">Mon logement<GameSelect aria-label="Mon logement" value={home.id} disabled={save.isPending} onChange={e => { if (leave()) onHomeChange(e.target.value); }} className="mt-2 min-h-12 w-full rounded-lg border border-input bg-background px-3">{data.homes.map(h=><option key={h.id} value={h.id}>{h.name} · {h.kind==='location'?'Location':'Propriété'}</option>)}</GameSelect></label>
     <div className="flex items-center justify-between gap-3 border-b border-border pb-3"><span className="text-sm font-semibold">{home.kind==='location'?'Ma location':'Ma propriété'}</span><span className="text-xs text-muted-foreground">{names.length} {names.length===1?'pièce':'pièces'} · {placements.length} {placements.length===1?'objet':'objets'}</span></div>
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Pièces">{names.map((name,i)=><Button key={i} variant={room===i?'default':'outline'} aria-pressed={room===i} className="h-auto min-h-16 min-w-0 justify-start whitespace-normal p-3 text-left" onClick={()=>setRoom(i)}><span className="min-w-0"><span className="block break-words">{name}</span><span className="block text-xs opacity-80">{placements.filter(p=>p.room===i).length} objet(s)</span></span></Button>)}</div>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">

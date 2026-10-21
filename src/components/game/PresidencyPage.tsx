@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -129,10 +130,10 @@ function PowersPanel({ s, pending, run }: { s: PrState; pending: boolean; run: R
       <h2 className="font-heading text-lg font-bold">Bureau du Président</h2>
       <div className="space-y-2">
         <h3 className="font-semibold">Nommer le Premier ministre</h3>
-        <select aria-label="Joueur à nommer" value={pm} onChange={(e) => setPm(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3">
+        <GameSelect aria-label="Joueur à nommer" value={pm} onChange={(e) => setPm(e.target.value)} className="min-h-12 w-full rounded-md border border-input bg-background px-3">
           <option value="">Choisir un joueur…</option>
           {s.players.map((p) => <option key={p.character_id} value={p.character_id}>{p.name}</option>)}
-        </select>
+        </GameSelect>
         <Button className="min-h-12 w-full" disabled={!pm || pending} onClick={() => run({ _action: 'pm', _target: pm, _request: req() })}>Nommer</Button>
         <p className="text-xs text-muted-foreground">Le titre est officiel et annoncé aux actualités ; les ministres fictifs actuels restent en place.</p>
       </div>

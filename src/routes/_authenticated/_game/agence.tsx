@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -22,10 +23,10 @@ const FICTIVE = "Agence fictive CIVITAS (tarif normal)";
 function AgencySelect({ s, city, value, onChange }: { s: AgencyState; city: string; value: string; onChange: (v: string) => void }) {
   const list = s.agencies.filter(a => a.city_id === city && !a.mine);
   return <label className="block text-sm">Agence
-    <select className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={value} onChange={e => onChange(e.target.value)}>
+    <GameSelect className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={value} onChange={e => onChange(e.target.value)}>
       <option value="">{FICTIVE}</option>
       {list.map(a => <option key={a.id} value={a.id}>{a.name} ({a.owner}) — {a.percent} %{a.rating != null ? ` · ${a.rating}/5` : ""}</option>)}
-    </select></label>;
+    </GameSelect></label>;
 }
 
 function AgencyPage() {

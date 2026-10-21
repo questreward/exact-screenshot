@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Landmark, LoaderCircle, ShieldAlert, HandCoins } from "lucide-react";
@@ -47,7 +48,7 @@ export function BankLoans({ compact = false }: { compact?: boolean }) {
         <p className="text-sm text-muted-foreground">Jusqu'à {formatMoney(b.loan_cap)} · taux fixe {b.rate} % par an · {s.min_months} à {s.max_months} mois.</p>
         <div className="grid grid-cols-2 gap-2">
           <label className="block space-y-1 text-sm">Montant<Input className="h-12" type="number" inputMode="numeric" min={s.min_loan} max={b.loan_cap} value={amount} onChange={e => setAmount(Number(e.target.value))} /></label>
-          <label className="block space-y-1 text-sm">Durée<select className={fieldClass} value={months} onChange={e => setMonths(Number(e.target.value))}>{Array.from({ length: s.max_months - s.min_months + 1 }, (_, k) => s.min_months + k).map(m => <option key={m} value={m}>{m} mois</option>)}</select></label>
+          <label className="block space-y-1 text-sm">Durée<GameSelect className={fieldClass} value={months} onChange={e => setMonths(Number(e.target.value))}>{Array.from({ length: s.max_months - s.min_months + 1 }, (_, k) => s.min_months + k).map(m => <option key={m} value={m}>{m} mois</option>)}</GameSelect></label>
         </div>
         {validAmount && <p className="rounded-md bg-accent/60 p-3 text-sm">Mensualité : <strong>{formatMoney(monthly)}</strong> · coût total {formatMoney(monthly * months)} (dont {formatMoney(Math.max(0, monthly * months - amount))} d'intérêts)</p>}
         <p className="text-xs text-muted-foreground">Impayé : frais de {s.late_fee_percent} %, note en baisse. Après {s.seizure_after} impayés de suite, la banque vend votre bien le plus cher à {s.seizure_percent} % de sa valeur.</p>

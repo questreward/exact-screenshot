@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { cpAction, cpNamesQuery, cpPresidencyQuery, securityQuery } from '@/services/game';
@@ -33,8 +34,8 @@ export function CivilProtectionPresidency() {
   </div>}
   {s.is_president && <div className="space-y-3"><h3 className="font-semibold">Tableau de bord national</h3><p>Trésorerie nationale : {s.balance} €</p>
    {s.dashboard.map(b=><div key={b.city_id} className="rounded-lg bg-muted p-3 text-sm"><strong>{b.label}</strong><p>{b.volunteers} bénévoles en service · {b.completed} services clôturés · {b.operation_services} participations aux opérations</p></div>)}
-   <label className="block text-sm">Antenne<select className="mt-1 min-h-12 w-full rounded border border-border bg-background p-2" value={city} onChange={e=>{setCity(e.target.value);setTarget('');}}><option value="">Toutes les antennes (messages)</option>{s.branches.map(b=><option key={b.city_id} value={b.city_id}>{b.label}</option>)}</select></label>
-   <label className="block text-sm">Responsable d’antenne<select className="mt-1 min-h-12 w-full rounded border border-border bg-background p-2" value={target} onChange={e=>setTarget(e.target.value)}><option value="">Révoquer le responsable</option>{nomination.map(n=><option key={n.character_id} value={n.character_id}>{who(n.character_id)}</option>)}</select></label>
+   <label className="block text-sm">Antenne<GameSelect className="mt-1 min-h-12 w-full rounded border border-border bg-background p-2" value={city} onChange={e=>{setCity(e.target.value);setTarget('');}}><option value="">Toutes les antennes (messages)</option>{s.branches.map(b=><option key={b.city_id} value={b.city_id}>{b.label}</option>)}</GameSelect></label>
+   <label className="block text-sm">Responsable d’antenne<GameSelect className="mt-1 min-h-12 w-full rounded border border-border bg-background p-2" value={target} onChange={e=>setTarget(e.target.value)}><option value="">Révoquer le responsable</option>{nomination.map(n=><option key={n.character_id} value={n.character_id}>{who(n.character_id)}</option>)}</GameSelect></label>
    {s.heads.filter(h=>h.city_id===city).map(h=><p key={h.city_id} className="break-all text-sm">Responsable : {who(h.character_id)}</p>)}
    <Button className="min-h-12" disabled={!city || act.isPending} onClick={()=>act.mutate({_action:'head',_city:city,_target:target || null})}>Enregistrer la nomination / révocation</Button>
    <p className="text-sm text-muted-foreground">Une opération par semaine ISO : les bénévoles présents dans la ville peuvent rejoindre les services supplémentaires, avec les règles habituelles d’énergie, de repos et de mission.</p>

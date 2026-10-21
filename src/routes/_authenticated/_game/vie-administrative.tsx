@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Check, Circle, GraduationCap, Lock, Sparkles, Trophy } from "lucide-react";
@@ -213,7 +214,7 @@ function TaxForm({ onDone }: { onDone: (ok: boolean) => void }) {
     <p className="text-sm text-muted-foreground">Ta fiche de paie indique 1 450 € net par mois, pendant 12 mois. Tu vis seul et n'as pas d'autre revenu.</p>
     <Field label="Revenus salariés de l'année" value={annual} onChange={setAnnual} suffix="€" />
     <Field label="Autres revenus" value={other} onChange={setOther} suffix="€" />
-    <label className="block text-sm">Situation<select className="mt-1 h-12 w-full rounded-md border border-input bg-background px-3" value={situation} onChange={e => setSituation(e.target.value)}><option value="">Choisir…</option><option value="celibataire">Célibataire</option><option value="couple">Marié / pacsé</option></select></label>
+    <label className="block text-sm">Situation<GameSelect className="mt-1 h-12 w-full rounded-md border border-input bg-background px-3" value={situation} onChange={e => setSituation(e.target.value)}><option value="">Choisir…</option><option value="celibataire">Célibataire</option><option value="couple">Marié / pacsé</option></GameSelect></label>
     {!done ? <Button className="min-h-12 w-full" disabled={!annual || !situation} onClick={() => setDone(true)}>Vérifier et valider</Button> : <>
       <div className="space-y-1 rounded-lg bg-muted p-4 text-sm">
         <p className="text-muted-foreground">Avis simulé (montants fictifs)</p>

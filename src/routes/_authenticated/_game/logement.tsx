@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -83,13 +84,13 @@ function HousingPage() {
         <div className="mb-3 flex gap-2 overflow-x-auto">{Object.entries(TYPES).map(([k, v]) =>
           <Button key={k} type="button" variant={type === k ? "default" : "secondary"} aria-pressed={type === k} onClick={() => setType(k)} className="min-h-11 shrink-0 rounded-full px-4 text-sm">{v}</Button>)}</div>
         {movers.length > 0 && <label className="mb-3 block text-sm">Déménageur
-          <select className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={mover} onChange={e => setMover(e.target.value)}>
+          <GameSelect className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={mover} onChange={e => setMover(e.target.value)}>
             <option value="">Déménageurs fictifs CIVITAS (prix normal)</option>
-            {movers.map(m => <option key={m.id} value={m.id}>{m.name} — {m.percent} %{m.rating != null ? ` · ${m.rating}/5` : ""}</option>)}</select></label>}
+            {movers.map(m => <option key={m.id} value={m.id}>{m.name} — {m.percent} %{m.rating != null ? ` · ${m.rating}/5` : ""}</option>)}</GameSelect></label>}
         <label className="mb-3 block text-sm">Agence immobilière
-          <select className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={agency} onChange={e => setAgency(e.target.value)}>
+          <GameSelect className="mt-1 h-12 w-full rounded-lg border border-input bg-background px-3" value={agency} onChange={e => setAgency(e.target.value)}>
             <option value="">Agence fictive CIVITAS (prix normal)</option>
-            {agencies.map(a => <option key={a.id} value={a.id}>{a.name} — {a.percent} %{a.rating != null ? ` · ${a.rating}/5` : ""}</option>)}</select></label>
+            {agencies.map(a => <option key={a.id} value={a.id}>{a.name} — {a.percent} %{a.rating != null ? ` · ${a.rating}/5` : ""}</option>)}</GameSelect></label>
         <Link to="/agence" className="mb-3 block text-sm font-semibold text-primary">Logements de joueurs à louer → Agence immobilière</Link>
         <ul className="space-y-2">{rentals.map(r => { const moveCost = serviceAmount(r.move, moverPct); const fee = agencyRentFee(r.monthly, months, agencyPct); const cost = r.deposit + moveCost + fee; const mine = s.lease?.title === r.title && s.lease.kind === "location";
           const rentBtn = mine ? <p className="mt-1 text-xs text-primary">Ton logement actuel</p>

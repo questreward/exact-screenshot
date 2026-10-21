@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { CreditRecap } from "@/components/game/CreditRecap";
 import { shopQuery } from "@/services/game";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -102,9 +103,9 @@ function TradeIn({ car, dealers, busy, onTrade }: { car: DealerState["my_cars"][
     <p className="font-semibold">{car.name}</p>
     <p className="text-sm text-muted-foreground">Valeur {eur(car.value)} · reprise proposée <strong className="text-foreground">{eur(car.offer)}</strong>{car.credit ? ` · crédit restant ${eur(car.credit)}` : ""}</p>
     {dealers.length ? <div className="flex gap-2">
-      <select aria-label="Concession" className="h-11 flex-1 rounded-md border border-input bg-background px-3 text-sm" value={biz} onChange={e => setBiz(e.target.value)}>
+      <GameSelect aria-label="Concession" className="h-11 flex-1 rounded-md border border-input bg-background px-3 text-sm" value={biz} onChange={e => setBiz(e.target.value)}>
         {dealers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-      </select>
+      </GameSelect>
       <Button className="h-11" disabled={busy || !biz || (car.credit != null && car.offer < car.credit)} onClick={() => onTrade(biz)}><Repeat />Faire reprendre</Button>
     </div> : <p className="text-xs text-muted-foreground">Aucune concession joueur dans ta ville. Tu peux revendre dans la Boutique.</p>}
   </div>;
@@ -131,9 +132,9 @@ function MyDealer({ s, busy, run }: { s: DealerState; busy: boolean; run: (fn: P
     </div>
     <div className="space-y-2 rounded-xl border border-border bg-card p-4">
       <h2 className="font-heading text-lg font-bold">Acheter du stock</h2>
-      <select aria-label="Voiture" className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={car} onChange={e => setCar(e.target.value)}>
+      <GameSelect aria-label="Voiture" className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={car} onChange={e => setCar(e.target.value)}>
         {s.catalog.map(c => <option key={c.id} value={c.id}>{c.brand ? `${c.brand} ` : ""}{c.name} — gros {eur(c.wholesale)}</option>)}
-      </select>
+      </GameSelect>
       <div className="flex gap-2"><Input className="h-11 w-24" type="number" inputMode="numeric" min={1} value={qty} onChange={e => setQty(e.target.value)} />
         <Button className="h-11 flex-1" disabled={busy || !chosen} onClick={() => run("dealer_restock", { _catalog_id: car, _quantity: Number(qty) }, "Stock acheté")}>
           Acheter{chosen ? ` · ${eur(chosen.wholesale * (Number(qty) || 0))}` : ""}</Button></div>

@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -60,8 +61,8 @@ function NewPoll({ s, onDone }: { s: PollsState; onDone: () => void }) {
   };
   return <div className="space-y-3 rounded-xl border border-border bg-card p-4">
     <p className="font-semibold">Nouveau sondage</p>
-    <select className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={sponsor} onChange={e => setSponsor(Number(e.target.value))}>
-      {s.sponsors.map((x, i) => <option key={i} value={i}>{SPONSOR_LABELS[x.kind]} · {x.label}</option>)}</select>
+    <GameSelect className="h-11 w-full rounded-md border border-input bg-background px-3 text-base" value={sponsor} onChange={e => setSponsor(Number(e.target.value))}>
+      {s.sponsors.map((x, i) => <option key={i} value={i}>{SPONSOR_LABELS[x.kind]} · {x.label}</option>)}</GameSelect>
     <Input className="h-11 text-base" maxLength={200} placeholder="Ta question (10 caractères minimum)" value={question} onChange={e => setQuestion(e.target.value)} />
     {options.map((o, i) => <div key={i} className="flex gap-2"><Input className="h-11 text-base" maxLength={60} value={o} onChange={e => setOptions(options.map((x, j) => (j === i ? e.target.value : x)))} />
       {options.length > 2 && <Button variant="ghost" className="h-11 w-11" aria-label="Retirer" onClick={() => setOptions(options.filter((_, j) => j !== i))}><X /></Button>}</div>)}

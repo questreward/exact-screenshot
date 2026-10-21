@@ -1,3 +1,4 @@
+import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -30,10 +31,10 @@ export function CampaignStage({ ca, e }: { ca: Candidate; e: Election }) {
     <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
       <h2 className="font-semibold">📣 Organiser un meeting</h2>
       <p className="text-sm text-muted-foreground">Choisis le lieu dans ta ville. Les habitants joueurs reçoivent une invitation et le meeting apparaît sur la carte et dans les actualités. Un meeting par jour.</p>
-      <select value={place} onChange={ev => setPlace(ev.target.value)} className="min-h-12 w-full rounded-xl border border-border bg-background px-3 text-base">
+      <GameSelect value={place} onChange={ev => setPlace(ev.target.value)} className="min-h-12 w-full rounded-xl border border-border bg-background px-3 text-base">
         <option value="">Choisir un lieu…</option>
         {places.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-      </select>
+      </GameSelect>
       <div className="grid grid-cols-3 gap-2">{HOURS.map(h => <Button key={h} type="button" variant={hours === h ? "default" : "outline"} className="min-h-12" onClick={() => setHours(h)}>Dans {h} h</Button>)}</div>
       <Button className="min-h-12 w-full" disabled={!place || busy} onClick={() => run(() => planCampaignMeeting({ candidacyId: ca.id, locationId: place, hoursAhead: hours }), "Meeting annoncé, les habitants sont invités")}>Annoncer le meeting</Button>
       {mine.length > 0 && <ul className="space-y-2">{mine.map(m => <li key={m.id} className="rounded-xl bg-muted p-3 text-sm">
