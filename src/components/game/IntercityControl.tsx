@@ -4,6 +4,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { citiesQuery, lifeQuery, intercityRoutesQuery, travelIntercity, travelDrive, economyQuery, formatMoney } from "@/services/game";
 import { Button } from "@/components/ui/button";
 import { useLifeMutation } from "./LifeControls";
+import { BoardingSheet } from "./BoardingSheet";
+import { useState } from "react";
 import type { LifeLocation } from "@/game/life-state";
 
 const duration = (m: number) => (m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? String(m % 60).padStart(2, "0") : ""}` : `${m} min`);
@@ -13,6 +15,7 @@ export function IntercityControl({ location }: { location: LifeLocation }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
   const { data: routes, isError } = useQuery(intercityRoutesQuery(location.city_id));
   const navigate = useNavigate();
+  const [pick, setPick] = useState<null | { toCity: string; mode: "train" | "car"; name: string; price: string }>(null);
   const travel = useLifeMutation(async (v: { toCity: string; mode: "train" | "car" }) => { await travelIntercity(v); navigate({ to: "/conduite" }); }, "Voyage commencé");
   const drive = useLifeMutation(async (v: { toCity: string; catalogId: string }) => { await travelDrive(v); navigate({ to: "/conduite" }); }, "En route !");
   const { data: economy } = useQuery(economyQuery);
@@ -40,7 +43,7 @@ export function IntercityControl({ location }: { location: LifeLocation }) {
               <span className="flex items-center gap-1"><Clock className="size-3" />{duration(r.duration_minutes)}</span>
               <span className="flex items-center gap-1"><Zap className="size-3" />{r.energy_cost} énergie</span>
             </div>
-            <Button className="mt-3 h-11 w-full" disabled={!here || busy || travel.isPending} onClick={() => travel.mutate({ toCity: r.to_city_id, mode: r.mode })}>
+            <Button className="mt-3 h-11 w-full" disabled={!here || busy || travel.isPending} onClick={() => setPick({ toCity: r.to_city_id, mode: r.mode, name: city?.name ?? r.to_city_id, price: formatMoney(r.money_cost) })}>
               <Icon />Partir
             </Button>
           </div>
@@ -53,6 +56,7 @@ export function IntercityControl({ location }: { location: LifeLocation }) {
           onClick={() => drive.mutate({ toCity: r.to_city_id, catalogId: a.catalog_id })}>
           <span>{cities.find(c => c.id === r.to_city_id)?.name ?? r.to_city_id}</span><span className="text-xs">{a.catalog.name} · ~{duration(Math.round(r.duration_minutes * 0.85))}</span></Button>))}
       </div>}
+      {pick && <BoardingSheet open onClose={() => setPick(null)} kind={pick.mode === "train" ? "train" : "car"} destination={pick.name} price={pick.price} onBoard={() => travel.mutateAsync({ toCity: pick.toCity, mode: pick.mode })} />}
       <p className="text-xs text-muted-foreground">Votre ville de résidence ne change pas : travail, études et vote restent chez vous.</p>
     </div>
   );
