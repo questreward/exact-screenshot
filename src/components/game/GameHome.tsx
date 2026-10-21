@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Wallet, Zap, Moon, Sun, Sunrise, Sunset } from "lucide-react";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
+import { greetingLine, moodFromEnergy } from "@/game/character-look";
 import { useWorldClock } from "./WorldClock";
 import { cityKey, gaugeTone, HOME_TILES, phaseFilter } from "@/game/home-scene";
 import { formatMoney } from "@/services/game";
@@ -28,6 +29,7 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
   const { time, phase } = useWorldClock();
   const PhaseIcon = PHASE_ICON[phase];
   const tone = gaugeTone(energy);
+  const mood = moodFromEnergy(energy);
   return (
     <div className="space-y-4">
       <section className="relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-3xl">
@@ -51,9 +53,10 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
         {/* Personnage */}
         <div className="absolute inset-x-4 bottom-4 flex items-end gap-4">
           <div className="h-36 w-28 shrink-0 animate-rise overflow-hidden rounded-3xl border-2 border-primary/60 bg-card shadow-elegant">
-            <CharacterAvatar appearance={normalizeAppearance(appearance as never)} />
+            <CharacterAvatar appearance={normalizeAppearance(appearance as never)} mood={mood} />
           </div>
           <div className="min-w-0 pb-1">
+            <p className="relative mb-2 inline-block max-w-full rounded-2xl rounded-bl-sm bg-card px-3 py-2 text-sm font-medium shadow-card animate-rise">« {greetingLine(mood, phase)} »</p>
             <p className="text-sm font-medium text-muted-foreground">{cityName}</p>
             <h1 className="truncate font-display text-3xl font-bold">Bonjour, {firstName}</h1>
             <p className="mt-1 line-clamp-2 text-sm text-foreground/80">{situation}</p>
