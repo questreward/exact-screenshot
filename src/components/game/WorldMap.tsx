@@ -29,6 +29,7 @@ import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
 import { BADGE_ICON, DistrictBadges, DistrictReasons, useDistrictStatuses } from './DistrictStatus';
 import { DISTRICT_BADGE_LABEL } from '@/game/districts-state';
 import { DistrictGauges } from './DistrictGauges';
+import { MAP_LAYERS, placeLayer, showPlace, type MapLayer } from "@/game/map-layers";
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -117,7 +118,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, r
     </div>
     <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0">
-        {realReady ? <RealCityMap city={city} districts={districts} selected={selected} positionId={playerHere ? position?.location_id : undefined} positionDistrict={playerHere ? position?.district_id : undefined} selectedLocation={selectedLocation} onDistrict={districtSelect} onLocation={setSelectedLocation} /> :
+        {realReady ? <RealCityMap phase={phase} city={city} districts={districts} selected={selected} positionId={playerHere ? position?.location_id : undefined} positionDistrict={playerHere ? position?.district_id : undefined} selectedLocation={selectedLocation} onDistrict={districtSelect} onLocation={setSelectedLocation} /> :
         <MapSurface phase={phase} resetKey={selected?.id ?? city.id}>
           <svg viewBox="0 0 900 760" role="img" aria-label={`Carte de ${selected?.name ?? city.name}`} className="world-svg">
             <defs><pattern id="blocks" width="65" height="65" patternUnits="userSpaceOnUse"><rect x="8" y="8" width="46" height="46" rx="4" className="world-block" /></pattern></defs>
@@ -150,20 +151,37 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, r
   </div>;
 }
 
-function RealCityMap({ city, districts, selected, positionId, positionDistrict, selectedLocation, onDistrict, onLocation }: { city: Tables<"cities">; districts: Tables<"districts">[]; selected?: Tables<"districts"> | undefined; positionId?: string | undefined; positionDistrict?: string | undefined; selectedLocation?: string | undefined; onDistrict: (id?: string) => void; onLocation: (id: string) => void }) {
+function RealCityMap({ city, districts, selected, positionId, positionDistrict, selectedLocation, onDistrict, onLocation, phase }: { city: Tables<"cities">; districts: Tables<"districts">[]; selected?: Tables<"districts"> | undefined; positionId?: string | undefined; positionDistrict?: string | undefined; selectedLocation?: string | undefined; onDistrict: (id?: string) => void; onLocation: (id: string) => void; phase: string }) {
   const lists = useQueries({ queries: districts.map(d => locationsQuery(d.id)) });
   const byDistrict = new Map(districts.map((d, i) => [d.id, lists[i]?.data ?? []]));
+  const [layers, setLayers] = useState<Set<MapLayer>>(() => new Set<MapLayer>(["vie", "transport", "politique"]));
+  const toggle = (id: MapLayer) => setLayers(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const view = CITY_CENTER[city.id] ?? { at: FRANCE_VIEW.at, zoom: 12 };
   let markers: RealMarker[]; let center = view.at; let zoom = view.zoom;
+  const deco = (kind: string, id: string) => { const p = placeLayer(kind); return { emoji: p.emoji, important: !!p.important || positionId === id }; };
   if (selected) {
     const locs = byDistrict.get(selected.id) ?? [];
     center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
-    markers = locs.flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, onClick: () => onLocation(l.id) }] : []; });
+    markers = locs.filter(l => showPlace(l.kind, layers, positionId === l.id || selectedLocation === l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, ...deco(l.kind, l.id), onClick: () => onLocation(l.id) }] : []; });
   } else {
-    // Tous les lieux (parcs, commerces, gare…) accessibles directement depuis la carte de la ville.
-    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
+    // Tous les lieux (parcs, commerces, gare…) accessibles directement depuis la carte de la ville, filtrés par catégorie.
+    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).filter(l => showPlace(l.kind, layers, positionId === l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, ...deco(l.kind, l.id), onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
   }
-  return <RealMapBox viewKey={selected?.id ?? city.id} center={center} zoom={zoom} markers={markers} />;
+  const here = positionId ? districts.flatMap(d => byDistrict.get(d.id) ?? []).find(l => l.id === positionId) : undefined;
+  const hereAt = here ? realPlace(city.id, here.kind, here.name)?.at : undefined;
+  const [focus, setFocus] = useState(0);
+  return <div className="space-y-2">
+    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Que voulez-vous voir sur la carte ?">
+      {MAP_LAYERS.map(l => <button key={l.id} type="button" aria-pressed={layers.has(l.id)} onClick={() => toggle(l.id)} className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${layers.has(l.id) ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground"}`}><span aria-hidden>{l.emoji}</span>{l.label}</button>)}
+    </div>
+    <div className="map-phase overflow-hidden rounded-lg" data-phase={phase}>
+      <RealMapBox viewKey={`${selected?.id ?? city.id}:${focus}`} center={focus && hereAt ? hereAt : center} zoom={focus && hereAt ? 16 : zoom} markers={markers} />
+    </div>
+    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+      <span>{markers.length} lieu{markers.length > 1 ? "x" : ""} affiché{markers.length > 1 ? "s" : ""} · touchez une catégorie pour l’afficher ou la cacher</span>
+      {hereAt && <Button variant="secondary" className="min-h-11" onClick={() => setFocus(f => f + 1)}><LocateFixed /> Où suis-je ?</Button>}
+    </div>
+  </div>;
 }
 
 function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {
