@@ -20,3 +20,10 @@ describe("trophées", () => {
     expect(rankTitle(20)).toBe("Figure nationale");
   });
 });
+
+import { computeTrophies as ct2, nextObjectives as no2 } from "./trophies";
+describe("bloc 2 progression", () => {
+  const zero = { activities: 0, studies: 0, jobs: 0, balance: 0, business: false, interactions: 0, memberships: 0, contacts: 0, followers: 0, newsRead: 0, reports: 0, consultations: 0, articles: 0, opinions: 0, politicalMember: false, reputation: 0, influence: 0, votes: 0, candidacies: 0, legislativeCandidate: false };
+  it("secret trophies never appear as next objectives", () => expect(no2(ct2(zero), 50).some(t => t.secret)).toBe(false));
+  it("millionaire is a long-term goal", () => expect(ct2(zero).find(t => t.id === "rich")!.term).toBe("long"));
+});
