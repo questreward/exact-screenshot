@@ -7,7 +7,7 @@ const rows = [
 ];
 describe('Historique bancaire', () => {
   it('filtre les dates inclusives du jeu en heure française', () => {
-    expect(bankDay(rows[0].at)).toBe('2026-10-22');
+    expect(bankDay('2026-10-21T22:30:00Z')).toBe('2026-10-22');
     expect(filterBankHistory(rows, '2026-10-22', '2026-10-22', 'all').map(r => r.amount)).toEqual([10, -50]);
   });
   it('distingue les retraits des dépôts', () => {
