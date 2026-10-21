@@ -8,6 +8,7 @@ import { transportAction, transportQuery } from "@/services/game";
 import { euros } from "@/game/income-tax";
 import { gameMeta } from "@/game/metadata";
 import { GarageCard } from "@/components/game/GarageCard";
+import { InspectionScene } from "@/components/game/InspectionScene";
 
 export const Route = createFileRoute("/_authenticated/_game/transports")({
   head: () => ({ meta: gameMeta("Transports", "Abonnement, contrôles, assurance auto, contrôle technique et amendes (fictif).") }),
@@ -29,6 +30,7 @@ function TransportPage() {
     <header className="flex items-center gap-3"><Bus className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Transports</h1><p className="text-sm text-muted-foreground">Bus, métro, tram et voiture · FICTIF</p></div></header>
     <GarageCard />
+    <InspectionScene />
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {!isLoading && !s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
     {s && (() => {
