@@ -14,7 +14,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] 4. Véhicules perso, bus, train, car : intérieurs réalistes, trajet animé
 - [x] 5. Espaces CAF / France Travail / ameli / Banque / Poste / Impôts / Préfecture : guichet ou ordinateur, courriers animés
 - [x] 6. Ville, logements, Mairie / Assemblée / Élysée, JT façon chaîne d'info, accueil du site pour la promo  (accueil promo fait)
-- [ ] 7. Boutique cosmétique en argent réel — choix validés : Stripe (compte d'Alex, clés dans .env du VPS), emails parents via SMTP de l'hébergeur d'Alex (.env), 0,49–2,99 €, objets de style uniquement. Attend : clés Stripe + infos SMTP posées par Alex sur le VPS.
+- [x] 7. Boutique d'objets de style (0122 prête, attend installation par Alex) : Stripe du compte d'Alex, accord parental par email Amen, le parent paie. Affichage des objets sur l'avatar : pas encore.
 - [x] Discussion avec un habitant : réponse IA locale adaptée au métier et à la situation
 - [x] Vraie carte des villes et de la France (à installer sur le VPS avec setup-map.sh)
 - [x] A. Guichets/ordinateurs CAF, France Travail, ameli, Banque, Poste, Impôts, Préfecture + arrivée des courriers

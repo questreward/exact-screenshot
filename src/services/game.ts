@@ -46,6 +46,25 @@ export const characterQuery = queryOptions({
   },
 });
 
+export type CosmeticItem = { id: string; name: string; description: string; kind: string; price_cents: number };
+export const cosmeticShopQuery = queryOptions({
+  queryKey: ["cosmetics"], retry: false,
+  queryFn: async () => {
+    const db = supabase as any;
+    const [items, owned, orders] = await Promise.all([
+      db.from("cosmetic_items").select("id, name, description, kind, price_cents").order("price_cents"),
+      db.from("cosmetic_owned").select("item_id"),
+      db.from("cosmetic_orders").select("item_id, status").eq("status", "attente_parent"),
+    ]);
+    if (items.error) throw new Error(items.error.message);
+    return {
+      items: (items.data ?? []) as CosmeticItem[],
+      owned: new Set<string>((owned.data ?? []).map((r: { item_id: string }) => r.item_id)),
+      waiting: new Set<string>((orders.data ?? []).map((r: { item_id: string }) => r.item_id)),
+    };
+  },
+});
+
 export const bankQuery = queryOptions({
   queryKey: ["bank"],
   queryFn: async () => {
