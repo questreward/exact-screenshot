@@ -106,10 +106,18 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    // Réagit seulement quand la personne connectée change réellement : iOS renvoie
+    // « SIGNED_IN » à chaque retour sur l'onglet, ce qui rechargeait tout et
+    // annulait la navigation juste après « Se connecter ».
+    let currentUser: string | null | undefined;
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      const next = session?.user.id ?? null;
+      if (currentUser === undefined) { currentUser = next; return; }
+      if (next === currentUser && event !== "USER_UPDATED") return;
+      currentUser = next;
+      if (window.location.pathname === "/auth" && next) return; // la page de connexion navigue elle-même
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (next) queryClient.invalidateQueries();
     });
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
