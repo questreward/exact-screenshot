@@ -7,6 +7,8 @@ import { workProfile, workTimeline, workMood, remaining, workLevel, shiftHighlig
 import { daylight } from "@/game/daylight";
 import { useLifeMutation } from "./LifeControls";
 import { useWorldClock } from "./WorldClock";
+import { ShiftVisitors, readVisitorResults } from "./ShiftVisitors";
+import { satisfactionLabel } from "@/game/client-dialogue";
 
 const hm = (d: Date) => d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
@@ -46,6 +48,7 @@ export function WorkDay() {
       <p className="mt-1 text-sm">👥 Un collègue : {workMood(day, p.key).colleague}</p>
       <ol className="mt-3 space-y-1">{steps.map(s => <li key={s.label} className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm ${s === cur ? "bg-primary/15 font-semibold" : s.at.getTime() < now ? "text-muted-foreground line-through" : ""}`}>
         <span className="w-12 font-mono text-xs">{hm(s.at)}</span>{s.label}</li>)}</ol>
+      <ShiftVisitors day={day} jobKey={p.key} />
       <div className="mt-2 grid grid-cols-3 gap-2">
         <Button asChild variant="outline" className="min-h-12"><Link to="/telephone">📱 Téléphone</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/agenda">📅 Agenda</Link></Button>
@@ -69,6 +72,8 @@ export function WorkDay() {
         <p className="font-semibold">📋 Bilan du service</p>
         <ul className="mt-1 space-y-1">{shiftHighlights(p.key).map(t => <li key={t}>✅ {t}</li>)}</ul>
         <p className="mt-2">📌 {workMood(day, p.key).mood}</p>
+        {(() => { const r = Object.values(readVisitorResults(day)); if (!r.length) return null; const avg = Math.round(r.reduce((a, b) => a + b.s, 0) / r.length);
+          return <p className="mt-1">👤 {r.length} client(s) reçu(s) · {satisfactionLabel(avg)} ({avg}/100)<span className="block text-xs text-muted-foreground">La satisfaction ne change pas ton salaire.</span></p>; })()}
       </div>
       <div className="mb-3 rounded-xl border p-3 text-sm">
         <p className="font-semibold">{level.emoji} Niveau : {level.label}</p>
