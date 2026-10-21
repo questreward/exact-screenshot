@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MapPin, Home, Briefcase, GraduationCap } from "lucide-react";
 import { lifeQuery, notificationsQuery } from "@/services/game";
 import { useWorldClock } from "./WorldClock";
-import { nextStep } from "@/game/next-step";
+import { nextStep, nextDestination } from "@/game/next-step";
 
 export function NextStepCard({ cityName }: { cityName?: string | null }) {
   const { data: life } = useSuspenseQuery(lifeQuery);
@@ -13,6 +13,7 @@ export function NextStepCard({ cityName }: { cityName?: string | null }) {
     now: time, activities: life.activities, notifications: notifs,
     hasHousing: !!life.housing, studying: !!life.enrollment, working: !!life.employment, age: life.character.age,
   });
+  const dest = nextDestination(life.activities, time, life.position?.location_id);
   const date = time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
   const role = life.employment?.job?.title ?? (life.enrollment ? `Études : ${life.enrollment.field_name}` : null);
   return (
@@ -35,6 +36,12 @@ export function NextStepCard({ cityName }: { cityName?: string | null }) {
         </span>
         <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">{step.cta}<ArrowRight className="h-4 w-4" /></span>
       </Link>
+      {dest && <Link to="/carte" search={{ city: dest.place.city_id, district: dest.place.district_id ?? undefined, location: dest.place.id }}
+        className="flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card p-3 active:scale-[0.98] animate-rise">
+        <span className="text-2xl" aria-hidden>📍</span>
+        <span className="min-w-0 flex-1"><span className="block text-xs font-bold uppercase tracking-wide text-primary">Votre prochaine destination</span><span className="block truncate font-semibold">{dest.place.name}</span><span className="block truncate text-xs text-muted-foreground">{dest.title}</span></span>
+        <span className="shrink-0 text-sm font-semibold text-primary">Voir sur la carte</span>
+      </Link>}
       {step.endOfDay && (
         <div className="grid grid-cols-2 gap-2 animate-rise">
           {[["Rentrer chez moi", "/chez-moi"], ["Mon agenda", "/agenda"], ["Mon téléphone", "/telephone"], ["Voir ma ville", "/ma-ville"]].map(([l, to]) => (

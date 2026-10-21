@@ -1,5 +1,5 @@
 // Couches de la carte : regroupe les lieux existants par catégorie (présentation seule).
-export type MapLayer = "vie" | "travail" | "commerces" | "transport" | "politique" | "loisirs";
+export type MapLayer = "vie" | "travail" | "commerces" | "transport" | "politique" | "loisirs" | "evenements";
 
 export const MAP_LAYERS: { id: MapLayer; label: string; emoji: string }[] = [
   { id: "vie", label: "Vie", emoji: "🏠" },
@@ -7,7 +7,8 @@ export const MAP_LAYERS: { id: MapLayer; label: string; emoji: string }[] = [
   { id: "commerces", label: "Commerces", emoji: "🛒" },
   { id: "transport", label: "Transport", emoji: "🚗" },
   { id: "politique", label: "Politique", emoji: "🏛️" },
-  { id: "loisirs", label: "Loisirs", emoji: "🎉" },
+  { id: "loisirs", label: "Loisirs", emoji: "☕" },
+  { id: "evenements", label: "Événements", emoji: "🎉" },
 ];
 
 const BY_KIND: Record<string, { layer: MapLayer; emoji: string; important?: boolean }> = {
@@ -31,3 +32,14 @@ export const placeLayer = (kind: string) => BY_KIND[kind] ?? { layer: "loisirs" 
 
 /** Un lieu est montré si sa couche est active, ou si c'est la position du joueur (toujours visible). */
 export const showPlace = (kind: string, active: ReadonlySet<MapLayer>, isPlayerHere: boolean) => isPlayerHere || active.has(placeLayer(kind).layer);
+
+/** Pictogramme d'un événement existant d'après son titre (présentation seule). */
+export function eventEmoji(title: string): string {
+  const t = title.toLowerCase();
+  if (/travaux|chantier/.test(t)) return "🚧";
+  if (/manif|grève|greve|rassemblement/.test(t)) return "📢";
+  if (/accident|incendie|intervention|panne/.test(t)) return "🚨";
+  if (/élection|election|scrutin|vote|campagne/.test(t)) return "🗳️";
+  if (/fête|fete|festival|concert|marché|marche/.test(t)) return "🎉";
+  return "❗";
+}
