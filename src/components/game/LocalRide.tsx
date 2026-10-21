@@ -1,20 +1,18 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { locationPlaceQuery } from "@/services/game";
 import { realPlace } from "@/game/real-places";
 import { midView } from "@/game/trip-map";
 import { VehicleInterior } from "./VehicleInterior";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
+import { useWorldClock } from "./WorldClock";
 import type { LifeActivity } from "@/game/life-state";
 
 // Trajet en bus dans la ville : intérieur + bus qui avance sur la vraie carte (animation seulement).
-export function LocalRide({ activity, worldNow }: { activity: LifeActivity; worldNow: string }) {
+export function LocalRide({ activity }: { activity: LifeActivity }) {
   const ready = useRealMapReady();
   const { data: from } = useQuery(locationPlaceQuery(activity.location_id ?? ""));
   const { data: to } = useQuery(locationPlaceQuery(activity.target_location_id ?? ""));
-  const [base] = useState(() => ({ server: Date.parse(worldNow), local: Date.now() }));
-  const [now, setNow] = useState(base.server);
-  useEffect(() => { const id = setInterval(() => setNow(base.server + (Date.now() - base.local)), 1000); return () => clearInterval(id); }, [base]);
+  const now = useWorldClock().time.getTime();
   const start = Date.parse(activity.start_time), end = Date.parse(activity.end_time);
   const pct = end > start ? Math.max(0, Math.min(1, (now - start) / (end - start))) : 0;
   const a = from?.district ? realPlace(from.district.city_id, from.kind) : null;
