@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { DeskScene } from "@/components/game/DeskScene";
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useQueryClient, useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { Bell, Calculator, ChevronRight, FileCheck2, FileText, Home, Mail, User, Wallet } from 'lucide-react';
+import { Bell, Calculator, CalendarDays, ListChecks, ChevronRight, FileCheck2, FileText, Home, Mail, User, Wallet } from 'lucide-react';
 import { adminQuery, characterQuery, formatMoney, rsaQuery, rsaApply, rsaDeclare } from '@/services/game';
 import { gameMeta } from '@/game/metadata';
 import { aidPayments, aidRights, type AidRight } from '@/game/aid-portal';
-import { housingAid } from '@/game/admin';
+import { housingAid, PROCEDURE_STATUS } from '@/game/admin';
+import { aidRequestSteps } from '@/game/aid-portal';
+import { COMING_SOON } from '@/game/navigation';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/_authenticated/_game/caisse-des-aides')({
@@ -15,11 +17,11 @@ export const Route = createFileRoute('/_authenticated/_game/caisse-des-aides')({
   component: AidSpace,
 });
 
-type Tab = 'accueil' | 'paiements' | 'droits' | 'messages' | 'attestations' | 'simulation';
+type Tab = 'accueil' | 'demandes' | 'paiements' | 'droits' | 'messages' | 'attestations' | 'rdv' | 'simulation';
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
-  { id: 'accueil', label: 'Accueil', icon: Home }, { id: 'paiements', label: 'Mes paiements', icon: Wallet },
+  { id: 'accueil', label: 'Accueil', icon: Home }, { id: 'demandes', label: 'Mes demandes', icon: ListChecks }, { id: 'paiements', label: 'Mes paiements', icon: Wallet },
   { id: 'droits', label: 'Mes droits', icon: FileCheck2 }, { id: 'messages', label: 'Ma messagerie', icon: Mail },
-  { id: 'attestations', label: 'Mes attestations', icon: FileText }, { id: 'simulation', label: 'Faire une simulation', icon: Calculator },
+  { id: 'attestations', label: 'Mes documents', icon: FileText }, { id: 'rdv', label: 'Mes rendez-vous', icon: CalendarDays }, { id: 'simulation', label: 'Faire une simulation', icon: Calculator },
 ];
 const fmt = (d: string | null | undefined) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : '—';
 const STATUS: Record<AidRight['status'], string> = { ouvert: 'Droit ouvert', en_cours: 'Demande en cours', termine: 'Droit terminé', refuse: 'Demande refusée' };
@@ -70,6 +72,8 @@ function AidSpace() {
       {tab === 'messages' && <Card title="Ma messagerie">{s.events.length ? <ul>{[...s.events].sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at)).slice(0, 30).map(e => <li key={e.id} className="flex min-h-14 items-start gap-3 border-t border-border py-2 text-sm first:border-t-0"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span><span className="block">{e.label}</span><span className="text-xs text-muted-foreground">{fmt(e.occurred_at)}</span></span></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucun message.</p>}</Card>}
       {tab === 'attestations' && <RsaPanel attestation name={allocataire} />}
       {tab === 'attestations' && <Card title="Mes attestations">{s.documents.filter(d => d.status === 'valide').length ? <ul>{s.documents.filter(d => d.status === 'valide').map(d => <li key={d.id} className="flex min-h-14 items-center justify-between gap-3 border-t border-border py-2 text-sm first:border-t-0"><span><span className="block font-medium">{s.document_types.find(t => t.id === d.type_id)?.name ?? d.type_id}</span><span className="text-xs text-muted-foreground">Valable jusqu’au {fmt(d.valid_until)}</span></span><Link to="/mes-documents" className="text-primary underline">Voir</Link></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucune attestation valide.</p>}</Card>}
+      {tab === 'demandes' && <Card title="Suivi de mes demandes">{s.procedures.filter(p => ['Aides', 'Logement'].includes(p.category)).length ? <ul className="space-y-3">{s.procedures.filter(p => ['Aides', 'Logement'].includes(p.category)).map(p => { const steps = aidRequestSteps(p.status); return <li key={p.id} className="rounded-lg border border-border p-3 text-sm"><div className="flex items-start justify-between gap-2"><span className="font-medium">{p.title}</span><span className="shrink-0 text-xs font-semibold text-primary">{PROCEDURE_STATUS[p.status]}</span></div><p className="text-xs text-muted-foreground">Commencée le {fmt(p.started_at)}{p.response_at ? ` · réponse le ${fmt(p.response_at)}` : ''}</p><ol className="mt-2 grid grid-cols-4 gap-1">{steps.map(st => <li key={st.label} className="text-center text-[11px]"><span className={`mx-auto block h-2 rounded-full ${st.done ? 'bg-primary' : 'bg-muted'}`} /><span className="mt-1 block">{st.label}</span></li>)}</ol>{['a_faire', 'a_completer'].includes(p.status) && <Link to="/demarches" className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">Continuer ma demande</Link>}</li>; })}</ul> : <p className="text-sm text-muted-foreground">Aucune demande d'aide. Faites-en une depuis <Link to="/demarches" className="text-primary underline">Mes démarches</Link>.</p>}</Card>}
+      {tab === 'rdv' && <Card title="Mes rendez-vous"><p className="text-sm text-muted-foreground">{COMING_SOON}. La prise de rendez-vous avec un conseiller arrivera bientôt.</p></Card>}
       {tab === 'simulation' && <Simulation />}
     </main>
   </div>;
