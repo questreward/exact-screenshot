@@ -15,6 +15,24 @@ const PROFILES: { test: RegExp; p: WorkProfile }[] = [
     [["🚑", "Vérifier l'ambulance"], ["💊", "Contrôler le sac médical"], ["🩺", "Tester le défibrillateur"]]) },
   { test: /protection civile|secouriste/i, p: P("pc", "Local de la Protection civile", "Équipe de bénévoles", "Véhicule de secours", "Tenir le poste de secours.", "Prendre mon poste",
     [["🎒", "Préparer les sacs de secours"], ["🚐", "Vérifier le véhicule"], ["📋", "Lire le planning du poste"]]) },
+  { test: /conseiller bancaire|guichetier|assurance/i, p: P("banque", "Agence", "Collègues de l'agence", null, "Recevoir les clients et traiter leurs dossiers.", "Ouvrir mon guichet",
+    [["💻", "Allumer mon poste"], ["📅", "Relire les rendez-vous"], ["📂", "Préparer les dossiers en attente"]]) },
+  { test: /mairie|impôts|préfecture|espace emploi|greffier/i, p: P("admin", "Bureau d'accueil", "Collègues du service", null, "Accueillir le public et traiter les demandes.", "Ouvrir l'accueil",
+    [["💻", "Ouvrir le logiciel du service"], ["🎫", "Lancer les tickets d'attente"], ["📂", "Trier le courrier du jour"]]) },
+  { test: /facteur/i, p: P("facteur", "Plateforme de La Poste", "Équipe de distribution", "Vélo ou voiture jaune", "Distribuer toute la tournée.", "Commencer ma tournée",
+    [["📬", "Trier le courrier de ma tournée"], ["📦", "Charger les colis"], ["🚲", "Vérifier mon véhicule"]]) },
+  { test: /aide-soignant|médecin|pharmacien|assistant social/i, p: P("soin", "Cabinet ou service de soins", "Équipe soignante", null, "Prendre soin de chaque patient.", "Prendre mon poste",
+    [["🧼", "Se laver les mains et s'équiper"], ["📋", "Lire les transmissions"], ["📅", "Regarder les patients du jour"]]) },
+  { test: /professeur|surveillant/i, p: P("ecole", "Établissement scolaire", "Équipe pédagogique", null, "Faire avancer chaque élève.", "Arriver à l'école",
+    [["📚", "Préparer le cours du jour"], ["🖨️", "Imprimer les documents"], ["☕", "Passer en salle des profs"]]) },
+  { test: /caissier|boulanger|serveur|cuisinier|coiffeur/i, p: P("commerce", "Commerce", "Collègues du magasin", null, "Bien servir chaque client.", "Ouvrir la boutique",
+    [["🧹", "Préparer l'espace client"], ["📦", "Mettre en place les produits"], ["💶", "Préparer la caisse"]]) },
+  { test: /maçon|électricien/i, p: P("chantier", "Chantier", "Équipe du chantier", "Camionnette", "Avancer le chantier en sécurité.", "Arriver sur le chantier",
+    [["⛑️", "Mettre casque et chaussures de sécurité"], ["🧰", "Vérifier les outils"], ["📐", "Lire le plan du jour"]]) },
+  { test: /chauffeur de bus|conducteur de train/i, p: P("conduite", "Dépôt", "Régulation et collègues conducteurs", "Bus ou train", "Assurer chaque départ à l'heure.", "Prendre mon service",
+    [["🔑", "Récupérer mon véhicule"], ["🔍", "Faire le tour de contrôle"], ["🗺️", "Lire la feuille de service"]]) },
+  { test: /avocat/i, p: P("avocat", "Cabinet d'avocats", "Associés et secrétariat", null, "Défendre au mieux tes clients.", "Arriver au cabinet",
+    [["📂", "Relire les dossiers du jour"], ["📅", "Vérifier les audiences"], ["✉️", "Lire les courriers"]]) },
   { test: /concession|vendeur auto|commercial auto|automobile/i, p: P("concession", "Showroom de la concession", "Équipe commerciale", null, "Accueillir les clients et conclure des ventes.", "Ouvrir le showroom",
     [["🚗", "Mettre les voitures en valeur"], ["🧹", "Préparer l'espace d'accueil"], ["📅", "Relire les rendez-vous clients"]]) },
 ];
@@ -37,4 +55,26 @@ export function workTimeline(startIso: string, endIso: string) {
     { label: "Reprise", at: at(0.58) },
     { label: "Fin de service", at: at(1) },
   ];
+}
+
+const MOODS: Record<string, string[]> = {
+  commerce: ["Journée calme, quelques habitués.", "Grosse affluence à midi.", "Livraison de marchandise le matin.", "Un client difficile à rassurer."],
+  ecole: ["Classe attentive aujourd'hui.", "Sortie scolaire à préparer.", "Réunion avec des parents en fin de journée.", "Contrôle à surveiller."],
+  soin: ["Service calme.", "Beaucoup de patients ce matin.", "Un nouveau collègue à accompagner.", "Une urgence en milieu de journée."],
+  chantier: ["Le béton arrive à 10 h.", "Météo difficile, prudence.", "Contrôle du chef de chantier.", "Journée de finitions."],
+};
+const MOOD_DEFAULT = ["Journée calme.", "Journée chargée.", "Réunion d'équipe le matin.", "Un dossier urgent à traiter."];
+const COLLEAGUES = ["« Tu prends un café ? »", "« Tu peux m'aider deux minutes ? »", "« Bonne journée à toi ! »", "« On mange ensemble à midi ? »", "« Pense au point de 15 h. »"];
+
+/** Daily flavour, deterministic per day and job: same day = same story, different days differ. */
+export function workMood(day: string, key: string) {
+  let h = 0; for (const c of day + key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const list = MOODS[key] ?? MOOD_DEFAULT;
+  return { mood: list[h % list.length]!, colleague: COLLEAGUES[(h >> 3) % COLLEAGUES.length]! };
+}
+
+/** "4 h 12 restantes" style label, never negative. */
+export function remaining(nowMs: number, endIso: string) {
+  const m = Math.max(0, Math.round((Date.parse(endIso) - nowMs) / 60000));
+  return m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} restantes` : `${m} min restantes`;
 }

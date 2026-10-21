@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { lifeQuery, startLifeActivity, formatMoney } from "@/services/game";
-import { workProfile, workTimeline } from "@/game/workday";
+import { workProfile, workTimeline, workMood, remaining } from "@/game/workday";
 import { daylight } from "@/game/daylight";
 import { useLifeMutation } from "./LifeControls";
 import { useWorldClock } from "./WorldClock";
@@ -39,9 +39,17 @@ export function WorkDay() {
     return <section className="rounded-2xl border-2 border-primary bg-card p-4">
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {p.place}</p>
       <h2 className="font-heading text-lg font-bold">En service : {cur.label}</h2>
+      <p className="text-xs text-muted-foreground">{hm(time)} / {hm(new Date(running.end_time))} · {remaining(now, running.end_time)}</p>
+      <p className="mt-2 rounded-lg bg-muted p-2 text-sm">📌 Aujourd'hui : {workMood(day, p.key).mood}</p>
+      <p className="mt-1 text-sm">👥 Un collègue : {workMood(day, p.key).colleague}</p>
       <ol className="mt-3 space-y-1">{steps.map(s => <li key={s.label} className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm ${s === cur ? "bg-primary/15 font-semibold" : s.at.getTime() < now ? "text-muted-foreground line-through" : ""}`}>
         <span className="w-12 font-mono text-xs">{hm(s.at)}</span>{s.label}</li>)}</ol>
-      <p className="mt-2 text-xs text-muted-foreground">Tu peux consulter ton téléphone ou la carte : le service continue.</p>
+      <div className="mt-2 grid grid-cols-3 gap-2">
+        <Button asChild variant="outline" className="min-h-12"><Link to="/telephone">📱 Téléphone</Link></Button>
+        <Button asChild variant="outline" className="min-h-12"><Link to="/agenda">📅 Agenda</Link></Button>
+        <Button asChild variant="outline" className="min-h-12"><Link to="/actualites">📰 Infos</Link></Button>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Le service continue pendant que tu regardes ailleurs.</p>
     </section>;
   }
 
