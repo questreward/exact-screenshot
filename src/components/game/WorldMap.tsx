@@ -29,6 +29,9 @@ import { PlaceAtmosphere, PublicPlaceLife } from './LivingLocation';
 import { BADGE_ICON, DistrictBadges, DistrictReasons, useDistrictStatuses } from './DistrictStatus';
 import { DISTRICT_BADGE_LABEL } from '@/game/districts-state';
 import { DistrictGauges } from './DistrictGauges';
+import { openState, placeDoor, searchPlaces } from "@/game/place-doors";
+import { Link } from "@tanstack/react-router";
+import { Search, DoorOpen } from "lucide-react";
 import { MAP_LAYERS, placeLayer, showPlace, type MapLayer } from "@/game/map-layers";
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
@@ -116,6 +119,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, r
         {playerHere && <Button variant="ghost" onClick={() => { districtSelect(position.district_id); setSelectedLocation(position.location_id); }}><LocateFixed /> Ma position</Button>}
       </div>
     </div>
+    <PlaceSearch districts={districts} onPick={(d, l, go) => { onDistrict(d); setSelectedLocation(l); if (go) setTimeout(() => document.getElementById("fiche-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 450); }} />
     <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0">
         {realReady ? <RealCityMap phase={phase} city={city} districts={districts} selected={selected} positionId={playerHere ? position?.location_id : undefined} positionDistrict={playerHere ? position?.district_id : undefined} selectedLocation={selectedLocation} onDistrict={districtSelect} onLocation={setSelectedLocation} /> :
@@ -216,14 +220,23 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
   const here = isCurrentPlace(p?.location_id, l.id);
   const allowed = p && movementAllowed(p.city_id, l, district.available, city.available);
   const { icon: Icon, label } = locationType(l.kind);
-  return <article className="min-w-0 border-t border-border pt-4">
+  const { time } = useWorldClock();
+  const open = openState(l.opening_hours, time);
+  const door = placeDoor(l.kind);
+  return <article id="fiche-lieu" className="min-w-0 scroll-mt-20 border-t border-border pt-4">
     <figure className="relative overflow-hidden rounded-lg">
       <img src={l.illustration ?? worldSquare} alt={`Ambiance illustrée · ${l.name}`} loading="lazy" width={1536} height={768} className="aspect-[2/1] w-full object-cover" />
       <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-2 bg-overlay px-3 py-2 text-xs text-foreground"><span>Illustration · CIVITAS</span><span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{here ? 'Vous êtes ici' : 'Lieu consulté'}</span></figcaption>
     </figure>
     <div className="space-y-4 py-4">
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><h3 className="text-xl font-semibold">{l.name}</h3><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
+      {open && <p className={`inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold ${open.open ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>{open.open ? "🟢 Ouvert" : `🔴 Fermé · ouvre ${open.opensAt?.startsWith("demain") ? open.opensAt : `à ${open.opensAt}`}`}</p>}
       <p className="text-sm text-muted-foreground">{l.description}</p>
+      {door && <div className="space-y-1">
+        {here && open?.open !== false ? <Button asChild className="min-h-12 w-full text-base"><Link to={door.to}><DoorOpen /> {door.label}</Link></Button> :
+          <Button disabled className="min-h-12 w-full text-base"><DoorOpen /> {door.label}</Button>}
+        <p className="text-center text-xs text-muted-foreground">{!here ? "Rendez-vous d’abord sur place pour entrer." : open?.open === false ? "Le lieu est fermé pour le moment." : "Vous êtes sur place."}</p>
+      </div>}
       <Suspense fallback={<p className="text-xs text-muted-foreground">Ambiance du lieu…</p>}><PlaceAtmosphere cityId={city.id} /></Suspense>
       <Suspense fallback={<p className="text-xs text-muted-foreground">Vie du lieu…</p>}><PublicPlaceLife cityId={city.id} locationId={l.id} /></Suspense>
       <Suspense fallback={<p className="text-xs text-muted-foreground">Projets municipaux…</p>}><MunicipalLocationProjects locationId={l.id}/></Suspense>
@@ -261,4 +274,27 @@ function SpaceRow({ space: s, here, currentSpace }: { space: Tables<"location_sp
   const act = useMutation({ mutationFn: () => inside ? leaveLocationSpace() : enterLocationSpace(s.id), onSuccess: async () => { await q.invalidateQueries({ queryKey: ["position"] }); toast.success(inside ? `Vous êtes sorti : ${s.name}` : `Vous êtes entré : ${s.name}`); }, onError: (e: Error) => toast.error(e.message) });
   if (!s.accessible) return <div className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>;
   return <div className="flex items-center justify-between gap-3 border-t border-border pt-3"><span className="text-sm">{s.name}{inside && <span className="block text-xs text-primary">Vous êtes à l’intérieur</span>}</span><Button variant={inside ? "secondary" : "outline"} className="h-11 shrink-0" disabled={!here || act.isPending} onClick={() => act.mutate()}>{inside ? "Sortir" : "Entrer"}</Button></div>;
+}
+
+function PlaceSearch({ districts, onPick }: { districts: Tables<"districts">[]; onPick: (district: string, location: string, go: boolean) => void }) {
+  const [q, setQ] = useState("");
+  const lists = useQueries({ queries: districts.filter(d => d.available).map(d => locationsQuery(d.id)) });
+  const avail = districts.filter(d => d.available);
+  const all = avail.flatMap((d, i) => (lists[i]?.data ?? []).map(l => ({ id: l.id, districtId: d.id, name: l.name, kind: l.kind, kindLabel: locationType(l.kind).label, district: d.name })));
+  const found = searchPlaces(all, q);
+  return <div className="space-y-2">
+    <label className="flex min-h-12 items-center gap-2 rounded-xl border border-border bg-card px-3 focus-within:border-primary">
+      <Search className="h-5 w-5 shrink-0 text-primary" />
+      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Où veux-tu aller ? (mairie, gare, magasin…)" aria-label="Où veux-tu aller ?" className="h-12 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+    </label>
+    {q.trim().length >= 2 && (found.length === 0 ? <p className="px-1 text-sm text-muted-foreground">Aucun lieu trouvé dans cette ville.</p> :
+      <ul className="divide-y divide-border rounded-xl border border-border bg-card">{found.map(f => <li key={f.id} className="flex flex-wrap items-center gap-2 p-3">
+        <span className="text-xl" aria-hidden>{placeLayer(f.kind).emoji}</span>
+        <span className="min-w-0 flex-1"><span className="block font-semibold">{f.name}</span><span className="block text-xs text-muted-foreground">{f.kindLabel} · {f.district}</span></span>
+        <span className="flex w-full gap-2 sm:w-auto">
+          <Button variant="outline" className="min-h-11 flex-1" onClick={() => { onPick(f.districtId, f.id, false); setQ(""); }}><MapPin /> Voir sur la carte</Button>
+          <Button className="min-h-11 flex-1" onClick={() => { onPick(f.districtId, f.id, true); setQ(""); }}><Footprints /> Y aller</Button>
+        </span>
+      </li>)}</ul>)}
+  </div>;
 }
