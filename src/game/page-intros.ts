@@ -31,6 +31,8 @@ const CUSTOM: Record<string, Omit<PageIntro, "title"> & { title?: string }> = {
   transports: { welcome: "« Ticket ou abonnement ? »", purpose: "Bus, métro, voiture : choisis comment te déplacer. Attention aux contrôles sans ticket !" },
   etudes: { welcome: "« Bienvenue à l’université. »", purpose: "Choisis tes études, passe tes examens et obtiens des diplômes pour accéder à de meilleurs métiers." },
   assurances: { welcome: "« Mieux vaut prévenir que guérir. »", purpose: "Assure ton logement et ta voiture pour éviter de gros frais en cas de problème." },
+  guide: { title: "Guide IA", welcome: "« Dites-moi ce que vous avez envie de faire. »", purpose: "Décris ton envie (sortir, travailler, te détendre) et le guide te propose des activités et un itinéraire dans les lieux de ta ville." },
+  style: { title: "Boutique de style", welcome: "« Envie de changer de look ? »", purpose: "Achète des tenues et des cadres pour personnaliser ton personnage et ton profil public. Ce sont des objets de style, sans avantage dans le jeu." },
   "tableau-de-bord": { welcome: "« Bonjour, Citoyen ! »", purpose: "Ton accueil : ce qui se passe en ville, tes prochaines étapes et tes raccourcis." },
 };
 
