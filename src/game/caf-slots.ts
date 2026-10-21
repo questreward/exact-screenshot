@@ -7,7 +7,7 @@ export const CAF_MOTIVES = [
 
 function parisParts(d: Date) {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", weekday: "short", hourCycle: "h23" }).formatToParts(d).map((x) => [x.type, x.value]));
-  return p as Record<string, string>;
+  return p as { weekday: string; hour: string; year: string; month: string; day: string };
 }
 
 export function cafSlots(now: Date): { day: string; slots: Date[] }[] {

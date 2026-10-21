@@ -26,6 +26,7 @@ export const SECTIONS: Section[] = [
   { id: "la-poste", label: "La Poste", icon: FileText, description: "Courriers et recommandés · FICTIF.", available: true },
   { id: "conjoncture", label: "Conjoncture", icon: BarChart3, description: "Inflation, SMIC, prix des villes et finances publiques.", available: true },
   { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
+  { id: "vip", label: "CIVITAS VIP", icon: Sparkles, description: "Badge, tenues exclusives et thèmes · 2,99 €/mois.", available: true },
   { id: "aide", label: "Aide", icon: BookOpen, description: "Tout CIVITAS expliqué simplement.", available: true },
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
   { id: "france", label: "France", icon: Map, description: "La vraie carte de France, communes et circonscriptions.", available: true },
@@ -116,7 +117,7 @@ export type SectionGroup = { id: string; label: string; ids: string[] };
 export const SECTION_GROUPS: SectionGroup[] = [
   { id: "vie", label: "Vie", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "vie", "agenda", "famille", "sante", "espace-sante", "etudes", "carriere", "espace-emploi", "secours", "retraite", "trophees"] },
   { id: "argent", label: "Argent", ids: ["banque", "patrimoine", "assurances", "impots", "caisse-des-aides", "conjoncture"] },
-  { id: "achats", label: "Achats et services", ids: ["boutique", "marche", "services", "civitas-services", "concession", "recrutement"] },
+  { id: "achats", label: "Achats et services", ids: ["boutique", "vip", "marche", "services", "civitas-services", "concession", "recrutement"] },
   { id: "logement", label: "Logement", ids: ["logement", "chez-moi", "construction", "agence"] },
   { id: "deplacements", label: "Déplacements", ids: ["carte", "france", "permis", "conduite", "transports", "voyages"] },
   { id: "papiers", label: "Papiers", ids: ["services-publics", "demarches", "vie-administrative", "mes-documents", "titres", "la-poste", "telephone"] },

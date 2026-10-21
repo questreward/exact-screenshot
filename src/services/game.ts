@@ -57,9 +57,11 @@ export const cosmeticShopQuery = queryOptions({
       db.from("cosmetic_orders").select("item_id, status").eq("status", "attente_parent"),
     ]);
     if (items.error) throw new Error(items.error.message);
+    const ownedSet = new Set<string>((owned.data ?? []).map((r: { item_id: string }) => r.item_id));
     return {
-      items: (items.data ?? []) as CosmeticItem[],
-      owned: new Set<string>((owned.data ?? []).map((r: { item_id: string }) => r.item_id)),
+      // VIP-exclusive items are never sold: only shown once received through the VIP page.
+      items: ((items.data ?? []) as CosmeticItem[]).filter((i) => !i.id.startsWith("vip-") || ownedSet.has(i.id)),
+      owned: ownedSet,
       waiting: new Set<string>((orders.data ?? []).map((r: { item_id: string }) => r.item_id)),
     };
   },
@@ -2247,3 +2249,6 @@ export async function cafBook(startsAt: string, motive: string) {
   const { error } = await (supabase as any).rpc('caf_book', { _starts_at: startsAt, _motive: motive }); if (error) throw new Error(error.message); }
 export async function cafCancel(id: string) {
   const { error } = await (supabase as any).rpc('caf_cancel', { _id: id }); if (error) throw new Error(error.message); }
+
+export const vipBadgeQuery = (characterId: string) => queryOptions({ queryKey: ['vip-badge', characterId], queryFn: async () => {
+  const { data, error } = await (supabase as any).rpc('vip_badge', { _character: characterId }); return !error && data === true; } });

@@ -1,3 +1,4 @@
+import { usePhoneTheme } from "@/game/phone-theme";
 import { useEffect, useState } from "react";
 import { starterGuide } from "@/game/starter-guide";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -22,6 +23,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
   const [more, setMore] = useState(false);
   const [q, setQ] = useState("");
   const hits = phoneSearch(q);
+  const theme = usePhoneTheme();
   const nowMs = time.getTime();
   const running = life.activities.find(a => a.status !== "cancelled" && a.status !== "completed" && Date.parse(a.start_time) <= nowMs && Date.parse(a.end_time) > nowMs);
   const pct = running ? Math.round(((nowMs - Date.parse(running.start_time)) / (Date.parse(running.end_time) - Date.parse(running.start_time))) * 100) : 0;
@@ -30,7 +32,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
   const unread = notifs.filter(n => !n.read).length;
   const badge = (id: string) => id === "messages" ? comm.unread : id === "actualites" ? news.unread_count : 0;
   const tile = "flex min-h-16 flex-col justify-center rounded-2xl bg-card p-3 text-left active:scale-[0.98]";
-  return <div className="space-y-4">
+  return <div className={`space-y-4 ${theme.cls}`}>
     <div className="text-center">
       <p className="font-display text-4xl font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</p>
       <p className="text-xs capitalize text-muted-foreground">{time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</p>

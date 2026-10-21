@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AccordParentalRouteImport } from './routes/accord-parental'
+import { Route as AccordVipRouteImport } from './routes/accord-vip'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as DecouvrirRouteImport } from './routes/decouvrir'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as PaiementStyleRouteImport } from './routes/paiement-style'
+import { Route as PaiementVipRouteImport } from './routes/paiement-vip'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
@@ -95,6 +97,7 @@ import { Route as AuthenticatedGameVerificationRouteImport } from './routes/_aut
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
 import { Route as AuthenticatedGameVieAdministrativeRouteImport } from './routes/_authenticated/_game/vie-administrative'
 import { Route as AuthenticatedGameVieDesPartisRouteImport } from './routes/_authenticated/_game/vie-des-partis'
+import { Route as AuthenticatedGameVipRouteImport } from './routes/_authenticated/_game/vip'
 import { Route as AuthenticatedGameVoyagesRouteImport } from './routes/_authenticated/_game/voyages'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameElectionsIdRouteImport } from './routes/_authenticated/_game/elections_.$id'
@@ -117,6 +120,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AccordParentalRoute = AccordParentalRouteImport.update({
   id: '/accord-parental',
   path: '/accord-parental',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccordVipRoute = AccordVipRouteImport.update({
+  id: '/accord-vip',
+  path: '/accord-vip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -142,6 +150,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
 const PaiementStyleRoute = PaiementStyleRouteImport.update({
   id: '/paiement-style',
   path: '/paiement-style',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaiementVipRoute = PaiementVipRouteImport.update({
+  id: '/paiement-vip',
+  path: '/paiement-vip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -582,6 +595,11 @@ const AuthenticatedGameVieDesPartisRoute =
     path: '/vie-des-partis',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVipRoute = AuthenticatedGameVipRouteImport.update({
+  id: '/vip',
+  path: '/vip',
+  getParentRoute: () => AuthenticatedGameRouteRoute,
+} as any)
 const AuthenticatedGameVoyagesRoute =
   AuthenticatedGameVoyagesRouteImport.update({
     id: '/voyages',
@@ -640,11 +658,13 @@ const AuthenticatedGameVisiteIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accord-parental': typeof AccordParentalRoute
+  '/accord-vip': typeof AccordVipRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
+  '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -722,6 +742,7 @@ export interface FileRoutesByFullPath {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/vip': typeof AuthenticatedGameVipRoute
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
@@ -735,11 +756,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accord-parental': typeof AccordParentalRoute
+  '/accord-vip': typeof AccordVipRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
+  '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -817,6 +840,7 @@ export interface FileRoutesByTo {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/vip': typeof AuthenticatedGameVipRoute
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
@@ -832,11 +856,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/accord-parental': typeof AccordParentalRoute
+  '/accord-vip': typeof AccordVipRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/decouvrir': typeof DecouvrirRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
+  '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
@@ -915,6 +941,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
   '/_authenticated/_game/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/_authenticated/_game/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/_authenticated/_game/vip': typeof AuthenticatedGameVipRoute
   '/_authenticated/_game/voyages': typeof AuthenticatedGameVoyagesRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/elections_/$id': typeof AuthenticatedGameElectionsIdRoute
@@ -930,11 +957,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/accord-parental'
+    | '/accord-vip'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
     | '/paiement-style'
+    | '/paiement-vip'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -1012,6 +1041,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/vip'
     | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
@@ -1025,11 +1055,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/accord-parental'
+    | '/accord-vip'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
     | '/paiement-style'
+    | '/paiement-vip'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -1107,6 +1139,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/vip'
     | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
@@ -1121,11 +1154,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/accord-parental'
+    | '/accord-vip'
     | '/auth'
     | '/confidentialite'
     | '/decouvrir'
     | '/mentions-legales'
     | '/paiement-style'
+    | '/paiement-vip'
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
@@ -1204,6 +1239,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/vie'
     | '/_authenticated/_game/vie-administrative'
     | '/_authenticated/_game/vie-des-partis'
+    | '/_authenticated/_game/vip'
     | '/_authenticated/_game/voyages'
     | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/elections_/$id'
@@ -1219,11 +1255,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AccordParentalRoute: typeof AccordParentalRoute
+  AccordVipRoute: typeof AccordVipRoute
   AuthRoute: typeof AuthRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   DecouvrirRoute: typeof DecouvrirRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   PaiementStyleRoute: typeof PaiementStyleRoute
+  PaiementVipRoute: typeof PaiementVipRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TilesSplatRoute: typeof TilesSplatRoute
 }
@@ -1249,6 +1287,13 @@ declare module '@tanstack/react-router' {
       path: '/accord-parental'
       fullPath: '/accord-parental'
       preLoaderRoute: typeof AccordParentalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accord-vip': {
+      id: '/accord-vip'
+      path: '/accord-vip'
+      fullPath: '/accord-vip'
+      preLoaderRoute: typeof AccordVipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1284,6 +1329,13 @@ declare module '@tanstack/react-router' {
       path: '/paiement-style'
       fullPath: '/paiement-style'
       preLoaderRoute: typeof PaiementStyleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paiement-vip': {
+      id: '/paiement-vip'
+      path: '/paiement-vip'
+      fullPath: '/paiement-vip'
+      preLoaderRoute: typeof PaiementVipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1832,6 +1884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieDesPartisRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/vip': {
+      id: '/_authenticated/_game/vip'
+      path: '/vip'
+      fullPath: '/vip'
+      preLoaderRoute: typeof AuthenticatedGameVipRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/voyages': {
       id: '/_authenticated/_game/voyages'
       path: '/voyages'
@@ -1973,6 +2032,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
   AuthenticatedGameVieAdministrativeRoute: typeof AuthenticatedGameVieAdministrativeRoute
   AuthenticatedGameVieDesPartisRoute: typeof AuthenticatedGameVieDesPartisRoute
+  AuthenticatedGameVipRoute: typeof AuthenticatedGameVipRoute
   AuthenticatedGameVoyagesRoute: typeof AuthenticatedGameVoyagesRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameElectionsIdRoute: typeof AuthenticatedGameElectionsIdRoute
@@ -2063,6 +2123,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameVieAdministrativeRoute:
       AuthenticatedGameVieAdministrativeRoute,
     AuthenticatedGameVieDesPartisRoute: AuthenticatedGameVieDesPartisRoute,
+    AuthenticatedGameVipRoute: AuthenticatedGameVipRoute,
     AuthenticatedGameVoyagesRoute: AuthenticatedGameVoyagesRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameElectionsIdRoute: AuthenticatedGameElectionsIdRoute,
@@ -2097,11 +2158,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AccordParentalRoute: AccordParentalRoute,
+  AccordVipRoute: AccordVipRoute,
   AuthRoute: AuthRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   DecouvrirRoute: DecouvrirRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   PaiementStyleRoute: PaiementStyleRoute,
+  PaiementVipRoute: PaiementVipRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TilesSplatRoute: TilesSplatRoute,
 }

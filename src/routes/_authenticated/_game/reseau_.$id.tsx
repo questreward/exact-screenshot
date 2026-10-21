@@ -1,3 +1,4 @@
+import { VipBadge } from "@/components/game/VipBadge";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
@@ -41,6 +42,7 @@ function ProfilePage() {
     {!p.blocked_by_me && <CivicProfileCard id={p.id} />}
     <section className="space-y-2 rounded-lg border border-border bg-card p-5">
       {!p.blocked_by_me && <PlayerLook id={p.id} />}
+      {!p.blocked_by_me && <div className="text-center"><VipBadge characterId={p.id} /></div>}
       <h1 className="text-2xl font-bold">{p.name}</h1>
       <p className="text-muted-foreground">{p.age} ans · {p.city}{p.situation ? ` · ${p.situation}` : ""}</p>
       {p.bio && <p className="whitespace-pre-wrap">{p.bio}</p>}
