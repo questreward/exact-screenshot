@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { CharacterAvatar } from "@/components/game/CharacterAvatar";
+import { normalizeAppearance } from "@/game/appearance";
+import { lookQuery } from "@/game/style-look";
 import { UserPlus, Star, Landmark, Store, Users, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLifeMutation } from "@/components/game/LifeControls";
@@ -13,6 +16,13 @@ export const Route = createFileRoute("/_authenticated/_game/reseau_/$id")({
   loader: async ({ context: { queryClient: q }, params }) => { await q.ensureQueryData(playerProfileQuery(params.id)); },
   component: ProfilePage,
 });
+
+function PlayerLook({ id }: { id: string }) {
+  const { data } = useQuery({ ...lookQuery(id), throwOnError: false });
+  if (!data) return null;
+  return <div className="mx-auto aspect-[6/7] w-32 overflow-hidden rounded-3xl border border-border">
+    <CharacterAvatar appearance={normalizeAppearance(data.appearance as never)} look={data.look} /></div>;
+}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return <div className="rounded-md bg-muted p-3 text-center"><p className="text-xl font-bold">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>;
@@ -29,6 +39,7 @@ function ProfilePage() {
     <Button asChild variant="ghost" className="h-12"><Link to="/reseau">← Réseau</Link></Button>
     {!p.blocked_by_me && <CivicProfileCard id={p.id} />}
     <section className="space-y-2 rounded-lg border border-border bg-card p-5">
+      {!p.blocked_by_me && <PlayerLook id={p.id} />}
       <h1 className="text-2xl font-bold">{p.name}</h1>
       <p className="text-muted-foreground">{p.age} ans · {p.city}{p.situation ? ` · ${p.situation}` : ""}</p>
       {p.bio && <p className="whitespace-pre-wrap">{p.bio}</p>}
