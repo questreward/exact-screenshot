@@ -2223,3 +2223,7 @@ export const businessPromoQuery = (businessId: string) => queryOptions({ queryKe
   return p && new Date(p.ends_at).getTime() > Date.now() - 86400000 * 0 ? p : null; } });
 export async function startBusinessPromo(percent: number) {
   const { data, error } = await (supabase as any).rpc('business_start_promo', { _percent: percent }); if (error) throw new Error(error.message); return data; }
+export const activePromosQuery = queryOptions({ queryKey: ['business-promos-active'], queryFn: async () => {
+  const { data, error } = await (supabase as any).from('business_promos').select('business_id,percent,ends_at').gt('ends_at', new Date().toISOString()).limit(200);
+  if (error) return {} as Record<string, number>;
+  return Object.fromEntries((data ?? []).map((r: { business_id: string; percent: number }) => [r.business_id, r.percent])) as Record<string, number>; } });

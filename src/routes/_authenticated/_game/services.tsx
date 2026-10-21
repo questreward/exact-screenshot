@@ -5,7 +5,7 @@ import { LoaderCircle, Wrench, Truck, Star, Receipt, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { serviceQuery, serviceRpc, type ServiceInvoice, type ServiceProvider, type ServiceState } from "@/services/game";
+import { activePromosQuery, serviceQuery, serviceRpc, type ServiceInvoice, type ServiceProvider, type ServiceState } from "@/services/game";
 import { BusinessPromo } from "@/components/game/BusinessPromo";
 import { gameMeta } from "@/game/metadata";
 import { FICTIVE_LABEL, SERVICE_LABEL, expectedNpcClients, serviceAmount } from "@/game/services";
@@ -68,9 +68,10 @@ function ServicesPage() {
 }
 
 function ProviderList({ list, fictive }: { list: ServiceProvider[]; fictive: string }) {
+  const { data: promos } = useQuery(activePromosQuery);
   return <ul className="space-y-2">
     {list.map(p => <li key={p.id} className="rounded-xl border border-border bg-card p-4">
-      <div className="flex items-start justify-between gap-2"><div><p className="font-heading font-bold">{p.name}</p>
+      <div className="flex items-start justify-between gap-2"><div><p className="font-heading font-bold">{p.name}{promos?.[p.id] && <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">🏷️ −{promos[p.id]} %</span>}</p>
         <p className="text-xs text-muted-foreground">Tenu par {p.mine ? "toi" : p.owner} · tarif {p.percent} % du prix normal</p></div><Stars value={p.rating} count={p.reviews} /></div>
       {p.last_reviews.length > 0 && <ul className="mt-2 space-y-1 text-sm">{p.last_reviews.map((r, k) => <li key={k} className="text-muted-foreground">« {r.comment ?? "—"} » <span className="text-xs">— {r.author}, {r.stars}/5</span></li>)}</ul>}
     </li>)}
