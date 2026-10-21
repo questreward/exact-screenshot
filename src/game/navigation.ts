@@ -110,16 +110,27 @@ export const COMING_SOON = "Disponible dans une prochaine étape";
 
 export type SectionGroup = { id: string; label: string; ids: string[] };
 
-// Big menu headings: every section belongs to exactly one group.
+// "Plus" menu headings: every section belongs to exactly one group.
 export const SECTION_GROUPS: SectionGroup[] = [
-  { id: "moi", label: "Moi", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "orientation", "mes-documents", "famille", "sante", "trophees"] },
-  { id: "quotidien", label: "Quotidien", ids: ["agenda", "titres", "la-poste", "civitas-services", "caisse-des-aides", "espace-emploi", "espace-sante", "vie", "etudes", "carriere", "secours", "permis", "transports", "conduite", "logement", "chez-moi", "telephone", "demarches", "vie-administrative"] },
-  { id: "argent", label: "Argent et achats", ids: ["banque", "patrimoine", "impots", "retraite", "boutique", "marche", "services", "agence", "concession", "construction", "recrutement", "assurances"] },
-  { id: "monde", label: "Monde", ids: ["voyages", "monde", "carte", "france", "evenements", "crises", "conjoncture", "actualites", "jt", "presse"] },
-  { id: "societe", label: "Société", ids: ["civi", "reseau", "organisations", "syndicats", "justice", "classements"] },
-  { id: "citoyen", label: "Citoyenneté et politique", ids: ["ma-ville", "projets", "petitions", "politique", "presidence", "elections", "vie-des-partis", "lois", "mandat", "debats", "debats-publics", "sondages", "verification"] },
+  { id: "vie", label: "Vie", ids: ["personnage", "mon-profil", "ma-vie", "mon-parcours", "vie", "agenda", "famille", "sante", "espace-sante", "etudes", "carriere", "espace-emploi", "secours", "retraite", "trophees"] },
+  { id: "argent", label: "Argent", ids: ["banque", "patrimoine", "assurances", "impots", "caisse-des-aides", "conjoncture"] },
+  { id: "achats", label: "Achats et services", ids: ["boutique", "marche", "services", "civitas-services", "concession", "recrutement"] },
+  { id: "logement", label: "Logement", ids: ["logement", "chez-moi", "construction", "agence"] },
+  { id: "deplacements", label: "Déplacements", ids: ["carte", "france", "permis", "conduite", "transports", "voyages"] },
+  { id: "papiers", label: "Papiers", ids: ["demarches", "vie-administrative", "mes-documents", "titres", "la-poste", "telephone"] },
+  { id: "citoyen", label: "Citoyenneté", ids: ["ma-ville", "projets", "petitions", "justice", "elections", "politique", "orientation", "vie-des-partis", "mandat", "lois", "presidence", "debats", "debats-publics", "sondages", "verification"] },
+  { id: "infos", label: "Ville et actualités", ids: ["monde", "evenements", "crises", "actualites", "jt", "presse"] },
+  { id: "social", label: "Social", ids: ["civi", "reseau", "organisations", "syndicats", "classements"] },
   { id: "reglages", label: "Réglages", ids: ["parametres"] },
 ];
+
+// Bottom-bar hubs: short themed lists opened by "Ma vie" and "Ma ville".
+export const LIFE_HUB = ["personnage", "ma-vie", "vie", "agenda", "famille", "sante", "etudes", "carriere", "patrimoine", "logement", "chez-moi", "mes-documents"];
+export const CITY_HUB = ["ma-ville", "evenements", "crises", "projets", "actualites", "jt", "politique", "elections", "mandat", "organisations", "civitas-services", "justice"];
+
+export function hubSections(ids: string[]) {
+  return ids.map((id) => SECTIONS.find((s) => s.id === id)).filter((s): s is Section => !!s);
+}
 
 export function groupedSections() {
   return SECTION_GROUPS.map((g) => ({
