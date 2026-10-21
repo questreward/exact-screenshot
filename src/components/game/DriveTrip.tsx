@@ -11,6 +11,7 @@ import { midView } from "@/game/trip-map";
 import { VehicleInterior } from "./VehicleInterior";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
 import { useWorldClock } from "./WorldClock";
+import { daylight } from "@/game/daylight";
 
 // Presentation only: the trip itself is recorded by the existing secured travel action.
 type Phase = "ready" | "boarding" | "driving" | "light" | "arriving" | "parked";
@@ -81,7 +82,7 @@ export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minute
 
         {(phase === "driving" || phase === "light" || phase === "arriving") && <div className="mt-3 space-y-3 animate-page">
           <div className="relative">
-            <VehicleInterior kind="voiture" speed={speed} limit={50} label={`Vers ${toName}`} />
+            <div className="relative overflow-hidden rounded-xl"><VehicleInterior kind="voiture" speed={speed} limit={50} label={`Vers ${toName}`} /><div className={`pointer-events-none absolute inset-0 ${daylight(time.getUTCHours()).overlay}`} /><span className="absolute left-2 top-2 rounded-md bg-background/85 px-2 py-1 text-xs">{daylight(time.getUTCHours()).emoji} {daylight(time.getUTCHours()).label}</span></div>
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[38%] h-8 overflow-hidden">
               {["🚙", "🚌", "🚲", "🚕"].map((c, i) => <span key={i} className="absolute text-xl animate-drift" style={{ left: `${i * 25}%`, animationDuration: `${12 + i * 5}s`, animationDelay: `-${i * 3}s` }}>{c}</span>)}
             </div>
