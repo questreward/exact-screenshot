@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/_game/style")({
   component: StylePage,
 });
 
+const previewLook = (id: string) => { const slot = STYLE_SLOT[id]; return slot ? { [slot]: id } : {}; };
 const eur = (c: number) => `${(c / 100).toFixed(2).replace(".", ",")} €`;
 
 function StylePage() {
@@ -56,9 +57,9 @@ function StylePage() {
     {minor && <p className="rounded-xl border border-border bg-card p-3 text-sm">Tu as moins de 18 ans : chaque achat demande l'accord d'un parent. Il reçoit un email, accepte et paie lui-même.</p>}
     <div className="grid gap-3 sm:grid-cols-2">
       {data.items.map((it) => {
-        const owned = data.owned.has(it.id); const waiting = data.waiting.has(it.id);
+        const owned = data.owned.has(it.id); const waiting = data.waiting.has(it.id); const slot = STYLE_SLOT[it.id];
         return <div key={it.id} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4">
-          {ch && <div role="img" aria-label={`Aperçu de ${it.name}`} className="mx-auto aspect-[6/7] w-40 overflow-hidden rounded-lg product-turn"><CharacterAvatar appearance={normalizeAppearance(ch.appearance as never)} look={{ ...look, ...(STYLE_SLOT[it.id] ? { [STYLE_SLOT[it.id]]: it.id } : {}) }} /></div>}
+          {ch && <div role="img" aria-label={`Aperçu de ${it.name}`} className="mx-auto aspect-[6/7] w-40 overflow-hidden rounded-lg product-turn"><CharacterAvatar appearance={normalizeAppearance(ch.appearance as never)} look={{ ...look, ...(slot ? { [slot]: it.id } : {}) }} /></div>}
           <span className="w-fit rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">{it.kind}</span>
           <p className="font-heading font-semibold">{it.name}</p>
           <p className="flex-1 text-sm text-muted-foreground">{it.description}</p>
@@ -72,7 +73,7 @@ function StylePage() {
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{pick?.name}</DialogTitle>
           <DialogDescription>Prix : {pick && eur(pick.price_cents)}, payé une seule fois en argent réel. Aucun abonnement.</DialogDescription></DialogHeader>
-        {pick && ch && <div role="img" aria-label={`Aperçu de ${pick.name}`} className="mx-auto aspect-[6/7] w-36 product-turn"><CharacterAvatar appearance={normalizeAppearance(ch.appearance as never)} look={{ ...look, ...(STYLE_SLOT[pick.id] ? { [STYLE_SLOT[pick.id]]: pick.id } : {}) }} /></div>}
+        {pick && ch && <div role="img" aria-label={`Aperçu de ${pick.name}`} className="mx-auto aspect-[6/7] w-36 product-turn"><CharacterAvatar appearance={normalizeAppearance(ch.appearance as never)} look={{ ...look, ...previewLook(pick.id) }} /></div>}
         {minor ? <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="pe">Email de ton parent</label>
           <Input id="pe" type="email" className="h-12" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@exemple.fr" />

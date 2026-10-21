@@ -1,3 +1,6 @@
+import vipCity from "@/assets/products/vip-city.jpg";
+import { CharacterAvatar } from "@/components/game/CharacterAvatar";
+import { normalizeAppearance } from "@/game/appearance";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -30,7 +33,7 @@ function VipPage() {
   const minor = (ch?.age ?? 18) < 18;
   const read = useServerFn(vipStatus); const start = useServerFn(startVip); const cancel = useServerFn(cancelVip); const claim = useServerFn(claimVipItems);
   const qc = useQueryClient();
-  const { data: st, refetch } = useQuery({ queryKey: ["vip-status"], queryFn: () => read(), retry: false });
+  const { data: st, refetch, isError } = useQuery({ queryKey: ["vip-status"], queryFn: () => read(), retry: false });
   const [email, setEmail] = useState(""); const [ok, setOk] = useState(false); const [busy, setBusy] = useState(false);
   const theme = usePhoneTheme();
   const active = st?.status === "actif";
@@ -53,29 +56,42 @@ function VipPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <header className="rounded-2xl bg-secondary p-5 text-secondary-foreground">
-        <p className="font-heading text-2xl font-bold">⭐ CIVITAS VIP</p>
-        <p className="mt-1 text-sm opacity-90">2,99 € par mois · sans engagement · résiliable à tout moment</p>
-        <p className="mt-2 text-xs opacity-80">Le VIP ne donne aucun avantage pour gagner : ni argent du jeu, ni énergie, ni votes. Seulement du style et du confort.</p>
+      <header className="relative isolate overflow-hidden border-b border-border">
+        <img src={vipCity} alt="Paris au crépuscule" width={1280} height={768} fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 bg-background/80" />
+        <div className="space-y-4 px-5 py-10 sm:px-8">
+          <p className="text-sm font-semibold text-primary">Votre vie. Votre ville. Votre histoire.</p>
+          <h1 className="font-heading text-3xl font-bold">CIVITAS VIP</h1>
+          <p className="max-w-md text-sm">Un style à toi, plus de lieux à retrouver et des voyages plus courts.</p>
+          <p className="font-heading text-4xl font-bold">2,99 € <span className="font-sans text-base font-normal text-muted-foreground">/ mois · argent réel</span></p>
+          <p className="text-xs text-muted-foreground">Sans engagement · résiliable à tout moment · sans essai gratuit</p>
+          <a href="#abonnement-vip" className="inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground">{active ? 'Mon abonnement' : 'Découvrir mon abonnement'}</a>
+        </div>
       </header>
+      <section className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-border py-5 sm:grid-cols-[140px_1fr]">
+        <div role="img" aria-label="Tenue de gala et cadre Étoile VIP" className="aspect-[6/7] product-turn"><CharacterAvatar appearance={normalizeAppearance(ch?.appearance)} look={{ tenue: 'vip-tenue-gala', cadre: 'vip-cadre-etoile' }} /></div>
+        <div><h2 className="font-heading text-lg font-bold">Ta signature dans la ville</h2><p className="mt-2 text-sm text-muted-foreground">La tenue de gala et le cadre Étoile, à porter sur ton personnage.</p></div>
+      </section>
       <ul className="grid grid-cols-2 gap-3">{PERKS.map((p) => (
-        <li key={p.t} className="rounded-xl border border-border bg-card p-3"><span className="text-2xl">{p.e}</span><p className="font-semibold">{p.t}</p><p className="text-xs text-muted-foreground">{p.d}</p></li>))}</ul>
+        <li key={p.t} className="min-w-0 rounded-lg border border-border bg-card p-3"><span className="text-2xl">{p.e}</span><p className="font-semibold">{p.t}</p><p className="text-xs text-muted-foreground">{p.d}</p></li>))}</ul>
 
-      {!st ? <p className="text-sm text-muted-foreground">Chargement…</p> : active ? (
+      <p className="text-sm text-muted-foreground">Aucun argent du jeu, énergie ou vote offert. L’horloge reste commune à ×4 ; seuls les voyages entre villes sont raccourcis pour les VIP.</p>
+      <div id="abonnement-vip" className="scroll-mt-20" />
+      {isError ? <div role="alert"><p>Impossible de consulter ton abonnement.</p><Button variant="outline" className="min-h-12" onClick={() => refetch()}>Réessayer</Button></div> : !st ? <p className="text-sm text-muted-foreground">Chargement…</p> : active ? (
         <section className="space-y-3 rounded-xl border border-primary bg-card p-4">
-          <h1 className="font-heading text-lg font-bold">Mon abonnement</h1>
+          <h2 className="font-heading text-lg font-bold">Mon abonnement</h2>
           <p className="text-sm">{st.cancelAtEnd ? `Résilié : tu restes VIP jusqu'au ${until}, puis rien ne sera plus payé.` : `Actif · prochain paiement de 2,99 € le ${until}.`}</p>
           <Button className="min-h-12 w-full" disabled={busy} onClick={() => act(() => claim(), "Objets exclusifs ajoutés à ta garde-robe")}>Recevoir mes objets exclusifs</Button>
           <Button asChild variant="outline" className="min-h-12 w-full"><Link to="/style">Porter mes tenues et cadres</Link></Button>
           <div><p className="text-sm font-semibold">Thème du téléphone</p><div className="mt-2 grid grid-cols-2 gap-2">{PHONE_THEMES.map((t) => (
-            <button key={t.id} type="button" onClick={() => theme.choose(t.id)} className={`min-h-12 rounded-xl border text-sm ${theme.id === t.id ? "border-primary bg-primary/15 font-semibold" : "border-border"}`}>{t.label}</button>))}</div></div>
+            <Button variant="outline" aria-pressed={theme.id === t.id} key={t.id} type="button" onClick={() => theme.choose(t.id)} className={`min-h-12 rounded-xl border text-sm ${theme.id === t.id ? "border-primary bg-primary/15 font-semibold" : "border-border"}`}>{t.label}</Button>))}</div></div>
           {!st.cancelAtEnd && <Button variant="outline" className="min-h-12 w-full" disabled={busy} onClick={() => { if (confirm("Résilier le VIP ? Tu le gardes jusqu'à la fin du mois payé.")) act(() => cancel(), "Abonnement résilié"); }}>Résilier mon abonnement</Button>}
         </section>
       ) : st.status === "attente_parent" ? (
-        <p className="rounded-xl border border-border bg-card p-4 text-sm">📧 Demande envoyée à ton parent. Le VIP s'activera quand il aura accepté et payé. <button type="button" className="underline" onClick={() => refetch()}>Actualiser</button></p>
+        <p className="rounded-xl border border-border bg-card p-4 text-sm">📧 Demande envoyée à ton parent. Le VIP s'activera quand il aura accepté et payé. <Button variant="link" onClick={() => refetch()}>Actualiser</Button></p>
       ) : (
         <section className="space-y-3 rounded-xl border border-border bg-card p-4">
-          <h1 className="font-heading text-lg font-bold">Devenir VIP</h1>
+          <h2 className="font-heading text-lg font-bold">Devenir VIP</h2>
           {minor && <>
             <p className="text-sm">Tu as moins de 18 ans : un parent doit accepter. Il recevra un email et paiera lui-même.</p>
             <Input type="email" inputMode="email" placeholder="Email de ton parent" value={email} onChange={(e) => setEmail(e.target.value)} className="min-h-12" />

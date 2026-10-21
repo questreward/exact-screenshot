@@ -7,6 +7,7 @@ import type { StyleLook } from "@/components/game/CharacterAvatar";
 export const STYLE_SLOT: Record<string, keyof StyleLook> = {
   "cadre-or": "cadre", "cadre-tricolore": "cadre", "tenue-costume": "tenue", "tenue-sport": "tenue",
   "tenue-soiree": "tenue", "badge-pionnier": "badge", "fond-tour": "fond", "fond-mer": "fond",
+  "vip-tenue-gala": "tenue", "vip-cadre-etoile": "cadre",
 };
 
 // Apparence + objets portés d'un joueur, enregistrés sur le serveur (visibles par les autres joueurs).

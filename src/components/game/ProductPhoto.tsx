@@ -6,7 +6,7 @@ import { canPreviewRoom, productConfiguration, resolveProductSlug, type ProductV
 import room from '@/assets/products/preview-room.jpg';
 const images = import.meta.glob<string>('/src/assets/products/*.png', { eager: true, query: '?url', import: 'default' });
 const photos = Object.fromEntries(Object.entries(images).map(([path, url]) => [path.split('/').pop()?.replace('.png', '') ?? '', url]));
-export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails; fallback?: string; className?: string; animated?: boolean }) {
+export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails; fallback?: string | undefined; className?: string; animated?: boolean }) {
   const slug = resolveProductSlug(name, details, Object.keys(photos));
   const src = slug ? photos[slug] : fallback;
   return <div className={`product-stage relative overflow-hidden bg-muted ${className}`}>
@@ -31,7 +31,7 @@ export function ProductPreview({ name, section, details, fallback }: { name: str
     </DialogContent></Dialog>
   </>;
 }
-export function PurchaseUnboxing({ products }: { products: { name: string; details?: ProductVisualDetails }[] }) {
+export function PurchaseUnboxing({ products }: { products: { name: string; details?: ProductVisualDetails | undefined }[] }) {
   const [opened, setOpened] = useState(false);
   if (!products.length) return null;
   return <section className="space-y-3 text-center"><Button variant="secondary" className="min-h-12 w-full gap-2" onClick={() => setOpened(!opened)}><PackageOpen className="h-5 w-5" />{opened ? 'Refermer mes achats' : 'Déballer mes achats'}</Button>
