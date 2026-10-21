@@ -1,6 +1,6 @@
 import { favorites, recents, toggleFavorite, pushRecent, crowdLevel, type SavedPlace } from "@/game/place-memory";
 import { lifeQuery } from '@/services/game';
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
 import type { RealMarker } from "./RealMap";
