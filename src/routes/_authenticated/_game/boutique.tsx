@@ -1,3 +1,4 @@
+import { CreditRecap } from "@/components/game/CreditRecap";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -290,8 +291,8 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
         <label className="block text-sm">Durée<select className={`${select} mt-1`} value={months} onChange={e => setMonths(Number(e.target.value))}>
           {durations.map(m => <option key={m} value={m}>{immo ? `${m / 12} ans` : `${m} mois`}</option>)}</select></label></div>
       {pct > 0 && <p className="mb-2 text-xs text-muted-foreground">La promo s'applique seulement au comptant.</p>}
-      <ul className="mb-3 space-y-1 text-sm">{row("Montant emprunté", eur(principal))}{row("Taux", `${rate} %`)}{row("Mensualité", `${eur(monthly)} / mois`)}
-        {row("Coût des intérêts", eur(creditCost(principal, rate, months)))}{immo && row("Frais de notaire (comptant)", eur(fees))}{row("Payé aujourd'hui", eur(d + fees))}</ul>
+      <div className="mb-3"><CreditRecap kind={immo ? "immo" : "auto"} price={p.price} down={d} fees={immo ? fees : 0} rate={rate} months={months} balance={s.balance} income={s.credit.income} burden={s.credit.burden} /></div>
+      <p className="mb-2 text-xs text-muted-foreground">Taux {rate} %.</p>
       {creditProblem && <p className="mb-3 text-sm text-destructive">{creditProblem}</p>}
       <p className="mb-3 text-xs text-muted-foreground">Mensualités prélevées chaque mois de jeu. Impayés : frais, baisse de la note bancaire, puis reprise du bien.</p>
       <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="h-12" onClick={onClose}>Annuler</Button>

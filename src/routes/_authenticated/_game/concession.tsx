@@ -1,3 +1,5 @@
+import { CreditRecap } from "@/components/game/CreditRecap";
+import { shopQuery } from "@/services/game";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -73,6 +75,7 @@ function NewCar({ dealer, car, busy, onBuy }: { dealer: string; car: DealerState
   const [credit, setCredit] = useState(false);
   const [down, setDown] = useState(String(Math.ceil(car.catalog_price * 0.1)));
   const [months, setMonths] = useState("48");
+  const { data: shop } = useQuery({ ...shopQuery, enabled: credit });
   return <div className="space-y-3 rounded-xl border border-border bg-card p-4">
     <div className="flex items-center justify-between gap-2"><div><p className="font-semibold">{car.brand ? `${car.brand} ` : ""}{car.name}</p>
       <p className="text-xs text-muted-foreground">{car.quantity} en stock · prix catalogue {eur(car.catalog_price)}</p></div>
@@ -87,6 +90,7 @@ function NewCar({ dealer, car, busy, onBuy }: { dealer: string; car: DealerState
         <label className="text-xs">Apport (€)<Input className="mt-1 h-11" type="number" inputMode="numeric" value={down} onChange={e => setDown(e.target.value)} /></label>
         <label className="text-xs">Durée (mois)<Input className="mt-1 h-11" type="number" inputMode="numeric" value={months} onChange={e => setMonths(e.target.value)} /></label>
       </div>
+      {shop && <CreditRecap kind="auto" price={car.catalog_price} down={Number(down) || 0} fees={0} rate={shop.credit.settings.auto_rate} months={Number(months) || 0} balance={shop.balance} income={shop.credit.income} burden={shop.credit.burden} />}
       <Button className="h-11 w-full" disabled={busy} onClick={() => onBuy({ _business_id: dealer, _catalog_id: car.catalog_id, _down_payment: Number(down), _months: Number(months) }, "Crédit accepté, voiture achetée !")}>Confirmer le crédit</Button>
     </div>}
   </div>;
