@@ -7,7 +7,7 @@ import { BankLoans } from "@/components/game/BankLoans";
 import { InsuranceCard } from "@/components/game/InsuranceCard";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { normalizeAppearance } from "@/game/appearance";
-import { bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
+import { notificationsQuery, clockQuery, bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
 import { CivicSummary } from '@/components/game/CivicSummary';
 import { SocialContacts } from "@/components/game/SocialContacts";
 import { cn } from "@/lib/utils";
@@ -20,12 +20,12 @@ import { economyQuery } from '@/services/game';
 import { EconomyBankLinks } from '@/components/game/EconomyPage';
 import { MessagesApp, CiviApp } from '@/components/game/CommunicationApps';
 import { communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, civiFeedQuery, positionQuery } from '@/services/game';
-import { badgeLabel } from '@/game/communication';
+import { PhoneHome } from '@/components/game/PhoneHome';
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
   head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery), q.ensureQueryData(positionQuery)]); await q.fetchQuery(communicationQuery); await Promise.all([q.ensureQueryData(threadsQuery), q.ensureQueryData(messagesQuery), q.ensureQueryData(messageTemplatesQuery), q.ensureQueryData(civiFeedQuery)]); },
+  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(notificationsQuery), q.ensureQueryData(clockQuery)]); await q.fetchQuery(communicationQuery); await Promise.all([q.ensureQueryData(threadsQuery), q.ensureQueryData(messagesQuery), q.ensureQueryData(messageTemplatesQuery), q.ensureQueryData(civiFeedQuery)]); },
   component: PhonePage,
 });
 
@@ -43,26 +43,7 @@ function PhonePage() {
         <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-background" />
         <div className="min-h-[560px] rounded-[2rem] bg-background p-4">
           {!current ? (
-            <>
-              <p className="mb-6 text-center font-display text-4xl font-semibold">
-                {new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-              </p>
-              <div className="grid grid-cols-3 gap-4">
-                {PHONE_APPS.map((a) => (
-                  <Button variant="ghost" key={a.id} onClick={() => open(a.id)} className="h-auto flex-col gap-2 px-0 py-1">
-                    <span className={cn("relative flex h-16 w-16 items-center justify-center rounded-2xl",
-                      a.available ? "bg-gradient-primary text-primary-foreground shadow-elegant" : "bg-muted text-muted-foreground")}>
-                      <a.icon className="h-7 w-7" />
-                      {a.id === "actualites" && news.unread_count > 0 && <span aria-label={`${news.unread_count} actualités non lues`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{news.unread_count > 99 ? "99+" : news.unread_count}</span>}
-                      {a.id === "messages" && comm.unread > 0 && <span aria-label={`${comm.unread} messages non lus`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{badgeLabel(comm.unread)}</span>}
-                      {!a.available && <Lock className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-background p-1" />}
-                    </span>
-                    <span className="text-xs">{a.label}</span>
-                  </Button>
-                ))}
-              </div>
-              <div className="mt-5 border-t border-border pt-4"><GovernanceLink/></div>
-            </>
+            <><PhoneHome open={open} /><div className="mt-5 border-t border-border pt-4"><GovernanceLink/></div></>
           ) : (
             <div>
               <button onClick={() => open(undefined)} className="mb-4 flex h-10 items-center gap-1 text-sm text-primary">
