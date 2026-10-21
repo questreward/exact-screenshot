@@ -27,3 +27,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] H. Tenues et cadres portés visibles sur le profil public des autres joueurs (0123 prête, attend installation)
 - [ ] I. Faire découvrir le jeu (réseaux sociaux) — après G et H
 - [ ] J. Page publique « Découvrir » + lien d'invitation à partager
+- [ ] K. Grand prompt récapitulatif pour ChatGPT (fichier dans Files)
