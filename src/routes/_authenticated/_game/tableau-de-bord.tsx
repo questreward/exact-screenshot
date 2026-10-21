@@ -49,7 +49,7 @@ function Dashboard() {
               <li key={n.id}>
                 {n.news_id
                   ? <Link to="/actualites/$id" params={{ id: n.news_id }} className="block min-h-11 rounded-2xl bg-accent/60 p-3 active:scale-[0.98]"><p className="font-semibold">{n.title}</p><p className="text-sm text-muted-foreground">{n.body}</p></Link>
-                  : <Link to={notificationTarget(n) as "/banque"} className="block min-h-11 rounded-2xl bg-accent/60 p-3 active:scale-[0.98]"><p className="font-semibold">{n.title}</p><p className="text-sm text-muted-foreground">{n.body}</p></Link>}
+                  : <Link to={notificationTarget(n) as "/banque"} className="block min-h-11 rounded-2xl bg-accent/60 p-3 active:scale-[0.98]">{notificationTarget(n) === "/la-poste" && <p className="text-xs font-bold uppercase text-primary">📄 Nouveau document · {n.read ? "lu" : "à ouvrir"}</p>}<p className="font-semibold">{n.title}</p><p className="text-sm text-muted-foreground">{n.body}</p></Link>}
               </li>
             ))}
           </ul>

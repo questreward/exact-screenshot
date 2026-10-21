@@ -1,5 +1,5 @@
 // Presentation-only: picks the single most relevant pointer to an existing page.
-export type NextStep = { emoji: string; title: string; detail: string; to: string; cta: string };
+export type NextStep = { emoji: string; title: string; detail: string; to: string; cta: string; endOfDay?: boolean };
 
 type Act = { title: string; start_time: string; end_time: string; status: string };
 type Notif = { title: string; body: string; read: boolean; news_id: string | null };
@@ -32,12 +32,14 @@ export function nextStep(i: Input): NextStep {
   const nowMs = i.now.getTime();
   const current = live.find((a) => Date.parse(a.start_time) <= nowMs && Date.parse(a.end_time) > nowMs);
   if (current) return { emoji: "⏳", title: `En cours : ${current.title}`, detail: `Fin prévue à ${hm(new Date(current.end_time))}.`, to: "/agenda", cta: "Voir mon agenda" };
+  const justEnded = i.activities.filter((a) => a.status !== "cancelled").filter((a) => { const e = Date.parse(a.end_time); return e <= nowMs && nowMs - e < 60 * 60000; }).sort((a, b) => Date.parse(b.end_time) - Date.parse(a.end_time))[0];
   const upcoming = live.filter((a) => Date.parse(a.start_time) > nowMs).sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time))[0];
   if (upcoming) {
     const mins = Math.round((Date.parse(upcoming.start_time) - nowMs) / 60000);
     const when = mins < 60 ? `dans ${mins} min` : `à ${hm(new Date(upcoming.start_time))}`;
     return { emoji: "📅", title: `${upcoming.title} ${when}`, detail: "C'est ta prochaine activité prévue.", to: "/agenda", cta: "Voir mon agenda" };
   }
+  if (justEnded) return { emoji: "✅", title: `Fin : ${justEnded.title} — ${hm(new Date(justEnded.end_time))}`, detail: "Journée terminée. Tes gains et ton énergie sont à jour.", to: "/agenda", cta: "Mon agenda", endOfDay: true };
   const unread = i.notifications.find((n) => !n.read);
   if (unread) return { emoji: "🔔", title: unread.title, detail: unread.body, to: notificationTarget(unread), cta: "Voir" };
   if (!i.hasHousing) return { emoji: "🏠", title: "Trouver un logement", detail: "Tu n'as pas encore de chez-toi.", to: "/logement", cta: "Chercher" };

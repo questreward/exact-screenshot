@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, LayoutGrid, ChevronDown, Search, Home, User, Building2, Sparkles } from "lucide-react";
@@ -107,6 +107,7 @@ export function GameShell() {
   const signOut = useSignOut();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hub, setHub] = useState<null | "vie" | "ville">(null);
+  const path = useRouterState({ select: (s) => s.location.pathname });
   const tel = SECTIONS.find((s) => s.id === "telephone")!;
   const carte = SECTIONS.find((s) => s.id === "carte")!;
   return (
@@ -132,7 +133,7 @@ export function GameShell() {
 
       <main className="game-content mx-auto min-w-0 max-w-6xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">
         <BirthdayBanner />
-        <Outlet />
+        <div key={path} className="animate-page"><Outlet /></div>
       </main>
 
       {/* Mobile bottom nav: 5 entries */}
