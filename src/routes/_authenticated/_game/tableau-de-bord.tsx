@@ -1,3 +1,4 @@
+import { ElectionBanner } from "@/components/game/CampaignJourney";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Bell, CalendarClock, Lock } from "lucide-react";
@@ -37,6 +38,8 @@ function Dashboard() {
         energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
 
       <DiscoveryTour firstName={character.first_name} cityName={character.city?.name} />
+
+      <ElectionBanner />
 
       <NextStepCard cityName={character.city?.name} />
 
