@@ -1,4 +1,5 @@
 import { JobMissionCard } from "@/components/game/JobMissionCard";
+import { WorkDay } from "@/components/game/WorkDay";
 import { groupJobOffers, jobDetails, jobRequirements } from "@/game/jobs-catalog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -51,6 +52,7 @@ function CareerPage() {
   });
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
+    <WorkDay />
     <JobMissionCard />
     <header className="flex items-center gap-3"><Briefcase className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Ma carrière</h1><p className="text-sm text-muted-foreground">Entretiens, promotions, changement d'entreprise et chômage.</p></div></header>
