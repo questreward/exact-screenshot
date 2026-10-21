@@ -1,3 +1,4 @@
+import { useStyleLook } from "@/game/style-look";
 import { useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -43,6 +44,7 @@ async function shrinkPhoto(file: File): Promise<string> {
 }
 
 function AppearanceTab({ card }: { card: IdentityCardData }) {
+  const { look } = useStyleLook();
   const [a, setA] = useState<Appearance>(normalizeAppearance(card.appearance));
   const fileRef = useRef<HTMLInputElement>(null);
   const save = useLifeMutation(() => identityUpdate("appearance", a), "Apparence enregistrée");
@@ -69,7 +71,7 @@ function AppearanceTab({ card }: { card: IdentityCardData }) {
     </section>
     <section className="space-y-3 rounded-xl border border-border bg-card p-4">
       <h2 className="font-heading text-lg font-bold">Personnaliser l'avatar</h2>
-      <div className="mx-auto aspect-[3/4] w-28 overflow-hidden rounded-xl border border-border"><CharacterAvatar appearance={a} /></div>
+      <div className="mx-auto aspect-[3/4] w-28 overflow-hidden rounded-xl border border-border"><CharacterAvatar appearance={a} look={look} /></div>
       {GROUPS.map(g => <div key={g.key}><p className="mb-1 text-sm font-semibold">{g.label}</p>
         <div className="flex flex-wrap gap-2">{(APPEARANCE_OPTIONS[g.key] as Option[]).map(o =>
           <Button key={o.id} variant={a[g.key] === o.id ? "default" : "outline"} className="h-11" onClick={() => setA({ ...a, [g.key]: o.id })}>

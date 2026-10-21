@@ -8,11 +8,13 @@ const UNIFORM_COLOR: Record<Uniform, string> = {
 };
 
 // Simple layered SVG avatar. New appearance options plug in by id.
-export function CharacterAvatar({ appearance, className, photo, mood = "neutre", uniform }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined; mood?: Mood; uniform?: Uniform | null | undefined }) {
+export type StyleLook = { cadre?: string; tenue?: string; fond?: string; badge?: string };
+export function CharacterAvatar({ appearance, className, photo, mood = "neutre", uniform, look }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined; mood?: Mood; uniform?: Uniform | null | undefined; look?: StyleLook | undefined }) {
   if (photo) return <img src={photo} alt="" className={cn("h-full w-full object-cover", className)} />;
   const skin = optionValue("skin", appearance.skin);
   const hair = optionValue("hairColor", appearance.hairColor);
-  const outfit = uniform ? UNIFORM_COLOR[uniform] : optionValue("outfit", appearance.outfit);
+  const styled = look?.tenue === "tenue-costume" ? "#26303f" : look?.tenue === "tenue-sport" ? "#c0392b" : look?.tenue === "tenue-soiree" ? "#111111" : null;
+  const outfit = uniform ? UNIFORM_COLOR[uniform] : styled ?? optionValue("outfit", appearance.outfit);
   const shoulder = appearance.silhouette === "slim" ? 34 : appearance.silhouette === "broad" ? 46 : 40;
 
   return (
@@ -24,6 +26,7 @@ export function CharacterAvatar({ appearance, className, photo, mood = "neutre",
         </radialGradient>
       </defs>
       <rect width="120" height="140" rx="22" fill="url(#av-bg)" />
+      <StyleBackground fond={look?.fond} />
       <g className="avatar-alive">
       {/* body */}
       <path d={`M${60 - shoulder} 140 Q${60 - shoulder} 98 60 96 Q${60 + shoulder} 98 ${60 + shoulder} 140 Z`} fill={outfit} />
@@ -68,7 +71,22 @@ export function CharacterAvatar({ appearance, className, photo, mood = "neutre",
       {appearance.accessory === "earrings" && <g fill="var(--primary)"><circle cx="37" cy="68" r="2.5" /><circle cx="83" cy="68" r="2.5" /></g>}
       {appearance.accessory === "cap" && <path d="M36 46 Q36 26 60 26 Q84 26 84 46 Z M80 44 H98 Q96 50 84 48 Z" fill="var(--primary)" />}
       {appearance.accessory === "scarf" && <path d="M44 92 Q60 102 76 92 L78 100 Q60 110 42 100 Z" fill="var(--primary)" />}
+      {/* objets de style achetés */}
+      {!uniform && look?.tenue === "tenue-costume" && <g><path d="M52 97 L60 120 L68 97 Z" fill="#f4f4f4" /><path d="M58 100 L60 118 L62 100 Z" fill="#8b1e2d" /></g>}
+      {!uniform && look?.tenue === "tenue-sport" && <g stroke="#ffffff" strokeWidth="2.5"><path d={`M${60 - shoulder + 8} 108 L${60 - shoulder + 4} 140`} /><path d={`M${60 + shoulder - 8} 108 L${60 + shoulder - 4} 140`} /></g>}
+      {!uniform && look?.tenue === "tenue-soiree" && <path d="M53 97 L60 101 L67 97 L67 105 L60 101 L53 105 Z" fill="#c9a227" />}
       </g>
+      {look?.cadre === "cadre-or" && <rect x="2" y="2" width="116" height="136" rx="21" fill="none" stroke="#d4a72c" strokeWidth="4" />}
+      {look?.cadre === "cadre-tricolore" && <g fill="none" strokeWidth="4"><path d="M23 2 H2 V138 H23" stroke="#1d3a8a" /><path d="M23 2 H97 M23 138 H97" stroke="#f4f4f4" /><path d="M97 2 H118 V138 H97" stroke="#d62828" /></g>}
+      {look?.badge === "badge-pionnier" && <g transform="translate(100 20)"><circle r="11" fill="#d4a72c" /><path d="M0 -6 L2 -2 L6 -2 L3 1 L4 6 L0 3 L-4 6 L-3 1 L-6 -2 L-2 -2 Z" fill="#ffffff" /></g>}
     </svg>
   );
+}
+
+function StyleBackground({ fond }: { fond: string | undefined }) {
+  if (fond === "fond-tour") return <g><rect width="120" height="140" rx="22" fill="#14213d" />
+    {[[14, 20], [30, 12], [96, 16], [108, 34], [20, 44]].map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.2" fill="#ffffff" />)}
+    <path d="M98 140 L104 90 L106 60 L108 90 L114 140 Z" fill="#e0b84a" opacity="0.8" /></g>;
+  if (fond === "fond-mer") return <g><rect width="120" height="140" rx="22" fill="#7fc8d8" /><path d="M0 100 Q30 90 60 100 T120 100 V140 H0 Z" fill="#1f7a8c" /><path d="M0 60 L25 30 L45 60 Z M80 60 L105 25 L120 50 V60 Z" fill="#e8e1d0" /></g>;
+  return null;
 }

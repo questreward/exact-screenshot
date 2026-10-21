@@ -10,6 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { gameMeta } from "@/game/metadata";
 import { characterQuery, cosmeticShopQuery, type CosmeticItem } from "@/services/game";
 import { startCosmeticOrder } from "@/lib/cosmetics.functions";
+import { useStyleLook, STYLE_SLOT } from "@/game/style-look";
+import { CharacterAvatar } from "@/components/game/CharacterAvatar";
+import { normalizeAppearance } from "@/game/appearance";
 
 export const Route = createFileRoute("/_authenticated/_game/style")({
   head: () => ({ meta: gameMeta("Objets de style", "Tenues, cadres et fonds pour personnaliser ton personnage, sans aucun avantage dans le jeu.") }),
@@ -30,6 +33,7 @@ function StylePage() {
   const [busy, setBusy] = useState(false);
   const start = useServerFn(startCosmeticOrder);
   const qc = useQueryClient();
+  const { look, wear } = useStyleLook();
 
   async function buy() {
     if (!pick) return;
@@ -48,6 +52,7 @@ function StylePage() {
     <header className="flex items-center gap-3"><Sparkles className="h-8 w-8 text-primary" />
       <div><h1 className="font-heading text-2xl font-bold">Objets de style</h1>
         <p className="text-sm text-muted-foreground">Change seulement l'apparence. Aucun avantage dans le jeu.</p></div></header>
+    <div className="mx-auto aspect-[6/7] w-40 overflow-hidden rounded-3xl border border-border">{ch && <CharacterAvatar appearance={normalizeAppearance(ch.appearance as never)} look={look} />}</div>
     {minor && <p className="rounded-xl border border-border bg-card p-3 text-sm">Tu as moins de 18 ans : chaque achat demande l'accord d'un parent. Il reçoit un email, accepte et paie lui-même.</p>}
     <div className="grid gap-3 sm:grid-cols-2">
       {data.items.map((it) => {
@@ -56,7 +61,7 @@ function StylePage() {
           <span className="w-fit rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">{it.kind}</span>
           <p className="font-heading font-semibold">{it.name}</p>
           <p className="flex-1 text-sm text-muted-foreground">{it.description}</p>
-          {owned ? <p className="flex min-h-12 items-center gap-2 text-sm font-semibold text-primary"><Check className="h-5 w-5" />Tu le possèdes</p>
+          {owned ? (() => { const on = look[STYLE_SLOT[it.id]!] === it.id; return <Button variant={on ? "secondary" : "outline"} className="min-h-12" onClick={() => wear(it.id, !on)}>{on ? <><Check className="mr-2 h-5 w-5" />Porté — retirer</> : "Porter"}</Button>; })()
             : waiting ? <p className="flex min-h-12 items-center gap-2 text-sm text-muted-foreground"><Mail className="h-5 w-5" />En attente de l'accord parental</p>
             : <Button className="min-h-12" onClick={() => { setPick(it); setOk(false); }}>Acheter {eur(it.price_cents)}</Button>}
         </div>;
