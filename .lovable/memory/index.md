@@ -8,3 +8,4 @@
 - [Président Protection civile](mem://features/civil-protection-president.md) — Rôle national élu par les bénévoles, 4 pouvoirs, indemnité
 - [Réseau Civi V2](mem://features/civi-network.md) — 10 posts/jour, 3 signalements masquent, buzz +5 influence/sem max
 - [Président joueur](mem://features/player-president.md) — Intérim pour Alex puis présidentielle 2 tours ; PM, dissolution, lois, discours/référendum
+- [Vraie carte](mem://features/real-map.md) — Carte réelle sur le VPS, lieux aux vraies adresses, pas de service extérieur
