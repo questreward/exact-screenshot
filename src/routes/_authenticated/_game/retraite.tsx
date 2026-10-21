@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { claimRetirement, retirementQuery } from "@/services/game";
 import { euros } from "@/game/income-tax";
 import { quartersProgress } from "@/game/retirement";
+import { FinancialDesk, GameDocument } from "@/components/game/FinancialTools";
 import { gameMeta } from "@/game/metadata";
 
 export const Route = createFileRoute("/_authenticated/_game/retraite")({
@@ -29,6 +30,8 @@ function RetirementPage() {
     {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
     {!isLoading && !s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
     {s && <>
+      <FinancialDesk retirement title="Votre espace retraite" comment={s.retired_at ? `Votre pension enregistrée est de ${euros(s.monthly_pension ?? 0)} par mois. Votre relevé reprend les versements déjà reçus.` : `Votre carrière compte ${s.estimate.quarters} trimestres. Le départ est possible à ${s.settings.legal_age} ans ; l’estimation ci-dessous ne constitue pas encore un versement.`} />
+      <GameDocument title="Relevé individuel de carrière" reference={`Âge : ${s.age} ans · CIVITAS Retraite`} text={`Trimestres : ${s.estimate.quarters} / ${s.settings.full_quarters}\nEstimation mensuelle : ${euros(s.estimate.monthly)}\nDépart possible : ${s.settings.legal_age} ans`}><dl className="grid grid-cols-2 gap-4 text-sm"><div><dt className="text-muted-foreground">Trimestres enregistrés</dt><dd className="font-semibold">{s.estimate.quarters} / {s.settings.full_quarters}</dd></div><div><dt className="text-muted-foreground">{s.retired_at ? "Pension enregistrée" : "Estimation mensuelle"}</dt><dd className="font-semibold">{euros(s.retired_at ? s.monthly_pension ?? 0 : s.estimate.monthly)}</dd></div></dl></GameDocument>
       {s.retired_at ? (
         <section className="rounded-xl border border-primary/30 bg-primary/10 p-4">
           <h2 className="font-heading text-base font-bold">Tu es à la retraite</h2>
