@@ -13,8 +13,8 @@ import auto from "@/assets/v2/shop-auto.webp";
 import immobilier from "@/assets/v2/ville-paris.webp";
 
 // Presentation only: existing catalogue sections shown as walkable aisles.
-const IMG: Record<string, string> = { tech, mode, maison, electromenager, loisirs, auto, immobilier };
-const EMOJI: Record<string, string> = { tech: "📱", maison: "🛋️", electromenager: "🧺", mode: "👕", loisirs: "⚽", auto: "🚗", immobilier: "🏠" };
+export const IMG: Record<string, string> = { tech, mode, maison, electromenager, loisirs, auto, immobilier };
+export const EMOJI: Record<string, string> = { tech: "📱", maison: "🛋️", electromenager: "🧺", mode: "👕", loisirs: "⚽", auto: "🚗", immobilier: "🏠" };
 const KEYS = Object.keys(SECTIONS);
 
 export function ShopHall({ onPick }: { onPick: (k: string) => void }) {
@@ -29,6 +29,12 @@ export function ShopHall({ onPick }: { onPick: (k: string) => void }) {
             <p className="text-sm text-muted-foreground">Choisis un rayon pour commencer tes courses.</p></div>
           <span className="glass rounded-xl px-2 py-1 text-xs font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} · Ouvert</span>
         </div>
+      </div>
+      <div aria-hidden className="relative h-10 overflow-hidden rounded-2xl bg-muted/50">
+        {["🧑‍🦱🛒", "👩🛍️", "👴", "🧒", "👩‍🦰🛒"].map((c, i) => (
+          <span key={i} className="absolute top-1.5 text-xl animate-drift" style={{ left: `${-10 + i * 22}%`, animationDuration: `${40 + i * 9}s`, animationDelay: `-${i * 7}s` }}>{c}</span>
+        ))}
+        <span className="absolute right-2 top-2 text-xs text-muted-foreground">🧾 Caisses ouvertes</span>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {KEYS.map((k, i) => (
