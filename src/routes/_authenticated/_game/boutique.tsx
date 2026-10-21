@@ -9,6 +9,7 @@ import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, 
 import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
+import { ShopHall, AisleHeader } from "@/components/game/ShopAisles";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -35,6 +36,7 @@ function ShopPage() {
   const [housingCity, setHousingCity] = useState("");
   const [housingRooms, setHousingRooms] = useState("");
   const [page, setPage] = useState(0);
+  const [showSearch, setShowSearch] = useState(!!entry.q);
   const pageSize = 24;
   useEffect(() => { setPage(0); }, [search, section, brand, max, sort, housingCity, housingRooms]);
   const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s });
@@ -94,14 +96,25 @@ function ShopPage() {
           <div className="mt-2 flex flex-wrap gap-2">{promoList.slice(0, 8).map(p => <Button key={p.id} variant="outline" onClick={() => setSearch(p.name)}
             className="min-h-11 h-auto whitespace-normal px-3 py-2 text-sm font-semibold">{p.name} <span className="text-primary">−{promo.get(p.id)} %</span></Button>)}</div>
         </section>}
-        <label className="relative block"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-          <input className="h-12 w-full rounded-lg border border-input bg-background pl-10 pr-3" placeholder="Rechercher une marque, un produit…" value={search} onChange={e => setSearch(e.target.value)} /></label>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <select className={select} value={section} onChange={e => setSection(e.target.value)} aria-label="Rubrique"><option value="">Toutes rubriques</option>{Object.entries(SECTIONS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-          <select className={select} value={brand} onChange={e => setBrand(e.target.value)} aria-label="Marque"><option value="">Toutes marques</option>{brands.map(b => <option key={b}>{b}</option>)}</select>
-          <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
-          <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
-        </div>
+        {!section && !search && !showSearch ? <>
+          <ShopHall onPick={setSection} />
+          <Button variant="outline" className="min-h-12 w-full gap-2" onClick={() => setShowSearch(true)}><Search className="h-5 w-5" />Rechercher un produit</Button>
+        </> : <>
+          {section && <AisleHeader section={section} onPick={(k) => { setSection(k); setSearch(""); }} onQuery={setSearch} active={search} />}
+          {!section && <Button variant="ghost" className="min-h-11 gap-1 px-2" onClick={() => { setSearch(""); setShowSearch(false); }}><ChevronLeft className="h-5 w-5" />Retour à l'entrée du magasin</Button>}
+          <label className="relative block"><Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+            <input className="h-12 w-full rounded-lg border border-input bg-background pl-10 pr-3" placeholder={section ? `Chercher dans ${SECTIONS[section]}…` : "Rechercher une marque, un produit…"} value={search} onChange={e => setSearch(e.target.value)} autoFocus={!section} /></label>
+          <details className="rounded-xl border border-border bg-card px-3">
+            <summary className="flex min-h-12 cursor-pointer items-center text-sm font-semibold">Filtres et tri</summary>
+            <div className="grid grid-cols-2 gap-2 pb-3 sm:grid-cols-4">
+              <select className={select} value={section} onChange={e => setSection(e.target.value)} aria-label="Rayon"><option value="">Tous les rayons</option>{Object.entries(SECTIONS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+              <select className={select} value={brand} onChange={e => setBrand(e.target.value)} aria-label="Marque"><option value="">Toutes marques</option>{brands.map(b => <option key={b}>{b}</option>)}</select>
+              <select className={select} value={max} onChange={e => setMax(e.target.value)} aria-label="Budget"><option value="">Tout budget</option>{[100, 300, 500, 1000, 15000, 30000, 300000].map(n => <option key={n} value={n}>Jusqu'à {eur(n)}</option>)}</select>
+              <select className={select} value={sort} onChange={e => setSort(e.target.value as ShopSort)} aria-label="Tri"><option value="populaire">Populaires</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="nom">Nom</option></select>
+            </div>
+          </details>
+        </>}
+        {(section || search || showSearch) && <>
         {section === "immobilier" && <div className="grid grid-cols-2 gap-2">
           <select className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</select>
           <select className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</select>
@@ -116,6 +129,7 @@ function ShopPage() {
           <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
           <Button variant="outline" className="h-12 w-12" aria-label="Page suivante" disabled={currentPage >= lastPage || catalog.isFetching} onClick={() => setPage(currentPage + 1)}><ChevronRight /></Button>
         </nav>}
+        </>}
       </TabsContent>
 
       <TabsContent value="envies" className="mt-4 space-y-3">
