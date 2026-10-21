@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
+import { phoneSearch } from "@/game/phone-search";
 import { bankQuery, economyQuery, formatMoney, lifeQuery, newsQuery, communicationQuery, notificationsQuery, markNotificationRead } from "@/services/game";
 import { MAIN_PHONE_APPS, MORE_PHONE_APPS } from "@/game/navigation";
 import { nextStep, notificationEmoji, notificationTarget } from "@/game/next-step";
@@ -18,6 +19,8 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
   const { data: notifs } = useSuspenseQuery(notificationsQuery);
   const { time } = useWorldClock();
   const [more, setMore] = useState(false);
+  const [q, setQ] = useState("");
+  const hits = phoneSearch(q);
   const step = nextStep({ now: time, activities: life.activities, notifications: notifs, hasHousing: !!life.housing, studying: !!life.enrollment, working: !!life.employment, age: life.character.age });
   const car = economy.assets.find(a => a.catalog.kind === "vehicle");
   const unread = notifs.filter(n => !n.read).length;
@@ -28,6 +31,12 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
       <p className="font-display text-4xl font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</p>
       <p className="text-xs capitalize text-muted-foreground">{time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</p>
     </div>
+    <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-border bg-card px-3 focus-within:border-primary">
+      <Search className="h-5 w-5 shrink-0 text-primary" />
+      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher… (permis, maison, salaire)" aria-label="Rechercher dans le téléphone" className="h-12 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+    </label>
+    {q.trim().length >= 2 && <div className="rounded-2xl border border-border bg-card">{hits.length === 0 ? <p className="p-3 text-sm text-muted-foreground">Rien trouvé. Essaie un autre mot.</p> :
+      <ul className="divide-y divide-border">{hits.map(h => <li key={h.to}><Link to={h.to as "/carte"} className="flex min-h-14 items-center gap-3 p-3 active:bg-muted"><span className="text-2xl" aria-hidden>{h.emoji}</span><span className="min-w-0"><span className="block text-sm font-semibold">{h.label}</span><span className="block truncate text-xs text-muted-foreground">{h.hint}</span></span></Link></li>)}</ul>}</div>}
     {notifs.filter(n => !n.read).slice(0, 2).map(n => <button key={n.id} type="button" onClick={() => open("notifications")} className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-card/90 p-3 text-left shadow-card animate-rise"><span className="text-xl" aria-hidden>{notificationEmoji(n)}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold">{n.title}</span><span className="block truncate text-xs text-muted-foreground">{n.body}</span></span></button>)}
     <Link to={step.to as "/agenda"} className="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-primary bg-card p-3 active:scale-[0.98]">
       <span className="text-2xl" aria-hidden>{step.emoji}</span>
