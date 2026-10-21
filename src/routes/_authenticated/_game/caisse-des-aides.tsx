@@ -8,7 +8,7 @@ import { gameMeta } from '@/game/metadata';
 import { aidPayments, aidRights, type AidRight } from '@/game/aid-portal';
 import { housingAid, PROCEDURE_STATUS } from '@/game/admin';
 import { aidRequestSteps } from '@/game/aid-portal';
-import { COMING_SOON } from '@/game/navigation';
+import { CafAppointments } from '@/components/game/CafAppointments';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/_authenticated/_game/caisse-des-aides')({
@@ -73,7 +73,7 @@ function AidSpace() {
       {tab === 'attestations' && <RsaPanel attestation name={allocataire} />}
       {tab === 'attestations' && <Card title="Mes attestations">{s.documents.filter(d => d.status === 'valide').length ? <ul>{s.documents.filter(d => d.status === 'valide').map(d => <li key={d.id} className="flex min-h-14 items-center justify-between gap-3 border-t border-border py-2 text-sm first:border-t-0"><span><span className="block font-medium">{s.document_types.find(t => t.id === d.type_id)?.name ?? d.type_id}</span><span className="text-xs text-muted-foreground">Valable jusqu’au {fmt(d.valid_until)}</span></span><Link to="/mes-documents" className="text-primary underline">Voir</Link></li>)}</ul> : <p className="text-sm text-muted-foreground">Aucune attestation valide.</p>}</Card>}
       {tab === 'demandes' && <Card title="Suivi de mes demandes">{s.procedures.filter(p => ['Aides', 'Logement'].includes(p.category)).length ? <ul className="space-y-3">{s.procedures.filter(p => ['Aides', 'Logement'].includes(p.category)).map(p => { const steps = aidRequestSteps(p.status); return <li key={p.id} className="rounded-lg border border-border p-3 text-sm"><div className="flex items-start justify-between gap-2"><span className="font-medium">{p.title}</span><span className="shrink-0 text-xs font-semibold text-primary">{PROCEDURE_STATUS[p.status]}</span></div><p className="text-xs text-muted-foreground">Commencée le {fmt(p.started_at)}{p.response_at ? ` · réponse le ${fmt(p.response_at)}` : ''}</p><ol className="mt-2 grid grid-cols-4 gap-1">{steps.map(st => <li key={st.label} className="text-center text-[11px]"><span className={`mx-auto block h-2 rounded-full ${st.done ? 'bg-primary' : 'bg-muted'}`} /><span className="mt-1 block">{st.label}</span></li>)}</ol>{['a_faire', 'a_completer'].includes(p.status) && <Link to="/demarches" className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">Continuer ma demande</Link>}</li>; })}</ul> : <p className="text-sm text-muted-foreground">Aucune demande d'aide. Faites-en une depuis <Link to="/demarches" className="text-primary underline">Mes démarches</Link>.</p>}</Card>}
-      {tab === 'rdv' && <Card title="Mes rendez-vous"><p className="text-sm text-muted-foreground">{COMING_SOON}. La prise de rendez-vous avec un conseiller arrivera bientôt.</p></Card>}
+      {tab === 'rdv' && <CafAppointments now={s.world_now} />}
       {tab === 'simulation' && <Simulation />}
     </main>
   </div>;
