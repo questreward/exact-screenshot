@@ -34,3 +34,9 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] M. Scène de contrôle technique : vérifier le véhicule, régler les défauts
 - [x] N. Trajets jouables pompiers / police / SAMU avec véhicules et destinations de mission
 - [x] O. Stations-service comme lieux sur la carte de la ville, avec action « faire le plein »
+
+## V3 Chantier 4 — Métiers
+- [ ] 1. Journée commune : prise de service, préparation, fin de service + salaire reçu
+- [ ] 2. Secours : pompier, police, gendarmerie, SAMU, Protection civile
+- [ ] 3. Concessionnaire : showroom, clients pendant la journée
+- [ ] 4. Autres métiers : lieu, outils, collègues, pauses, téléphone
