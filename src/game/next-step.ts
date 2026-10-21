@@ -32,7 +32,7 @@ export function nextStep(i: Input): NextStep {
   const nowMs = i.now.getTime();
   const current = live.find((a) => Date.parse(a.start_time) <= nowMs && Date.parse(a.end_time) > nowMs);
   if (current) return { emoji: "⏳", title: `En cours : ${current.title}`, detail: `Fin prévue à ${hm(new Date(current.end_time))}.`, to: "/agenda", cta: "Voir mon agenda" };
-  const justEnded = live.filter((a) => { const e = Date.parse(a.end_time); return e <= nowMs && nowMs - e < 60 * 60000; }).sort((a, b) => Date.parse(b.end_time) - Date.parse(a.end_time))[0];
+  const justEnded = i.activities.filter((a) => a.status !== "cancelled").filter((a) => { const e = Date.parse(a.end_time); return e <= nowMs && nowMs - e < 60 * 60000; }).sort((a, b) => Date.parse(b.end_time) - Date.parse(a.end_time))[0];
   const upcoming = live.filter((a) => Date.parse(a.start_time) > nowMs).sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time))[0];
   if (upcoming) {
     const mins = Math.round((Date.parse(upcoming.start_time) - nowMs) / 60000);

@@ -35,6 +35,13 @@ export function NextStepCard({ cityName }: { cityName?: string | null }) {
         </span>
         <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">{step.cta}<ArrowRight className="h-4 w-4" /></span>
       </Link>
+      {step.endOfDay && (
+        <div className="grid grid-cols-2 gap-2 animate-rise">
+          {[["Rentrer chez moi", "/chez-moi"], ["Mon agenda", "/agenda"], ["Mon téléphone", "/telephone"], ["Voir ma ville", "/ma-ville"]].map(([l, to]) => (
+            <Link key={to} to={to as "/agenda"} className="flex min-h-12 items-center justify-center rounded-2xl border border-border bg-card px-3 text-sm font-semibold active:scale-95">{l}</Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
