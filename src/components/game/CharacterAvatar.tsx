@@ -1,12 +1,18 @@
 import { type Appearance, optionValue } from "@/game/appearance";
+import type { Mood } from "@/game/character-look";
 import { cn } from "@/lib/utils";
 
+type Uniform = "pompiers" | "police" | "gendarmerie" | "samu" | "protection_civile";
+const UNIFORM_COLOR: Record<Uniform, string> = {
+  pompiers: "#1f2a44", police: "#1d3a6e", gendarmerie: "#14234a", samu: "#f4f4f4", protection_civile: "#f28c28",
+};
+
 // Simple layered SVG avatar. New appearance options plug in by id.
-export function CharacterAvatar({ appearance, className, photo }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined }) {
+export function CharacterAvatar({ appearance, className, photo, mood = "neutre", uniform }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined; mood?: Mood; uniform?: Uniform | null | undefined }) {
   if (photo) return <img src={photo} alt="" className={cn("h-full w-full object-cover", className)} />;
   const skin = optionValue("skin", appearance.skin);
   const hair = optionValue("hairColor", appearance.hairColor);
-  const outfit = optionValue("outfit", appearance.outfit);
+  const outfit = uniform ? UNIFORM_COLOR[uniform] : optionValue("outfit", appearance.outfit);
   const shoulder = appearance.silhouette === "slim" ? 34 : appearance.silhouette === "broad" ? 46 : 40;
 
   return (
@@ -44,7 +50,15 @@ export function CharacterAvatar({ appearance, className, photo }: { appearance: 
       {/* face */}
       <g className="avatar-eyes"><circle cx="52" cy="60" r="2.2" fill="var(--background)" />
       <circle cx="68" cy="60" r="2.2" fill="var(--background)" /></g>
-      <path d="M54 71 Q60 75 66 71" stroke="var(--background)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d={mood === "joyeux" ? "M52 70 Q60 78 68 70" : mood === "fatigue" ? "M54 74 Q60 70 66 74" : "M54 71 Q60 74 66 71"} stroke="var(--background)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      {mood === "fatigue" && <g stroke="var(--background)" strokeWidth="1.2" opacity="0.6"><path d="M48 65 H56" /><path d="M64 65 H72" /></g>}
+      {/* tenue de service */}
+      {uniform && (uniform === "protection_civile" || uniform === "samu" || uniform === "pompiers") && (
+        <path d={`M${60 - shoulder + 4} 122 H${60 + shoulder - 4}`} stroke={uniform === "samu" ? "#d62828" : "#e8e8a0"} strokeWidth="4" />
+      )}
+      {uniform === "protection_civile" && <path d="M56 106 h8 v-4 h4 v8 h-4 v4 h-8 v-4 h-4 v-8 h4 z" fill="#1d3a6e" transform="translate(0 6)" />}
+      {uniform === "pompiers" && <path d="M34 50 Q34 22 60 22 Q86 22 86 50 L90 52 H30 Z" fill="#d9d9d9" stroke="#999" />}
+      {(uniform === "police" || uniform === "gendarmerie") && <path d="M36 44 Q36 30 60 28 Q84 30 84 44 Z M34 44 H86 V49 H34 Z" fill={UNIFORM_COLOR[uniform]} />}
       {/* accessory */}
       {(appearance.accessory === "glasses" || appearance.accessory === "sunglasses") && (
         <g stroke="var(--foreground)" strokeWidth="1.8" fill={appearance.accessory === "sunglasses" ? "var(--foreground)" : "none"}>

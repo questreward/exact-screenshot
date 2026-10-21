@@ -37,7 +37,7 @@ function NpcConversation({ npcId, name, here }: { npcId: string; name: string; h
     <p className="text-xs text-muted-foreground">Dialogue fictif · aucun effet sur le jeu · conservé uniquement tant que cette page reste ouverte.</p>
     {!here && <p role="status" className="text-sm text-muted-foreground">Rejoins {name} pour poursuivre l’échange.</p>}
     <div className="max-h-80 space-y-2 overflow-y-auto" role="log" aria-label="Messages" aria-live="polite">
-      {turns.map((t, i) => <p key={i} className={`max-w-[90%] break-words rounded-lg px-3 py-2 text-sm ${t.role === "user" ? "ml-auto bg-primary text-primary-foreground" : "bg-muted"}`}>{t.role === "assistant" && <span className="block text-xs font-semibold">{name}</span>}{t.content}</p>)}
+      {turns.map((t, i) => <p key={i} className={`max-w-[90%] break-words rounded-2xl px-4 py-2.5 text-base shadow-card animate-rise ${t.role === "user" ? "ml-auto rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card border border-border"}`}>{t.role === "assistant" && <span className="block text-xs font-semibold">{name}</span>}{t.content}</p>)}
       {send.isPending && <p className="text-sm text-muted-foreground">{name} réfléchit…</p>}
       {send.isError && <div role="alert" className="space-y-2"><p className="text-sm text-destructive">{send.error instanceof Error ? send.error.message : 'La réponse est indisponible.'}</p><Button variant="outline" className="min-h-12" disabled={!here} onClick={() => send.mutate(turns)}><RefreshCw />Réessayer le même message</Button></div>}
       <div ref={end} />
