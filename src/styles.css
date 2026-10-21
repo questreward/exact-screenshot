@@ -306,3 +306,6 @@
 .mail-arrive { animation: mail-arrive .9s cubic-bezier(.2,.8,.3,1.2) both; }
 .desk-online { background: var(--muted); padding: 1.25rem 0 .5rem; }
 @media (prefers-reduced-motion: reduce) { .mail-arrive { animation: none; } }
+@keyframes ride-sway { 0%,100% { transform: scale(1.04) translate(0,0); } 50% { transform: scale(1.04) translate(-.4%, .3%); } }
+.ride-sway { animation: ride-sway 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .ride-sway { animation: none; } }
