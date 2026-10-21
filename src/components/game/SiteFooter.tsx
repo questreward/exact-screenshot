@@ -15,7 +15,7 @@ export function SiteFooter() {
         <Link className={item} to="/mentions-legales">Mentions légales</Link>
         <Link className={item} to="/confidentialite">Confidentialité</Link>
       </nav>
-      <p className="pb-6 text-center text-xs text-muted-foreground">© CIVITAS — Votre vie. Votre pouvoir.</p>
+      <p className="pb-6 text-center text-xs text-muted-foreground">© CIVITAS — Votre vie. Votre ville. Votre histoire.</p>
     </footer>
   );
 }
