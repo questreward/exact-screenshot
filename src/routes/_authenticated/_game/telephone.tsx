@@ -81,30 +81,41 @@ function ProfileApp() {
 
 function BankApp() {
   const { data: bank } = useSuspenseQuery(bankQuery);
+  const { data: eco } = useQuery(economyQuery);
   if (!bank) return <p className="text-sm text-muted-foreground">Aucun compte.</p>;
   return (
-    <div>
+    <div className="space-y-5">
       <div className="rounded-3xl bg-gradient-primary p-5 text-primary-foreground shadow-elegant">
-        <p className="text-sm opacity-80">{bank.label}</p>
+        <p className="text-sm opacity-80">Mon compte · solde disponible</p>
         <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
       </div>
-      <div className="mt-4"><EconomyBankLinks/></div>
-      <div className="mt-4"><BankLoans compact /></div>
-      <div className="mt-4"><InsuranceCard compact /></div>
-      <h2 className="mt-5 mb-2 text-sm font-semibold text-muted-foreground">Historique</h2>
-      <ul className="space-y-2">
-        {bank.transactions.map((t) => (
-          <li key={t.id} className="flex items-center justify-between rounded-2xl bg-accent/60 p-3">
-            <div>
-              <p className="text-sm font-semibold">{t.label}</p>
-              <p className="text-xs text-muted-foreground">{new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
-            </div>
-            <span className={cn("font-semibold", t.amount >= 0 ? "text-success" : "text-destructive")}>
-              {t.amount >= 0 ? "+" : ""}{formatMoney(t.amount)}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <section className="space-y-2">
+        <h2 className="text-sm font-bold">🏦 Mes comptes</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-2xl bg-card p-3"><p className="text-xs text-muted-foreground">💶 Compte courant</p><p className="font-bold">{formatMoney(bank.balance)}</p></div>
+          <Link to="/patrimoine" className="rounded-2xl bg-card p-3 active:scale-95"><p className="text-xs text-muted-foreground">🐷 Épargne</p><p className="font-bold">{eco ? formatMoney(eco.saved) : "—"}</p></Link>
+        </div>
+      </section>
+      <section className="space-y-2"><h2 className="text-sm font-bold">💳 Mes crédits</h2><BankLoans compact /></section>
+      <EconomyBankLinks/>
+      <InsuranceCard compact />
+      <section className="space-y-2">
+        <h2 className="text-sm font-bold">🧾 Dernières opérations</h2>
+        {bank.transactions.length === 0 && <p className="rounded-xl bg-card p-3 text-sm text-muted-foreground">Aucune opération pour l'instant.</p>}
+        <ul className="space-y-2">
+          {bank.transactions.map((t) => { const k = opKind(t.label, t.amount); return (
+            <li key={t.id} className="flex min-h-14 items-center gap-3 rounded-2xl bg-card p-3">
+              <span className="text-2xl" aria-hidden>{k.emoji}</span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">{opTitle(t.label)}</p>
+                <p className="text-xs text-muted-foreground">{k.place} · {new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
+              </div>
+              <span className={cn("font-semibold", t.amount >= 0 ? "text-success" : "text-destructive")}>
+                {t.amount >= 0 ? "+" : ""}{formatMoney(t.amount)}
+              </span>
+            </li>); })}
+        </ul>
+      </section>
     </div>
   );
 }
