@@ -45,6 +45,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] 1-4. Vue de Chez moi, placement au doigt, visites/déménagement, vie à la maison
 - [x] P. Inviter des amis à visiter son logement (serveur)
 - [x] Q. Clients du showroom qui achètent vraiment (stock + ventes)
-- [ ] K. Récapitulatif avant achat à crédit (maison/voiture)
-- [ ] L. Marque du lieu de travail sur la carte
-- [ ] M. Historique du patrimoine sur 6 mois (courbe)
+- [x] K. Récapitulatif avant achat à crédit (maison/voiture)
+- [x] L. Marque du lieu de travail sur la carte
+- [x] M. Historique du patrimoine sur 6 mois (courbe)
