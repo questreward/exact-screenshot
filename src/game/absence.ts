@@ -9,7 +9,7 @@ export function absenceSummary(since: string, now: string, d: { txs: Tx[]; notif
   const txs = d.txs.filter(t => after(t.created_at));
   const income = txs.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
   const expenses = txs.filter(t => t.amount < 0).reduce((s, t) => s - t.amount, 0);
-  const salary = txs.find(t => t.amount > 0 && opKind(t.label, t.amount).place === "Travail");
+  const salary = txs.find(t => t.amount > 0 && opKind(t.label, t.amount).place === "Salaire");
   const notifs = d.notifs.filter(n => after(n.world_at ?? n.created_at));
   const news = d.news.filter(n => after(n.published_at) && n.importance >= 60).slice(0, 3);
   const hours = Math.floor((Date.parse(now) - Date.parse(since)) / 3600000);
