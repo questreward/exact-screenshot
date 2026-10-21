@@ -33,4 +33,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] L. Jauge d'essence liée aux trajets voiture + stations-service pour faire le plein
 - [x] M. Scène de contrôle technique : vérifier le véhicule, régler les défauts
 - [x] N. Trajets jouables pompiers / police / SAMU avec véhicules et destinations de mission
-- [ ] O. Stations-service comme lieux sur la carte de la ville, avec action « faire le plein »
+- [x] O. Stations-service comme lieux sur la carte de la ville, avec action « faire le plein »

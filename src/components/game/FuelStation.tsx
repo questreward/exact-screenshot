@@ -21,18 +21,18 @@ export function CarFuel({ catalogId }: { catalogId: string }) {
   return car ? <FuelGauge level={car.level} electric={car.electric} /> : null;
 }
 
-export function FuelStation() {
+export function FuelStation({ here }: { here?: boolean }) {
   const { data } = useQuery(fuelQuery);
   const [pump, setPump] = useState<string | null>(null);
   if (!data || data.cars.length === 0) return null;
   return <section className="rounded-xl border border-border bg-card p-4">
-    <h2 className="font-heading text-base font-bold">⛽ Station-service</h2>
-    <p className="mb-3 text-sm text-muted-foreground">L'essence se paie au plein. Réservoir vide = voiture bloquée.</p>
+    <h2 className="font-heading text-base font-bold">{here ? "⛽ Pompes" : "⛽ Essence"}</h2>
+    <p className="mb-3 text-sm text-muted-foreground">{here ? "Choisis ta pompe. L'essence se paie au plein." : "Rends-toi dans une station-service sur la carte de la ville pour faire le plein. Réservoir vide = voiture bloquée."}</p>
     <div className="space-y-3">{data.cars.map(c => <div key={c.catalog_id} className="rounded-lg border border-border p-3">
       <p className="mb-2 font-semibold">🚗 {c.name}</p>
       <FuelGauge level={c.level} electric={c.electric} />
-      <Button className="mt-3 min-h-12 w-full" disabled={c.level >= 100} onClick={() => setPump(c.catalog_id)}>
-        {c.level >= 100 ? "Plein fait" : `${c.electric ? "Recharger à la borne" : "Faire le plein"} · ${c.fill_price} €`}</Button>
+      <Button className="mt-3 min-h-12 w-full" disabled={!here || c.level >= 100} onClick={() => setPump(c.catalog_id)}>
+        {c.level >= 100 ? "Plein fait" : !here ? `Plein sur place · ${c.fill_price} €` : `${c.electric ? "Recharger à la borne" : "Faire le plein"} · ${c.fill_price} €`}</Button>
     </div>)}</div>
     {pump && <Pump catalogId={pump} onClose={() => setPump(null)} />}
   </section>;
