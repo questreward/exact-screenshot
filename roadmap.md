@@ -25,3 +25,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] F. Décisions Mairie/Assemblée/Élysée (0121 prête, attend installation par Alex)
 - [ ] G. Planificateur IA : le joueur décrit son envie, l'IA locale propose activités + itinéraire parmi les vrais lieux
 - [ ] H. Tenues et cadres portés visibles sur le profil public des autres joueurs
+- [ ] I. Faire découvrir le jeu (réseaux sociaux) — après G et H
