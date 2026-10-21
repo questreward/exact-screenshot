@@ -10,6 +10,7 @@ import { cancelContact, followPlayer, playerProfileQuery, requestContact, respon
 import { gameMeta } from "@/game/metadata";
 import { PlayerActions } from "@/components/game/PlayerActions";
 import { CivicProfileCard } from "@/components/game/CivicProfileCard";
+import { InviteHomeButton } from "@/components/game/HomeVisits";
 
 export const Route = createFileRoute("/_authenticated/_game/reseau_/$id")({
   head: () => ({ meta: gameMeta("Profil d'un joueur", "Profil public d'un citoyen de CIVITAS : parcours, engagements et réputation.") }),
@@ -50,6 +51,7 @@ function ProfilePage() {
         {p.contact?.status === "pending" && !p.contact.incoming && <Button variant="outline" className="h-12" disabled={cancel.isPending} onClick={() => cancel.mutate(p.contact!.id)}>Demande envoyée · annuler</Button>}
         {p.contact?.status === "accepted" && <Button variant="outline" className="h-12" disabled={cancel.isPending} onClick={() => cancel.mutate(p.contact!.id)}>Retirer des contacts</Button>}
         <Button variant={p.following ? "secondary" : "outline"} className="h-12" disabled={follow.isPending} onClick={() => follow.mutate({ id: p.id, on: !p.following })}><Star /> {p.following ? "Suivi" : "Suivre"}</Button>
+        <InviteHomeButton guest={p.id} />
       </div>}
     </section>
     <PlayerActions p={p} />

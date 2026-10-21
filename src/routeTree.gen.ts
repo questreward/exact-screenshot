@@ -101,6 +101,7 @@ import { Route as AuthenticatedGamePolitiqueIdRouteImport } from './routes/_auth
 import { Route as AuthenticatedGamePortailIdRouteImport } from './routes/_authenticated/_game/portail.$id'
 import { Route as AuthenticatedGameReseauIdRouteImport } from './routes/_authenticated/_game/reseau_.$id'
 import { Route as AuthenticatedGameSectionIdRouteImport } from './routes/_authenticated/_game/section.$id'
+import { Route as AuthenticatedGameVisiteIdRouteImport } from './routes/_authenticated/_game/visite.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -616,6 +617,12 @@ const AuthenticatedGameSectionIdRoute =
     path: '/section/$id',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVisiteIdRoute =
+  AuthenticatedGameVisiteIdRouteImport.update({
+    id: '/visite/$id',
+    path: '/visite/$id',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -708,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/portail/$id': typeof AuthenticatedGamePortailIdRoute
   '/reseau/$id': typeof AuthenticatedGameReseauIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
+  '/visite/$id': typeof AuthenticatedGameVisiteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -800,6 +808,7 @@ export interface FileRoutesByTo {
   '/portail/$id': typeof AuthenticatedGamePortailIdRoute
   '/reseau/$id': typeof AuthenticatedGameReseauIdRoute
   '/section/$id': typeof AuthenticatedGameSectionIdRoute
+  '/visite/$id': typeof AuthenticatedGameVisiteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -895,6 +904,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/portail/$id': typeof AuthenticatedGamePortailIdRoute
   '/_authenticated/_game/reseau_/$id': typeof AuthenticatedGameReseauIdRoute
   '/_authenticated/_game/section/$id': typeof AuthenticatedGameSectionIdRoute
+  '/_authenticated/_game/visite/$id': typeof AuthenticatedGameVisiteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -989,6 +999,7 @@ export interface FileRouteTypes {
     | '/portail/$id'
     | '/reseau/$id'
     | '/section/$id'
+    | '/visite/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1081,6 +1092,7 @@ export interface FileRouteTypes {
     | '/portail/$id'
     | '/reseau/$id'
     | '/section/$id'
+    | '/visite/$id'
   id:
     | '__root__'
     | '/'
@@ -1175,6 +1187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/portail/$id'
     | '/_authenticated/_game/reseau_/$id'
     | '/_authenticated/_game/section/$id'
+    | '/_authenticated/_game/visite/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1836,6 +1849,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameSectionIdRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/visite/$id': {
+      id: '/_authenticated/_game/visite/$id'
+      path: '/visite/$id'
+      fullPath: '/visite/$id'
+      preLoaderRoute: typeof AuthenticatedGameVisiteIdRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
   }
 }
 
@@ -1920,6 +1940,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGamePortailIdRoute: typeof AuthenticatedGamePortailIdRoute
   AuthenticatedGameReseauIdRoute: typeof AuthenticatedGameReseauIdRoute
   AuthenticatedGameSectionIdRoute: typeof AuthenticatedGameSectionIdRoute
+  AuthenticatedGameVisiteIdRoute: typeof AuthenticatedGameVisiteIdRoute
 }
 
 const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
@@ -2007,6 +2028,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGamePortailIdRoute: AuthenticatedGamePortailIdRoute,
     AuthenticatedGameReseauIdRoute: AuthenticatedGameReseauIdRoute,
     AuthenticatedGameSectionIdRoute: AuthenticatedGameSectionIdRoute,
+    AuthenticatedGameVisiteIdRoute: AuthenticatedGameVisiteIdRoute,
   }
 
 const AuthenticatedGameRouteRouteWithChildren =

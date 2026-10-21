@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { housingQuery } from "@/services/game";
 import type { FurnishingHome, Furniture } from "@/game/home-furnishing";
 import { DailyActions } from "./LifeControls";
+import { HomeInvitesPanel } from "./HomeVisits";
 
 const MOMENTS: Record<string, [string, string]> = {
   sofa: ["🛋️ S'installer dans le canapé", "Tu t'installes confortablement. La ville peut attendre un instant."],
@@ -35,6 +36,7 @@ export function HomeLife({ home, furniture }: { home: FurnishingHome; furniture:
       {kinds.size === 0 && <p className="text-xs text-muted-foreground">Installe des meubles pour débloquer des petits moments (canapé, télé, lit…).</p>}
     </section>
 
+    <HomeInvitesPanel />
     <section className="grid grid-cols-3 gap-2" aria-label="Raccourcis">
       {([["/boutique", "🛍️", "Boutique"], ["/style", "👕", "Style"], ["/patrimoine", "💼", "Patrimoine"], ["/famille", "👨‍👩‍👧", "Famille"], ["/agenda", "📅", "Agenda"], ["/carte", "🗺️", "Carte"]] as const).map(([to, e, l]) =>
         <Button key={to} asChild variant="outline" className="h-auto min-h-16 flex-col gap-1 p-2"><Link to={to}><span className="text-xl">{e}</span><span className="text-xs">{l}</span></Link></Button>)}

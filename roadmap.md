@@ -37,6 +37,11 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 
 ## V3 Chantier 4 — Métiers
 - [x] 1. Journée commune : prise de service, préparation, fin de service + salaire reçu
-- [ ] 2. Secours : pompier, police, gendarmerie, SAMU, Protection civile
-- [ ] 3. Concessionnaire : showroom, clients pendant la journée
-- [ ] 4. Autres métiers : lieu, outils, collègues, pauses, téléphone
+- [x] 2. Secours : pompier, police, gendarmerie, SAMU, Protection civile
+- [x] 3. Concessionnaire : showroom, clients pendant la journée
+- [x] 4. Autres métiers : lieu, outils, collègues, pauses, téléphone
+
+## V3 Chantier 5 — Logement
+- [x] 1-4. Vue de Chez moi, placement au doigt, visites/déménagement, vie à la maison
+- [ ] P. Inviter des amis à visiter son logement (serveur)
+- [ ] Q. Clients du showroom qui achètent vraiment (stock + ventes)
