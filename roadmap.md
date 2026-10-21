@@ -80,3 +80,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 ## Lancement
 - [x] Connexion iPhone : plusieurs appuis sur « Se connecter » nécessaires + lenteur des pages
 - [ ] Bot Discord (plan approuvé) : accueil, actualités, commandes, annonces
+- [ ] Magasin : photos animées des produits (10 000 produits) + aperçu de l'achat
+- [ ] Boutique argent réel : photos animées des objets
+- [ ] Page de présentation VIP améliorée
