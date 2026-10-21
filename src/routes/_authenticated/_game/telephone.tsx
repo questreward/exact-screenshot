@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMyUniform } from "@/hooks/use-my-uniform";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ChevronLeft, Lock } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { BankLoans } from "@/components/game/BankLoans";
 import { InsuranceCard } from "@/components/game/InsuranceCard";
@@ -32,8 +32,6 @@ export const Route = createFileRoute("/_authenticated/_game/telephone")({
 function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const { data: news } = useSuspenseQuery(newsQuery);
-  const { data: comm } = useSuspenseQuery(communicationQuery);
   const open = (id?: string) => id === "politique" ? navigate({ to: "/politique" }) : id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
   const current = PHONE_APPS.find((a) => a.id === app);
 
