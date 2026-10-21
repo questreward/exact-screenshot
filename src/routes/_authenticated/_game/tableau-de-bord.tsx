@@ -33,24 +33,18 @@ function Dashboard() {
       <GameHome firstName={character.first_name} cityName={character.city?.name} appearance={character.appearance}
         energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
 
-      <WorldClock />
-
-      <FranceDay />
-
-      <LifeSummary />
-
-      <PositionBlock />
+      <NextStepCard cityName={character.city?.name} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
           <h2 className="flex items-center gap-2 text-lg font-semibold"><Bell className="h-5 w-5 text-primary" /> Notifications</h2>
           <ul className="mt-3 space-y-2">
             {notifs.length === 0 && <li className="text-sm text-muted-foreground">Aucune notification.</li>}
-            {notifs.map((n) => (
-              <li key={n.id} className="rounded-2xl bg-accent/60 p-3">
-                <p className="font-semibold">{n.title}</p>
-                <p className="text-sm text-muted-foreground">{n.body}</p>
-                {n.news_id && <Link to="/actualites/$id" params={{ id: n.news_id }} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary">Lire l’article</Link>}
+            {notifs.slice(0, 4).map((n) => (
+              <li key={n.id}>
+                {n.news_id
+                  ? <Link to="/actualites/$id" params={{ id: n.news_id }} className="block min-h-11 rounded-2xl bg-accent/60 p-3 active:scale-[0.98]"><p className="font-semibold">{n.title}</p><p className="text-sm text-muted-foreground">{n.body}</p></Link>
+                  : <Link to={notificationTarget(n) as "/banque"} className="block min-h-11 rounded-2xl bg-accent/60 p-3 active:scale-[0.98]"><p className="font-semibold">{n.title}</p><p className="text-sm text-muted-foreground">{n.body}</p></Link>}
               </li>
             ))}
           </ul>
