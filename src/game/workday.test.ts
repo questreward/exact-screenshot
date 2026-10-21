@@ -18,3 +18,10 @@ describe("other jobs", () => {
   it("same day same mood", () => expect(wm("2026-10-21", "commerce")).toEqual(wm("2026-10-21", "commerce")));
   it("remaining time label", () => expect(rem(0, new Date(252 * 60000).toISOString())).toBe("4 h 12 restantes"));
 });
+
+import { workLevel } from "./workday";
+describe("work level", () => {
+  it("9 shifts is Débutant", () => expect(workLevel(9).label).toBe("Débutant"));
+  it("10 shifts is Confirmé", () => expect(workLevel(10).label).toBe("Confirmé"));
+  it("30 shifts is Expert", () => expect(workLevel(30).label).toBe("Expert"));
+});

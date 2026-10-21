@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { lifeQuery, startLifeActivity, formatMoney } from "@/services/game";
-import { workProfile, workTimeline, workMood, remaining } from "@/game/workday";
+import { workProfile, workTimeline, workMood, remaining, workLevel, shiftHighlights } from "@/game/workday";
 import { daylight } from "@/game/daylight";
 import { useLifeMutation } from "./LifeControls";
 import { useWorldClock } from "./WorldClock";
@@ -27,6 +27,7 @@ export function WorkDay() {
   const works = life.activities.filter(a => a.type === "work" && a.start_time.slice(0, 10) === day);
   const running = works.find(a => a.status === "running");
   const finished = works.filter(a => a.status === "completed").sort((a, b) => b.end_time.localeCompare(a.end_time))[0];
+  const level = workLevel(life.activities.filter(a => a.type === "work" && a.status === "completed").length);
   const planned = works.find(a => a.status === "planned");
   const here = life.position.location_id === life.employment.location.id;
   const rule = life.rules.find(r => r.id === "work");
@@ -39,6 +40,7 @@ export function WorkDay() {
     return <section className="rounded-2xl border-2 border-primary bg-card p-4">
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {p.place}</p>
       <h2 className="font-heading text-lg font-bold">En service : {cur.label}</h2>
+      <p className="text-xs">{level.emoji} {level.label}</p>
       <p className="text-xs text-muted-foreground">{hm(time)} / {hm(new Date(running.end_time))} · {remaining(now, running.end_time)}</p>
       <p className="mt-2 rounded-lg bg-muted p-2 text-sm">📌 Aujourd'hui : {workMood(day, p.key).mood}</p>
       <p className="mt-1 text-sm">👥 Un collègue : {workMood(day, p.key).colleague}</p>
@@ -63,6 +65,16 @@ export function WorkDay() {
         {finished.progression_gain > 0 && <li>📈 Progression +{finished.progression_gain}</li>}
         <li>⚡ Énergie restante : {life.character.energy}</li>
       </ul>
+      <div className="mb-3 rounded-xl bg-muted p-3 text-left text-sm">
+        <p className="font-semibold">📋 Bilan du service</p>
+        <ul className="mt-1 space-y-1">{shiftHighlights(p.key).map(t => <li key={t}>✅ {t}</li>)}</ul>
+        <p className="mt-2">📌 {workMood(day, p.key).mood}</p>
+      </div>
+      <div className="mb-3 rounded-xl border p-3 text-sm">
+        <p className="font-semibold">{level.emoji} Niveau : {level.label}</p>
+        <p className="text-xs text-muted-foreground">{level.shifts} service(s) terminé(s){level.next ? ` · ${level.next - level.shifts} avant le niveau suivant` : " · niveau maximum"}</p>
+        <p className="text-xs text-muted-foreground">Le niveau ne change pas ton salaire.</p>
+      </div>
       <div className="grid gap-2">
         <Button asChild className="min-h-12"><Link to="/banque">Voir ma banque</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/chez-moi" onClick={() => { localStorage.setItem("civitas-workday-ack", finished.id); }}>🏠 Rentrer chez moi</Link></Button>
