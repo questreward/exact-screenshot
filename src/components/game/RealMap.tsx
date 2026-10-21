@@ -6,7 +6,7 @@ import { layers, namedFlavor } from "@protomaps/basemaps";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LonLat } from "@/game/real-places";
 
-export type RealMarker = { id: string; at: LonLat; label: string; sub?: string | undefined; active?: boolean; selected?: boolean; onClick: () => void };
+export type RealMarker = { id: string; at: LonLat; label: string; sub?: string | undefined; active?: boolean; selected?: boolean; emoji?: string; important?: boolean; onClick: () => void };
 
 let protocolReady = false;
 
@@ -51,10 +51,11 @@ export default function RealMap({ center, zoom, markers, viewKey, route, height 
       const el = document.createElement("button");
       el.type = "button";
       el.setAttribute("aria-label", mk.label);
-      el.className = `real-pin${mk.active ? " is-player" : ""}${mk.selected ? " is-selected" : ""}`;
-      const dot = document.createElement("span"); dot.className = "real-pin-dot";
-      const label = document.createElement("span"); label.className = "real-pin-label"; label.textContent = mk.label;
+      el.className = `real-pin${mk.active ? " is-player" : ""}${mk.selected ? " is-selected" : ""}${mk.important ? " is-important" : ""}`;
+      const dot = document.createElement("span"); dot.className = "real-pin-dot"; if (mk.emoji) dot.textContent = mk.active ? "👤" : mk.emoji;
+      const label = document.createElement("span"); label.className = "real-pin-label"; label.textContent = mk.active ? `Vous êtes ici · ${mk.label}` : mk.label;
       el.append(dot, label);
+      if (mk.active) el.style.zIndex = "5";
       if (mk.sub) { el.title = mk.sub; }
       el.addEventListener("click", (e) => { e.stopPropagation(); mk.onClick(); });
       return new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat(mk.at).addTo(m);

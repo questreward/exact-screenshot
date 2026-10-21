@@ -307,6 +307,16 @@
 .real-pin.is-player .real-pin-dot { background: var(--primary); box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 35%, transparent); }
 .real-pin.is-selected .real-pin-dot { width: 26px; height: 26px; background: var(--primary); }
 .real-pin-label { padding: 2px 8px; border-radius: 8px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .35); }
+.real-pin-dot:not(:empty) { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 1; }
+.real-pin.is-important .real-pin-dot:not(:empty) { width: 36px; height: 36px; font-size: 18px; }
+.real-pin.is-player .real-pin-dot:not(:empty) { width: 40px; height: 40px; font-size: 20px; animation: pin-pulse 1.8s ease-in-out infinite; }
+.real-pin.is-player .real-pin-label { background: var(--primary); color: var(--primary-foreground); }
+@keyframes pin-pulse { 50% { box-shadow: 0 0 0 12px color-mix(in oklab, var(--primary) 15%, transparent); } }
+.map-phase { position: relative; }
+.map-phase::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; transition: background .6s; }
+.map-phase[data-phase="matin"]::after { background: color-mix(in oklab, var(--accent) 8%, transparent); }
+.map-phase[data-phase="soiree"]::after { background: color-mix(in oklab, var(--primary) 10%, transparent); }
+.map-phase[data-phase="nuit"]::after { background: rgb(5 10 30 / .28); }
 
 /* Guichets : arrivée des courriers */
 @keyframes mail-arrive { 0% { transform: translateY(-140%) rotate(-12deg); opacity: 0; } 60% { transform: translateY(8%) rotate(3deg); opacity: 1; } 100% { transform: none; } }
