@@ -105,6 +105,11 @@ function SummaryTab() {
         {top("reputation").map(d => <li key={d.dimension} className="flex justify-between"><span>{REPUTATION_LABELS[d.dimension]?.label}</span><b>{d.value}</b></li>)}
         {top("skill").map(d => <li key={d.dimension} className="flex justify-between"><span>{SKILL_LABELS[d.dimension]}</span><b>{d.value}</b></li>)}
       </ul>}</section>
+    {data && <section className="rounded-xl border border-border bg-card p-4"><h2 className="font-heading text-lg font-bold">⭐ Réputation par domaine</h2>
+      <ul className="mt-3 space-y-3">{Object.entries(REPUTATION_LABELS).map(([k, l]) => { const v = data.dimensions.find(d => d.axis === "reputation" && d.dimension === k)?.value ?? 0; return <li key={k}>
+        <div className="flex justify-between text-sm"><span className="font-semibold">{l.label}</span><b>{v}/100</b></div>
+        <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, v))}%` }} /></div>
+        <p className="mt-0.5 text-xs text-muted-foreground">{l.hint}</p></li>; })}</ul></section>}
     <div className="grid grid-cols-2 gap-2">
       <Button asChild variant="outline" className="h-12"><Link to="/personnage">Vie et relations</Link></Button>
       <Button asChild variant="outline" className="h-12"><Link to="/ma-vie">Ma vie</Link></Button>
