@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { VehicleHealth, BreakdownStory } from "./VehicleHealth";
 import { Fuel, Gauge, Clock, FastForward, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -15,8 +16,8 @@ import { useWorldClock } from "./WorldClock";
 type Phase = "ready" | "boarding" | "driving" | "light" | "arriving" | "parked";
 const RIDE_MS = 14000;
 
-export function DriveTrip({ open, onClose, vehicle, condition, minutes, fromId, toId, toName, onStart }: {
-  open: boolean; onClose: () => void; vehicle: string; condition: string; minutes: number;
+export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minutes, fromId, toId, toName, onStart }: {
+  catalogId: string; open: boolean; onClose: () => void; vehicle: string; condition: string; minutes: number;
   fromId: string; toId: string; toName: string; onStart: () => Promise<unknown>;
 }) {
   const [phase, setPhase] = useState<Phase>("ready");
@@ -24,6 +25,8 @@ export function DriveTrip({ open, onClose, vehicle, condition, minutes, fromId, 
   const [fast, setFast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lightDone = useRef(false);
+  const startedAt = useRef(0);
+  const qc = useQueryClient();
   const { time } = useWorldClock();
   const ready = useRealMapReady();
   const { data: from } = useQuery(locationPlaceQuery(fromId));
@@ -46,7 +49,8 @@ export function DriveTrip({ open, onClose, vehicle, condition, minutes, fromId, 
 
   const go = async () => {
     setError(null); setPhase("boarding");
-    try { await onStart(); setTimeout(() => setPhase("driving"), fast ? 0 : 1200); }
+    startedAt.current = Date.now();
+    try { await onStart(); qc.invalidateQueries({ queryKey: ["vehicle-wear"] }); setTimeout(() => setPhase("driving"), fast ? 0 : 1200); }
     catch (e) { setError((e as Error).message); setPhase("ready"); }
   };
   const speed = phase === "driving" ? 38 + Math.round(12 * Math.sin(pct * 20)) : 0;
@@ -65,6 +69,7 @@ export function DriveTrip({ open, onClose, vehicle, condition, minutes, fromId, 
             <li className="rounded-2xl bg-card p-3"><Clock className="mb-1 h-4 w-4 text-primary" />Départ {hm} · {minutes} min</li>
             <li className="col-span-2 rounded-2xl bg-card p-3"><MapPin className="mb-1 h-4 w-4 text-primary" />Destination : <b>{toName}</b></li>
           </ul>
+          <VehicleHealth catalogId={catalogId} />
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5" checked={fast} onChange={(e) => setFast(e.target.checked)} /><FastForward className="h-4 w-4" />Mode rapide</label>
           <Button className="min-h-14 w-full text-base" onClick={go}>Prendre la route</Button>
@@ -108,6 +113,7 @@ export function DriveTrip({ open, onClose, vehicle, condition, minutes, fromId, 
           <p className="text-5xl">🅿️ → 🧍</p>
           <p className="font-display text-lg font-bold">Moteur coupé.</p>
           <p className="text-muted-foreground">Vous êtes arrivé : {toName}.</p>
+          <BreakdownStory since={startedAt.current} />
           <Link to="/carte" onClick={onClose} className="flex min-h-14 items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground active:scale-95">Entrer dans le lieu</Link>
         </div>}
       </SheetContent>
