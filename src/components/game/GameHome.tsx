@@ -1,3 +1,4 @@
+import { useStyleLook } from "@/game/style-look";
 import { Link } from "@tanstack/react-router";
 import { Wallet, Zap, Moon, Sun, Sunrise, Sunset } from "lucide-react";
 import { CharacterAvatar } from "./CharacterAvatar";
@@ -27,6 +28,7 @@ const PHASE_ICON = { matin: Sunrise, journee: Sun, soiree: Sunset, nuit: Moon };
 type Props = { firstName: string; cityName?: string | null | undefined; appearance: unknown; energy: number; balance: number; situation: string };
 
 export function GameHome({ firstName, cityName, appearance, energy, balance, situation }: Props) {
+  const { look } = useStyleLook();
   const { time, phase } = useWorldClock();
   const PhaseIcon = PHASE_ICON[phase];
   const tone = gaugeTone(energy);
@@ -55,7 +57,7 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
         {/* Personnage */}
         <div className="absolute inset-x-4 bottom-4 flex items-end gap-4">
           <div className="h-36 w-28 shrink-0 animate-rise overflow-hidden rounded-3xl border-2 border-primary/60 bg-card shadow-elegant">
-            <CharacterAvatar appearance={normalizeAppearance(appearance as never)} mood={mood} uniform={uniform} />
+            <CharacterAvatar appearance={normalizeAppearance(appearance as never)} mood={mood} uniform={uniform} look={look} />
           </div>
           <div className="min-w-0 pb-1">
             <p className="relative mb-2 inline-block max-w-full rounded-2xl rounded-bl-sm bg-card px-3 py-2 text-sm font-medium shadow-card animate-rise">« {greetingLine(mood, phase)} »</p>

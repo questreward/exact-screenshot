@@ -1,6 +1,7 @@
 import { MapPin, GraduationCap } from "lucide-react";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { useMyUniform } from "@/hooks/use-my-uniform";
+import { useStyleLook } from "@/game/style-look";
 import { normalizeAppearance } from "@/game/appearance";
 import type { characterQuery } from "@/services/game";
 
@@ -8,10 +9,11 @@ type Character = NonNullable<Awaited<ReturnType<NonNullable<typeof characterQuer
 
 export function CharacterCard({ character }: { character: Character }) {
   const uniform = useMyUniform();
+  const { look } = useStyleLook();
   return (
     <div className="flex items-center gap-5 rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
       <div className="h-28 w-24 shrink-0 overflow-hidden rounded-2xl border border-border">
-        <CharacterAvatar appearance={normalizeAppearance(character.appearance)} uniform={uniform} />
+        <CharacterAvatar appearance={normalizeAppearance(character.appearance)} uniform={uniform} look={look} />
       </div>
       <div className="min-w-0">
         <h2 className="truncate text-2xl font-bold">{character.first_name} {character.last_name}</h2>
