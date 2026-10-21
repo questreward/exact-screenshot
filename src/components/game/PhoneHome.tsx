@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
-import { bankQuery, economyQuery, formatMoney, lifeQuery, newsQuery, communicationQuery, notificationsQuery } from "@/services/game";
+import { bankQuery, economyQuery, formatMoney, lifeQuery, newsQuery, communicationQuery, notificationsQuery, markNotificationRead } from "@/services/game";
 import { MAIN_PHONE_APPS, MORE_PHONE_APPS } from "@/game/navigation";
-import { nextStep } from "@/game/next-step";
+import { nextStep, notificationEmoji, notificationTarget } from "@/game/next-step";
 import { useWorldClock } from "./WorldClock";
 import { badgeLabel } from "@/game/communication";
 
@@ -28,6 +28,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
       <p className="font-display text-4xl font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</p>
       <p className="text-xs capitalize text-muted-foreground">{time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</p>
     </div>
+    {notifs.filter(n => !n.read).slice(0, 2).map(n => <button key={n.id} type="button" onClick={() => open("notifications")} className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-card/90 p-3 text-left shadow-card animate-rise"><span className="text-xl" aria-hidden>{notificationEmoji(n)}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold">{n.title}</span><span className="block truncate text-xs text-muted-foreground">{n.body}</span></span></button>)}
     <Link to={step.to as "/agenda"} className="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-primary bg-card p-3 active:scale-[0.98]">
       <span className="text-2xl" aria-hidden>{step.emoji}</span>
       <span className="min-w-0"><span className="block text-[11px] font-bold uppercase text-primary">📅 Aujourd’hui</span><span className="block truncate text-sm font-semibold">{step.title}</span></span>
@@ -36,7 +37,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
       <button type="button" onClick={() => open("banque")} className={tile}><span className="text-[11px] text-muted-foreground">💶 Argent</span><span className="font-bold">{bank ? formatMoney(bank.balance) : "—"}</span></button>
       <Link to="/chez-moi" className={tile}><span className="text-[11px] text-muted-foreground">🏠 Logement</span><span className="truncate font-semibold">{life.housing?.name ?? "Aucun"}</span></Link>
       <Link to="/conduite" className={tile}><span className="text-[11px] text-muted-foreground">🚗 Véhicule</span><span className="truncate font-semibold">{car ? `${car.catalog.name} · ${car.condition}` : "Aucun"}</span></Link>
-      <Link to="/evenements" className={tile}><span className="text-[11px] text-muted-foreground">🔔 Notifications</span><span className="font-semibold">{unread ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "Rien de neuf"}</span></Link>
+      <button type="button" onClick={() => open("notifications")} className={tile}><span className="text-[11px] text-muted-foreground">🔔 Notifications</span><span className={`font-semibold ${unread ? "text-primary" : ""}`}>{unread ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "Rien de neuf"}</span></button>
     </div>
     <div className="grid grid-cols-3 gap-3">
       {MAIN_PHONE_APPS.map(a => {
@@ -49,4 +50,23 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
     <button type="button" onClick={() => setMore(!more)} aria-expanded={more} className="flex min-h-11 w-full items-center justify-center gap-1 rounded-xl text-sm font-semibold text-primary">Plus d’applications <ChevronDown className={`h-4 w-4 transition-transform ${more ? "rotate-180" : ""}`} /></button>
     {more && <div className="grid grid-cols-4 gap-2">{MORE_PHONE_APPS.map(a => <button key={a.id} type="button" onClick={() => open(a.id)} className="flex min-h-16 flex-col items-center gap-1 rounded-xl p-1 text-[11px] active:scale-95"><a.icon className="h-6 w-6 text-primary" />{a.label}</button>)}</div>}
   </div>;
+}
+
+export function NotificationsApp() {
+  const { data: notifs } = useSuspenseQuery(notificationsQuery);
+  const q = useQueryClient();
+  const navigate = useNavigate();
+  const go = async (n: (typeof notifs)[number]) => {
+    if (!n.read) { await markNotificationRead(n.id); await q.invalidateQueries({ queryKey: ["notifications"] }); }
+    const to = notificationTarget(n);
+    if (to === "/telephone") navigate({ to: "/telephone", search: { app: "messages" } }); else navigate({ to: to as "/agenda" });
+  };
+  if (notifs.length === 0) return <p className="py-10 text-center text-sm text-muted-foreground">🔔 Aucune notification pour le moment.</p>;
+  return <ul className="space-y-2">{notifs.map(n => <li key={n.id}>
+    <button type="button" onClick={() => void go(n)} className={`flex min-h-16 w-full items-start gap-3 rounded-2xl p-3 text-left active:scale-[0.98] ${n.read ? "bg-card" : "border-2 border-primary bg-primary/10"}`}>
+      <span className="text-2xl" aria-hidden>{notificationEmoji(n)}</span>
+      <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{n.title}</span><span className="line-clamp-2 block text-xs text-muted-foreground">{n.body}</span><span className="mt-1 block text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span></span>
+      {!n.read && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="Non lue" />}
+    </button>
+  </li>)}</ul>;
 }
