@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { serviceQuery, serviceRpc, type ServiceInvoice, type ServiceProvider, type ServiceState } from "@/services/game";
+import { BusinessPromo } from "@/components/game/BusinessPromo";
 import { gameMeta } from "@/game/metadata";
 import { FICTIVE_LABEL, SERVICE_LABEL, expectedNpcClients, serviceAmount } from "@/game/services";
 
@@ -60,7 +61,7 @@ function ServicesPage() {
       </TabsContent>
 
       {s.my_business && <TabsContent value="entreprise" className="mt-4 space-y-3"><MyServiceBusiness s={s} busy={act.isPending}
-        onPrice={p => run("service_set_price", { _percent: p }, "Tarif mis à jour.")} /></TabsContent>}
+        onPrice={p => run("service_set_price", { _percent: p }, "Tarif mis à jour.")} /><BusinessPromo businessId={s.my_business.id} /></TabsContent>}
     </Tabs>}
     {s && !s.my_business && <Link to="/patrimoine" className="block rounded-xl border border-border bg-card p-3 text-center text-sm font-semibold text-primary">Ouvrir ton garage ou ta société de déménagement → Patrimoine</Link>}
   </div>;

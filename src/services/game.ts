@@ -2215,3 +2215,11 @@ export const situationsQuery = queryOptions({ queryKey: ['situations'], retry: f
 export async function chooseSituation(input: { id: string; choice: string }) {
   const { data, error } = await (supabase as any).rpc('situation_choose', { _id: input.id, _choice: input.choice });
   if (error) throw new Error(error.message); return data as { ok: boolean; amount: number; message: string }; }
+
+// 0130 — boss promotions (5–30 %, 3 game days); seasonal sales and demand pricing live in shop_promos.
+export const businessPromoQuery = (businessId: string) => queryOptions({ queryKey: ['business-promo', businessId], queryFn: async () => {
+  const { data, error } = await (supabase as any).from('business_promos').select('percent,ends_at').eq('business_id', businessId).order('ends_at', { ascending: false }).limit(1);
+  if (error) return null; const p = data?.[0] as { percent: number; ends_at: string } | undefined;
+  return p && new Date(p.ends_at).getTime() > Date.now() - 86400000 * 0 ? p : null; } });
+export async function startBusinessPromo(percent: number) {
+  const { data, error } = await (supabase as any).rpc('business_start_promo', { _percent: percent }); if (error) throw new Error(error.message); return data; }
