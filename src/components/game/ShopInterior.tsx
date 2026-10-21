@@ -23,7 +23,7 @@ export function ShopInterior({ section, name, here }: { section: string; name: s
     <div className="relative overflow-hidden rounded-2xl border border-border">
       <img src={IMG[section]} alt={`Intérieur · ${name}`} width={1024} height={576} className="aspect-video w-full object-cover" />
       {aisles.map(a => <Link key={a.label} to="/boutique" search={{ rayon: section, q: a.q || undefined }}
-        className="absolute flex min-h-11 -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full bg-card/95 px-3 text-xs font-semibold shadow-elegant hotspot-pulse"
+        className="absolute flex min-h-11 -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full bg-card/95 px-3 text-xs font-semibold shadow-elegant hotspot"
         style={{ left: `${a.x}%`, top: `${a.y}%` }}><ShoppingBag className="h-4 w-4 text-primary" />{a.label}</Link>)}
     </div>
     <div className="flex gap-2">
