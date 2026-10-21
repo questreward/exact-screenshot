@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import type { FurnishingHome, FurnishingState } from "@/game/home-furnishing";
@@ -8,13 +8,17 @@ import { RoomInterior } from "./RoomInterior";
 import { useWorldClock } from "./WorldClock";
 
 /** "Voilà chez moi": visual first, editing second. Shows only real placements. */
-export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; onEdit: () => void }) {
+export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; onEdit: (asset?: string, room?: number) => void }) {
   const { time } = useWorldClock();
   const hour = time.getUTCHours();
   const light = daylight(hour);
   const g = homeGlance(home, data.furniture);
   const names = Array.from({ length: home.rooms }, (_, i) => home.room_names[i] ?? `Pièce ${i + 1}`);
   const [room, setRoom] = useState(0);
+  const [seen, setSeen] = useState<string[] | null>(null);
+  useEffect(() => { try { setSeen(JSON.parse(localStorage.getItem("civitas-home-seen") ?? "[]")); } catch { setSeen([]); } }, []);
+  const fresh = seen === null ? [] : data.furniture.filter(f => !f.placed_home && !seen.includes(f.asset_id));
+  const markSeen = (id: string) => { const next = [...(seen ?? []), id]; setSeen(next); localStorage.setItem("civitas-home-seen", JSON.stringify(next)); };
   const items = home.placements.filter(p => p.room === room).map(p => data.furniture.find(f => f.asset_id === p.asset_id)?.name).filter(Boolean);
 
   return <div className="space-y-4 animate-page">
@@ -32,6 +36,15 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
       <p className="mt-2 text-sm">{g.emoji} {g.status}{g.emptyRooms > 0 && g.placed > 0 ? ` · ${g.emptyRooms} pièce(s) encore vide(s)` : ""}</p>
     </div>
 
+    {fresh.length > 0 && <div className="space-y-2 rounded-2xl border-2 border-primary bg-card p-4">
+      <p className="font-heading font-bold">🚚 Livraison arrivée</p>
+      {fresh.slice(0, 3).map(f => <div key={f.asset_id} className="rounded-xl bg-muted p-3">
+        <p className="text-sm">📦 Ton objet <strong>{f.name}</strong> vient d'arriver.</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Button className="min-h-12" onClick={() => { markSeen(f.asset_id); onEdit(f.asset_id, room); }}>Installer dans {names[room]}</Button>
+          <Button variant="outline" className="min-h-12" onClick={() => markSeen(f.asset_id)}>Le ranger</Button>
+        </div></div>)}
+    </div>}
     <div className="overflow-hidden rounded-2xl border border-border">
       <RoomInterior name={names[room] ?? ""} placements={home.placements} furniture={data.furniture} room={room} grid={data.grid} light={light.key} />
       <div className="px-3 pb-3 text-sm text-muted-foreground">{items.length ? items.join(" · ") : "Pièce vide pour l'instant."}</div>
@@ -43,7 +56,7 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
     </div>
 
     <div className="grid gap-2">
-      <Button className="min-h-14 text-base" onClick={onEdit}>🛋️ Aménager mon logement</Button>
+      <Button className="min-h-14 text-base" onClick={() => onEdit()}>🛋️ Aménager mon logement</Button>
       <Button asChild variant="outline" className="min-h-12"><Link to="/boutique">🛍️ Acheter des meubles</Link></Button>
     </div>
   </div>;

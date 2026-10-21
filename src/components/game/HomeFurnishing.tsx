@@ -10,6 +10,7 @@ import { canPlace, footprint, type FurnishingState, type FurnishingHome, type Pl
 import { RoomInterior } from './RoomInterior';
 import { FurnitureVisual } from './FurnitureVisual';
 import { HomeOverview } from './HomeOverview';
+import { firstFreeSpot } from '@/game/home-view';
 
 export function HomeFurnishing({ data }: { data: FurnishingState }) {
   const [homeId, setHomeId] = useState(data.homes[0]?.id ?? '');
@@ -19,17 +20,22 @@ export function HomeFurnishing({ data }: { data: FurnishingState }) {
   return <HomeSwitch key={`${home.id}:${home.version}:${JSON.stringify(home.placements)}`} home={home} data={data} onHomeChange={setHomeId}/>;
 }
 function HomeSwitch(props: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
-  const [edit, setEdit] = useState(false);
-  return edit ? <div className="space-y-3"><Button variant="outline" className="min-h-12 w-full" onClick={() => setEdit(false)}>🏠 Revenir à la vue de mon logement</Button><Editor {...props}/></div>
-    : <HomeOverview home={props.home} data={props.data} onHomeChange={props.onHomeChange} onEdit={() => setEdit(true)}/>;
+  const [edit, setEdit] = useState<false | { asset?: string | undefined; room?: number | undefined }>(false);
+  return edit ? <div className="space-y-3"><Button variant="outline" className="min-h-12 w-full" onClick={() => setEdit(false)}>🏠 Revenir à la vue de mon logement</Button><Editor {...props} start={edit}/></div>
+    : <HomeOverview home={props.home} data={props.data} onHomeChange={props.onHomeChange} onEdit={(asset, room) => setEdit({ asset, room })}/>;
 }
-function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
+function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; start?: { asset?: string | undefined; room?: number | undefined } }) {
   const qc = useQueryClient();
-  const [placements, setPlacements] = useState(home.placements);
+  const [placements, setPlacements] = useState(() => {
+    if (!start?.asset || home.placements.some(p => p.asset_id === start.asset)) return home.placements;
+    const spot = firstFreeSpot(start.asset, start.room ?? 0, home.placements, data.furniture, home.rooms, data.grid);
+    return spot ? [...home.placements, spot] : home.placements;
+  });
+  const [drag, setDrag] = useState<string | null>(null);
   const initialNames = Array.from({ length: home.rooms }, (_, i) => home.room_names[i] ?? `Pièce ${i + 1}`);
   const [names, setNames] = useState(initialNames);
-  const [room, setRoom] = useState(0);
-  const [selected, setSelected] = useState('');
+  const [room, setRoom] = useState(start?.room ?? 0);
+  const [selected, setSelected] = useState(start?.asset ?? '');
   const [rotation, setRotation] = useState(0);
   const dirty = JSON.stringify(placements) !== JSON.stringify(home.placements) || JSON.stringify(names) !== JSON.stringify(initialNames);
   const leave = () => !dirty || window.confirm('Quitter sans enregistrer les changements ?');
@@ -65,14 +71,21 @@ function Editor({ home, data, onHomeChange }: { home: FurnishingHome; data: Furn
       <section className="min-w-0 space-y-3" aria-label="Aménagement de la pièce">
         <RoomInterior name={names[room] ?? `Pièce ${room + 1}`} placements={placements} furniture={data.furniture} room={room} grid={data.grid}/>
         <Input aria-label="Nom de la pièce" maxLength={40} className="h-12" value={names[room] ?? ''} disabled={save.isPending} onChange={e=>setNames(old=>old.map((n,i)=>i===room?e.target.value:n))}/>
-        <div className="relative isolate grid aspect-square w-full overflow-hidden border-4 border-secondary bg-surface" style={{ gridTemplateColumns: `repeat(${data.grid}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${data.grid}, minmax(0, 1fr))` }}>
+        <div className="relative isolate grid aspect-square w-full touch-none overflow-hidden border-4 border-secondary bg-surface"
+          onPointerUp={e => { if (!drag) return; const r = e.currentTarget.getBoundingClientRect(); const box = chosen ? footprint(chosen, rotation) : { width: 1, height: 1 };
+            const x = Math.min(data.grid - box.width, Math.max(0, Math.floor((e.clientX - r.left) / r.width * data.grid - box.width / 2 + .5)));
+            const y = Math.min(data.grid - box.height, Math.max(0, Math.floor((e.clientY - r.top) / r.height * data.grid - box.height / 2 + .5)));
+            setDrag(null); put(x, y); }}
+          onPointerLeave={() => setDrag(null)} style={{ gridTemplateColumns: `repeat(${data.grid}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${data.grid}, minmax(0, 1fr))` }}>
           {Array.from({length:data.grid*data.grid},(_,i)=><Button key={i} variant="ghost" aria-label={`Emplacement ${i%data.grid+1}, ${Math.floor(i/data.grid)+1}`} disabled={!chosen || save.isPending} className="h-full min-h-0 w-full rounded-none border border-border p-0" onClick={()=>put(i%data.grid,Math.floor(i/data.grid))}/>)}
           {placements.filter(p=>p.room===room).map(p=>{
             const f=data.furniture.find(item=>item.asset_id===p.asset_id); if(!f)return null;
             const box=footprint(f,p.rotation);
-            return <Button key={p.asset_id} variant="ghost" aria-label={`Sélectionner ${f.name}`} disabled={save.isPending} onClick={()=>pick(p.asset_id)} className={`absolute z-10 h-auto overflow-hidden rounded-sm border-2 bg-secondary p-1 ${selected===p.asset_id?'border-primary ring-2 ring-ring':'border-border'}`} style={{ left:`${p.x/data.grid*100}%`, top:`${p.y/data.grid*100}%`, width:`${box.width/data.grid*100}%`, height:`${box.height/data.grid*100}%` }}><span className="absolute left-1/2 top-1/2 block" style={{width:`${f.width/box.width*100}%`,height:`${f.height/box.height*100}%`,transform:`translate(-50%, -50%) rotate(${p.rotation}deg)`}}><FurnitureVisual kind={f.visual}/></span></Button>;
+            return <Button key={p.asset_id} variant="ghost" aria-label={`Sélectionner ${f.name}`} disabled={save.isPending} onPointerDown={e=>{ (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId); pick(p.asset_id); setDrag(p.asset_id); }} onClick={()=>pick(p.asset_id)} className={`absolute z-10 ${drag===p.asset_id?'opacity-60 scale-105':''} h-auto overflow-hidden rounded-sm border-2 bg-secondary p-1 ${selected===p.asset_id?'border-primary ring-2 ring-ring':'border-border'}`} style={{ left:`${p.x/data.grid*100}%`, top:`${p.y/data.grid*100}%`, width:`${box.width/data.grid*100}%`, height:`${box.height/data.grid*100}%` }}><span className="absolute left-1/2 top-1/2 block" style={{width:`${f.width/box.width*100}%`,height:`${f.height/box.height*100}%`,transform:`translate(-50%, -50%) rotate(${p.rotation}deg)`}}><FurnitureVisual kind={f.visual}/></span></Button>;
           })}
         </div>
+        <p className="text-xs text-muted-foreground">👆 Touche un meuble, glisse-le puis relâche. Ou choisis un objet puis touche une case.</p>
+        {chosen && !placements.some(p=>p.asset_id===selected) && <Button variant="secondary" className="min-h-12 w-full" disabled={save.isPending} onClick={()=>{ const s2=firstFreeSpot(selected, room, placements, data.furniture, home.rooms, data.grid); if(!s2){toast.error('Plus de place dans cette pièce.');return;} setPlacements(old=>[...old,s2]); }}>✨ Placer {chosen.name} ici automatiquement</Button>}
         <p className="text-xs text-muted-foreground">Disposition de jeu · sans dimensions immobilières contractuelles</p>
         <div className="flex items-center gap-2"><Button variant="outline" size="icon" className="h-12 w-12" title="Tourner" aria-label="Tourner" disabled={!chosen || save.isPending} onClick={turn}><RotateCw/></Button><Button variant="outline" size="icon" className="h-12 w-12" title="Ranger" aria-label="Ranger" disabled={!placements.some(p=>p.asset_id===selected) || save.isPending} onClick={()=>setPlacements(old=>old.filter(p=>p.asset_id!==selected))}><Archive/></Button><p className="min-w-0 break-words text-sm">{chosen?.name ?? 'Aucun objet sélectionné'}{chosen && <span className="block text-xs text-muted-foreground">{rotation}°</span>}</p></div>
       </section>
