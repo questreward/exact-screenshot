@@ -56,7 +56,7 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
     </div>
 
     <div className="grid gap-2">
-      <Button className="min-h-14 text-base" onClick={onEdit}>🛋️ Aménager mon logement</Button>
+      <Button className="min-h-14 text-base" onClick={() => onEdit()}>🛋️ Aménager mon logement</Button>
       <Button asChild variant="outline" className="min-h-12"><Link to="/boutique">🛍️ Acheter des meubles</Link></Button>
     </div>
   </div>;

@@ -20,11 +20,11 @@ export function HomeFurnishing({ data }: { data: FurnishingState }) {
   return <HomeSwitch key={`${home.id}:${home.version}:${JSON.stringify(home.placements)}`} home={home} data={data} onHomeChange={setHomeId}/>;
 }
 function HomeSwitch(props: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void }) {
-  const [edit, setEdit] = useState<false | { asset?: string; room?: number }>(false);
+  const [edit, setEdit] = useState<false | { asset?: string | undefined; room?: number | undefined }>(false);
   return edit ? <div className="space-y-3"><Button variant="outline" className="min-h-12 w-full" onClick={() => setEdit(false)}>🏠 Revenir à la vue de mon logement</Button><Editor {...props} start={edit}/></div>
     : <HomeOverview home={props.home} data={props.data} onHomeChange={props.onHomeChange} onEdit={(asset, room) => setEdit({ asset, room })}/>;
 }
-function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; start?: { asset?: string; room?: number } }) {
+function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; start?: { asset?: string | undefined; room?: number | undefined } }) {
   const qc = useQueryClient();
   const [placements, setPlacements] = useState(() => {
     if (!start?.asset || home.placements.some(p => p.asset_id === start.asset)) return home.placements;
