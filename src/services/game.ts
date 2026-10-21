@@ -2126,3 +2126,17 @@ export async function presidencyAction(a: { _action: 'candidate' | 'sponsor' | '
   if (error) throw new Error(error.message);
   return data as PrState;
 }
+
+/** Décisions Mairie/Élysée (0121). null tant que l'installation n'est pas faite sur le serveur. */
+export const institutionQuery = (cityId: string) => queryOptions({
+  queryKey: ['institutions', cityId], staleTime: 15000,
+  queryFn: async (): Promise<import('@/game/institutions').InstitutionState | null> => {
+    const { data, error } = await (supabase.rpc as unknown as LooseRpc)('institution_state', { _city: cityId });
+    if (error) { if (error.code === 'PGRST202' || error.code === '42883' || /institution_state/.test(error.message)) return null; throw new Error(error.message); }
+    return data as import('@/game/institutions').InstitutionState;
+  },
+});
+export async function institutionDecree(input: { kind: 'mairie' | 'elysee'; city: string; district: string | null; gauge: string; delta: number; title: string }) {
+  const { error } = await (supabase.rpc as unknown as LooseRpc)('institution_decree', { _kind: input.kind, _city: input.city, _district: input.district, _gauge: input.gauge, _delta: input.delta, _title: input.title });
+  if (error) throw new Error(error.message);
+}
