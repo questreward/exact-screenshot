@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Bell, CalendarClock, Wallet, Zap, Briefcase, Lock } from "lucide-react";
-import { SectionLink } from "@/components/game/GameShell";
-import { SECTIONS, COMING_SOON, HOME_SHORTCUTS } from "@/game/navigation";
+import { Bell, CalendarClock, Lock } from "lucide-react";
+import { COMING_SOON } from "@/game/navigation";
+import { GameHome } from "@/components/game/GameHome";
 import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery, worldQuery } from "@/services/game";
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
@@ -38,21 +38,6 @@ function Dashboard() {
       <FranceDay />
 
       <LifeSummary />
-
-      <div>
-        <h2 className="mb-3 text-lg font-semibold">Autres raccourcis</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {HOME_SHORTCUTS.filter((id) => !["vie", "carriere", "telephone", "carte", "ma-ville", "civitas-services"].includes(id)).map((id) => SECTIONS.find((x) => x.id === id)!).filter(Boolean).map((s) => (
-            <SectionLink key={s.id} section={s}
-              className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
-              <s.icon className="h-6 w-6 text-primary" />
-              <span className="font-semibold">{s.label}</span>
-              {!s.available && <Lock className="absolute top-4 right-4 h-3.5 w-3.5 text-muted-foreground" />}
-            </SectionLink>
-          ))}
-        </div>
-      </div>
-
 
       <PositionBlock />
 
