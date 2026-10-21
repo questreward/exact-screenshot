@@ -149,6 +149,7 @@ export const MAIN_PHONE_APPS: MainPhoneApp[] = [
   { id: "messages", label: "Messages", emoji: "💬", app: "messages" },
   { id: "actualites", label: "Actualités", emoji: "📰", to: "/actualites" },
   { id: "civi", label: "Civi", emoji: "🏛️", app: "social" },
+  { id: "social", label: "Vie sociale", emoji: "👥", app: "vie-sociale" },
   { id: "banque", label: "Banque", emoji: "💶", app: "banque" },
   { id: "shopping", label: "Shopping", emoji: "🛒", to: "/boutique" },
   { id: "agenda", label: "Agenda", emoji: "📅", to: "/agenda" },
