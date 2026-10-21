@@ -11,13 +11,14 @@ const OPEN: [string, string][] = [["🔓", "Ouvrir le showroom"], ["🚗", "Vér
 const STEPS = ["Écouter son besoin", "Proposer un véhicule", "Présenter la voiture", "Faire essayer", "Préparer l'offre"];
 
 /** Presentation-only showroom day. Visitors are fictional and never buy; real sales come from players. */
-export function ShowroomDay({ stock, soldToday }: { stock: DealerCar[]; soldToday: boolean }) {
+export function ShowroomDay({ stock, soldDays }: { stock: DealerCar[]; soldDays: string[] }) {
   const qc = useQueryClient();
   const [sold, setSold] = useState<string | null>(null);
   const sell = useMutation({ mutationFn: dealerShowroomSell, onSuccess: r => { setSold(`🔑 Vendu : ${r.name} pour ${eur(r.amount)}. La voiture est sortie du stock.`); toast.success("Vente conclue !"); qc.invalidateQueries({ queryKey: ["dealer"] }); }, onError: (e: Error) => toast.error(e.message) });
   const { time } = useWorldClock();
   const day = time.toISOString().slice(0, 10);
   const visitors = visitorsOf(day);
+  const soldToday = soldDays.includes(day);
   const nowHm = time.toISOString().slice(11, 16);
   const [open, setOpen] = useState<number[]>([]);
   const [idx, setIdx] = useState(0);
