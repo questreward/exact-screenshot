@@ -6,6 +6,7 @@ import { homeGlance, welcomeLine } from "@/game/home-view";
 import { daylight } from "@/game/daylight";
 import { RoomInterior } from "./RoomInterior";
 import { useWorldClock } from "./WorldClock";
+import { HomeLife } from "./HomeLife";
 
 /** "Voilà chez moi": visual first, editing second. Shows only real placements. */
 export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: FurnishingHome; data: FurnishingState; onHomeChange: (id: string) => void; onEdit: (asset?: string, room?: number) => void }) {
@@ -59,5 +60,6 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
       <Button className="min-h-14 text-base" onClick={() => onEdit()}>🛋️ Aménager mon logement</Button>
       <Button asChild variant="outline" className="min-h-12"><Link to="/boutique">🛍️ Acheter des meubles</Link></Button>
     </div>
+    <HomeLife home={home} furniture={data.furniture} />
   </div>;
 }
