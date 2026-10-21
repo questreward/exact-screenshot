@@ -2171,3 +2171,17 @@ export async function fillFuel(catalogId: string) {
   if (error) throw new Error(error.message);
   return data as FuelState;
 }
+
+// Home visits (0126): invitations between players, read-only interior for guests.
+export type HomeInvitations = { received: { id: string; name: string; expires_at: string }[]; sent: { id: string; name: string; expires_at: string }[] };
+export const homeInvitationsQuery = queryOptions({
+  queryKey: ["home-visits", "invitations"], retry: false,
+  queryFn: async (): Promise<HomeInvitations> => { const { data, error } = await untyped.rpc("home_invitations", {}); if (error) throw new Error(error.message); return data as HomeInvitations; },
+});
+export type HomeVisit = { host: string; name: string; rooms: number; room_names: string[]; grid: number; placements: import("@/game/home-furnishing").Placement[]; furniture: import("@/game/home-furnishing").Furniture[] };
+export const homeVisitQuery = (owner: string) => queryOptions({
+  queryKey: ["home-visits", "visit", owner], retry: false,
+  queryFn: async (): Promise<HomeVisit> => { const { data, error } = await untyped.rpc("home_visit", { _owner: owner }); if (error) throw new Error(error.message); return data as HomeVisit; },
+});
+export async function homeInvite(input: { guest: string; home: string }) { const { error } = await untyped.rpc("home_invite", { _guest: input.guest, _home: input.home }); if (error) throw new Error(error.message); }
+export async function homeInviteRevoke(guest: string) { const { error } = await untyped.rpc("home_invite_revoke", { _guest: guest }); if (error) throw new Error(error.message); }
