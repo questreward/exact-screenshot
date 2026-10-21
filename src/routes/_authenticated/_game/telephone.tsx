@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMyUniform } from "@/hooks/use-my-uniform";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, Lock } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
@@ -85,10 +86,11 @@ function PhonePage() {
 
 function ProfileApp() {
   const { data: c } = useSuspenseQuery(characterQuery);
+  const uniform = useMyUniform();
   if (!c) return null;
   return (
     <div className="text-center">
-      <div className="mx-auto h-32 w-28 overflow-hidden rounded-3xl border border-border"><CharacterAvatar appearance={normalizeAppearance(c.appearance)} /></div>
+      <div className="mx-auto h-32 w-28 overflow-hidden rounded-3xl border border-border"><CharacterAvatar appearance={normalizeAppearance(c.appearance)} uniform={uniform} /></div>
       <p className="mt-3 text-xl font-bold">{c.first_name} {c.last_name}</p>
       <p className="text-sm text-muted-foreground">{c.age} ans · {c.city?.name}</p>
       <p className="mt-4 rounded-2xl bg-accent/60 p-3 text-sm">{c.path?.name} — {c.situation}</p>
