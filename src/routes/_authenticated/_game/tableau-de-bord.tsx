@@ -12,6 +12,7 @@ import { lifeQuery } from "@/services/game";
 import { LifeSummary } from "@/components/game/LifeSummary";
 import { FranceDay } from "@/components/game/FranceDay";
 import { NextStepCard } from "@/components/game/NextStepCard";
+import { DiscoveryTour } from "@/components/game/DiscoveryTour";
 import { notificationTarget } from "@/game/next-step";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
@@ -34,6 +35,8 @@ function Dashboard() {
     <div className="-mt-6 space-y-6 lg:-mt-10">
       <GameHome firstName={character.first_name} cityName={character.city?.name} appearance={character.appearance}
         energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
+
+      <DiscoveryTour firstName={character.first_name} cityName={character.city?.name} />
 
       <NextStepCard cityName={character.city?.name} />
 
