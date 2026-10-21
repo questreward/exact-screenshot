@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { districtGaugesQuery, positionQuery } from "@/services/game";
+import { InstitutionDecisions } from "./InstitutionDecisions";
 import mairie from "@/assets/v2/inst-mairie.webp";
 import assemblee from "@/assets/v2/inst-assemblee.webp";
 import elysee from "@/assets/v2/inst-elysee.webp";
@@ -28,6 +29,7 @@ export function InstitutionScene({ kind }: { kind: keyof typeof INST }) {
         <p className="text-sm text-foreground/80">{i.sub}</p>
       </div>
     </div>
+    {city && <InstitutionDecisions kind={kind} cityId={city} />}
     {recent.length > 0 && <div className="rounded-2xl border border-border bg-card p-3">
       <p className="mb-2 text-sm font-semibold">Ce qui a changé en ville{pos?.city?.name ? ` · ${pos.city.name}` : ""}</p>
       <ul className="space-y-2">{recent.map((h, n) => <li key={n} className="flex items-start gap-2 text-sm animate-rise" style={{ animationDelay: `${n * 80}ms` }}>
