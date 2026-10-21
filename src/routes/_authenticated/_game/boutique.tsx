@@ -77,7 +77,7 @@ function ShopPage() {
   const roomCounts = [...new Set((s?.products ?? []).filter(p => p.details.realestate).flatMap(p => p.details.rooms != null ? [p.details.rooms] : []))].sort((a, b) => a - b);
   const total = (s?.assets ?? []).reduce((n, a) => n + a.value, 0);
   const activeCredits = (s?.credit.list ?? []).filter(c => c.status === "active");
-  const promoList = (s?.products ?? []).filter(p => promo.has(p.id));
+  const promoList = (s?.products ?? []).filter(p => (promo.get(p.id) ?? 0) > 0);
   const wishList = (s?.products ?? []).filter(p => wished.has(p.id));
   const goal = wishList.find(p => wished.get(p.id));
   const count = catalog.data?.total ?? list.length;
@@ -281,7 +281,7 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
       <Button variant={mode === "cash" ? "default" : "outline"} className="h-11" onClick={() => setMode("cash")}>Comptant</Button>
       <Button variant={mode === "credit" ? "default" : "outline"} className="h-11" onClick={() => setMode("credit")}>À crédit</Button></div>}
     {mode === "cash" ? <>
-      <ul className="my-3 space-y-1 text-sm">{pct > 0 && row("Prix normal", eur(p.price))}{row(pct > 0 ? `Prix promo (−${pct} %)` : "Prix", eur(cash))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - cash - fees))}</ul>
+      <ul className="my-3 space-y-1 text-sm">{pct > 0 && row("Prix normal", eur(p.price))}{row(pct > 0 ? `Prix promo (−${pct} %)` : pct < 0 ? `Prix (forte demande +${-pct} %)` : "Prix", eur(cash))}{immo && row("Frais de notaire", eur(fees))}{row("Solde après achat", eur(s.balance - cash - fees))}</ul>
       {cash + fees > s.balance && <p className="mb-3 text-sm text-destructive">Solde insuffisant.</p>}
       <div className="grid grid-cols-2 gap-2"><Button variant="outline" className="h-12" onClick={onClose}>Annuler</Button>
         <Button className="h-12" disabled={pending || cash + fees > s.balance} onClick={onCash}>Payer</Button></div>
@@ -315,7 +315,7 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
     </div>}
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
-      {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}</div>
+      {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}{pct < 0 && <span className="rounded-full bg-accent px-2 py-1 text-xs font-semibold">📈 Très demandé +{-pct} %</span>}</div>
     <p className="font-heading text-lg font-bold">{p.name}</p>
     <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{p.desc}</p>
     {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
