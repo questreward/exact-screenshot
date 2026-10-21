@@ -15,7 +15,7 @@ export function DiscoveryTour({ firstName, cityName }: { firstName: string; city
 
   if (!state.intro) {
     return createPortal(
-      <div role="dialog" aria-label="Bienvenue" className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background/95 p-6 text-center backdrop-blur">
+      <div role="dialog" aria-label="Bienvenue" className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background/95 p-6 text-center">
         <p className="font-display text-4xl font-bold animate-rise">Bienvenue à CIVITAS.</p>
         <p className="text-xl text-muted-foreground animate-rise" style={{ animationDelay: "600ms", animationFillMode: "both" }}>Votre vie commence ici.</p>
         <p className="text-lg animate-rise" style={{ animationDelay: "1200ms", animationFillMode: "both" }}>Tu es <b>{firstName}</b>, à <b>{cityName}</b>.</p>
