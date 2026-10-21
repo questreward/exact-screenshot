@@ -9,7 +9,7 @@ import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, 
 import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
-import { ShopHall, AisleHeader } from "@/components/game/ShopAisles";
+import { ShopHall, AisleHeader, IMG as AISLE_IMG, EMOJI as AISLE_EMOJI } from "@/components/game/ShopAisles";
 import { ShopCart } from "@/components/game/ShopCart";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
@@ -149,6 +149,7 @@ function ShopPage() {
           <p className="mt-1 text-sm">{g.missing === 0 ? "Objectif atteint : tu peux l'acheter !" : `${g.percent} % · il te manque ${eur(g.missing)}`}</p>
           <p className="text-xs opacity-80">Calculé sur ton solde : l'argent reste sur ton compte.</p></div>; })()
           : <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Pas d'objectif. Touche la cible sur un produit pour suivre ton épargne.</p>}
+        <h2 className="font-display text-lg font-bold">📝 Ma liste de courses</h2>
         {wishList.length === 0 ? <p className="text-sm text-muted-foreground">Ta liste d'envies est vide. Touche le cœur sur un produit pour l'ajouter.</p> :
           <ul className="grid gap-3 sm:grid-cols-2">{wishList.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished isGoal={!!wished.get(p.id)}
             busy={wish.isPending} onBuy={() => addOrConfirm(p)} inCart={cart.some(c => c.id === p.id)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>}
@@ -156,12 +157,16 @@ function ShopPage() {
       </TabsContent>
 
       <TabsContent value="occasions" className="mt-4 space-y-3">
-        <p className="text-sm text-muted-foreground">Objets et voitures repris par la boutique, remis en vente moins cher que le neuf.</p>
+        <div className="rounded-3xl border border-border bg-gradient-card p-4"><p className="font-display text-lg font-bold">♻️ Le marché de l'occasion</p><p className="text-sm text-muted-foreground">Objets et voitures repris par la boutique, remis en vente moins cher que le neuf. Pour vendre entre joueurs : <Link to="/marche" className="font-semibold text-primary">Marché</Link>.</p></div>
         {s.secondhand.length === 0 ? <p className="text-sm text-muted-foreground">Aucune occasion pour l'instant.</p> :
           <ul className="grid gap-3 sm:grid-cols-2">{s.secondhand.map(l => {
             const blocked = l.kind === "vehicle" && !s.license;
-            return <li key={l.id} className="flex flex-col rounded-xl border border-border bg-card p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">{l.brand} · {SECTIONS[l.section] ?? l.section} · seconde main</p>
+            return <li key={l.id} className="flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-card animate-rise">
+              <div className="relative -mx-4 -mt-4 mb-3 h-24 overflow-hidden"><img src={AISLE_IMG[l.section]} alt="" loading="lazy" className="h-full w-full object-cover opacity-50 grayscale-[40%]" />
+                <span className="absolute left-3 top-3 rounded-full bg-card/90 px-2 py-1 text-xs font-semibold">♻️ {l.condition}</span>
+                <span className="absolute right-3 top-3 rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{Math.max(0, Math.round((1 - l.price / l.new_price) * 100))} % vs neuf</span></div>
+              <p className="text-xs text-muted-foreground">Vendeur : stand des reprises de la boutique</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">{l.brand} · {SECTIONS[l.section] ?? l.section}</p>
               <p className="font-heading text-lg font-bold">{l.name}</p>
               <p className="flex-1 text-sm text-muted-foreground">{l.condition} · neuf {eur(l.new_price)}</p>
               <div className="mt-3 flex items-center justify-between gap-2"><p className="font-heading text-xl font-bold">{eur(l.price)}</p>
@@ -300,13 +305,18 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
   const price = storePrice(p.price, pct);
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
   const blocked = p.kind === "vehicle" && !s.license;
-  return <li className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-4">
-    {p.details.realestate && <HousingPreview p={p} />}
+  return <li className="flex min-w-0 flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-card animate-rise">
+    {p.details.realestate ? <HousingPreview p={p} /> : <div className="relative -mx-4 -mt-4 mb-3 h-28 overflow-hidden">
+      <img src={AISLE_IMG[p.section]} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+      <span className="absolute bottom-2 left-4 text-4xl" aria-hidden>{AISLE_EMOJI[p.section] ?? "🛍️"}</span>
+      {p.sales > 0 && <span className="absolute right-3 top-3 rounded-full bg-card/90 px-2 py-1 text-xs font-semibold">⭐ Populaire</span>}
+    </div>}
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
       {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}</div>
     <p className="font-heading text-lg font-bold">{p.name}</p>
-    <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
+    <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{p.desc}</p>
     {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
     {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
     {p.details.realestate && <Button variant="outline" className="mt-3 min-h-11" onClick={onVisit}>Visiter</Button>}
