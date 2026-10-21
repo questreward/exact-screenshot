@@ -33,7 +33,7 @@ CREATE TABLE public.character_housing(character_id uuid PRIMARY KEY,type_id text
 CREATE TABLE public.housing_types(id text PRIMARY KEY,daily_cost integer);
 CREATE FUNCTION public.personal_economy_state() RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE cid uuid; BEGIN
 SELECT id INTO cid FROM public.characters WHERE user_id=auth.uid();
-RETURN jsonb_build_object('available',(SELECT balance FROM public.accounts WHERE character_id=cid)); END $$;
+RETURN jsonb_build_object('available',(SELECT balance FROM public.accounts WHERE character_id=cid),'world_now',public.game_now()); END $$;
 GRANT USAGE ON SCHEMA public,auth TO authenticated;
 GRANT SELECT ON public.characters TO authenticated;
 INSERT INTO public.characters VALUES('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000001',25),('00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002',25);
