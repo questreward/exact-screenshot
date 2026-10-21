@@ -312,7 +312,7 @@ function TripPlanner({ target, cityId, from, onWalk, walking }: { target: Tables
     <p className="text-xs uppercase tracking-wider text-primary">Itinéraire</p>
     <p className="text-sm"><strong>{origin?.name ?? "Votre position"}</strong> → <strong>{target.name}</strong>{km != null && <span className="text-muted-foreground"> · {km.toLocaleString("fr-FR")} km</span>}</p>
     <Button variant="outline" className="min-h-12 w-full text-base" disabled={walking} onClick={onWalk}>{walking ? <LoaderCircle className="animate-spin" /> : <Footprints />} À pied · gratuit</Button>
-    {origin && <TransportControl location={origin} preset={{ id: target.id, name: target.name, districtId: target.district_id }} />}
+    {origin && <TransportControl location={origin} preset={{ id: target.id, name: target.name, districtId: target.district_id ?? "" }} />}
     <p className="text-xs text-muted-foreground">Durées et prix selon les règles du jeu. En voiture, le trajet se joue ; en bus, vous suivez le trajet sur la carte.</p>
   </section>;
 }
