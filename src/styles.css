@@ -309,3 +309,4 @@
 @keyframes ride-sway { 0%,100% { transform: scale(1.04) translate(0,0); } 50% { transform: scale(1.04) translate(-.4%, .3%); } }
 .ride-sway { animation: ride-sway 2.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .ride-sway { animation: none; } }
+.trip-mover { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 9999px; background: var(--primary); color: var(--primary-foreground); font-size: 22px; box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 30%, transparent); transition: transform .3s linear; }

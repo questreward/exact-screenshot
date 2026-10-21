@@ -10,7 +10,10 @@ export type RealMarker = { id: string; at: LonLat; label: string; sub?: string |
 
 let protocolReady = false;
 
-export default function RealMap({ center, zoom, markers, viewKey }: { center: LonLat; zoom: number; markers: RealMarker[]; viewKey: string }) {
+export type RealRoute = { from: LonLat; to: LonLat; pct: number; icon?: string };
+
+export default function RealMap({ center, zoom, markers, viewKey, route, height }: { center: LonLat; zoom: number; markers: RealMarker[]; viewKey: string; route?: RealRoute | undefined; height?: string }) {
+  const mover = useRef<maplibregl.Marker | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const pins = useRef<maplibregl.Marker[]>([]);
@@ -58,5 +61,26 @@ export default function RealMap({ center, zoom, markers, viewKey }: { center: Lo
     });
   }, [markers]);
 
-  return <div ref={box} className="h-[26rem] w-full sm:h-[32rem]" />;
+  // Trajet animé : ligne départ → arrivée et véhicule placé selon l'avancement (heure du jeu).
+  useEffect(() => {
+    const m = map.current; if (!m || !route) return;
+    const draw = () => {
+      const line = { type: "Feature" as const, properties: {}, geometry: { type: "LineString" as const, coordinates: [route.from, route.to] } };
+      const src = m.getSource("trip") as maplibregl.GeoJSONSource | undefined;
+      if (src) src.setData(line);
+      else {
+        m.addSource("trip", { type: "geojson", data: line });
+        m.addLayer({ id: "trip-line", type: "line", source: "trip", paint: { "line-color": getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#f06a4e", "line-width": 5, "line-dasharray": [2, 1.5] } });
+      }
+      const p = Math.max(0, Math.min(1, route.pct));
+      const at: LonLat = [route.from[0] + (route.to[0] - route.from[0]) * p, route.from[1] + (route.to[1] - route.from[1]) * p];
+      if (!mover.current) {
+        const el = document.createElement("div"); el.className = "trip-mover"; el.textContent = route.icon ?? "●";
+        mover.current = new maplibregl.Marker({ element: el }).setLngLat(at).addTo(m);
+      } else mover.current.setLngLat(at);
+    };
+    if (m.isStyleLoaded()) draw(); else m.once("load", draw);
+  }, [route?.from[0], route?.from[1], route?.to[0], route?.to[1], route?.pct]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return <div ref={box} className={height ?? "h-[26rem] w-full sm:h-[32rem]"} />;
 }

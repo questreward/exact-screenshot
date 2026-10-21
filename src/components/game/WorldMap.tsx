@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
 import type { RealMarker } from "./RealMap";
