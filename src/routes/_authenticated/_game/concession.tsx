@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/_game/concession")({
 });
 
 const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
-const KIND: Record<string, string> = { restock: "Achat en stock", sale: "Vente comptant", credit_sale: "Vente à crédit", trade_in: "Reprise", used_sale: "Vente d'occasion" };
+const KIND: Record<string, string> = { restock: "Achat en stock", sale: "Vente comptant", credit_sale: "Vente à crédit", trade_in: "Reprise", used_sale: "Vente d'occasion", npc_sale: "Vente showroom" };
 
 function DealerPage() {
   const qc = useQueryClient();

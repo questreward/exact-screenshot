@@ -43,5 +43,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 
 ## V3 Chantier 5 — Logement
 - [x] 1-4. Vue de Chez moi, placement au doigt, visites/déménagement, vie à la maison
-- [ ] P. Inviter des amis à visiter son logement (serveur)
-- [ ] Q. Clients du showroom qui achètent vraiment (stock + ventes)
+- [x] P. Inviter des amis à visiter son logement (serveur)
+- [x] Q. Clients du showroom qui achètent vraiment (stock + ventes)
