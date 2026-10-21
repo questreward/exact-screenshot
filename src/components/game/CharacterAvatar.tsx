@@ -1,8 +1,14 @@
 import { type Appearance, optionValue } from "@/game/appearance";
+import type { Mood } from "@/game/character-look";
 import { cn } from "@/lib/utils";
 
+type Uniform = "pompiers" | "police" | "gendarmerie" | "samu" | "protection_civile";
+const UNIFORM_COLOR: Record<Uniform, string> = {
+  pompiers: "#1f2a44", police: "#1d3a6e", gendarmerie: "#14234a", samu: "#f4f4f4", protection_civile: "#f28c28",
+};
+
 // Simple layered SVG avatar. New appearance options plug in by id.
-export function CharacterAvatar({ appearance, className, photo }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined }) {
+export function CharacterAvatar({ appearance, className, photo, mood = "neutre", uniform }: { appearance: Appearance; className?: string | undefined; photo?: string | null | undefined; mood?: Mood; uniform?: Uniform | null | undefined }) {
   if (photo) return <img src={photo} alt="" className={cn("h-full w-full object-cover", className)} />;
   const skin = optionValue("skin", appearance.skin);
   const hair = optionValue("hairColor", appearance.hairColor);
