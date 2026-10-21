@@ -141,3 +141,19 @@ export function groupedSections() {
 
 // Personal home shortcuts (kept short on purpose).
 export const HOME_SHORTCUTS = ["civitas-services", "vie", "carriere", "telephone", "carte", "ma-ville"];
+
+/** Les 10 applications principales du téléphone (chantier 7) : chacune ouvre un système existant. */
+export type MainPhoneApp = { id: string; label: string; emoji: string; to?: string; app?: string };
+export const MAIN_PHONE_APPS: MainPhoneApp[] = [
+  { id: "maps", label: "Maps", emoji: "🗺️", to: "/carte" },
+  { id: "messages", label: "Messages", emoji: "💬", app: "messages" },
+  { id: "actualites", label: "Actualités", emoji: "📰", to: "/actualites" },
+  { id: "civi", label: "Civi", emoji: "🏛️", app: "social" },
+  { id: "banque", label: "Banque", emoji: "💶", app: "banque" },
+  { id: "shopping", label: "Shopping", emoji: "🛒", to: "/boutique" },
+  { id: "agenda", label: "Agenda", emoji: "📅", to: "/agenda" },
+  { id: "documents", label: "Documents", emoji: "📁", to: "/mes-documents" },
+  { id: "moi", label: "Moi", emoji: "👤", app: "profil" },
+];
+/** Applications rangées dans « Plus » pour ne rien perdre de l'existant. */
+export const MORE_PHONE_APPS = PHONE_APPS.filter(a => !["profil", "banque", "messages", "social", "actualites", "agenda", "carte"].includes(a.id));
