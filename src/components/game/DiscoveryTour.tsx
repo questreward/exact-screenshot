@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, X } from "lucide-react";
@@ -13,15 +14,16 @@ export function DiscoveryTour({ firstName, cityName }: { firstName: string; city
   const steps = tourSteps({ studying: !!life.enrollment, working: !!life.employment, hasHousing: !!life.housing, rescue });
 
   if (!state.intro) {
-    return (
-      <div role="dialog" aria-label="Bienvenue" className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-background/95 p-6 text-center backdrop-blur">
+    return createPortal(
+      <div role="dialog" aria-label="Bienvenue" className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background/95 p-6 text-center backdrop-blur">
         <p className="font-display text-4xl font-bold animate-rise">Bienvenue à CIVITAS.</p>
         <p className="text-xl text-muted-foreground animate-rise" style={{ animationDelay: "600ms", animationFillMode: "both" }}>Votre vie commence ici.</p>
         <p className="text-lg animate-rise" style={{ animationDelay: "1200ms", animationFillMode: "both" }}>Tu es <b>{firstName}</b>, à <b>{cityName}</b>.</p>
         <Button size="lg" onClick={seeIntro} className="mt-4 min-h-14 rounded-2xl px-8 text-base animate-rise" style={{ animationDelay: "1800ms", animationFillMode: "both" }}>
           Découvrir ma vie <ArrowRight className="h-5 w-5" />
         </Button>
-      </div>
+      </div>,
+      document.body,
     );
   }
 
