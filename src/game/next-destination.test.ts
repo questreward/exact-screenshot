@@ -10,3 +10,10 @@ describe("prochaine destination", () => {
     expect(nextDestination([act("2026-10-20T11:00:00Z", "2026-10-20T12:00:00Z", "a")], new Date("2026-10-20T10:00:00Z"), "a")).toBeNull();
   });
 });
+import { notificationEmoji, notificationTarget } from "./next-step";
+describe("notifications", () => {
+  const n = (title: string) => ({ title, body: "", news_id: null });
+  it("salaire → banque 💶", () => { expect(notificationTarget(n("Salaire reçu"))).toBe("/banque"); expect(notificationEmoji(n("Salaire reçu"))).toBe("💶"); });
+  it("alerte → secours 🚨", () => { expect(notificationTarget(n("ALERTE — Intervention"))).toBe("/secours"); expect(notificationEmoji(n("ALERTE — Intervention"))).toBe("🚨"); });
+  it("livraison → boutique 📦", () => { expect(notificationTarget(n("Votre commande est arrivée"))).toBe("/boutique"); });
+});

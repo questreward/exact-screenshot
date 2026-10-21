@@ -24,6 +24,10 @@ export function notificationTarget(n: { title: string; body: string; news_id: st
   if (/visite|logement|loyer|bail/.test(t)) return "/logement";
   if (/agenda|commence|rendez-vous|cours|service/.test(t)) return "/agenda";
   if (/impôt|impot/.test(t)) return "/impots";
+  if (/alerte|intervention|urgence/.test(t)) return "/secours";
+  if (/commande|livraison|livré|achat/.test(t)) return "/boutique";
+  if (/document|attestation|titre|permis/.test(t)) return "/mes-documents";
+  if (/message/.test(t)) return "/telephone";
   return "/evenements";
 }
 
@@ -55,4 +59,19 @@ export function nextDestination<A extends { status: string; start_time: string; 
   const a = activities.filter(x => x.status !== "cancelled" && x.status !== "completed" && Date.parse(x.end_time) > t && x.location && x.location.id !== currentLocationId)
     .sort((x, y) => Date.parse(x.start_time) - Date.parse(y.start_time))[0];
   return a?.location ? { title: a.title, place: a.location } : null;
+}
+
+/** Pictogramme d'une notification existante, d'après son texte (présentation seule). */
+export function notificationEmoji(n: { title: string; body: string; news_id: string | null }): string {
+  if (n.news_id) return "📰";
+  const t = `${n.title} ${n.body}`.toLowerCase();
+  if (/alerte|intervention|urgence/.test(t)) return "🚨";
+  if (/salaire|virement|paiement|banque|compte/.test(t)) return "💶";
+  if (/commande|livraison|livré|colis/.test(t)) return "📦";
+  if (/rendez-vous|agenda|commence|cours|service/.test(t)) return "📅";
+  if (/logement|loyer|bail|visite/.test(t)) return "🏠";
+  if (/vote|scrutin|élection|election/.test(t)) return "🗳️";
+  if (/message/.test(t)) return "💬";
+  if (/document|courrier|lettre|recommandé/.test(t)) return "📄";
+  return "🔔";
 }

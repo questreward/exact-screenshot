@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMyUniform } from "@/hooks/use-my-uniform";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Bell } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { BankLoans } from "@/components/game/BankLoans";
 import { InsuranceCard } from "@/components/game/InsuranceCard";
@@ -20,7 +20,7 @@ import { economyQuery } from '@/services/game';
 import { EconomyBankLinks } from '@/components/game/EconomyPage';
 import { MessagesApp, CiviApp } from '@/components/game/CommunicationApps';
 import { communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, civiFeedQuery, positionQuery } from '@/services/game';
-import { PhoneHome } from '@/components/game/PhoneHome';
+import { PhoneHome, NotificationsApp } from '@/components/game/PhoneHome';
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
   validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
@@ -33,7 +33,7 @@ function PhonePage() {
   const { app } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const open = (id?: string) => id === "politique" ? navigate({ to: "/politique" }) : id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
-  const current = PHONE_APPS.find((a) => a.id === app);
+  const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : PHONE_APPS.find((a) => a.id === app);
 
   return (
     <div className="flex justify-center animate-rise">
@@ -48,7 +48,7 @@ function PhonePage() {
                 <ChevronLeft className="h-4 w-4" /> Accueil
               </button>
               <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
-              {current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : (
+              {current.id === "notifications" ? <NotificationsApp /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
                   <p className="mt-6 font-semibold">{COMING_SOON}</p>
