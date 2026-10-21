@@ -58,7 +58,7 @@ export const SECTIONS: Section[] = [
   { id: "vie-administrative", label: "Vie administrative", icon: GraduationCap, description: "Apprendre logement, CAF, impôts et documents en missions.", available: true },
   { id: "evenements", label: "Événements", icon: Sparkles, description: "Ce qui se passe dans votre ville et pour vous.", available: true },
   { id: "ma-ville", label: "Ma Ville", icon: Landmark, description: "Institutions et participation citoyenne.", available: true },
-  { id: "politique", label: "Politique", icon: Vote, description: "Mouvements, partis et engagement politique.", available: true },
+  { id: "politique", label: "CIVITAS Politique", icon: Vote, description: "Mouvements, partis et engagement politique.", available: true },
   { id: "lois", label: "Lois", icon: BookOpen, description: "100 vraies lois françaises et réformes débattues.", available: true },
   { id: "mandat", label: "Mandat", icon: Landmark, description: "Conseil et projets municipaux.", available: true },
   { id: "organisations", label: "Organisations", icon: Users, description: "Associations et organisations locales.", available: true },
@@ -103,7 +103,7 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "evenements", label: "Événements", icon: Sparkles, available: true },
   { id: "vie", label: "Vie", icon: Briefcase, available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
-  { id: "politique", label: "Politique", icon: Vote, available: true },
+  { id: "politique", label: "CIVITAS Politique", icon: Vote, available: true },
 ];
 
 export const COMING_SOON = "Disponible dans une prochaine étape";
