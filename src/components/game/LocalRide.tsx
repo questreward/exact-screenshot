@@ -18,8 +18,8 @@ export function LocalRide({ activity }: { activity: LifeActivity }) {
   const now = useWorldClock().time.getTime();
   const start = Date.parse(activity.start_time), end = Date.parse(activity.end_time);
   const pct = end > start ? Math.max(0, Math.min(1, (now - start) / (end - start))) : 0;
-  const a = from?.district ? realPlace(from.district.city_id, from.kind) : null;
-  const b = to?.district ? realPlace(to.district.city_id, to.kind) : null;
+  const a = from?.district ? realPlace(from.district.city_id, from.kind, from.name) : null;
+  const b = to?.district ? realPlace(to.district.city_id, to.kind, to.name) : null;
   const v = a && b ? midView(a.at, b.at) : null;
   return <div className="space-y-2">
     <div className="relative overflow-hidden rounded-xl"><VehicleInterior kind="bus" label={to ? `Vers ${to.name}` : "Transport public"} /><div className={`pointer-events-none absolute inset-0 ${daylight(new Date(now).getUTCHours()).overlay}`} /></div>

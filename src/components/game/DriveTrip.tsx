@@ -34,8 +34,8 @@ export function DriveTrip({ open, onClose, vehicle, catalogId, condition, minute
   const ready = useRealMapReady();
   const { data: from } = useQuery(locationPlaceQuery(fromId));
   const { data: to } = useQuery(locationPlaceQuery(toId));
-  const a = from?.district ? realPlace(from.district.city_id, from.kind) : null;
-  const b = to?.district ? realPlace(to.district.city_id, to.kind) : null;
+  const a = from?.district ? realPlace(from.district.city_id, from.kind, from.name) : null;
+  const b = to?.district ? realPlace(to.district.city_id, to.kind, to.name) : null;
   const v = a && b ? midView(a.at, b.at) : null;
 
   useEffect(() => { if (!open) { setPhase("ready"); setPct(0); setError(null); lightDone.current = false; } }, [open]);
