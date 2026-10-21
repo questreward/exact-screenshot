@@ -1,4 +1,5 @@
 import { AbsenceSummary } from "@/components/game/AbsenceSummary";
+import { DailySituations } from "@/components/game/DailySituations";
 import { ElectionBanner } from "@/components/game/CampaignJourney";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -43,6 +44,8 @@ function Dashboard() {
       <AbsenceSummary />
 
       <ElectionBanner />
+
+      <DailySituations />
 
       <NextStepCard cityName={character.city?.name} />
 

@@ -2204,3 +2204,14 @@ export async function publishCampaignAnnouncement(input: { candidacyId: string; 
   const { error } = await (supabase as any).rpc('publish_campaign_announcement', { _candidacy_id: input.candidacyId, _text: input.text });
   if (error) throw new Error(error.message);
 }
+
+// 0129 — daily situations (Bloc 3): server snapshots, choices settled by secured SQL.
+export type Situation = { id: string; day: string; slot: number; status: 'open' | 'resolved' | 'missed'; choice: string | null;
+  snapshot: { emoji: string; title: string; body: string; tone: string; options: { id: string; label: string; hint: string }[] };
+  outcome: { ok: boolean; amount: number; message: string; label: string } | null };
+export const situationsQuery = queryOptions({ queryKey: ['situations'], retry: false, queryFn: async () => {
+  const { data, error } = await (supabase as any).rpc('situations_state'); if (error) throw new Error(error.message);
+  return data as { day: string; max: number; unlocked: number; items: Situation[] }; } });
+export async function chooseSituation(input: { id: string; choice: string }) {
+  const { data, error } = await (supabase as any).rpc('situation_choose', { _id: input.id, _choice: input.choice });
+  if (error) throw new Error(error.message); return data as { ok: boolean; amount: number; message: string }; }
