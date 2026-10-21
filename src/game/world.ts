@@ -1,4 +1,4 @@
-import { Building2, GraduationCap, Home, Landmark, TrainFront, Trees, Coffee, Store, Briefcase, MapPin } from "lucide-react";
+import { Building2, GraduationCap, Home, Landmark, TrainFront, Trees, Coffee, Store, Briefcase, MapPin, ShoppingBag } from "lucide-react";
 
 export const LOCATION_TYPES: Record<string, { label: string; icon: typeof MapPin }> = {
   logement: { label: "Logement", icon: Home }, universite: { label: "Université", icon: GraduationCap },
@@ -6,6 +6,7 @@ export const LOCATION_TYPES: Record<string, { label: string; icon: typeof MapPin
   place: { label: "Place publique", icon: MapPin }, administration: { label: "Administration", icon: Building2 },
   entreprise: { label: "Entreprise", icon: Briefcase }, commerce: { label: "Commerce", icon: Store },
   cafe: { label: "Café", icon: Coffee }, parc: { label: "Parc", icon: Trees },
+  magasin: { label: "Magasin", icon: ShoppingBag },
   gare: { label: "Gare", icon: TrainFront }, station: { label: "Station", icon: TrainFront },
 };
 export const locationType = (kind: string) => LOCATION_TYPES[kind] ?? { label: kind, icon: MapPin };

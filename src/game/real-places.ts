@@ -86,7 +86,22 @@ export const REAL_PLACES: Record<string, Record<string, { at: LonLat; real: stri
   },
 };
 
-export function realPlace(cityId: string, kind: string) {
+// Magasins (0120) : le nom du lieu donne le rayon de la Boutique et la rue commerçante réelle.
+export const SHOP_SECTION: Record<string, string> = {
+  "Magasin high-tech": "tech", "Boutique de vêtements": "mode", "Magasin de meubles et déco": "maison",
+  "Magasin d'électroménager": "electromenager", "Magasin de sport et loisirs": "loisirs", "Concession automobile": "auto",
+};
+
+export const REAL_SHOPS: Record<string, Record<string, { at: LonLat; real: string }>> = {
+  paris: { tech: { at: [2.3412, 48.8718], real: "Boulevard Haussmann" }, mode: { at: [2.3330, 48.8737], real: "Quartier des grands magasins" }, maison: { at: [2.3555, 48.8570], real: "Rue de Rivoli" }, electromenager: { at: [2.3790, 48.8590], real: "Bastille" }, loisirs: { at: [2.3482, 48.8625], real: "Les Halles" }, auto: { at: [2.2950, 48.8738], real: "Avenue de la Grande-Armée" } },
+  lyon: { tech: { at: [4.8560, 45.7610], real: "Part-Dieu" }, mode: { at: [4.8355, 45.7605], real: "Rue de la République" }, maison: { at: [4.8330, 45.7560], real: "Rue Victor-Hugo" }, electromenager: { at: [4.8580, 45.7600], real: "Part-Dieu" }, loisirs: { at: [4.8345, 45.7630], real: "Presqu'île" }, auto: { at: [4.8700, 45.7480], real: "Avenue Berthelot" } },
+  marseille: { tech: { at: [5.3790, 43.2960], real: "Centre Bourse" }, mode: { at: [5.3775, 43.2945], real: "Rue Saint-Ferréol" }, maison: { at: [5.3800, 43.2940], real: "Rue de Rome" }, electromenager: { at: [5.3815, 43.2965], real: "Belsunce" }, loisirs: { at: [5.3760, 43.2985], real: "La Canebière" }, auto: { at: [5.3950, 43.2900], real: "Boulevard Baille" } },
+  bordeaux: { tech: { at: [-0.5735, 44.8395], real: "Rue Sainte-Catherine" }, mode: { at: [-0.5730, 44.8380], real: "Rue Sainte-Catherine" }, maison: { at: [-0.5720, 44.8360], real: "Cours Victor-Hugo" }, electromenager: { at: [-0.5850, 44.8380], real: "Mériadeck" }, loisirs: { at: [-0.5710, 44.8410], real: "Porte Dijeaux" }, auto: { at: [-0.5550, 44.8600], real: "Bassins à flot" } },
+  lille: { tech: { at: [3.0750, 50.6365], real: "Euralille" }, mode: { at: [3.0630, 50.6355], real: "Rue Neuve" }, maison: { at: [3.0600, 50.6345], real: "Rue Nationale" }, electromenager: { at: [3.0760, 50.6375], real: "Euralille" }, loisirs: { at: [3.0640, 50.6340], real: "Rue de Béthune" }, auto: { at: [3.0900, 50.6250], real: "Fives" } },
+};
+
+export function realPlace(cityId: string, kind: string, name?: string) {
+  if (kind === "magasin") { const sec = name ? SHOP_SECTION[name] : undefined; return sec ? REAL_SHOPS[cityId]?.[sec] ?? null : null; }
   return REAL_PLACES[cityId]?.[kind] ?? null;
 }
 
