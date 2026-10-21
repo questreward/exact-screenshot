@@ -103,7 +103,6 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "demarches", label: "Démarches", icon: FileText, available: true },
   { id: "evenements", label: "Événements", icon: Sparkles, available: true },
   { id: "vie", label: "Vie", icon: Briefcase, available: true },
-  { id: "aide", label: "Aide", icon: BookOpen, description: "Tout CIVITAS expliqué simplement.", available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
   { id: "politique", label: "CIVITAS Politique", icon: Vote, available: true },
 ];
