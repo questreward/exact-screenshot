@@ -1,5 +1,21 @@
-import { Suspense, useState } from "react";
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { useMutation, useQueries, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { CITY_CENTER, FRANCE_VIEW, districtCenter, realPlace } from "@/game/real-places";
+import type { RealMarker } from "./RealMap";
+const RealMap = lazy(() => import("./RealMap"));
+
+// La vraie carte s'affiche seulement si le serveur de carte est installé ; sinon l'ancienne carte dessinée.
+function useRealMapReady() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const { data } = useQuery({ queryKey: ["real-map-ready"], enabled: mounted, staleTime: Infinity, retry: false,
+    queryFn: async () => { const r = await fetch("/tiles/france.pmtiles", { headers: { range: "bytes=0-15" } }).catch(() => null); return !!r && (r.status === 206 || r.status === 200); } });
+  return mounted && data === true;
+}
+
+function RealMapBox(props: React.ComponentProps<typeof RealMap>) {
+  return <div className="relative min-w-0 overflow-hidden rounded-lg border border-border"><Suspense fallback={<MapLoading />}><RealMap {...props} /></Suspense></div>;
+}
 import { BonhommeG } from "./Bonhomme";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
@@ -31,6 +47,7 @@ export function WorldMap({ initialCity, initialDistrict, initialLocation, initia
   const [france, setFrance] = useState(initialFrance);
   const city = cities.find(c => c.id === cityId);
   const { phase } = useWorldClock();
+  const realReady = useRealMapReady();
   const selectCity = (id: string) => { setCityId(id); setDistrictId(undefined); setFrance(false); };
   if (!city) return <p>Ville introuvable.</p>;
   return <div className="space-y-5 animate-rise">
@@ -42,6 +59,8 @@ export function WorldMap({ initialCity, initialDistrict, initialLocation, initia
     <Suspense fallback={<p className="text-sm text-muted-foreground">Horloge…</p>}><WorldClock cityId={city.id} /></Suspense>
     {!france && position?.city_id !== city.id && <p className="flex items-center gap-2 border-l-2 border-primary bg-primary/10 p-3 text-sm"><MapPin className="h-4 w-4 shrink-0" /> Ville consultée · pour venir, prenez le train ou le car depuis votre ville.</p>}
     {france ? <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
+      {realReady ? <RealMapBox viewKey="france" center={FRANCE_VIEW.at} zoom={FRANCE_VIEW.zoom}
+        markers={cities.flatMap(c => { const v = CITY_CENTER[c.id]; return v ? [{ id: c.id, at: v.at, label: c.name, active: position?.city_id === c.id, onClick: () => selectCity(c.id) }] : []; })} /> :
       <MapSurface phase={phase} resetKey="france">
         <svg viewBox="0 0 800 700" role="img" aria-label="Carte de France stylisée" className="world-svg">
           <path className="world-land" d="M250 125 L360 90 L475 60 L525 140 L650 210 L625 325 L580 420 L660 515 L575 610 L425 575 L325 620 L210 550 L190 400 L105 315 L130 240 L255 220 Z" />
@@ -50,11 +69,11 @@ export function WorldMap({ initialCity, initialDistrict, initialLocation, initia
             <MapMarker label={c.name} active={position?.city_id === c.id} onClick={() => selectCity(c.id)} />
           </g>)}
         </svg>
-      </MapSurface>
+      </MapSurface>}
       <div><h2 className="mb-3 text-lg font-semibold">Les villes</h2><div className="divide-y divide-border">{cities.map(c => <Button key={c.id} variant="ghost" className="h-auto min-h-16 w-full justify-start whitespace-normal rounded-none px-2 py-3 text-left" onClick={() => selectCity(c.id)}>
         <MapPin className="shrink-0 text-primary" /><span><span className="block font-semibold">{c.name}</span><span className="block text-xs font-normal text-muted-foreground">{position?.city_id === c.id ? "Votre ville actuelle" : c.region}</span></span>
       </Button>)}</div></div>
-    </div> : <Suspense fallback={<MapLoading />}><CityMap key={city.id} city={city} selectedDistrict={districtId} initialLocation={initialLocation} onDistrict={setDistrictId} phase={phase} /></Suspense>}
+    </div> : <Suspense fallback={<MapLoading />}><CityMap key={city.id} city={city} selectedDistrict={districtId} initialLocation={initialLocation} onDistrict={setDistrictId} phase={phase} realReady={realReady} /></Suspense>}
   </div>;
 }
 
@@ -89,7 +108,7 @@ function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin, even
   </g>;
 }
 
-function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }: { city: Tables<"cities">; selectedDistrict?: string | undefined; initialLocation?: string | undefined; onDistrict: (id?: string) => void; phase: string }) {
+function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, realReady }: { city: Tables<"cities">; selectedDistrict?: string | undefined; initialLocation?: string | undefined; onDistrict: (id?: string) => void; phase: string; realReady: boolean }) {
   const { data: districts } = useSuspenseQuery(districtsQuery(city.id));
   const { data: position } = useSuspenseQuery(positionQuery);
   const selected = districts.find(d => d.id === selectedDistrict);
@@ -107,6 +126,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
     </div>
     <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0">
+        {realReady ? <RealCityMap city={city} districts={districts} selected={selected} positionId={playerHere ? position?.location_id : undefined} positionDistrict={playerHere ? position?.district_id : undefined} selectedLocation={selectedLocation} onDistrict={districtSelect} onLocation={setSelectedLocation} /> :
         <MapSurface phase={phase} resetKey={selected?.id ?? city.id}>
           <svg viewBox="0 0 900 760" role="img" aria-label={`Carte de ${selected?.name ?? city.name}`} className="world-svg">
             <defs><pattern id="blocks" width="65" height="65" patternUnits="userSpaceOnUse"><rect x="8" y="8" width="46" height="46" rx="4" className="world-block" /></pattern></defs>
@@ -124,7 +144,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
             {selected && <Suspense fallback={null}><LocationMarkers district={selected} positionId={playerHere ? position?.location_id : undefined} selectedId={selectedLocation} onSelect={setSelectedLocation} /></Suspense>}
             {playerHere && !selected && <text x="30" y="730" className="district-label">● {position?.district?.name} — {position?.location?.name}</text>}
           </svg>
-        </MapSurface>
+        </MapSurface>}
         <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><span className="h-2 w-2 rounded-full bg-primary" /> Votre position {playerHere ? `· ${position?.location?.name}` : `· ${position?.city?.name ?? "—"}`}</p>
       </div>
       <div className="min-w-0">
@@ -137,6 +157,21 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase }:
       </div>
     </div>
   </div>;
+}
+
+function RealCityMap({ city, districts, selected, positionId, positionDistrict, selectedLocation, onDistrict, onLocation }: { city: Tables<"cities">; districts: Tables<"districts">[]; selected?: Tables<"districts"> | undefined; positionId?: string | undefined; positionDistrict?: string | undefined; selectedLocation?: string | undefined; onDistrict: (id?: string) => void; onLocation: (id: string) => void }) {
+  const lists = useQueries({ queries: districts.map(d => locationsQuery(d.id)) });
+  const byDistrict = new Map(districts.map((d, i) => [d.id, lists[i]?.data ?? []]));
+  const view = CITY_CENTER[city.id] ?? { at: FRANCE_VIEW.at, zoom: 12 };
+  let markers: RealMarker[]; let center = view.at; let zoom = view.zoom;
+  if (selected) {
+    const locs = byDistrict.get(selected.id) ?? [];
+    center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
+    markers = locs.flatMap(l => { const r = realPlace(city.id, l.kind); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, onClick: () => onLocation(l.id) }] : []; });
+  } else {
+    markers = districts.flatMap(d => { const c = districtCenter(city.id, (byDistrict.get(d.id) ?? []).map(l => l.kind)); return c && d.available ? [{ id: d.id, at: c, label: d.name, active: positionDistrict === d.id, onClick: () => onDistrict(d.id) }] : []; });
+  }
+  return <RealMapBox viewKey={selected?.id ?? city.id} center={center} zoom={zoom} markers={markers} />;
 }
 
 function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {

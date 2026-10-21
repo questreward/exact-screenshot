@@ -293,3 +293,10 @@
 .protest-march img { animation: march 3s ease-out forwards; }
 @keyframes march { to { transform: scale(1.08); } }
 @media (prefers-reduced-motion: reduce) { .cab-beacon, .hotspot, .crowd-dot, .protest-march img { animation: none !important; } }
+
+/* Vraie carte : épingles tactiles */
+.real-pin { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 44px; min-height: 44px; background: none; border: 0; cursor: pointer; }
+.real-pin-dot { width: 20px; height: 20px; border-radius: 9999px; background: var(--card); border: 3px solid var(--primary); box-shadow: 0 2px 6px rgb(0 0 0 / .4); }
+.real-pin.is-player .real-pin-dot { background: var(--primary); box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 35%, transparent); }
+.real-pin.is-selected .real-pin-dot { width: 26px; height: 26px; background: var(--primary); }
+.real-pin-label { padding: 2px 8px; border-radius: 8px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .35); }
