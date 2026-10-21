@@ -26,7 +26,7 @@ export function JobMissionCard() {
     <div className="flex items-center gap-3"><Bonhomme seed={m?.job ?? 'mission'} /><div><h2 className="font-heading font-bold">{m ? missionResult(m.status) : 'Mission professionnelle'}</h2><p className="text-sm text-muted-foreground">Une mission par journée travaillée · aucun gain monétaire</p></div></div>
     {query.isPending ? <p role="status">Chargement…</p> : query.isError ? <div role="alert"><p>Impossible de charger la mission.</p><Button variant="outline" onClick={() => void query.refetch()}>Réessayer</Button></div> : !m ? <p className="mt-3 text-sm text-muted-foreground">Commencez une vacation pour recevoir votre mission du jour.</p> : <div className="mt-3 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="min-w-0 break-words font-semibold">{m.title}</h3><MissionDossier mission={m} /></div>
-      <JobStage key={`stage-${m.day}-${m.step_index}`} job={m.job} title={m.title} active={m.status === 'active'} />
+      <JobStage key={`stage-${m.day}`} job={m.job} title={m.title} active={m.status === 'active'} />
       <MissionScene key={`${m.day}-${m.step_index}-${m.status}`} job={m.job} title={m.title} step={m.step_index} count={m.step_count} active={m.status === 'active'} />
       <MissionVehiclePanel key={`${m.day}-${m.job}`} job={m.job} title={m.title} />
       {m.status === 'active' && m.step ? <>
