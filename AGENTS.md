@@ -48,3 +48,4 @@
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
 - VPS test restores omit cron via TOC; full backups retain production cron.
+- Self-hosted payment-key recovery verifies matching auth/PostgREST JWT secrets locally, writes only the server environment atomically with owner-only permissions, and never exposes private keys to browser config or output.
