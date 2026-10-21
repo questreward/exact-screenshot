@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/_game/concession")({
 });
 
 const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
-const KIND: Record<string, string> = { restock: "Achat en stock", sale: "Vente comptant", credit_sale: "Vente à crédit", trade_in: "Reprise", used_sale: "Vente d'occasion" };
+const KIND: Record<string, string> = { restock: "Achat en stock", sale: "Vente comptant", credit_sale: "Vente à crédit", trade_in: "Reprise", used_sale: "Vente d'occasion", npc_sale: "Vente showroom" };
 
 function DealerPage() {
   const qc = useQueryClient();
@@ -114,7 +114,7 @@ function MyDealer({ s, busy, run }: { s: DealerState; busy: boolean; run: (fn: P
   const [qty, setQty] = useState("1");
   const chosen = s.catalog.find(c => c.id === car);
   return <>
-    <ShowroomDay stock={me?.stock ?? []} />
+    <ShowroomDay stock={me?.stock ?? []} soldDays={mine.ops.filter(o => o.kind === "npc_sale").map(o => o.at.slice(0, 10))} />
     <div className="grid grid-cols-2 gap-3">
       <div className="rounded-xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Caisse</p><p className="font-heading text-2xl font-bold">{eur(mine.balance ?? 0)}</p></div>
       <div className="rounded-xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Stock</p><p className="font-heading text-2xl font-bold">{mine.stock_count} / {s.settings.max_stock}</p></div>
@@ -142,7 +142,7 @@ function MyDealer({ s, busy, run }: { s: DealerState; busy: boolean; run: (fn: P
     <div className="space-y-1 rounded-xl border border-border bg-card p-4">
       <h2 className="font-heading text-lg font-bold">Historique</h2>
       {mine.ops.length ? <ul className="divide-y divide-border text-sm">{mine.ops.map((o, i) => <li key={i} className="flex justify-between gap-2 py-2">
-        <span className="min-w-0 truncate">{KIND[o.kind] ?? o.kind} · {o.quantity > 1 ? `${o.quantity} × ` : ""}{o.name}{o.kind !== "restock" ? ` · ${o.client}` : ""}</span>
+        <span className="min-w-0 truncate">{KIND[o.kind] ?? o.kind} · {o.quantity > 1 ? `${o.quantity} × ` : ""}{o.name}{o.kind === "npc_sale" ? " · client du showroom" : o.kind !== "restock" ? ` · ${o.client}` : ""}</span>
         <span className={o.kind === "restock" || o.kind === "trade_in" ? "text-destructive" : "font-semibold"}>{o.kind === "restock" ? "" : o.kind === "trade_in" ? "−" : "+"}{eur(Math.abs(o.amount))}</span></li>)}</ul>
         : <p className="text-sm text-muted-foreground">Rien pour l'instant. Les clients fictifs passent chaque semaine.</p>}
     </div>

@@ -2,17 +2,23 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { suggestCars, visitorsOf } from "@/game/showroom";
 import { useWorldClock } from "./WorldClock";
-import type { DealerCar } from "@/services/game";
+import { dealerShowroomSell, type DealerCar } from "@/services/game";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const eur = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} €`;
 const OPEN: [string, string][] = [["🔓", "Ouvrir le showroom"], ["🚗", "Vérifier les véhicules exposés"], ["🧽", "Préparer une voiture"], ["📅", "Consulter les rendez-vous"], ["📩", "Lire les demandes des clients"]];
 const STEPS = ["Écouter son besoin", "Proposer un véhicule", "Présenter la voiture", "Faire essayer", "Préparer l'offre"];
 
 /** Presentation-only showroom day. Visitors are fictional and never buy; real sales come from players. */
-export function ShowroomDay({ stock }: { stock: DealerCar[] }) {
+export function ShowroomDay({ stock, soldDays }: { stock: DealerCar[]; soldDays: string[] }) {
+  const qc = useQueryClient();
+  const [sold, setSold] = useState<string | null>(null);
+  const sell = useMutation({ mutationFn: dealerShowroomSell, onSuccess: r => { setSold(`🔑 Vendu : ${r.name} pour ${eur(r.amount)}. La voiture est sortie du stock.`); toast.success("Vente conclue !"); qc.invalidateQueries({ queryKey: ["dealer"] }); }, onError: (e: Error) => toast.error(e.message) });
   const { time } = useWorldClock();
   const day = time.toISOString().slice(0, 10);
   const visitors = visitorsOf(day);
+  const soldToday = soldDays.includes(day);
   const nowHm = time.toISOString().slice(11, 16);
   const [open, setOpen] = useState<number[]>([]);
   const [idx, setIdx] = useState(0);
@@ -42,10 +48,13 @@ export function ShowroomDay({ stock }: { stock: DealerCar[] }) {
           : suggestCars(stock, v.budget).map(c => <Button key={c.catalog_id} variant={car === c.catalog_id ? "default" : "outline"} className="min-h-14 w-full justify-between" onClick={() => { setCar(c.catalog_id); setStep(2); }}><span>{c.name}</span><span>{eur(c.price)}</span></Button>)}
       </div> : step < STEPS.length ? <Button className="min-h-14 w-full text-base" onClick={() => setStep(s => s + 1)}>{STEPS[step]}</Button>
       : <div className="space-y-2">
-        <p className="rounded-lg bg-success/15 p-3 text-sm">📝 Offre préparée : {stock.find(c => c.catalog_id === car)?.name ?? "—"} à {eur(stock.find(c => c.catalog_id === car)?.price ?? 0)}. {v.name} repart réfléchir avec ta proposition.</p>
-        <Button className="min-h-14 w-full" onClick={() => { setIdx(i => i + 1); setStep(0); setCar(null); }}>👋 Client suivant</Button>
+        {sold ? <p className="rounded-lg bg-success/15 p-3 text-sm">{sold} Remise des clés à {v.name} 🎉</p>
+          : <p className="rounded-lg bg-muted p-3 text-sm">📝 Offre : {stock.find(c => c.catalog_id === car)?.name ?? "—"} à {eur(stock.find(c => c.catalog_id === car)?.price ?? 0)} (ton tarif).</p>}
+        {!sold && (soldToday ? <p className="text-sm text-muted-foreground">{v.name} repart réfléchir : tu as déjà vendu à un client du showroom aujourd'hui (1 par jour).</p>
+          : car && <Button className="min-h-14 w-full text-base" disabled={sell.isPending} onClick={() => sell.mutate(car)}>🤝 Négocier et conclure la vente</Button>)}
+        <Button variant="outline" className="min-h-14 w-full" onClick={() => { setIdx(i => i + 1); setStep(0); setCar(null); setSold(null); }}>👋 Client suivant</Button>
       </div>}
     </div>}
-    <p className="text-xs text-muted-foreground">Ces visiteurs sont des habitants fictifs pour t'entraîner : ils n'achètent pas. Les vraies ventes viennent des joueurs et apparaissent dans ta caisse.</p>
+    <p className="text-xs text-muted-foreground">Un seul client du showroom peut acheter par jour, au prix de ton tarif. L'argent arrive dans la caisse de ta concession.</p>
   </div>;
 }

@@ -2185,3 +2185,8 @@ export const homeVisitQuery = (owner: string) => queryOptions({
 });
 export async function homeInvite(input: { guest: string; home: string }) { const { error } = await untyped.rpc("home_invite", { _guest: input.guest, _home: input.home }); if (error) throw new Error(error.message); }
 export async function homeInviteRevoke(guest: string) { const { error } = await untyped.rpc("home_invite_revoke", { _guest: guest }); if (error) throw new Error(error.message); }
+export async function dealerShowroomSell(catalogId: string) {
+  const { data, error } = await untyped.rpc("dealer_showroom_sell", { _catalog_id: catalogId });
+  if (error) throw new Error(error.message);
+  return data as { amount: number; name: string };
+}
