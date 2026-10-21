@@ -44,6 +44,7 @@
 - Mission scenes/dossiers/vehicle entry use server snapshots only, no invented trips, incidents or outcomes.
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
+- Financial presentation reuses recorded state in FinancialTools documents/adviser comments; amount shortcuts only populate inputs and date milestones derive from the shared game clock, never execute payments.
 - Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
