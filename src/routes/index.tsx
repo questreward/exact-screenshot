@@ -127,7 +127,7 @@ function Home() {
         <div className="mx-auto max-w-6xl px-5">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Du lycée à l'Élysée</p>
           <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold sm:text-5xl">Jusqu'où iras-tu ?</h2>
-          <ol className="mt-10 grid gap-4 sm:grid-cols-4">{LADDER.map((l, i) => <li key={l.t} className="rounded-3xl border border-border glass p-5">
+          <ol className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">{LADDER.map((l, i) => <li key={l.t} className="rounded-3xl border border-border glass p-4 sm:p-5">
             <span className="text-xs font-bold text-primary">Étape {i + 1}</span>
             <l.icon className="mt-3 h-8 w-8 text-primary" />
             <p className="mt-3 font-display text-lg font-bold">{l.t}</p><p className="mt-1 text-sm text-muted-foreground">{l.s}</p>
