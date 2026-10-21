@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { starterGuide } from "@/game/starter-guide";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronDown, Search } from "lucide-react";
@@ -21,6 +22,9 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
   const [more, setMore] = useState(false);
   const [q, setQ] = useState("");
   const hits = phoneSearch(q);
+  const nowMs = time.getTime();
+  const running = life.activities.find(a => a.status !== "cancelled" && a.status !== "completed" && Date.parse(a.start_time) <= nowMs && Date.parse(a.end_time) > nowMs);
+  const pct = running ? Math.round(((nowMs - Date.parse(running.start_time)) / (Date.parse(running.end_time) - Date.parse(running.start_time))) * 100) : 0;
   const step = nextStep({ now: time, activities: life.activities, notifications: notifs, hasHousing: !!life.housing, studying: !!life.enrollment, working: !!life.employment, age: life.character.age });
   const car = economy.assets.find(a => a.catalog.kind === "vehicle");
   const unread = notifs.filter(n => !n.read).length;
@@ -31,6 +35,12 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
       <p className="font-display text-4xl font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</p>
       <p className="text-xs capitalize text-muted-foreground">{time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</p>
     </div>
+    {running && <Link to="/agenda" className="block rounded-2xl bg-gradient-primary p-3 text-primary-foreground shadow-elegant active:scale-[0.98]" aria-label="Mode journée">
+      <span className="block text-[11px] font-bold uppercase opacity-90">☀️ Mode journée · en cours</span>
+      <span className="block truncate font-semibold">{running.title}</span>
+      <span className="mt-2 block h-2 overflow-hidden rounded-full bg-background/30"><span className="block h-full rounded-full bg-background" style={{ width: `${pct}%` }} /></span>
+      <span className="mt-1 block text-xs opacity-90">Fin à {new Date(running.end_time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} · tu peux utiliser ton téléphone pendant ce temps</span>
+    </Link>}
     <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-border bg-card px-3 focus-within:border-primary">
       <Search className="h-5 w-5 shrink-0 text-primary" />
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher… (permis, maison, salaire)" aria-label="Rechercher dans le téléphone" className="h-12 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground" />
@@ -56,6 +66,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
           : <button key={a.id} type="button" onClick={() => open(a.app)} className="flex flex-col items-center gap-1.5 active:scale-95">{inner}</button>;
       })}
     </div>
+    <StarterGuide life={life} balance={bank?.balance ?? null} hasVehicle={!!car} />
     <button type="button" onClick={() => setMore(!more)} aria-expanded={more} className="flex min-h-11 w-full items-center justify-center gap-1 rounded-xl text-sm font-semibold text-primary">Plus d’applications <ChevronDown className={`h-4 w-4 transition-transform ${more ? "rotate-180" : ""}`} /></button>
     {more && <div className="grid grid-cols-4 gap-2">{MORE_PHONE_APPS.map(a => <button key={a.id} type="button" onClick={() => open(a.id)} className="flex min-h-16 flex-col items-center gap-1 rounded-xl p-1 text-[11px] active:scale-95"><a.icon className="h-6 w-6 text-primary" />{a.label}</button>)}</div>}
   </div>;
@@ -78,4 +89,26 @@ export function NotificationsApp() {
       {!n.read && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="Non lue" />}
     </button>
   </li>)}</ul>;
+}
+
+function StarterGuide({ life, balance, hasVehicle }: { life: { character: { first_name: string; age: number }; housing?: { name: string } | null; employment?: { job?: { title: string } | null } | null; enrollment?: { field_name: string } | null }; balance: number | null; hasVehicle: boolean }) {
+  const [hidden, setHidden] = useState(true);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { setHidden(localStorage.getItem("civitas-guide-hidden") === "1"); }, []);
+  if (hidden) return <button type="button" onClick={() => { localStorage.removeItem("civitas-guide-hidden"); setHidden(false); setOpen(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">🎓 Revoir le guide « Commencer CIVITAS »</button>;
+  const steps = starterGuide({ firstName: life.character.first_name, age: life.character.age, housing: life.housing?.name ?? null, job: life.employment?.job?.title ?? null, studying: life.enrollment?.field_name ?? null, balance, hasVehicle });
+  const done = steps.filter(x => x.done).length;
+  return <section className="rounded-2xl border border-border bg-card p-3">
+    <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-11 w-full items-center justify-between gap-2 text-left">
+      <span><span className="block font-semibold">🎓 Commencer CIVITAS</span><span className="block text-xs text-muted-foreground">{done}/6 · 6 questions simples</span></span>
+      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+    {open && <ol className="mt-2 space-y-2">{steps.map(st => <li key={st.n} className="rounded-xl bg-surface p-3">
+      <p className="text-sm font-semibold">{st.done ? "✅" : `${st.n}.`} {st.q}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{st.a}</p>
+      <Link to={st.to as "/carte"} className="mt-2 inline-flex min-h-10 items-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground">{st.cta}</Link>
+    </li>)}
+      <li><button type="button" onClick={() => { localStorage.setItem("civitas-guide-hidden", "1"); setHidden(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">J’ai compris, masquer le guide</button></li>
+    </ol>}
+  </section>;
 }
