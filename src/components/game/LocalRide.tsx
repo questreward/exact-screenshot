@@ -6,6 +6,8 @@ import { VehicleInterior } from "./VehicleInterior";
 import { RealMapBox, useRealMapReady } from "./RealMapBox";
 import { useWorldClock } from "./WorldClock";
 import { daylight } from "@/game/daylight";
+import { arrivalFor } from "@/game/arrival";
+import { Link } from "@tanstack/react-router";
 import type { LifeActivity } from "@/game/life-state";
 
 // Trajet en bus dans la ville : intérieur + bus qui avance sur la vraie carte (animation seulement).
@@ -24,5 +26,6 @@ export function LocalRide({ activity }: { activity: LifeActivity }) {
     <p role="status" className="text-sm">{pct >= 1 ? `🛑 Arrivée${to ? ` : ${to.name}` : ""} — descendez du bus` : `${daylight(new Date(now).getUTCHours()).emoji} En route · ${Math.round(pct * 100)} %`}</p>
     {ready && a && b && v && <RealMapBox viewKey={`${activity.id}`} center={v.at} zoom={v.zoom} height="h-52 w-full"
       markers={[]} route={{ from: a.at, to: b.at, pct, icon: "🚌" }} />}
+    {pct >= 1 && <Link to={arrivalFor(to?.kind).to} className="flex min-h-14 items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground active:scale-95">{arrivalFor(to?.kind).emoji} {arrivalFor(to?.kind).label}</Link>}
   </div>;
 }
