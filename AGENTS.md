@@ -29,7 +29,7 @@
 - Treasuries and kitties have separate nonnegative unique ledgers, no personal withdrawals. economy_cash acts for signed-in character; payees collect incoming rows on read.
 - Protests use activities and unique effects. Overdraft/insurance debt remain separate; balances never negative, loans/incidents settle once on reads.
 - Player network exposed only by network_card/network_profile, never broader character RLS; guard_player_block central, VPS live updates poll.
-- France map uses local data and maplibre-gl v4, no tiles; rent retry failures have distinct keys.
+- Real maps: self-hosted PMTiles via /tiles relay, drawn fallback; rent retry failures have distinct keys.
 - Deferred effects use scheduled_effects exactly once on read; projects/crises never write indicators/budgets/reputation directly, municipal costs use treasury effects.
 - Services share payments/weekly ledgers; agency rent settles on tenant reads, owner shares on owner reads. Recruitment opt-in unique placements, fees between treasuries, not candidates.
 - Insurance uses anonymous funding/fictive shortfalls, no personal credit; pricing via insurer_set_price. Body fingerprints guard patches.
