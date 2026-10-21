@@ -21,3 +21,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] B. Intérieurs voiture/bus/train/car + trajet animé sur la vraie carte
 - [x] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
 - [x] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
+- [ ] E. Magasins sur la carte (0120, à installer) : fiche, intérieur avec rayons, accès Boutique
