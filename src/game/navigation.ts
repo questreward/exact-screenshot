@@ -25,6 +25,7 @@ export const SECTIONS: Section[] = [
   { id: "la-poste", label: "La Poste", icon: FileText, description: "Courriers et recommandés · FICTIF.", available: true },
   { id: "conjoncture", label: "Conjoncture", icon: BarChart3, description: "Inflation, SMIC, prix des villes et finances publiques.", available: true },
   { id: "monde", label: "Monde", icon: Globe2, description: "L'état du monde, la date, la société.", available: true },
+  { id: "aide", label: "Aide", icon: BookOpen, description: "Tout CIVITAS expliqué simplement.", available: true },
   { id: "carte", label: "Carte", icon: Map, description: "Explorez votre ville et ses lieux.", available: true },
   { id: "france", label: "France", icon: Map, description: "La vraie carte de France, communes et circonscriptions.", available: true },
   { id: "telephone", label: "Téléphone", icon: Smartphone, description: "Votre outil principal au quotidien.", available: true },
@@ -102,6 +103,7 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "demarches", label: "Démarches", icon: FileText, available: true },
   { id: "evenements", label: "Événements", icon: Sparkles, available: true },
   { id: "vie", label: "Vie", icon: Briefcase, available: true },
+  { id: "aide", label: "Aide", icon: BookOpen, description: "Tout CIVITAS expliqué simplement.", available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
   { id: "politique", label: "CIVITAS Politique", icon: Vote, available: true },
 ];
@@ -121,7 +123,7 @@ export const SECTION_GROUPS: SectionGroup[] = [
   { id: "citoyen", label: "Citoyenneté", ids: ["ma-ville", "projets", "petitions", "justice", "elections", "politique", "orientation", "vie-des-partis", "mandat", "lois", "presidence", "debats", "debats-publics", "sondages", "verification"] },
   { id: "infos", label: "Ville et actualités", ids: ["monde", "evenements", "crises", "actualites", "jt", "presse"] },
   { id: "social", label: "Social", ids: ["civi", "reseau", "organisations", "syndicats", "classements"] },
-  { id: "reglages", label: "Réglages", ids: ["parametres"] },
+  { id: "reglages", label: "Réglages", ids: ["aide", "parametres"] },
 ];
 
 // Bottom-bar hubs: short themed lists opened by "Ma vie" and "Ma ville".
