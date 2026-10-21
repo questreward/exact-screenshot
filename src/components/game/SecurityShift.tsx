@@ -39,11 +39,13 @@ export function ShiftLive({ service, startsAt, endsAt, decided, children }: { se
   const s = Date.parse(startsAt), e = Date.parse(endsAt), now = time.getTime();
   const times = d.rhythm.map((label, i) => ({ label, at: new Date(s + (e - s) * (i / (d.rhythm.length - 1))) }));
   const cur = [...times].reverse().find(t => t.at.getTime() <= now) ?? times[0]!;
+  const [gone, setGone] = useState(false);
   const onSite = step >= d.act.length;
   return <div className="space-y-3">
     <ol className="flex gap-1 overflow-x-auto pb-1">{times.map(t => <li key={t.label} className={`shrink-0 rounded-lg px-2 py-1 text-xs ${t === cur ? "bg-primary text-primary-foreground font-semibold" : t.at.getTime() < now ? "bg-muted text-muted-foreground" : "border border-border"}`}>{hm(t.at)} {t.label}</li>)}</ol>
     {!decided && <p className="animate-pulse rounded-lg bg-destructive/15 p-3 text-center font-display font-bold">{d.alert}</p>}
-    {decided || onSite ? children : <div className="space-y-2">
+    {!decided && d.depart && !gone ? <div className="space-y-2"><p className="text-sm font-semibold">{d.emoji} Départ</p><Checklist items={d.depart} cta="Arrivée sur place" onDone={() => setGone(true)} /></div> :
+    decided || onSite ? children : <div className="space-y-2">
       <div className="flex gap-1">{d.act.map((a, i) => <span key={a} className={`h-2 flex-1 rounded-full ${i < step ? "bg-primary" : "bg-muted"}`} />)}</div>
       <p className="text-sm text-muted-foreground">Étape {step + 1}/{d.act.length}</p>
       <Button className="min-h-14 w-full text-base" onClick={() => setStep(x => x + 1)}>{d.act[step]}</Button>
@@ -56,6 +58,8 @@ export function ShiftLive({ service, startsAt, endsAt, decided, children }: { se
 export function ReturnToBase({ service }: { service: string }) {
   const d = securityDay(service);
   const [ok, setOk] = useState(false);
+  const [report, setReport] = useState(false);
+  if (d.report && ok && !report) return <ReportDraft service={service} onDone={() => setReport(true)} />;
   if (ok) return <p className="rounded-lg bg-success/15 p-3 text-sm">✅ De retour : {d.base.toLowerCase()}. Prêt pour la suite du service.</p>;
   return <div className="space-y-2"><p className="text-sm font-semibold">Retour : {d.base}</p><Checklist items={d.back} cta="Retour au planning" onDone={() => setOk(true)} /></div>;
 }
@@ -72,5 +76,21 @@ export function ShiftSummary({ service, endsAt, hours, outcome, pay }: { service
       <Button asChild className="min-h-12"><Link to="/banque">Voir ma banque</Link></Button>
       <Button asChild variant="outline" className="min-h-12"><Link to="/chez-moi">🏠 Rentrer chez moi</Link></Button>
     </div>
+  </div>;
+}
+
+const MEASURES = ["Zone sécurisée", "Personnes écoutées", "Secours prévenus", "Circulation organisée", "Rappel à la loi"];
+/** Rapport du joueur : ce qu'il a fait, en ses mots. Reste sur cette page, n'invente aucun résultat. */
+function ReportDraft({ service, onDone }: { service: string; onDone: () => void }) {
+  const d = securityDay(service);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [note, setNote] = useState("");
+  return <div className="space-y-2 rounded-xl border border-border p-3">
+    <p className="text-sm font-semibold">📝 Rapport d'intervention · {d.base}</p>
+    <p className="text-xs text-muted-foreground">Coche ce que tu as fait.</p>
+    <div className="flex flex-wrap gap-2">{MEASURES.map(m => { const on = picked.includes(m); return <button key={m} type="button" onClick={() => setPicked(p => on ? p.filter(x => x !== m) : [...p, m])} className={`min-h-11 rounded-full border px-3 text-sm ${on ? "border-primary bg-primary/15 font-semibold" : "border-border"}`}>{on ? "✅ " : ""}{m}</button>; })}</div>
+    <label className="block text-sm">Observations<textarea maxLength={300} value={note} onChange={e => setNote(e.target.value)} className="mt-1 min-h-20 w-full rounded-lg border border-input bg-background p-2" placeholder="Ce que tu as vu et fait…" /></label>
+    <Button className="min-h-12 w-full" disabled={picked.length === 0} onClick={onDone}>Signer le rapport</Button>
+    <p className="text-xs text-muted-foreground">Rapport visible sur cette page seulement. L'archivage sera disponible dans une prochaine étape.</p>
   </div>;
 }
