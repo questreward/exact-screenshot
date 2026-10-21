@@ -8,6 +8,7 @@ import { agencyQuery, agencyRpc, housingAction, housingQuery, serviceQuery } fro
 import { agencyRentFee, serviceAmount } from "@/game/services";
 import { gameMeta } from "@/game/metadata";
 import { housingShare } from "@/game/career";
+import { Facade, VisitSheet, MoveMoment } from "@/components/game/HousingMoments";
 
 export const Route = createFileRoute("/_authenticated/_game/logement")({
   head: () => ({ meta: gameMeta("Logement", "Annonces de location, dépôt de garantie, bail fictif et emménagement dans un bien acheté.") }),
@@ -30,13 +31,16 @@ function HousingPage() {
   const agencies = (agencyData.data?.agencies ?? []).filter(a => a.city_id === agencyData.data?.city_id && !a.mine);
   const [agency, setAgency] = useState("");
   const agencyPct = agencies.find(a => a.id === agency)?.percent ?? 100;
+  const [visit, setVisit] = useState<string | null>(null);
+  const [moved, setMoved] = useState<null | { kind: "rent" | "own"; from: string | null; to: string }>(null);
   const months = agencyData.data?.settings.rent_months ?? 1;
   const act = useMutation({
-    mutationFn: (v: { cmd: "rent" | "move_in"; input: Record<string, unknown> }) => v.cmd === "rent"
+    mutationFn: (v: { cmd: "rent" | "move_in"; input: Record<string, unknown>; to?: string }) => v.cmd === "rent"
       ? agencyRpc("agency_rent_listing", { _listing_id: v.input['listing_id'], _mover_id: v.input['mover_id'] ?? null, _agency_id: agency || null }) as Promise<{ deposit?: number }>
       : housingAction(v.cmd, v.input),
     onSuccess: (r, v) => {
       toast.success(v.cmd === "rent" ? `Bail signé. Dépôt ${eur(r.deposit ?? 0)} (rendu à ton départ), déménageur payé.` : "Tu habites maintenant chez toi !");
+      setVisit(null); setMoved({ kind: v.cmd === "rent" ? "rent" : "own", from: s?.lease?.title ?? null, to: v.to ?? "Nouveau logement" });
       ["housing", "economy", "life", "character", "shop", "services", "agency"].forEach(k => qc.invalidateQueries({ queryKey: [k] }));
     },
     onError: (e: Error) => toast.error(e.message),
@@ -70,7 +74,7 @@ function HousingPage() {
           <p className="font-semibold">{o.name}</p><p className="text-xs text-muted-foreground">Acheté {eur(o.price)}</p>
           {s.lease?.kind === "propriete" && s.lease.title === o.name ? <p className="mt-1 text-xs text-primary">Tu y habites</p>
             : o.city !== s.city ? <p className="mt-1 text-xs text-muted-foreground">Dans une autre ville</p>
-            : <Button className="mt-2 h-11 w-full" disabled={act.isPending} onClick={() => act.mutate({ cmd: "move_in", input: { property_id: o.id } })}>Emménager ici</Button>}
+            : <Button className="mt-2 h-11 w-full" disabled={act.isPending} onClick={() => act.mutate({ cmd: "move_in", input: { property_id: o.id }, to: o.name })}>Emménager ici</Button>}
         </li>)}</ul>
       </section>}
 
@@ -88,12 +92,18 @@ function HousingPage() {
             {agencies.map(a => <option key={a.id} value={a.id}>{a.name} — {a.percent} %{a.rating != null ? ` · ${a.rating}/5` : ""}</option>)}</select></label>
         <Link to="/agence" className="mb-3 block text-sm font-semibold text-primary">Logements de joueurs à louer → Agence immobilière</Link>
         <ul className="space-y-2">{rentals.map(r => { const moveCost = serviceAmount(r.move, moverPct); const fee = agencyRentFee(r.monthly, months, agencyPct); const cost = r.deposit + moveCost + fee; const mine = s.lease?.title === r.title && s.lease.kind === "location";
-          return <li key={r.id} className="rounded-lg border border-border p-3">
+          const rentBtn = mine ? <p className="mt-1 text-xs text-primary">Ton logement actuel</p>
+              : <Button className="mt-2 min-h-12 w-full" disabled={act.isPending || cost > s.balance} onClick={() => act.mutate({ cmd: "rent", input: { listing_id: r.id, ...(mover ? { mover_id: mover } : {}) }, to: r.title })}>{cost > s.balance ? "Solde insuffisant" : `Louer (${eur(cost)} à l'entrée)`}</Button>;
+          return <li key={r.id} className="overflow-hidden rounded-lg border border-border">
+            <Facade type={r.type_id} className="max-h-28" />
+            <div className="p-3">
             <p className="font-semibold">{r.title}</p>
             <p className="text-xs text-muted-foreground">{r.type} · {r.surface} m² · étage {r.floor} · DPE {r.dpe}</p>
             <p className="mt-1 text-sm"><b>{eur(r.monthly)}</b> / mois · à l'entrée : dépôt {eur(r.deposit)} + agence {eur(fee)} + déménagement {eur(moveCost)}</p>
-            {mine ? <p className="mt-1 text-xs text-primary">Ton logement actuel</p>
-              : <Button variant="outline" className="mt-2 h-11 w-full" disabled={act.isPending || cost > s.balance} onClick={() => act.mutate({ cmd: "rent", input: { listing_id: r.id, ...(mover ? { mover_id: mover } : {}) } })}>{cost > s.balance ? "Solde insuffisant" : `Louer (${eur(cost)} à l'entrée)`}</Button>}
+            {!mine && <Button variant="outline" className="mt-2 min-h-12 w-full" onClick={() => setVisit(r.id)}>👀 Visiter</Button>}
+            {mine && rentBtn}
+            </div>
+            <VisitSheet r={r} open={visit === r.id} onOpenChange={o => setVisit(o ? r.id : null)} action={rentBtn} />
           </li>; })}</ul>
       </section>
 
@@ -103,5 +113,6 @@ function HousingPage() {
         <ul className="space-y-1">{s.past_leases.map(l => <li key={l.id}>{l.title} <span className="text-xs text-muted-foreground">· {day(l.started_at)} → {l.ended_at ? day(l.ended_at) : "…"}</span></li>)}</ul>
       </section>}
     </>}
+    {moved && <MoveMoment {...moved} onClose={() => setMoved(null)} />}
   </div>;
 }
