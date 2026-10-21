@@ -21,3 +21,13 @@ export function welcomeLine(hour: number): string {
   if (hour >= 18) return "Bonsoir, bienvenue chez toi.";
   return "Bienvenue chez toi.";
 }
+
+import { canPlace, type Placement } from "./home-furnishing";
+/** First free spot in a room (row by row), trying both orientations. Null when the room is full. */
+export function firstFreeSpot(assetId: string, room: number, placements: Placement[], furniture: Furniture[], rooms: number, grid: number): Placement | null {
+  for (const rotation of [0, 90]) for (let y = 0; y < grid; y++) for (let x = 0; x < grid; x++) {
+    const c = { asset_id: assetId, room, x, y, rotation };
+    if (canPlace(c, placements, furniture, rooms, grid)) return c;
+  }
+  return null;
+}
