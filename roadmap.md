@@ -64,3 +64,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Bloc 17 : abonnement VIP 2,99 €/mois (badge, objets exclusifs, thèmes, 24 favoris, accord parental, résiliation)
 - [ ] Horloge : date/heure françaises à l’installation, ×5 exact, voyages VIP ×8 ; préparer installation et vérifier les règles.
 - [ ] Corriger l’erreur lors de l’achat montrée dans IMG_3724.png.
+- [ ] Banque, Retraite, Patrimoine : guichets, commentaires adaptés et documents fictifs réalistes.
+- [ ] Frise de dates et montants rapides 10 €, 50 €, 100 € dans les formulaires concernés.
+- [ ] Signalement mairie : rétablir « Choisir un lieu » et vérifier la sélection.
