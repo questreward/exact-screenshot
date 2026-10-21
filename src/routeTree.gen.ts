@@ -18,6 +18,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
+import { Route as TilesSplatRouteImport } from './routes/tiles/$'
 import { Route as AuthenticatedGameActualitesRouteImport } from './routes/_authenticated/_game/actualites'
 import { Route as AuthenticatedGameAgenceRouteImport } from './routes/_authenticated/_game/agence'
 import { Route as AuthenticatedGameAgendaRouteImport } from './routes/_authenticated/_game/agenda'
@@ -139,6 +140,11 @@ const AuthenticatedCreationRoute = AuthenticatedCreationRouteImport.update({
   id: '/creation',
   path: '/creation',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const TilesSplatRoute = TilesSplatRouteImport.update({
+  id: '/tiles/$',
+  path: '/tiles/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGameActualitesRoute =
   AuthenticatedGameActualitesRouteImport.update({
@@ -595,6 +601,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agence': typeof AuthenticatedGameAgenceRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
@@ -682,6 +689,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
+  '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
   '/agence': typeof AuthenticatedGameAgenceRoute
   '/agenda': typeof AuthenticatedGameAgendaRoute
@@ -772,6 +780,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
+  '/tiles/$': typeof TilesSplatRoute
   '/_authenticated/_game/actualites': typeof AuthenticatedGameActualitesRoute
   '/_authenticated/_game/agence': typeof AuthenticatedGameAgenceRoute
   '/_authenticated/_game/agenda': typeof AuthenticatedGameAgendaRoute
@@ -861,6 +870,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/tiles/$'
     | '/actualites'
     | '/agence'
     | '/agenda'
@@ -948,6 +958,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/creation'
+    | '/tiles/$'
     | '/actualites'
     | '/agence'
     | '/agenda'
@@ -1037,6 +1048,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
+    | '/tiles/$'
     | '/_authenticated/_game/actualites'
     | '/_authenticated/_game/agence'
     | '/_authenticated/_game/agenda'
@@ -1125,6 +1137,7 @@ export interface RootRouteChildren {
   DecouvrirRoute: typeof DecouvrirRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TilesSplatRoute: typeof TilesSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1191,6 +1204,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/creation'
       preLoaderRoute: typeof AuthenticatedCreationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/tiles/$': {
+      id: '/tiles/$'
+      path: '/tiles/$'
+      fullPath: '/tiles/$'
+      preLoaderRoute: typeof TilesSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_game/actualites': {
       id: '/_authenticated/_game/actualites'
@@ -1933,6 +1953,7 @@ const rootRouteChildren: RootRouteChildren = {
   DecouvrirRoute: DecouvrirRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TilesSplatRoute: TilesSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
