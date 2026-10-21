@@ -22,6 +22,7 @@ const PERKS = [
   { e: "👔", t: "Tenues et cadres exclusifs", d: "Tenue de gala et cadre « Étoile », réservés aux VIP." },
   { e: "📱", t: "Thèmes du téléphone", d: "Corail, Ardoise ou Nuit étoilée." },
   { e: "📍", t: "24 lieux favoris", d: "Au lieu de 12 sur la carte." },
+  { e: "⚡", t: "Voyages 4 fois plus courts", d: "Train, car et voiture entre villes : même prix, moins d'attente." },
 ];
 
 function VipPage() {
