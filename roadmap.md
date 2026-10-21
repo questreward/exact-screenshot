@@ -63,3 +63,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Rendez-vous CAF (créneau, confirmation, à venir)
 - [x] Bloc 17 : abonnement VIP 2,99 €/mois (badge, objets exclusifs, thèmes, 24 favoris, accord parental, résiliation)
 - [ ] Horloge : date/heure françaises à l’installation, ×5 exact, voyages VIP ×8 ; préparer installation et vérifier les règles.
+- [ ] Corriger l’erreur lors de l’achat montrée dans IMG_3724.png.
