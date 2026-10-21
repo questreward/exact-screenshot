@@ -38,3 +38,9 @@ describe("discussion avec les habitants", () => {
     ] })).toThrow(/trop long/);
   });
 });
+
+import { professionStyle } from "./npc-chat";
+describe("ton selon le métier", () => {
+  it("un pompier parle de sécurité", () => { expect(professionStyle("Sapeur-pompier")).toContain("sécurité"); });
+  it("une boulangère parle en commerçante", () => { expect(professionStyle("Boulangère")).toContain("commerçant"); });
+});

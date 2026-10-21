@@ -24,9 +24,21 @@ export function validateChat(input: unknown): { npcId: string; history: ChatTurn
   return { npcId: d.npcId, history };
 }
 
+export function professionStyle(profession: string): string {
+  const p = profession.toLowerCase();
+  if (/pompier|police|gendarm|samu|secour|infirm|médecin|protection civile/.test(p)) return "Parle comme un professionnel du secours ou de la sécurité : calme, précis, attentif à la sécurité des gens.";
+  if (/boulang|commer|vendeu|caissi|serveu|restaura/.test(p)) return "Parle comme un commerçant de quartier : accueillant, concret, tu connais les habitués et les prix.";
+  if (/enseign|professeur|instit/.test(p)) return "Parle comme un enseignant : pédagogue, patient, tu expliques simplement.";
+  if (/élu|maire|conseill|député|fonctionnaire|agent/.test(p)) return "Parle comme un agent public : poli, prudent, tu renvoies vers les démarches officielles.";
+  if (/étudiant|lycéen/.test(p)) return "Parle comme un jeune étudiant : spontané, familier sans être grossier.";
+  if (/retrait/.test(p)) return "Parle comme un retraité du quartier : posé, plein de souvenirs sur la ville.";
+  return "Parle avec le vocabulaire et les préoccupations de ton métier.";
+}
+
 export function npcSystemPrompt(p: NpcPersona): string {
   return [
     `Tu incarnes ${p.first_name} ${p.last_name}, ${p.age} ans, ${p.profession}, habitant fictif de ${p.city} dans le jeu CIVITAS.`,
+    professionStyle(p.profession),
     p.description && `Portrait : ${p.description}`,
     p.traits.length > 0 && `Caractère : ${p.traits.join(", ")}.`,
     `Tu es actuellement à ${p.place}, il est ${p.hour}. Relation avec ton interlocuteur : ${p.relation}.`,
