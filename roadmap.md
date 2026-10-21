@@ -74,3 +74,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] Installation VPS 0135 → 0136 → 0137 : attend exécution par Alex, après les prérequis 0133/0134 déjà fournis.
 - [ ] Vérification avec personnage : connexion dans l’aperçu nécessaire ; aucune identité correspondante disponible pour la vérification automatique.
 - [ ] Réponse IA réelle : Ollama absent de l’aperçu ; attend installation puis essai sur le VPS.
+- [ ] Historique bancaire : filtres de dates et types, reçus enregistrés consultables après dépôt/retrait ; tests et commande VPS.
