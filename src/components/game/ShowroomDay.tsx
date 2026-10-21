@@ -8,6 +8,8 @@ import { toast } from "sonner";
 
 const eur = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} €`;
 const OPEN: [string, string][] = [["🔓", "Ouvrir le showroom"], ["🚗", "Vérifier les véhicules exposés"], ["🧽", "Préparer une voiture"], ["📅", "Consulter les rendez-vous"], ["📩", "Lire les demandes des clients"]];
+const DRIVE = ["🔑 Remettre les clés", "🏙️ Rouler en ville", "🛣️ Tester sur voie rapide", "🅿️ Se garer"];
+const ARGS = ["🛡️ Mettre en avant la garantie", "⛽ Parler de la consommation", "🧳 Montrer le coffre et le confort", "📅 Proposer une livraison rapide"];
 const STEPS = ["Écouter son besoin", "Proposer un véhicule", "Présenter la voiture", "Faire essayer", "Préparer l'offre"];
 
 /** Presentation-only showroom day. Visitors are fictional and never buy; real sales come from players. */
@@ -24,12 +26,19 @@ export function ShowroomDay({ stock, soldDays }: { stock: DealerCar[]; soldDays:
   const [idx, setIdx] = useState(0);
   const [step, setStep] = useState(0);
   const [car, setCar] = useState<string | null>(null);
+  const [drive, setDrive] = useState(0);
+  const [arg, setArg] = useState<string | null>(null);
   const opened = open.length >= OPEN.length;
   const v = visitors[idx];
   const arrived = visitors.filter(x => x.at <= nowHm).length;
 
   return <div className="space-y-3 rounded-xl border border-border bg-card p-4">
     <h2 className="font-heading text-lg font-bold">🏬 Ma journée au showroom</h2>
+    <div className="grid grid-cols-3 gap-2 text-center">
+      <div className="rounded-xl bg-muted p-2"><p className="text-xs text-muted-foreground">🚗 En stock</p><p className="font-bold">{stock.reduce((n, c) => n + c.quantity, 0)}</p></div>
+      <div className="rounded-xl bg-muted p-2"><p className="text-xs text-muted-foreground">👥 Clients du jour</p><p className="font-bold">{arrived}/{visitors.length}</p></div>
+      <div className="rounded-xl bg-muted p-2"><p className="text-xs text-muted-foreground">💶 Ventes showroom</p><p className="font-bold">{soldDays.length}</p></div>
+    </div>
     {!opened ? <div className="space-y-2">
       <p className="text-sm text-muted-foreground">09:00 — ouverture. Prépare le showroom avant l'arrivée des clients.</p>
       {OPEN.map(([e, l], i) => <Button key={l} variant={open.includes(i) ? "secondary" : "outline"} className="min-h-14 w-full justify-between" onClick={() => setOpen(o => o.includes(i) ? o : [...o, i])}><span>{e} {l}</span><span>{open.includes(i) ? "✅" : "Faire"}</span></Button>)}
@@ -51,8 +60,9 @@ export function ShowroomDay({ stock, soldDays }: { stock: DealerCar[]; soldDays:
         {sold ? <p className="rounded-lg bg-success/15 p-3 text-sm">{sold} Remise des clés à {v.name} 🎉</p>
           : <p className="rounded-lg bg-muted p-3 text-sm">📝 Offre : {stock.find(c => c.catalog_id === car)?.name ?? "—"} à {eur(stock.find(c => c.catalog_id === car)?.price ?? 0)} (ton tarif).</p>}
         {!sold && (soldToday ? <p className="text-sm text-muted-foreground">{v.name} repart réfléchir : tu as déjà vendu à un client du showroom aujourd'hui (1 par jour).</p>
+          : car && !arg ? <div className="space-y-2"><p className="text-sm font-semibold">🤝 Négociation : ton argument</p>{ARGS.map(a => <Button key={a} variant="outline" className="min-h-12 w-full justify-start" onClick={() => setArg(a)}>{a}</Button>)}<p className="text-xs text-muted-foreground">Le prix reste celui de ton tarif.</p></div>
           : car && <Button className="min-h-14 w-full text-base" disabled={sell.isPending} onClick={() => sell.mutate(car)}>🤝 Négocier et conclure la vente</Button>)}
-        <Button variant="outline" className="min-h-14 w-full" onClick={() => { setIdx(i => i + 1); setStep(0); setCar(null); setSold(null); }}>👋 Client suivant</Button>
+        <Button variant="outline" className="min-h-14 w-full" onClick={() => { setIdx(i => i + 1); setStep(0); setCar(null); setSold(null); setDrive(0); setArg(null); }}>👋 Client suivant</Button>
       </div>}
     </div>}
     <p className="text-xs text-muted-foreground">Un seul client du showroom peut acheter par jour, au prix de ton tarif. L'argent arrive dans la caisse de ta concession.</p>
