@@ -48,3 +48,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] K. Récapitulatif avant achat à crédit (maison/voiture)
 - [x] L. Marque du lieu de travail sur la carte
 - [x] M. Historique du patrimoine sur 6 mois (courbe)
+- [ ] N. Meetings de campagne au lieu choisi sur la carte + invitation des habitants
+- [ ] O. Annonces de campagne publiées dans les actualités politiques
+- [ ] P. Vérifier sur téléphone : app Politique, pages de partis, calendrier électoral, bandeau d'accueil
