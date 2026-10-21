@@ -22,3 +22,7 @@ describe("portes et recherche", () => {
     expect(searchPlaces([{ name: "Hôtel de ville", kindLabel: "Mairie", district: "Centre" }], "hotel")).toHaveLength(1);
   });
 });
+import { distanceKm } from "./place-doors";
+describe("distance", () => {
+  it("Paris → Lille ≈ 204 km", () => { const d = distanceKm([2.3522, 48.8566], [3.0573, 50.6292]); expect(d).toBeGreaterThan(200); expect(d).toBeLessThan(208); });
+});
