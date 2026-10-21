@@ -8,7 +8,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Images prêtes (pas encore affichées) : 5 villes (Paris, Lyon, Marseille, Bordeaux, Lille) + 5 tuiles d'accueil
 
 ## À faire
-- [ ] 1. Écran principal façon jeu : grande image de la ville (jour/nuit), personnage, jauges, grosses tuiles illustrées
+- [x] 1. Écran principal façon jeu : grande image de la ville (jour/nuit), personnage, jauges, grosses tuiles illustrées
 - [ ] 2. Personnages plus détaillés (tenue selon le métier, humeur) et dialogues en bulles
 - [ ] 3. Travail : décor et journée jouée pour chaque métier ; relier le matériel du véhicule aux choix d'intervention
 - [ ] 4. Véhicules perso, bus, train, car : intérieurs réalistes, trajet animé

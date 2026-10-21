@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Bell, CalendarClock, Wallet, Zap, Briefcase, Lock } from "lucide-react";
-import { SectionLink } from "@/components/game/GameShell";
-import { SECTIONS, COMING_SOON, HOME_SHORTCUTS } from "@/game/navigation";
+import { Bell, CalendarClock, Lock } from "lucide-react";
+import { COMING_SOON } from "@/game/navigation";
+import { GameHome } from "@/components/game/GameHome";
 import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery, worldQuery } from "@/services/game";
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
@@ -29,47 +29,15 @@ function Dashboard() {
   if (!character) return null;
 
   return (
-    <div className="space-y-6 animate-rise">
-      <div>
-        <WorldClock />
-        <h1 className="text-3xl font-bold sm:text-4xl">Bonjour, {character.first_name}</h1>
-      </div>
+    <div className="-mt-6 space-y-6 lg:-mt-10">
+      <GameHome firstName={character.first_name} cityName={character.city?.name} appearance={character.appearance}
+        energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
 
-      <div className="grid grid-cols-2 gap-4">
-          <Link to="/telephone" search={{ app: "banque" }} className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card transition-colors hover:border-primary/40">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground"><Wallet className="h-4 w-4 text-primary" /> Argent</p>
-            <p className="mt-2 font-display text-2xl font-bold">{formatMoney(bank?.balance ?? 0)}</p>
-          </Link>
-          <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground"><Zap className="h-4 w-4 text-primary" /> Énergie</p>
-            <p className="mt-2 font-display text-2xl font-bold">{character.energy} / 100</p>
-            <div className="mt-2 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${character.energy}%` }} /></div>
-          </div>
-      </div>
-
-      <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
-        <p className="flex items-center gap-2 text-sm text-muted-foreground"><Briefcase className="h-4 w-4 text-primary" /> Situation actuelle</p>
-        <p className="mt-1 text-lg font-semibold">{character.situation}</p>
-      </div>
+      <WorldClock />
 
       <FranceDay />
 
       <LifeSummary />
-
-      <div>
-        <h2 className="mb-3 text-lg font-semibold">Raccourcis</h2>
-        <p className="-mt-2 mb-3 text-sm text-muted-foreground">Tout le reste est dans le menu.</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {HOME_SHORTCUTS.map((id) => SECTIONS.find((x) => x.id === id)!).filter(Boolean).map((s) => (
-            <SectionLink key={s.id} section={s}
-              className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elegant">
-              <s.icon className="h-6 w-6 text-primary" />
-              <span className="font-semibold">{s.label}</span>
-              {!s.available && <Lock className="absolute top-4 right-4 h-3.5 w-3.5 text-muted-foreground" />}
-            </SectionLink>
-          ))}
-        </div>
-      </div>
 
       <PositionBlock />
 
