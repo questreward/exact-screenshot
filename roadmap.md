@@ -58,3 +58,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 ## En attente de décision (V3 gelée)
 - [x] Bloc 16 — centre « Mes services publics » + recherche de démarches (V3 rouverte)
 - [x] Tableau de bord des promotions (clients, ventes, avis)
+- [x] Espace CAF à onglets (paiements, droits, documents, messages, rendez-vous) + suivi des demandes
+- [x] Bloc final V3 : tests complets + contrôle sécurité, V3 fermée, idées dans V4-BACKLOG.md

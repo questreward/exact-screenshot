@@ -21,3 +21,9 @@ describe('aid portal', () => {
     expect(aidPayments({ events }).map(e => e.id)).toEqual(['d', 'a']);
   });
 });
+
+import { aidRequestSteps } from './aid-portal';
+describe('aidRequestSteps', () => {
+  it('demande envoyée = 2 étapes faites', () => expect(aidRequestSteps('envoyee').filter(s => s.done).length).toBe(2));
+  it('réponse reçue = toutes les étapes', () => expect(aidRequestSteps('acceptee').every(s => s.done)).toBe(true));
+});

@@ -25,3 +25,9 @@ export function aidPayments(state: Pick<AdminState, 'events'>) {
   return state.events.filter(e => typeof e.amount === 'number' && e.amount > 0)
     .sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at));
 }
+
+/** Étapes du suivi d'une demande d'aide : Remplie → Envoyée → Étudiée → Réponse. */
+export function aidRequestSteps(status: string) {
+  const level = ({ a_faire: 0, a_completer: 0, en_cours: 1, envoyee: 2, acceptee: 4, refusee: 4, terminee: 4 } as Record<string, number>)[status] ?? 0;
+  return ['Remplie', 'Envoyée', 'Étudiée', 'Réponse'].map((label, i) => ({ label, done: i < level }));
+}
