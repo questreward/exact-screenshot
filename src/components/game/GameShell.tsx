@@ -35,13 +35,12 @@ export function useSignOut() {
   };
 }
 
-const MOBILE_IDS = ["telephone", "carte", "politique"];
 
 const ITEM = "group flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-primary";
 
 function GroupedMenu({ onPick, big }: { onPick?: () => void; big?: boolean }) {
   const groups = groupedSections();
-  const [open, setOpen] = useState<Record<string, boolean>>({ moi: true, quotidien: true });
+  const [open, setOpen] = useState<Record<string, boolean>>({ vie: true });
   const [search, setSearch] = useState("");
   const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr");
   const term = normalize(search.trim());
