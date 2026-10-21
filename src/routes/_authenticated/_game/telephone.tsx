@@ -1,6 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { opKind, opTitle } from "@/game/money-labels";
 import { useMyUniform } from "@/hooks/use-my-uniform";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Bell } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
 import { BankLoans } from "@/components/game/BankLoans";
