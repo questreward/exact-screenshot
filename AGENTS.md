@@ -16,6 +16,7 @@
 - Game routes belong under _authenticated/_game; missing characters redirect to creation, unavailable navigation uses section/$id.
 - World hierarchy: cities/districts/locations/spaces; move_character controls location. Map badges use public SELECT facts, never state RPCs; distinguish selected/current and expected/recorded effects.
 - game_now derives from DB anchor; clients animate only. Reads/reconnect settle deadlines.
+- World-clock resets use a locked, uniquely keyed VPS migration and an explicit Europe/Paris wall-time anchor; VIP acceleration replaces the existing travel trigger so speed factors never stack.
 - Isolated temporary accounts for regressions; accelerated deadlines preferred, world-clock tests restore the entire world_state in one transaction.
 - Social/civic/political/campaign/governance/events share activities and exactly-once energy/reward ledgers.
 - Fictional NPCs remain separate from players; local Ollama narrative never writes gameplay or reveals private player data. Membership history is immutable; reactivation keeps identity.
