@@ -53,3 +53,4 @@
 - Financial AI uses an owner-only read-only SQL snapshot and local Ollama; it explains recorded data and never executes operations or settles deadlines.
 - Physical cash is conserved with the bank account through character-locked, uniquely keyed SQL transfers; all wealth totals include cash and transfers are excluded from income/expenses.
 - Real branch locations are sourced from official address listings; CIVITAS advisers and cash terminals remain fictional and unaffiliated.
+- Bank history filters use Paris game dates; cash receipts reuse persisted operation keys and deltas, never reconstructed historical balances, to remain faithful to recorded transfers.

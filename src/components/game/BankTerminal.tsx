@@ -7,6 +7,8 @@ import { bankCashQuery, bankCashAction, formatMoney } from '@/services/game';
 import { QuickAmounts } from './FinancialTools';
 import { Link } from '@tanstack/react-router';
 import bankDesk from '@/assets/v2/desk-banque.webp';
+import { BankHistory, CashReceiptDialog } from './BankHistory';
+import type { CashReceipt } from '@/game/bank-history';
 
 export function BankTerminal() {
   const { data, isError, refetch } = useQuery(bankCashQuery);
@@ -17,12 +19,13 @@ export function BankTerminal() {
   const [request, setRequest] = useState(() => crypto.randomUUID());
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [receipt, setReceipt] = useState<CashReceipt | null>(null);
   const max = direction === 'withdraw' ? data?.balance ?? 0 : data?.cash ?? 0;
   function edit(value: string) { setAmount(value); setRequest(crypto.randomUUID()); setConfirming(false); }
   async function execute() {
     if (busy) return;
     setBusy(true); setMessage('');
-    try { const result = await bankCashAction({ direction, amount: Number(amount), request }); q.setQueryData(bankCashQuery.queryKey,result); setRequest(crypto.randomUUID()); setConfirming(false); setMessage('Opération enregistrée. Compte et espèces mis à jour.'); await Promise.all(['online-bank','economy','bank','financial-adviser'].map(key=>q.invalidateQueries({queryKey:[key]}))); }
+    try { const result = await bankCashAction({ direction, amount: Number(amount), request }); q.setQueryData(bankCashQuery.queryKey,result); setReceipt(result.history.find(h => h.operation_key === `bank-cash:${request}`) ?? null); setRequest(crypto.randomUUID()); setConfirming(false); setMessage('Opération enregistrée. Compte et espèces mis à jour.'); await Promise.all(['online-bank','economy','bank','financial-adviser'].map(key=>q.invalidateQueries({queryKey:[key]}))); }
     catch(e) { setMessage(e instanceof Error ? e.message : 'Opération impossible'); }
     finally { setBusy(false); }
   }
@@ -39,8 +42,9 @@ export function BankTerminal() {
         {confirming ? <div className="space-y-3 border-l-4 border-primary p-3"><p className="text-sm">{direction==='withdraw'?'Retrait':'Dépôt'} de {formatMoney(Number(amount))}. Compte après : {formatMoney(data.balance+(direction==='deposit'?1:-1)*Number(amount))}. Espèces après : {formatMoney(data.cash+(direction==='withdraw'?1:-1)*Number(amount))}.</p><div className="flex flex-wrap gap-2"><Button disabled={busy} className="min-h-12" onClick={()=>void execute()}><Check />{busy?'Enregistrement…':'Confirmer'}</Button><Button disabled={busy} variant="ghost" onClick={()=>setConfirming(false)}>Annuler</Button></div></div> : <Button className="min-h-12 w-full" disabled={busy || !Number.isInteger(Number(amount)) || Number(amount)<=0 || Number(amount)>max} onClick={()=>setConfirming(true)}>Vérifier mon opération</Button>}
       </>}
       <p className="text-xs text-muted-foreground">Transfert entre votre compte et vos espèces uniquement. Aucun argent créé, aucun service bancaire réel.</p>
-      <div className="divide-y divide-border">{data.history.map(h=><p key={h.operation_key} className="py-2 text-sm">{h.amount<0?'Retrait':'Dépôt'} · {formatMoney(Math.abs(h.amount))} · {h.occurred_at.slice(0,10)}</p>)}</div>
+      <BankHistory cashOnly cash={data.history} movements={data.history.map(h => ({ at: h.occurred_at, amount: h.amount, category: 'especes', label: h.amount < 0 ? 'Retrait d’espèces' : 'Dépôt d’espèces' }))} />
     </>}
     {message && <p role="status" className="text-sm">{message}</p>}
+    <CashReceiptDialog receipt={receipt} onClose={() => setReceipt(null)} />
   </section>;
 }

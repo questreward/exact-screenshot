@@ -8,6 +8,7 @@ import { onlineBankQuery, onlineBankAction, networkQuery } from '@/services/game
 import { cardRemaining, statementText } from '@/game/online-bank';
 import { FinancialAdviser } from '@/components/game/FinancialAdviser';
 import { BankTerminal } from '@/components/game/BankTerminal';
+import { BankHistory } from '@/components/game/BankHistory';
 
 export const Route = createFileRoute('/_authenticated/_game/banque')({
   head: () => ({ meta: gameMeta('Banque Horizon — FICTIF', 'Compte, carte, virements et relevés fictifs CIVITAS.') }),
@@ -40,6 +41,7 @@ function BankPage() {
     <p role="status">{message}</p>
     <FinancialAdviser />
     <BankTerminal />
+    <BankHistory movements={data.statements.flatMap(s => s.movements)} />
     <section className={panel}><h2 className="text-lg font-semibold">Mon RIB fictif</h2><p className="break-all font-mono">{data.iban}</p><p>BIC : {data.bic} · Code banque inventé 00000</p><p className="text-sm text-muted-foreground">Ne pas utiliser pour un paiement réel. Votre carte et votre RIB sont aussi dans La Poste.</p></section>
     <section className={panel}><h2 className="text-lg font-semibold">Carte Horizon · FICTIF</h2><p className="font-semibold">{data.blocked ? 'Carte bloquée' : 'Carte débloquée'}{data.spent >= data.ceiling ? ' · Plafond atteint ou dépassé' : ''}</p><p>{data.spent.toLocaleString('fr-FR')} € / 1 500 € ce mois · Reste indicatif : {cardRemaining(data.spent)} €</p><button className={button} disabled={busy} onClick={() => void act('online_bank_card', { _blocked: !data.blocked })}>{data.blocked ? 'Débloquer' : 'Bloquer'} la carte</button><p className="text-sm text-muted-foreground">Blocage et plafond informatifs : les achats existants ne sont pas refusés. Dépenses : débits de catégorie « achat », par mois calendaire du jeu (UTC).</p></section>
     <form className={panel} onSubmit={e => { e.preventDefault(); void act('online_bank_transfer', { _target: target, _amount: Number(amount), _request: request }); }}><h2 className="text-lg font-semibold">Virement à un contact</h2><label className="block">Contact<GameSelect required className="mt-1 min-h-11 w-full rounded border border-input bg-background p-2" value={target} onChange={e => { setTarget(e.target.value); setRequest(crypto.randomUUID()); }}><option value="">Choisir un contact</option>{network.contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</GameSelect></label><label className="block">Montant en euros<input required type="number" min={1} max={5000} step={1} value={amount} onChange={e => { setAmount(e.target.value); setRequest(crypto.randomUUID()); }} className="mt-1 min-h-11 w-full rounded border border-input bg-background p-2" /></label><QuickAmounts value={amount} max={Math.min(5000, data.balance)} onChange={v => { setAmount(v); setRequest(crypto.randomUUID()); }} /><button disabled={busy} className={button}>Envoyer le virement</button><p className="text-sm text-muted-foreground">1–5 000 € · 10 virements par jour du jeu. Crédité à la prochaine consultation du destinataire. Aucun solde négatif.</p></form>
