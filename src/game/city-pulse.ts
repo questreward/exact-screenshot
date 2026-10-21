@@ -82,7 +82,7 @@ export function cityPulse(cityName: string, gameNow: Date): PulseScene[] {
   const scenes: PulseScene[] = [];
   for (let i = 0; used.size < 3 && i < 20; i++) {
     const seed = hash(`${cityName}|${hourKey}|${i}`);
-    const kind = KINDS[seed % KINDS.length];
+    const kind = KINDS[seed % KINDS.length] as PulseKind;
     if (used.has(kind)) continue;
     used.add(kind);
     const d = DEFS[kind];
@@ -91,10 +91,10 @@ export function cityPulse(cityName: string, gameNow: Date): PulseScene[] {
     const stage: PulseStage = t < 15 ? "signale" : t < 45 ? "en_cours" : "maitrise";
     const shown = stage === "signale" ? 1 : stage === "en_cours" ? 3 : d.reactions.length;
     const start = (seed >>> 4) % d.reactions.length;
-    const reactions = Array.from({ length: Math.min(shown, d.reactions.length) }, (_, k) => d.reactions[(start + k) % d.reactions.length]);
+    const reactions = Array.from({ length: Math.min(shown, d.reactions.length) }, (_, k) => d.reactions[(start + k) % d.reactions.length] ?? "");
     scenes.push({
       id: `${hourKey}-${kind}`, kind, emoji: d.emoji, title: d.title,
-      place: d.places[(seed >>> 12) % d.places.length], stage, stageLabel: STAGE_LABEL[stage],
+      place: d.places[(seed >>> 12) % d.places.length] ?? "", stage, stageLabel: STAGE_LABEL[stage],
       responder: d.responder, reactions, link: d.link,
     });
   }
