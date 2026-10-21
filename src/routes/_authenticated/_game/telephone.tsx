@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { MoneyMonth } from "@/components/game/MoneyMonth";
 import { opKind, opTitle } from "@/game/money-labels";
 import { useMyUniform } from "@/hooks/use-my-uniform";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
@@ -98,6 +99,7 @@ function BankApp() {
         </div>
       </section>
       <section className="space-y-2"><h2 className="text-sm font-bold">💳 Mes crédits</h2><BankLoans compact /></section>
+      <MoneyMonth />
       <EconomyBankLinks/>
       <InsuranceCard compact />
       <section className="space-y-2">
