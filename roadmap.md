@@ -20,3 +20,4 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] A. Guichets/ordinateurs CAF, France Travail, ameli, Banque, Poste, Impôts, Préfecture + arrivée des courriers
 - [ ] B. Intérieurs voiture/bus/train/car + trajet animé sur la vraie carte
 - [ ] C. Décor par métier + journée jouable avec choix + matériel du camion en intervention
+- [ ] D. Intervention : le joueur décrit son action, l'IA locale décrit la réaction (récit seulement, aucun effet sur le jeu)
