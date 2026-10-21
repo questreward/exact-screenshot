@@ -27,7 +27,7 @@ const BY_KIND: Record<string, { layer: MapLayer; emoji: string; important?: bool
   parc: { layer: "loisirs", emoji: "🌳" },
 };
 
-export const placeLayer = (kind: string) => BY_KIND[kind] ?? { layer: "loisirs" as MapLayer, emoji: "📍" };
+export const placeLayer = (kind: string) => BY_KIND[kind] ?? { layer: "loisirs" as MapLayer, emoji: "📍", important: false };
 
 /** Un lieu est montré si sa couche est active, ou si c'est la position du joueur (toujours visible). */
 export const showPlace = (kind: string, active: ReadonlySet<MapLayer>, isPlayerHere: boolean) => isPlayerHere || active.has(placeLayer(kind).layer);
