@@ -60,3 +60,11 @@ export function goalProgress(balance: number, price: number): { percent: number;
   const have = Math.max(0, balance);
   return { percent: Math.min(100, Math.floor(have * 100 / price)), missing: Math.max(0, price - have) };
 }
+
+/** Récapitulatif d'un achat à crédit : coût total et budget restant après la signature (même formule que le serveur). */
+export function creditRecap(i: { price: number; down: number; fees: number; rate: number; months: number; balance: number; income: number; burden: number }) {
+  const principal = Math.max(0, i.price - i.down);
+  const monthly = creditMonthly(principal, i.rate, i.months);
+  const interest = Math.max(0, monthly * i.months - principal);
+  return { principal, monthly, interest, totalCost: i.down + i.fees + monthly * i.months, balanceAfter: i.balance - i.down - i.fees, monthlyLeft: i.income - i.burden - monthly };
+}
