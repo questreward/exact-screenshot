@@ -54,3 +54,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 
 - [x] Badge promo dans la liste des entreprises (clients)
 - [x] Réputation par domaine dans le profil
+
+## En attente de décision (V3 gelée)
+- [ ] Bloc 16 — France réelle (CAF, France Travail, impôts…) : V3 ou V4 ?
+- [ ] Tableau de bord promotions entreprises (visites, ventes, résultats) : V3 ou V4 ?
