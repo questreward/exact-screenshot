@@ -26,3 +26,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] G. Planificateur IA : le joueur décrit son envie, l'IA locale propose activités + itinéraire parmi les vrais lieux
 - [x] H. Tenues et cadres portés visibles sur le profil public des autres joueurs (0123 prête, attend installation)
 - [ ] I. Faire découvrir le jeu (réseaux sociaux) — après G et H
+- [x] J. Page publique « Découvrir » + lien d'invitation à partager
+- [x] K. Grand prompt récapitulatif pour ChatGPT (fichier dans Files)
