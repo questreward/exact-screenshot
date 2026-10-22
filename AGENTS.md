@@ -46,8 +46,8 @@
 - NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
 - Financial presentation reuses recorded state in FinancialTools documents/adviser comments; amount shortcuts only populate inputs and date milestones derive from the shared game clock, never execute payments.
-- Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
-- TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
+- Interiors/reports show recorded trips/shifts only, never invented outcomes.
+- TV shots/captions quote stored editions; local voices with bundled fallback.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
 - VPS test restores omit cron; full backups keep it.
 - Payment-key recovery verifies matching JWT secrets locally, writes only the server env atomically (owner-only), never exposes keys.
