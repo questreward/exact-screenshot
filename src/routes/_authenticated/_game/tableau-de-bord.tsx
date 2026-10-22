@@ -48,7 +48,7 @@ function Dashboard() {
 
       <DailySituations />
 
-      {character.city?.name && <CityPulse cityName={character.city.name} />}
+      {character.city?.name && <CityPulse cityName={character.city.name} cityId={character.city_id} />}
 
       <NextStepCard cityName={character.city?.name} />
 

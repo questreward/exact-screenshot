@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
+- World event surfaces share the existing events query and persisted IDs; local feeds filter server snapshots and never infer catastrophe phases, mission links or applied effects.
 - src/game is presentation-only; secured SQL enforces age, money, rewards and configured balance values.
 - src/services/game.ts owns queries; loaders ensureQueryData, pages useSuspenseQuery. Catalog inserts are additive, reads paged; purchases unchanged.
 - Player money, character, position and stats tables are owner-SELECT-only; secured writes lock characters and use unique keys.

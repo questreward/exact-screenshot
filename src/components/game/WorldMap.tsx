@@ -38,6 +38,7 @@ import { openState, placeDoor, searchPlaces, distanceKm } from "@/game/place-doo
 import { Link } from "@tanstack/react-router";
 import { Search, DoorOpen } from "lucide-react";
 import { MAP_LAYERS, placeLayer, showPlace, eventEmoji, type MapLayer } from "@/game/map-layers";
+import { WorldEventFeed } from './WorldEventFeed';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -126,6 +127,7 @@ function CityMap({ city, selectedDistrict, initialLocation, onDistrict, phase, r
     </div>
     <SavedPlaces cityId={city.id} onPick={(d, l) => { onDistrict(d); setSelectedLocation(l); setTimeout(() => document.getElementById("fiche-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 450); }} />
     <PlaceSearch districts={districts} onPick={(d, l, go) => { onDistrict(d); setSelectedLocation(l); if (go) setTimeout(() => document.getElementById("fiche-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 450); }} />
+    <WorldEventFeed cityId={city.id} districtId={selected?.id} cityName={city.name} compact />
     <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0">
         {realReady ? <RealCityMap phase={phase} city={city} districts={districts} selected={selected} positionId={playerHere ? position?.location_id : undefined} positionDistrict={playerHere ? position?.district_id : undefined} selectedLocation={selectedLocation} onDistrict={districtSelect} onLocation={setSelectedLocation} /> :
@@ -172,7 +174,7 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   const toggle = (id: MapLayer) => setLayers(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const view = CITY_CENTER[city.id] ?? { at: FRANCE_VIEW.at, zoom: 12 };
   let markers: RealMarker[]; let center = view.at; let zoom = view.zoom;
-  const deco = (kind: string, id: string) => { if (id === workId && positionId !== id) return { emoji: "💼", important: true, work: true }; const p = placeLayer(kind); const e = evMap.get(id); return e?.length ? { emoji: eventEmoji(e[0]!.title), important: true } : { emoji: p.emoji, important: !!p.important || positionId === id }; };
+  const deco = (kind: string, id: string) => { if (id === workId && positionId !== id) return { emoji: "💼", important: true, work: true }; const p = placeLayer(kind); const event = evMap.get(id)?.[0]; return event && layers.has('evenements') ? { emoji: eventEmoji(event.title), important: true } : { emoji: p.emoji, important: !!p.important || positionId === id }; };
   const show = (kind: string, id: string, keep: boolean) => keep || id === workId || showPlace(kind, layers, false) || (layers.has("evenements") && evMap.has(id));
   if (selected) {
     const locs = byDistrict.get(selected.id) ?? [];

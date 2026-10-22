@@ -72,7 +72,7 @@ export function cityEffectLevel(satisfaction: number | null): CityEffectLevel {
 export function markersByLocation(events: WorldEvent[]) {
   const m = new Map<string, WorldEvent[]>();
   for (const e of events) {
-    if (!e.marker || e.personal || !e.location_id) continue;
+    if (!e.marker || e.personal || !e.location_id || e.phase !== 'en_cours') continue;
     const list = m.get(e.location_id) ?? [];
     if (!list.some(x => x.id === e.id)) list.push(e);
     m.set(e.location_id, list);
