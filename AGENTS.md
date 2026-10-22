@@ -75,3 +75,5 @@
 - EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.
 - discord-bot has its own deployment and scoped public SQL projections; its durable pending-before-send journal avoids blind duplicate sends without claiming transactional Discord delivery. Read discord-bot/AGENTS.md before changing it.
 - 3D street/interiors (ville-3d, lieu-3d) are presentation only: spots open existing secured pages.
+- Vite config awaits a fresh official route-generator disk scan before loading the app and fails on missing route imports; the existing Start plugin alone owns live watching, with no manual generated-tree edits.
+- 3D parked cars illustrate current owned vehicle assets beside the home; service vehicles are scenery, never persisted parking, availability or mission state. Reuse existing ownership/housing queries and purchase invalidations.

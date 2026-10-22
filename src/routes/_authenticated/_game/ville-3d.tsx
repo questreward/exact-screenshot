@@ -3,7 +3,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, DoorOpen, Volume2, VolumeX, RotateCcw, RotateCw, Smartphone, CreditCard } from "lucide-react";
 import { ClientOnly } from "@tanstack/react-router";
-import { bankQuery, characterQuery, clockQuery, formatMoney, weatherQuery } from "@/services/game";
+import { bankQuery, characterQuery, clockQuery, formatMoney, weatherQuery, shopQuery, housingQuery } from "@/services/game";
+import { streetParking } from "@/game/street-parking";
 import { useWorldClock } from "@/components/game/WorldClock";
 import { normalizeAppearance } from "@/game/appearance";
 import { STREETS, arrivalPoint, characterModel, type Door } from "@/game/street3d";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/_game/ville-3d")({
     const rue = Number(s["rue"]);
     return { ...(Number.isInteger(rue) && rue > 0 && rue < STREETS.length ? { rue } : {}), ...(s["depuis"] === "est" || s["depuis"] === "ouest" ? { depuis: s["depuis"] } : {}) };
   },
-  loader: ({ context: { queryClient: q } }) => Promise.all([q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(clockQuery)]),
+  loader: ({ context: { queryClient: q } }) => Promise.all([q.ensureQueryData(characterQuery), q.ensureQueryData(bankQuery), q.ensureQueryData(clockQuery), q.ensureQueryData(shopQuery), q.ensureQueryData(housingQuery)]),
   component: Street,
   errorComponent: () => <p role="alert" className="p-6">La rue n'a pas pu s'afficher. Revenez à l'accueil puis réessayez.</p>,
 });
@@ -29,6 +30,8 @@ export const Route = createFileRoute("/_authenticated/_game/ville-3d")({
 function Street() {
   const { data: character } = useSuspenseQuery(characterQuery);
   const { data: bank } = useSuspenseQuery(bankQuery);
+  const { data: shop } = useSuspenseQuery(shopQuery);
+  const { data: housing } = useSuspenseQuery(housingQuery);
   const { time, phase } = useWorldClock();
   const { rue = 0, depuis } = Route.useSearch();
   // Recorded city weather, re-read regularly so the street follows its changes.
@@ -79,7 +82,7 @@ function Street() {
     <div className="fixed inset-0 z-50 bg-background">
       <ClientOnly fallback={<p className="p-6">Chargement de la rue…</p>}>
         <Suspense fallback={<div className="flex h-full items-center justify-center font-display text-lg">Chargement de la rue…</div>}>
-          <Street3D phase={phase} characterUrl={characterModel(appearance.hair, appearance.skin)} input={input} onDoor={setDoor} crowd={streetLife(phase)} quality={quality} street={rue} weather={weather} key={`${rue}-${depuis ?? ""}`} {...(depuis ? { start: arrivalPoint(depuis === "est") } : {})} />
+          <Street3D phase={phase} characterUrl={characterModel(appearance.hair, appearance.skin)} input={input} onDoor={setDoor} crowd={streetLife(phase)} quality={quality} street={rue} weather={weather} parked={streetParking(rue, shop.assets, housing.current !== null)} key={`${rue}-${depuis ?? ""}`} {...(depuis ? { start: arrivalPoint(depuis === "est") } : {})} />
         </Suspense>
       </ClientOnly>
 

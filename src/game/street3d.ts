@@ -35,7 +35,7 @@ const MAIN: Building[] = [
   { model: C + "building-f.glb", x: -24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("sante", "Centre de santé", "/espace-sante", -24, 1) },
   { model: C + "building-g.glb", x: -16.5, z: 9.8, rot: Math.PI, scale: 4.5, door: door("vetements", "Boutique de vêtements", "/style", -16.5, 1) },
   { model: C + "building-h.glb", x: -10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("emploi", "Espace Emploi", "/espace-emploi", -10, 1) },
-  { model: C + "building-a.glb", x: 10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("secours", "Commissariat et secours", "/secours", 10, 1) },
+  { model: C + "building-a.glb", x: 10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("secours", "Commissariat", "/secours", 10, 1) },
   { model: S + "building-type-c.glb", x: 17, z: 10, rot: Math.PI, scale: 5, door: door("concession", "Concessionnaire", "/concession", 17, 1) },
   { model: C + "building-b.glb", x: 24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("travail", "Mon travail", "/carriere", 24, 1) },
 ];
@@ -44,7 +44,7 @@ const MAIN: Building[] = [
 const AVENUE: Building[] = [
   { model: C + "building-e.glb", x: -24, z: -9.8, rot: 0, scale: 4.5, door: door("agence", "Agence immobilière", "/agence", -24, -1) },
   { model: C + "building-c.glb", x: -16.5, z: -9.8, rot: 0, scale: 4.5, door: door("vetements", "Boutique de vêtements", "/style", -16.5, -1) },
-  { model: C + "building-h.glb", x: -10, z: -9.8, rot: 0, scale: 4.5 },
+  { model: C + "building-h.glb", x: -10, z: -9.8, rot: 0, scale: 4.5, door: door("caserne", "Caserne", "/secours", -10, -1) },
   { model: C + "building-a.glb", x: 10, z: -9.8, rot: 0, scale: 4.5, door: door("superette", "Supérette", "/marche", 10, -1) },
   { model: C + "building-g.glb", x: 17, z: -9.8, rot: 0, scale: 4.5 },
   { model: C + "building-skyscraper-a.glb", x: 24, z: -10, rot: 0, scale: 4.5, door: door("meubles", "Magasin de meubles", "/marche", 24, -1) },
