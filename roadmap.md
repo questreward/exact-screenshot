@@ -188,3 +188,6 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Boutique argent réel : aperçu animé des cosmétiques sur le personnage, y compris tenue/cadre VIP.
 - [x] Page de présentation VIP améliorée, règles et parcours de paiement conservés.
 - [ ] Contrôle connecté des achats et du VIP : l’aperçu redirige vers la connexion, aucun compte personnel disponible ; essai avec personnage requis sur VPS.
+
+- [x] Ville 3D : rue explorable, portes vers les pages existantes
+- [ ] Serveur VPS en mode final (attente du contenu du Dockerfile)

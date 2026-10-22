@@ -97,6 +97,7 @@ import { Route as AuthenticatedGameVerificationRouteImport } from './routes/_aut
 import { Route as AuthenticatedGameVieRouteImport } from './routes/_authenticated/_game/vie'
 import { Route as AuthenticatedGameVieAdministrativeRouteImport } from './routes/_authenticated/_game/vie-administrative'
 import { Route as AuthenticatedGameVieDesPartisRouteImport } from './routes/_authenticated/_game/vie-des-partis'
+import { Route as AuthenticatedGameVille3dRouteImport } from './routes/_authenticated/_game/ville-3d'
 import { Route as AuthenticatedGameVipRouteImport } from './routes/_authenticated/_game/vip'
 import { Route as AuthenticatedGameVoyagesRouteImport } from './routes/_authenticated/_game/voyages'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
@@ -595,6 +596,12 @@ const AuthenticatedGameVieDesPartisRoute =
     path: '/vie-des-partis',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameVille3dRoute =
+  AuthenticatedGameVille3dRouteImport.update({
+    id: '/ville-3d',
+    path: '/ville-3d',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameVipRoute = AuthenticatedGameVipRouteImport.update({
   id: '/vip',
   path: '/vip',
@@ -742,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/ville-3d': typeof AuthenticatedGameVille3dRoute
   '/vip': typeof AuthenticatedGameVipRoute
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
@@ -840,6 +848,7 @@ export interface FileRoutesByTo {
   '/vie': typeof AuthenticatedGameVieRoute
   '/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/ville-3d': typeof AuthenticatedGameVille3dRoute
   '/vip': typeof AuthenticatedGameVipRoute
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
@@ -941,6 +950,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/vie': typeof AuthenticatedGameVieRoute
   '/_authenticated/_game/vie-administrative': typeof AuthenticatedGameVieAdministrativeRoute
   '/_authenticated/_game/vie-des-partis': typeof AuthenticatedGameVieDesPartisRoute
+  '/_authenticated/_game/ville-3d': typeof AuthenticatedGameVille3dRoute
   '/_authenticated/_game/vip': typeof AuthenticatedGameVipRoute
   '/_authenticated/_game/voyages': typeof AuthenticatedGameVoyagesRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
@@ -1041,6 +1051,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/ville-3d'
     | '/vip'
     | '/voyages'
     | '/actualites/$id'
@@ -1139,6 +1150,7 @@ export interface FileRouteTypes {
     | '/vie'
     | '/vie-administrative'
     | '/vie-des-partis'
+    | '/ville-3d'
     | '/vip'
     | '/voyages'
     | '/actualites/$id'
@@ -1239,6 +1251,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/vie'
     | '/_authenticated/_game/vie-administrative'
     | '/_authenticated/_game/vie-des-partis'
+    | '/_authenticated/_game/ville-3d'
     | '/_authenticated/_game/vip'
     | '/_authenticated/_game/voyages'
     | '/_authenticated/_game/actualites_/$id'
@@ -1884,6 +1897,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameVieDesPartisRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/ville-3d': {
+      id: '/_authenticated/_game/ville-3d'
+      path: '/ville-3d'
+      fullPath: '/ville-3d'
+      preLoaderRoute: typeof AuthenticatedGameVille3dRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/vip': {
       id: '/_authenticated/_game/vip'
       path: '/vip'
@@ -2032,6 +2052,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameVieRoute: typeof AuthenticatedGameVieRoute
   AuthenticatedGameVieAdministrativeRoute: typeof AuthenticatedGameVieAdministrativeRoute
   AuthenticatedGameVieDesPartisRoute: typeof AuthenticatedGameVieDesPartisRoute
+  AuthenticatedGameVille3dRoute: typeof AuthenticatedGameVille3dRoute
   AuthenticatedGameVipRoute: typeof AuthenticatedGameVipRoute
   AuthenticatedGameVoyagesRoute: typeof AuthenticatedGameVoyagesRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
@@ -2123,6 +2144,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameVieAdministrativeRoute:
       AuthenticatedGameVieAdministrativeRoute,
     AuthenticatedGameVieDesPartisRoute: AuthenticatedGameVieDesPartisRoute,
+    AuthenticatedGameVille3dRoute: AuthenticatedGameVille3dRoute,
     AuthenticatedGameVipRoute: AuthenticatedGameVipRoute,
     AuthenticatedGameVoyagesRoute: AuthenticatedGameVoyagesRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
