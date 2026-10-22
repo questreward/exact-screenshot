@@ -6,7 +6,8 @@
 - [x] Horaires existants affichés, prochaine ouverture tenant compte des jours et pauses/nuit, espaces fermés sans empêcher la sortie, rayons déjà conditionnés à l’ouverture. Aucun horaire ajouté ni règle serveur modifiée.
 - [x] Repères interactifs : disponibilité connue, visite attestée par position actuelle ou activité sur place terminée, rencontres sociales réservées avec lieu et horaire ; ni consultation ni trajet terminé ne deviennent une visite.
 - [x] Fiche habitant dans carte et contacts : échanges IA de la page, lieu associé, actions sociales enregistrées séparément ; aucun ancien lieu attribué au lieu actuel du PNJ.
-- [ ] Vérifier les tests ciblés et le parcours connecté si un compte est disponible.
+- [x] Vérifications : 559 tests sur 143 fichiers puis 24 tests ciblés réussis après ajout du contrôle de fiche ; compilation automatique OK. Horaires/portes/fiche isolés vérifiés à 390×844 et 1280×1800, entrée fermée et sortie disponible, sans erreur ni débordement.
+- [ ] Parcours connecté et installation VPS : aucun compte correspondant à l’utilisateur dans l’aperçu (--self échoué) ; dialogue Ollama réel, marqueurs du monde connecté et installation non vérifiés. Visites plus anciennes que les activités disponibles et lieux d’anciennes interactions non reconstruits.
 - [ ] Extensions complètes des Prompts 16–19 : persistance des véhicules/parkings, logistique, appels, métiers profonds et simulation réactive ; contrats sécurisés et SQL exact à approuver avant installation.
 - [ ] Prompts 20–25 complets : appels/livraisons, monde physique et objets partagés, interactions politiques et crises coordonnées ; extension des contrats existants à soumettre à accord, puis audit final connecté sur VPS. Pas de nouvelles scènes faussement actives.
 
