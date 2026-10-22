@@ -7,7 +7,9 @@ import { bankQuery, characterQuery, clockQuery, formatMoney } from "@/services/g
 import { useWorldClock } from "@/components/game/WorldClock";
 import { normalizeAppearance } from "@/game/appearance";
 import { characterModel, type Door } from "@/game/street3d";
+import { INTERIORS } from "@/game/interior3d";
 import { streetLife } from "@/game/world-scene";
+import { Joystick } from "@/components/game/street3d/Joystick";
 import type { StreetInput, StreetQuality } from "@/components/game/street3d/Street3D";
 
 const Street3D = lazy(() => import("@/components/game/street3d/Street3D").then((m) => ({ default: m.Street3D })));
@@ -18,26 +20,6 @@ export const Route = createFileRoute("/_authenticated/_game/ville-3d")({
   component: Street,
   errorComponent: () => <p role="alert" className="p-6">La rue n'a pas pu s'afficher. Revenez à l'accueil puis réessayez.</p>,
 });
-
-function Joystick({ input }: { input: React.RefObject<StreetInput> }) {
-  const base = useRef<HTMLDivElement>(null);
-  const [knob, setKnob] = useState({ x: 0, y: 0 });
-  const set = (cx: number, cy: number) => {
-    const r = base.current!.getBoundingClientRect();
-    let dx = (cx - (r.left + r.width / 2)) / (r.width / 2), dy = (cy - (r.top + r.height / 2)) / (r.height / 2);
-    const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; }
-    input.current.x = dx; input.current.y = -dy; setKnob({ x: dx, y: dy });
-  };
-  const end = () => { input.current.x = 0; input.current.y = 0; setKnob({ x: 0, y: 0 }); };
-  return (
-    <div ref={base} role="application" aria-label="Manette de déplacement" className="glass relative h-32 w-32 touch-none rounded-full shadow-card"
-      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); set(e.clientX, e.clientY); }}
-      onPointerMove={(e) => { if (e.buttons || e.pointerType === "touch") set(e.clientX, e.clientY); }}
-      onPointerUp={end} onPointerCancel={end}>
-      <span className="absolute left-1/2 top-1/2 h-14 w-14 rounded-full bg-primary/80 shadow-elegant" style={{ transform: `translate(calc(-50% + ${knob.x * 36}px), calc(-50% + ${knob.y * 36}px))` }} />
-    </div>
-  );
-}
 
 function Street() {
   const { data: character } = useSuspenseQuery(characterQuery);
@@ -52,7 +34,11 @@ function Street() {
   const cycleQuality = () => setQuality((q) => { const n: StreetQuality = q === "auto" ? "low" : q === "low" ? "high" : "auto"; localStorage.setItem("civitas-street-quality", n); return n; });
   doorRef.current = door;
   const appearance = normalizeAppearance((character?.appearance ?? {}) as never);
-  const enter = () => { if (doorRef.current) navigate({ to: doorRef.current.to as "/banque" }); };
+  const enter = () => {
+    const d = doorRef.current; if (!d) return;
+    if (INTERIORS[d.id]) navigate({ to: "/lieu-3d/$id", params: { id: d.id } });
+    else navigate({ to: d.to as "/banque" });
+  };
 
   useEffect(() => {
     const keys = new Set<string>();

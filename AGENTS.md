@@ -43,13 +43,13 @@
 - Tax space extends existing returns/withholding; notices never also enter profile debt; property based on owned assets, receipts on actual payments only.
 - Jobs reuse secured career/application hiring; diploma gates use student_ledger, missions have no separate money rewards.
 - Mission scenes/dossiers/vehicle entry use server snapshots only, no invented trips, incidents or outcomes.
-- NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
+- NPC chat history is page-local; no persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
 - Financial presentation reuses recorded state in FinancialTools documents/adviser comments; amount shortcuts only populate inputs and date milestones derive from the shared game clock, never execute payments.
-- Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
-- TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
-- Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
-- VPS test restores omit cron via TOC; full backups retain production cron.
+- Interiors/reports show recorded trips/shifts only, never invented outcomes.
+- TV shots/captions quote stored editions; local voices with bundled fallback.
+- Volunteer history: private append-only, no career rewards.
+- VPS test restores omit cron; full backups keep it.
 - Payment-key recovery verifies matching JWT secrets locally, writes only the server env atomically (owner-only), never exposes keys.
 - Financial AI uses an owner-only read-only SQL snapshot and local Ollama; it explains recorded data and never executes operations or settles deadlines.
 - Physical cash is conserved with the bank account through character-locked, uniquely keyed SQL transfers; all wealth totals include cash and transfers are excluded from income/expenses.
@@ -59,7 +59,7 @@
 
 - V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
 
-- Smartphone loaders select dependencies by application with a query-independent pending/error device shell; conversation IDs live in route search, back exits the thread before the app, and query error reset retries reads without duplicating communication storage.
+- Smartphone loaders load per app with a query-independent shell; conversation IDs live in route search; error reset retries reads only.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
 - Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.
 - MissionActions renders only server-provided choices over shared job imagery; refresh after uncertainty must succeed before choices unlock, to prevent stale decisions.
@@ -74,4 +74,4 @@
 - Map place facts use current position and completed on-site activities as visit evidence, and saved social bookings as meeting markers; selected/recent places never count as visits.
 - EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.
 - discord-bot has its own deployment and scoped public SQL projections; its durable pending-before-send journal avoids blind duplicate sends without claiming transactional Discord delivery. Read discord-bot/AGENTS.md before changing it.
-- 3D street (ville-3d, CC0 models in public/models) is presentation only: doors open existing secured pages, never act or record positions.
+- 3D street/interiors (ville-3d, lieu-3d) are presentation only: spots open existing secured pages.
