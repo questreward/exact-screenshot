@@ -144,6 +144,7 @@ export function WorldScene({ firstName, cityName, cityId, appearance, energy, ba
           <span className="min-w-0"><span className="block text-[10px] font-bold uppercase tracking-wide text-primary">Objectif</span><span className="block truncate text-sm font-semibold">{step.title}</span></span>
         </Link>
         <div className="flex gap-2">
+          <Link to="/ville-3d" className="glass flex h-12 items-center gap-2 rounded-full px-4 text-sm font-bold shadow-card">🚶 Sortir</Link>
           <Link to="/carte" aria-label="Ouvrir la carte" className="glass flex h-12 w-12 items-center justify-center rounded-full shadow-card"><MapIcon className="h-5 w-5" /></Link>
           <Link to="/telephone" aria-label="Ouvrir le téléphone" className="glass flex h-12 w-12 items-center justify-center rounded-full shadow-card"><Smartphone className="h-5 w-5" /></Link>
         </div>
