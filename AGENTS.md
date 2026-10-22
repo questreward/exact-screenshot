@@ -74,3 +74,4 @@
 - Map place facts use current position and completed on-site activities as visit evidence, and saved social bookings as meeting markers; selected/recent places never count as visits.
 - EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.
 - discord-bot has its own deployment and scoped public SQL projections; its durable pending-before-send journal avoids blind duplicate sends without claiming transactional Discord delivery. Read discord-bot/AGENTS.md before changing it.
+- The 3D street (ville-3d, R3F, CC0 Kenney models in public/models) is presentation only: doors navigate to existing secured pages, never perform actions or record positions, so gameplay stays server-authoritative.
