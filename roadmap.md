@@ -1,6 +1,7 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## V4 — Véhicules, téléphone, métiers et ville (Prompts 16–19)
+- [ ] Documents 20–25 reçus : lire leurs priorités, conserver leurs demandes et intégrer les tranches indépendantes possibles après les accès et rencontres.
 - [ ] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
 - [ ] Afficher les horaires enregistrés des lieux et préciser l’accès aux espaces et rayons, sans inventer d’heures.
 - [ ] Ajouter des repères interactifs pour lieux disponibles, visites enregistrées et prochaines rencontres réservées ; ne pas déduire une visite d’une simple consultation.
