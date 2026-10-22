@@ -107,7 +107,7 @@ function MapMarker({ label, active, selected, onClick, icon: Icon = MapPin, even
     <circle r="20" className="marker-body" />
     <Icon x={-10} y={-10} width={20} height={20} className="marker-icon" />
     <rect x={-105} y={27} width={210} height={26} rx={4} className="marker-caption" />
-    <text textAnchor="middle" y={45} className="marker-label">{label}</text>
+    <title>{label}</title><text textAnchor="middle" y={45} className="marker-label">{label.length > 30 ? `${label.slice(0, 29)}…` : label}</text>
     {events > 0 && onEvents && <g role="button" tabIndex={0} aria-label={events > 1 ? `${events} événements : ${label}` : `Événement : ${label}`} data-testid="event-marker" className="event-badge" transform="translate(20,-22)" onClick={e => { e.stopPropagation(); onEvents(); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onEvents(); } }}>
       <circle r="16" className="event-badge-hit" /><circle r="12" className="event-badge-body" /><text textAnchor="middle" y={5} className="event-badge-label">{events > 1 ? events : "!"}</text>
     </g>}

@@ -70,3 +70,6 @@
 - JourneyProgress derives remaining game time and road hints only from saved trip deadlines/segments; elapsed time never confirms arrival. WorkSchedule keeps recorded running shifts across deadlines and uses only each activity's saved location, with no additional queries.
 - BuildingSpaces uses existing location_spaces and secured enter/leave operations; uncertain results lock actions until position reads succeed. Shop aisle exploration never claims a persisted entry.
 - EncounterHistory displays only deduplicated social_interactions from the existing social snapshot; it never persists or interprets temporary AI conversations as relationship events.
+- PlaceAccess parses existing opening text conservatively; closed spaces retain exit, secured operations remain authoritative, and unknown schedules never imply opening.
+- Map place facts use current position and completed on-site activities as visit evidence, and saved social bookings as meeting markers; selected/recent places never count as visits.
+- EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.

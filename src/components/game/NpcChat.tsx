@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { chatWithNpc } from "@/lib/npc-chat.functions";
 import { MAX_MESSAGE, MAX_TURNS, NPC_CHAT_STARTERS, type ChatTurn } from "@/game/npc-chat";
+import { EncounterSheet } from './EncounterSheet';
 
-export function NpcChat({ npcId, name, here }: { npcId: string; name: string; here: boolean }) {
-  return <NpcConversation key={npcId} npcId={npcId} name={name} here={here} />;
+export function NpcChat({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string }) {
+  return <NpcConversation key={npcId} npcId={npcId} name={name} here={here} locationName={locationName} />;
 }
 
-function NpcConversation({ npcId, name, here }: { npcId: string; name: string; here: boolean }) {
+function NpcConversation({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string }) {
   const [open, setOpen] = useState(false);
+  const [sheet, setSheet] = useState(false);
+  const [metAt, setMetAt] = useState<string>();
   const [text, setText] = useState("");
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const end = useRef<HTMLDivElement>(null);
@@ -28,16 +31,19 @@ function NpcConversation({ npcId, name, here }: { npcId: string; name: string; h
     const m = msg.trim();
     if (!here || !m || m.length > MAX_MESSAGE || pending.current || send.isPending || send.isError) return;
     pending.current = true;
+    if (!turns.length) setMetAt(locationName);
     const next = [...turns, { role: "user" as const, content: m }];
     setTurns(next); setText(""); send.mutate(next);
   };
-  if (!open) return <Button variant="outline" className="min-h-12 w-full justify-start" disabled={!here} onClick={() => setOpen(true)}><MessageSquare />{turns.length ? 'Reprendre la conversation' : 'Discuter'}</Button>;
+  const record = <>{sheet && <><EncounterSheet npcId={npcId} name={name} locationName={metAt ?? locationName} /><h5 className="text-sm font-semibold">Échanges IA de cette page</h5>{!turns.length && <p className="text-xs text-muted-foreground">Aucun message dans cette page.</p>}<ol className="max-h-64 space-y-2 overflow-y-auto" aria-label="Échanges IA temporaires">{turns.map((turn, i) => <li key={i} className="break-words text-sm"><strong>{turn.role === 'user' ? 'Vous' : name} : </strong>{turn.content}</li>)}</ol><p className="text-xs text-muted-foreground">Ces messages disparaissent en quittant la page ; ils ne constituent pas des actions enregistrées.</p></>}</>;
+  if (!open) return <div className="space-y-2"><Button variant="outline" className="min-h-12 w-full justify-start" disabled={!here} onClick={() => setOpen(true)}><MessageSquare />{turns.length ? 'Reprendre la conversation' : 'Discuter'}</Button><Button variant="ghost" className="min-h-12 w-full justify-start" aria-expanded={sheet} onClick={() => setSheet(!sheet)}><MessageSquare />Fiche de rencontre</Button>{record}</div>;
   return <div className="space-y-3 border-t border-border py-3" aria-label={`Conversation avec ${name}`}>
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><p className="min-w-0 break-words font-semibold">{name}</p><div className="flex shrink-0 gap-1">
-      <Button variant="ghost" size="icon" className="h-12 w-12" title="Recommencer la conversation" aria-label="Recommencer la conversation" disabled={send.isPending} onClick={() => { setTurns([]); setText(''); send.reset(); }}><RotateCcw /></Button>
+      <Button variant="ghost" size="icon" className="h-12 w-12" title="Recommencer la conversation" aria-label="Recommencer la conversation" disabled={send.isPending} onClick={() => { setTurns([]); setText(''); setMetAt(undefined); send.reset(); }}><RotateCcw /></Button>
       <Button variant="ghost" size="icon" className="h-12 w-12" title="Fermer la conversation" aria-label="Fermer la conversation" onClick={() => setOpen(false)}><X /></Button>
     </div></div>
     <p className="text-xs text-muted-foreground">Dialogue fictif · aucun effet sur le jeu · conservé uniquement tant que cette page reste ouverte.</p>
+    <Button variant="outline" className="min-h-12 w-full" aria-expanded={sheet} onClick={() => setSheet(!sheet)}><MessageSquare />Fiche de rencontre</Button>{record}
     {!here && <p role="status" className="text-sm text-muted-foreground">Rejoins {name} pour poursuivre l’échange.</p>}
     <div className="max-h-80 space-y-2 overflow-y-auto" role="log" aria-label="Messages" aria-live="polite">
       {turns.map((t, i) => <p key={i} className={`max-w-[90%] break-words rounded-2xl px-4 py-2.5 text-base shadow-card animate-rise ${t.role === "user" ? "ml-auto rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card border border-border"}`}>{t.role === "assistant" && <span className="block text-xs font-semibold">{name}</span>}{t.content}</p>)}
