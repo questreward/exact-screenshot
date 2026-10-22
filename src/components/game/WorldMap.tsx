@@ -41,6 +41,9 @@ import { Link } from "@tanstack/react-router";
 import { Search, DoorOpen } from "lucide-react";
 import { MAP_LAYERS, placeLayer, showPlace, eventEmoji, type MapLayer } from "@/game/map-layers";
 import { WorldEventFeed } from './WorldEventFeed';
+import { PlaceAccess } from './PlaceAccess';
+import { recordedPlaceFacts, placeAvailability } from '@/game/map-place-facts';
+import { gameHour } from '@/game/life';
 
 export function WorldMap({ initialCity, initialDistrict, initialLocation, initialFrance = false }: { initialCity?: string | undefined; initialDistrict?: string | undefined; initialLocation?: string | undefined; initialFrance?: boolean }) {
   const { data: cities } = useSuspenseQuery(citiesQuery);
@@ -173,18 +176,21 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   const evMap = markersByLocation(ev?.enabled ? ev.events : [], ev?.now);
   const { data: life } = useQuery(lifeQuery);
   const workId = life?.employment?.location?.id;
+  const facts = recordedPlaceFacts(life?.activities ?? [], positionId);
+  const factsAt = new Date(life?.world_now ?? '');
+  const hint = (l: Tables<'locations'>, available: boolean) => `${placeAvailability(l.opening_hours, available && l.accessible, factsAt)}${facts.visited.has(l.id) ? ' · Visite attestée' : ''}${facts.meetings.has(l.id) ? ' · Rencontre réservée' : ''}`;
   const toggle = (id: MapLayer) => setLayers(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const view = CITY_CENTER[city.id] ?? { at: FRANCE_VIEW.at, zoom: 12 };
   let markers: RealMarker[]; let center = view.at; let zoom = view.zoom;
-  const deco = (kind: string, id: string) => { if (id === workId && positionId !== id) return { emoji: "💼", important: true, work: true }; const p = placeLayer(kind); const event = evMap.get(id)?.[0]; return event && layers.has('evenements') ? { emoji: eventEmoji(event.title), important: true } : { emoji: p.emoji, important: !!p.important || positionId === id }; };
+  const deco = (kind: string, id: string) => { if (facts.meetings.has(id)) return { emoji: '📅', important: true }; if (id === workId && positionId !== id) return { emoji: "💼", important: true, work: true }; const p = placeLayer(kind); const event = evMap.get(id)?.[0]; return event && layers.has('evenements') ? { emoji: eventEmoji(event.title), important: true } : { emoji: facts.visited.has(id) ? '✓' : p.emoji, important: !!p.important || positionId === id }; };
   const show = (kind: string, id: string, keep: boolean) => keep || id === workId || showPlace(kind, layers, false) || (layers.has("evenements") && evMap.has(id));
   if (selected) {
     const locs = byDistrict.get(selected.id) ?? [];
     center = districtCenter(city.id, locs.map(l => l.kind)) ?? center; zoom = 15.3;
-    markers = locs.filter(l => show(l.kind, l.id, positionId === l.id || selectedLocation === l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, ...deco(l.kind, l.id), onClick: () => onLocation(l.id) }] : []; });
+    markers = locs.filter(l => show(l.kind, l.id, positionId === l.id || selectedLocation === l.id) || facts.meetings.has(l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: `${l.name} · ${hint(l, selected.available && city.available)}`, sub: r.real, active: positionId === l.id, selected: selectedLocation === l.id, ...deco(l.kind, l.id), onClick: () => onLocation(l.id) }] : []; });
   } else {
     // Tous les lieux (parcs, commerces, gare…) accessibles directement depuis la carte de la ville, filtrés par catégorie.
-    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).filter(l => show(l.kind, l.id, positionId === l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: l.name, sub: `${d.name} · ${r.real}`, active: positionId === l.id, ...deco(l.kind, l.id), onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
+    markers = districts.filter(d => d.available).flatMap(d => (byDistrict.get(d.id) ?? []).filter(l => show(l.kind, l.id, positionId === l.id) || facts.meetings.has(l.id)).flatMap(l => { const r = realPlace(city.id, l.kind, l.name); return r ? [{ id: l.id, at: r.at, label: `${l.name} · ${hint(l, d.available && city.available)}`, sub: `${d.name} · ${r.real}`, active: positionId === l.id, ...deco(l.kind, l.id), onClick: () => { onDistrict(d.id); onLocation(l.id); } }] : []; }));
   }
   const here = positionId ? districts.flatMap(d => byDistrict.get(d.id) ?? []).find(l => l.id === positionId) : undefined;
   const hereAt = here ? realPlace(city.id, here.kind, here.name)?.at : undefined;
@@ -207,10 +213,13 @@ function LocationMarkers({ district, positionId, selectedId, onSelect }: { distr
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
   const { data: ev } = useQuery(worldEventsQuery);
   const markers = markersByLocation(ev?.enabled ? ev.events : [], ev?.now);
+  const { data: life } = useQuery(lifeQuery);
+  const facts = recordedPlaceFacts(life?.activities ?? [], positionId);
   const openEvents = (id: string) => { onSelect(id); setTimeout(() => document.getElementById("evenements-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 400); };
   // The district detail projects persisted location coordinates into a local frame.
   return <g transform="translate(400,350)">{locations.map(l => {
-    return <g key={l.id} transform={`translate(${(Number(l.map_x)-Number(district.map_x))*22},${(Number(l.map_y)-Number(district.map_y))*22})`}><MapMarker label={l.name} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} events={markers.get(l.id)?.length ?? 0} onEvents={() => openEvents(l.id)} /></g>;
+    const label = `${l.name}${facts.meetings.has(l.id) ? ' · 📅 Rencontre réservée' : facts.visited.has(l.id) ? ' · ✓ Visite attestée' : ''} · ${placeAvailability(l.opening_hours, l.accessible && district.available, new Date(life?.world_now ?? ''))}`;
+    return <g key={l.id} transform={`translate(${(Number(l.map_x)-Number(district.map_x))*22},${(Number(l.map_y)-Number(district.map_y))*22})`}><MapMarker label={label} icon={locationType(l.kind).icon} active={positionId === l.id} selected={selectedId === l.id} onClick={() => onSelect(l.id)} events={markers.get(l.id)?.length ?? 0} onEvents={() => openEvents(l.id)} /></g>;
   })}</g>;
 }
 
@@ -250,7 +259,8 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
     </figure>
     <div className="space-y-4 py-4">
       <div><p className="mb-2 flex items-center gap-2 text-xs text-primary"><Icon className="h-4 w-4" /> {label}</p><div className="flex items-start justify-between gap-2"><h3 className="text-xl font-semibold">{l.name}</h3><button type="button" aria-label={fav ? "Retirer des favoris" : "Ajouter aux favoris"} onClick={() => setFav(toggleFavorite(saved))} className="min-h-11 min-w-11 rounded-full border border-border text-xl">{fav ? "⭐" : "☆"}</button></div><p className="mt-1 text-xs text-muted-foreground">{city.name} · {district.name}</p></div>
-      {open && <p className={`inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold ${open.open ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>{open.open ? "🟢 Ouvert" : `🔴 Fermé · ouvre ${open.opensAt?.startsWith("demain") ? open.opensAt : `à ${open.opensAt}`}`}</p>}
+      <PlaceAccess hours={l.opening_hours} state={open} accessible={l.accessible && district.available && city.available} here={here} />
+      <LocationMeetings locationId={l.id} />
       <p className="text-sm">{crowd.emoji} {crowd.label} <span className="text-xs text-muted-foreground">(estimation)</span></p>
       <p className="text-sm text-muted-foreground">{l.description}</p>
       {here && arrived && <div role="status" className="animate-rise rounded-xl border border-primary/50 bg-primary/10 p-4 text-center"><p className="text-lg font-bold">📍 Vous êtes arrivé.</p><p className="text-sm text-muted-foreground">{placeLayer(l.kind).emoji} {l.name}</p></div>}
@@ -272,12 +282,19 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       {here && l.kind === 'banque' && <FinancialAdviser />}
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
-      <BuildingSpaces spaces={spaces} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />
+      <BuildingSpaces spaces={spaces} here={here} closed={open?.open === false || !l.accessible || !district.available || !city.available} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />
       <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
-      <LocalPeople key={l.id} locationId={l.id} here={here} />
+      <LocalPeople key={l.id} locationId={l.id} locationName={l.name} here={here} />
       {here && <Suspense fallback={<p className="text-xs text-muted-foreground">Rencontres…</p>}><SocialContacts locationId={l.id}/></Suspense>}
     </div>
   </article>;
+}
+
+function LocationMeetings({ locationId }: { locationId: string }) {
+  const { data: life } = useQuery(lifeQuery);
+  const meetings = recordedPlaceFacts(life?.activities ?? []).meetings.get(locationId) ?? [];
+  if (!meetings.length) return null;
+  return <section className="space-y-2 border-l-2 border-primary pl-3" aria-label="Rencontres réservées ici"><h4 className="text-sm font-semibold">📅 Prochaines rencontres enregistrées</h4>{meetings.map(a => <div key={a.id} className="text-sm"><p>{a.title}</p><p className="text-xs text-muted-foreground">{new Date(a.start_time).toLocaleDateString('fr-FR', { timeZone: 'UTC' })} · {gameHour(a.start_time)} · {a.status === 'running' ? 'En cours' : 'Réservée'}</p></div>)}<Button asChild variant="outline" className="min-h-12"><Link to="/agenda">Mon agenda</Link></Button></section>;
 }
 
 function PlaceSearch({ districts, onPick }: { districts: Tables<"districts">[]; onPick: (district: string, location: string, go: boolean) => void }) {
