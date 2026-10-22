@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { canPreviewRoom, productConfiguration, resolveProductSlug, type ProductVisualDetails } from '@/game/product-visuals';
 import room from '@/assets/products/preview-room.jpg';
-const images = import.meta.glob<string>('/src/assets/products/*.png', { eager: true, query: '?url', import: 'default' });
-const photos = Object.fromEntries(Object.entries(images).map(([path, url]) => [path.split('/').pop()?.replace('.png', '') ?? '', url]));
+const images = import.meta.glob<string>('/src/assets/products/*.webp', { eager: true, query: '?url', import: 'default' });
+const photos = Object.fromEntries(Object.entries(images).map(([path, url]) => [path.split('/').pop()?.replace('.webp', '') ?? '', url]));
 export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails | undefined; fallback?: string | undefined; className?: string; animated?: boolean }) {
   const slug = resolveProductSlug(name, details, Object.keys(photos));
   const src = slug ? photos[slug] : fallback;
