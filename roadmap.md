@@ -192,8 +192,8 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [x] Ville 3D : rue explorable, portes vers les pages existantes
 - [ ] Serveur VPS en mode final (attente du contenu du Dockerfile)
 - [x] 3D étape 1 socle intérieurs + 2 supérette + 3 vêtements/meubles + 4 concession (halls) + 6 halls publics
-- [ ] 3D étape 5 logement explorable (disposition enregistrée), produits réels dans les rayons, véhicule possédé garé
-- [ ] 3D étape 7 ville vivante (plusieurs rues, météo, sons)
+- [x] 3D logement explorable (disposition enregistrée)
+- [ ] 3D véhicule possédé garé devant chez soi, véhicules de service
 - [x] Réglage manuel qualité rue 3D
-- [ ] Rayons 3D : vrais produits ajoutés au panier existant
-- [ ] Rues reliées + météo changeante + sons d'ambiance
+- [x] Rayons 3D : vrais produits ajoutés au panier existant
+- [x] Rues reliées + météo changeante + sons d'ambiance
