@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Caisse, téléphone et messages habitants
+- [ ] Relier les achats scannés puis confirmés au solde et aux possessions enregistrées, sans paiement au simple scan ni double débit.
+- [ ] Ajouter dans le téléphone l’historique des achats avec articles, montants et lieux enregistrés.
+- [ ] Permettre d’écrire à un habitant avec réponse de notre IA fondée sur son identité et le lieu de rencontre existants.
+- [ ] Tester les achats, reprises, historique et contexte des conversations ; essai connecté et IA VPS selon disponibilité.
+
 ## V4 — Population et commerces (Prompts 10–11)
 - [x] Prompt 10, première tranche : audit des routines P2 et présences locales ; habitants dédoublonnés, apparence enregistrée et connaissances dans la carte, erreur réessayable. Contacts et téléphone ne déclarent plus de garde, humeur, retour chez soi ou rencontre physique déduits du métier.
 - [x] Prompt 11, première tranche : caisse illustrée réutilisable, scan manuel de chaque article, total progressif et retour au panier ; caisse rapide maintenue, aucune opération pendant le scan, confirmation/paiements/tickets existants inchangés.
