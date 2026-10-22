@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, type ThreeElements } from "@react-three/fiber";
 import { Environment, Lightformer, useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -49,9 +49,9 @@ function Ground() {
   );
 }
 
-function Model({ url, ...props }: { url: string } & JSX.IntrinsicElements["group"]) {
+function Model({ url, ...props }: { url: string } & ThreeElements["group"]) {
   const { scene } = useGLTF(url);
-  const obj = useMemo(() => { const c = scene.clone(true); c.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return c; }, [scene]);
+  const obj = useMemo(() => { const c = scene.clone(true); c.traverse((o: THREE.Object3D) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return c; }, [scene]);
   return <primitive object={obj} {...props} />;
 }
 
