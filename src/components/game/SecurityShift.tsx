@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { securityDay } from "@/game/security-day";
 import { daylight } from "@/game/daylight";
 import { useWorldClock } from "./WorldClock";
+import { WorkBackdrop } from "./WorkBackdrop";
 
 const hm = (d: Date) => d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
@@ -23,11 +24,13 @@ export function ShiftPrep({ service, start }: { service: string; start: (ready: 
   const { time } = useWorldClock();
   const light = daylight(time.getUTCHours());
   return <div className="space-y-3">
+    <WorkBackdrop job={service} title={d.base} />
     <div className="rounded-xl bg-muted p-3 text-sm">
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {d.base}</p>
-      <p>👥 {d.team} · {d.emoji} {d.vehicle}</p>
+      <p>{d.emoji} Consignes du service</p>
     </div>
-    <Checklist items={d.prep} cta="">{start}</Checklist>
+    <ul className="space-y-2 text-sm">{d.prep.map(([emoji, label]) => <li key={label}>{emoji} {label}</li>)}</ul>
+    {start(true)}
   </div>;
 }
 
@@ -35,33 +38,18 @@ export function ShiftPrep({ service, start }: { service: string; start: (ready: 
 export function ShiftLive({ service, startsAt, endsAt, decided, children }: { service: string; startsAt: string; endsAt: string; decided: boolean; children: ReactNode }) {
   const d = securityDay(service);
   const { time } = useWorldClock();
-  const [step, setStep] = useState(0);
-  const s = Date.parse(startsAt), e = Date.parse(endsAt), now = time.getTime();
-  const times = d.rhythm.map((label, i) => ({ label, at: new Date(s + (e - s) * (i / (d.rhythm.length - 1))) }));
-  const cur = [...times].reverse().find(t => t.at.getTime() <= now) ?? times[0]!;
-  const [gone, setGone] = useState(false);
-  const onSite = step >= d.act.length;
   return <div className="space-y-3">
-    <ol className="flex gap-1 overflow-x-auto pb-1">{times.map(t => <li key={t.label} className={`shrink-0 rounded-lg px-2 py-1 text-xs ${t === cur ? "bg-primary text-primary-foreground font-semibold" : t.at.getTime() < now ? "bg-muted text-muted-foreground" : "border border-border"}`}>{hm(t.at)} {t.label}</li>)}</ol>
-    {!decided && <p className="animate-pulse rounded-lg bg-destructive/15 p-3 text-center font-display font-bold">{d.alert}</p>}
-    {!decided && d.depart && !gone ? <div className="space-y-2"><p className="text-sm font-semibold">{d.emoji} Départ</p><Checklist items={d.depart} cta="Arrivée sur place" onDone={() => setGone(true)} /></div> :
-    decided || onSite ? children : <div className="space-y-2">
-      <div className="flex gap-1">{d.act.map((a, i) => <span key={a} className={`h-2 flex-1 rounded-full ${i < step ? "bg-primary" : "bg-muted"}`} />)}</div>
-      <p className="text-sm text-muted-foreground">Étape {step + 1}/{d.act.length}</p>
-      <Button className="min-h-14 w-full text-base" onClick={() => setStep(x => x + 1)}>{d.act[step]}</Button>
-      <p className="text-xs text-muted-foreground">Ensuite, tu choisis comment agir. Le résultat suit les règles du service.</p>
-    </div>}
+    <WorkBackdrop job={service} title={d.base} />
+    <dl className="grid grid-cols-2 gap-3 border-y border-border py-3 text-sm"><dt>Prise de service</dt><dd>{hm(new Date(startsAt))}</dd><dt>Heure du jeu</dt><dd>{hm(time)}</dd><dt>Relève prévue</dt><dd>{hm(new Date(endsAt))}</dd><dt>Dossier</dt><dd>{decided ? 'Décision enregistrée' : 'Décision attendue'}</dd></dl>
+    {!decided && <p className="border-l-2 border-primary pl-3 font-semibold">{d.alert}</p>}
+    {children}
   </div>;
 }
 
 /** After the decision: return to base steps (presentation only). */
 export function ReturnToBase({ service }: { service: string }) {
   const d = securityDay(service);
-  const [ok, setOk] = useState(false);
-  const [report, setReport] = useState(false);
-  if (d.report && ok && !report) return <ReportDraft service={service} onDone={() => setReport(true)} />;
-  if (ok) return <p className="rounded-lg bg-success/15 p-3 text-sm">✅ De retour : {d.base.toLowerCase()}. Prêt pour la suite du service.</p>;
-  return <div className="space-y-2"><p className="text-sm font-semibold">Retour : {d.base}</p><Checklist items={d.back} cta="Retour au planning" onDone={() => setOk(true)} /></div>;
+  return <div className="space-y-3 border-t border-border pt-3"><p className="text-sm">Votre décision est conservée dans le dossier du service. Le bilan sera confirmé à la relève.</p><Button asChild variant="outline" className="min-h-12 w-full"><Link to="/agenda">Consulter mon planning</Link></Button><p className="text-xs text-muted-foreground">{d.base} · aucun retour ni trajet ajouté au dossier.</p></div>;
 }
 
 /** End of shift summary for the last settled shift. */

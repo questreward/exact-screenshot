@@ -60,3 +60,4 @@
 
 - Smartphone loaders select existing query dependencies by application and lazy-load app views; persistent conversation IDs live in route search while server messages remain authoritative, avoiding eager unrelated fetches and duplicate communication storage.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
+- Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.
