@@ -1,5 +1,8 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Prompt 7 reçu pendant le Prompt 6
+- [ ] Lire le document et poursuivre ses améliorations après les contrôles du monde vivant, sans abandonner le chantier en cours.
+
 ## V4 — Monde vivant (Prompt 6)
 - [ ] Remplacer les scènes d’incidents fictives de l’accueil par les événements enregistrés.
 - [ ] Partager identité, statut et conséquences des événements entre accueil, carte, téléphone et météo sans nouveau moteur.
