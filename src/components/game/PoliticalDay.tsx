@@ -7,7 +7,7 @@ import { localPoliticalEvents, politicalAppointments } from '@/game/political-da
 
 const when = (at: string) => new Date(at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
 
-export function PoliticalDay({ politics, elections }: { politics: PoliticalState; elections?: ElectionState }) {
+export function PoliticalDay({ politics, elections }: { politics: PoliticalState; elections?: ElectionState | undefined }) {
   const appointments = politicalAppointments(politics, elections);
   const events = localPoliticalEvents(politics).slice(0, 3);
   const mine = elections?.elections.find(e => e.status !== 'completed' && e.candidates.some(c => c.mine && c.status === 'validated'));

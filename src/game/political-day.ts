@@ -2,7 +2,7 @@ import type { PoliticalState } from './politics';
 import type { ElectionState } from './elections';
 import type { LifeLocation } from './life-state';
 
-export type PoliticalAppointment = { id: string; title: string; start: string; end: string; status: string; location?: LifeLocation; organizationId?: string; electionId?: string };
+export type PoliticalAppointment = { id: string; title: string; start: string; end: string; status: string; location?: LifeLocation | undefined; organizationId?: string | undefined; electionId?: string | undefined };
 
 /** Recorded appointments only: no attendance, inferred completion or new agenda. */
 export function politicalAppointments(p: PoliticalState, e?: ElectionState): PoliticalAppointment[] {
