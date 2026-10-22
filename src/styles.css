@@ -401,3 +401,26 @@
  .phone-status { padding: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .phone-app-content { animation: none; } .phone-app-launch { transition: none; } }
+
+/* V4 arrival scene: camera, street life, weather, HUD toasts */
+@keyframes world-cam { from { transform: scale(1.18) translateX(0); } 12% { transform: scale(1.06) translateX(0); } to { transform: scale(1.1) translateX(-2.5%); } }
+@keyframes world-drive { from { transform: translateX(-12vw); } to { transform: translateX(110vw); } }
+@keyframes world-walk { from { transform: translateX(-5vw); } to { transform: translateX(105vw); } }
+@keyframes world-step { 50% { margin-bottom: 3px; } }
+@keyframes world-fall { to { background-position: -40px 400px; } }
+@keyframes world-title { 0% { opacity: 0; letter-spacing: .2em; } 20%, 75% { opacity: 1; letter-spacing: .02em; } 100% { opacity: 0; } }
+@keyframes world-player { from { opacity: 0; transform: translate(-50%, 24px) scale(.95); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+.world-camera { animation: world-cam 40s ease-out forwards; transition: filter 1s; }
+.world-car { position: absolute; left: 0; width: 46px; height: 16px; border-radius: 8px 12px 4px 4px; background: color-mix(in oklab, var(--foreground) 70%, transparent); animation: world-drive linear infinite; }
+.world-car[data-night]::after { content: ""; position: absolute; right: -14px; top: 5px; width: 18px; height: 6px; border-radius: 50%; background: color-mix(in oklab, var(--primary-glow) 80%, transparent); filter: blur(3px); }
+.world-walker { position: absolute; bottom: 0; width: 8px; height: 26px; border-radius: 4px 4px 2px 2px; background: color-mix(in oklab, var(--foreground) 65%, transparent); animation: world-walk linear infinite, world-step .6s ease-in-out infinite; }
+.world-walker::before { content: ""; position: absolute; top: -9px; left: 0; width: 8px; height: 8px; border-radius: 50%; background: inherit; }
+.world-walker[data-rain]::after { content: ""; position: absolute; top: -16px; left: -6px; width: 20px; height: 8px; border-radius: 10px 10px 0 0; background: color-mix(in oklab, var(--primary) 70%, transparent); }
+.world-windows { background-image: radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 55%, transparent) 1.5px, transparent 2.5px); background-size: 38px 31px; mask-image: linear-gradient(to bottom, transparent 8%, black 30%, black 60%, transparent 75%); opacity: .55; }
+.world-rain { background-image: linear-gradient(105deg, transparent 48%, color-mix(in oklab, var(--foreground) 35%, transparent) 50%, transparent 52%); background-size: 22px 60px; animation: world-fall .5s linear infinite; }
+.world-snow { background-image: radial-gradient(circle, color-mix(in oklab, var(--foreground) 80%, transparent) 1.5px, transparent 2.5px); background-size: 40px 40px; animation: world-fall 6s linear infinite; }
+.world-title { animation: world-title 2.6s ease-out forwards; }
+.world-player { animation: world-player .9s ease-out both .4s; }
+.world-toast { opacity: 0; transform: translateY(-12px); pointer-events: none; transition: opacity .35s, transform .35s; }
+.world-toast[data-show] { opacity: 1; transform: none; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .world-camera, .world-car, .world-walker, .world-rain, .world-snow, .world-player { animation: none; } }

@@ -1,9 +1,9 @@
 import { GameContext } from "./GameContext";
 import { PageIntro } from "@/components/game/PageIntro";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, LayoutGrid, ArrowLeft, Search, Home, User, Building2, Sparkles } from "lucide-react";
+import { LogOut, LayoutGrid, Menu, ArrowLeft, Search, Home, User, Building2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -108,19 +108,30 @@ export function GameShell() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const tel = SECTIONS.find((s) => s.id === "telephone");
   const carte = SECTIONS.find((s) => s.id === "carte");
+  const [deskMenu, setDeskMenu] = useState(false);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.key === "m" || e.key === "M") setDeskMenu((o) => !o);
+    };
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const currentTitle = SECTIONS.find(s => s.id === path.split("/")[1])?.label ?? "Votre journée";
   return (
-    <div className="min-h-dvh lg:pl-64">
-      {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar p-4 lg:flex">
-        <Link to="/tableau-de-bord" className="mb-8 px-2 pt-2"><Logo size={30} /></Link>
-        <nav className="-mx-1 flex flex-1 flex-col gap-1 overflow-y-auto px-1">
-          <GroupedMenu />
-        </nav>
-        <Button variant="ghost" onClick={signOut} className="h-11 justify-start gap-3 rounded-xl px-3 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
-          <LogOut className="h-5 w-5" /> Se déconnecter
-        </Button>
-      </aside>
+    <div className="min-h-dvh">
+      {/* Desktop: menu hidden by default, opened with the button or the M key */}
+      <Button type="button" variant="ghost" onClick={() => setDeskMenu(true)} aria-label="Ouvrir le menu (touche M)" title="Menu (M)"
+        className="glass fixed left-4 top-4 z-40 hidden h-12 w-12 rounded-full shadow-card lg:flex"><Menu className="h-5 w-5" /></Button>
+      <Sheet open={deskMenu} onOpenChange={setDeskMenu}>
+        <SheetContent side="left" aria-describedby={undefined} className="flex w-72 flex-col bg-sidebar/90 p-4 backdrop-blur-xl">
+          <SheetHeader><SheetTitle className="sr-only">Menu</SheetTitle><Link to="/tableau-de-bord" onClick={() => setDeskMenu(false)} className="px-2 pt-2"><Logo size={30} /></Link></SheetHeader>
+          <nav className="-mx-1 mt-4 flex flex-1 flex-col gap-1 overflow-y-auto px-1"><GroupedMenu onPick={() => setDeskMenu(false)} /></nav>
+          <Button variant="ghost" onClick={signOut} className="h-11 justify-start gap-3 rounded-xl px-3 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
+            <LogOut className="h-5 w-5" /> Se déconnecter
+          </Button>
+        </SheetContent>
+      </Sheet>
 
       {/* Mobile top bar */}
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border glass px-4 py-2 lg:hidden">
@@ -130,11 +141,11 @@ export function GameShell() {
         </Button>
       </header>
 
-      <main className="game-content mx-auto min-w-0 max-w-6xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">
+      <main className="game-content mx-auto min-w-0 max-w-6xl px-4 pt-6 sm:px-6 lg:px-20 lg:pt-10">
         <GameSpeed />
         <GameContext />
         <BirthdayBanner />
-        <div key={path} className="animate-page"><PageIntro path={path} /><Outlet /></div>
+        <div key={path} className="animate-page">{path !== "/tableau-de-bord" && <PageIntro path={path} />}<Outlet /></div>
         <SalaryMoment />
       </main>
 

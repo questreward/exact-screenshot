@@ -5,7 +5,7 @@ import { ElectionBanner } from "@/components/game/CampaignJourney";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
-import { GameHome } from "@/components/game/GameHome";
+import { WorldScene } from "@/components/game/WorldScene";
 import { bankQuery, characterQuery, notificationsQuery, worldQuery } from "@/services/game";
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
@@ -19,7 +19,7 @@ import { DiscoveryTour } from "@/components/game/DiscoveryTour";
 import { notificationTarget } from "@/game/next-step";
 
 export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
-  head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
+  head: () => ({ meta: gameMeta("Dans la ville", "Votre personnage dans sa ville, en temps réel dans CIVITAS.") }),
   loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
     q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
     q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
@@ -35,8 +35,10 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <GameHome firstName={character.first_name} cityName={character.city?.name} appearance={character.appearance}
-        energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
+      <WorldScene firstName={character.first_name} cityName={character.city?.name} cityId={character.city_id} appearance={character.appearance}
+        energy={character.energy} balance={bank?.balance ?? 0} />
+
+      <h2 className="pt-2 font-display text-lg font-bold">Ma journée</h2>
 
       <DiscoveryTour firstName={character.first_name} cityName={character.city?.name} />
 
