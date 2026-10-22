@@ -55,12 +55,12 @@ function Model({ url, ...props }: { url: string } & ThreeElements["group"]) {
   return <primitive object={obj} {...props} />;
 }
 
-function Lamp({ x, z, on }: { x: number; z: number; on: boolean }) {
+function Lamp({ x, z, on, light = true }: { x: number; z: number; on: boolean; light?: boolean }) {
   return (
     <group position={[x, 0, z]}>
       <mesh position-y={1.8} castShadow><cylinderGeometry args={[0.06, 0.08, 3.6, 8]} /><meshStandardMaterial color="#2b2f36" metalness={0.6} roughness={0.4} /></mesh>
       <mesh position-y={3.65}><sphereGeometry args={[0.22, 12, 12]} /><meshStandardMaterial color="#fff3c4" emissive="#ffcf70" emissiveIntensity={on ? 3 : 0.1} /></mesh>
-      {on && <pointLight position={[0, 3.4, 0]} intensity={6} distance={9} color="#ffd38a" />}
+      {on && light && <pointLight position={[0, 3.4, 0]} intensity={6} distance={9} color="#ffd38a" />}
     </group>
   );
 }
@@ -189,7 +189,7 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd }: { phase:
       <Suspense fallback={null}>
         {BUILDINGS.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
         {[-28, 28].map((z) => [-2.5, 2.5].map((x) => <Model key={`t${z}${x}`} url="/models/city-kit-suburban/tree-large.glb" position={[x * 2, 0, z]} scale={4} />))}
-        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} light={!low} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} light={!low && (x === -6 || x === 6)} />])}
+        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} light={!low && (x === -18 || x === 18)} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} light={!low && (x === -6 || x === 6)} />])}
         {CARS.slice(0, cars).map((url, i) => {
           const axis = i % 3 === 2 ? "z" : "x"; const fwd = i % 2 === 0;
           return <Car key={i} url={url} axis={axis} lane={fwd ? 2 : -2} speed={(fwd ? 1 : -1) * (6 + i)} start={-25 + i * 11} playerRef={playerRef} night={look.lamps && !low} />;
