@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Bâtiments et société (Prompts 14–15)
+- [x] Auditer les lieux, intérieurs, pièces, présences et relations existants ; conserver les systèmes sécurisés.
+- [x] Première tranche lieux : espaces enregistrés, pièce actuelle, entrée/sortie et reprise verrouillée après réponse incertaine ; rayons tactiles sur téléphone et exploration distincte d’une entrée physique. Aucun nouveau bâtiment ou droit créé.
+- [x] Première tranche société : chronologie datée des interactions enregistrées par identité dans les contacts, ordre récent et dédoublonnage ; dialogues IA temporaires inchangés, aucune nouvelle mémoire.
+- [x] 550 tests sur 142 fichiers réussis ; compilation automatique OK. Espaces et rencontres isolés vérifiés à 390×844 et 1280×1800, sans débordement ; ce n’est pas une entrée connectée ni une rencontre réelle.
+- [ ] Essai avec personnage et installation VPS : --self échoué, aucun compte correspondant à l’utilisateur dans l’aperçu ; parcours connecté non vérifié.
+- [ ] Extensions enregistrées : portes/droits, stocks/logistique, routines réactives, budgets PNJ et mémoire importante ; contrat et SQL exact à soumettre avant installation. Les documents complets ne sont pas déclarés terminés.
+
 ## V4 — Déplacements et métiers (Prompts 12–13)
 - [x] Auditer les véhicules, trajets, missions et journées existants ; aucune seconde simulation, achat, récompense ni destination inventée.
 - [x] Première tranche : suivi commun des trajets locaux/interurbains (temps du jeu restant, tronçon et prochain radar enregistrés), arrivée locale conditionnée au statut confirmé. Planning professionnel du téléphone : services réservés/en cours, lieux enregistrés, reprise et dernier service terminé ; service de la veille conservé après sa relève prévue.

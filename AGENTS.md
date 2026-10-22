@@ -68,3 +68,5 @@
 - CheckoutScanner is presentation-only over frozen cart estimates; scanning never calls purchases, and explicit confirmation retains existing per-item retry keys and recorded receipts.
 - Checkout completion invalidates shared wallet, assets and furnishing reads even after uncertainty; purchase locations are transaction-time position snapshots, never URL labels or reconstructed historical locations.
 - JourneyProgress derives remaining game time and road hints only from saved trip deadlines/segments; elapsed time never confirms arrival. WorkSchedule keeps recorded running shifts across deadlines and uses only each activity's saved location, with no additional queries.
+- BuildingSpaces uses existing location_spaces and secured enter/leave operations; uncertain results lock actions until position reads succeed. Shop aisle exploration never claims a persisted entry.
+- EncounterHistory displays only deduplicated social_interactions from the existing social snapshot; it never persists or interprets temporary AI conversations as relationship events.

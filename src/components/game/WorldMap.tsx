@@ -11,6 +11,7 @@ import { BankTerminal } from './BankTerminal';
 import { FinancialAdviser } from './FinancialAdviser';
 import { ShopInterior } from "./ShopInterior";
 import { LocalPeople } from './LocalPeople';
+import { BuildingSpaces } from './BuildingSpaces';
 import { SHOP_SECTION } from "@/game/real-places";
 
 import { BonhommeG } from "./Bonhomme";
@@ -18,7 +19,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ArrowLeft, LocateFixed, MapPin, Minus, Plus, Lock, Footprints, LoaderCircle, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery, enterLocationSpace, leaveLocationSpace } from "@/services/game";
+import { citiesQuery, districtsQuery, locationsQuery, positionQuery, spacesQuery, moveCharacter, worldEventsQuery } from "@/services/game";
 import { locationType, movementAllowed } from "@/game/world";
 import type { Tables } from "@/integrations/supabase/types";
 import { WorldClock, useWorldClock } from "./WorldClock";
@@ -271,20 +272,12 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       {here && l.kind === 'banque' && <FinancialAdviser />}
       <Button className="w-full" disabled={!allowed || here || move.isPending} onClick={() => move.mutate()}>{move.isPending ? <LoaderCircle className="animate-spin" /> : here ? <Check /> : <Footprints />}{move.isPending ? "Déplacement…" : here ? "Vous êtes ici" : "Se déplacer ici"}</Button>
       {p?.city_id !== city.id && <p className="text-xs text-muted-foreground">Pour venir ici, prenez le train à la Gare centrale ou le car à la Station de transport de votre ville.</p>}
-      {spaces.map(s => <SpaceRow key={s.id} space={s} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />)}
+      <BuildingSpaces spaces={spaces} here={here} currentSpace={(p as { space_id?: string | null } | null)?.space_id ?? null} />
       <Suspense fallback={<p className="text-xs text-muted-foreground">Activités…</p>}><DailyActions locationId={l.id} selectedLocation={l} />{["gare","station"].includes(l.kind) && <TransportControl location={l} />}</Suspense>
       <LocalPeople key={l.id} locationId={l.id} here={here} />
       {here && <Suspense fallback={<p className="text-xs text-muted-foreground">Rencontres…</p>}><SocialContacts locationId={l.id}/></Suspense>}
     </div>
   </article>;
-}
-
-function SpaceRow({ space: s, here, currentSpace }: { space: Tables<"location_spaces">; here: boolean; currentSpace: string | null }) {
-  const q = useQueryClient();
-  const inside = currentSpace === s.id;
-  const act = useMutation({ mutationFn: () => inside ? leaveLocationSpace() : enterLocationSpace(s.id), onSuccess: async () => { await q.invalidateQueries({ queryKey: ["position"] }); toast.success(inside ? `Vous êtes sorti : ${s.name}` : `Vous êtes entré : ${s.name}`); }, onError: (e: Error) => toast.error(e.message) });
-  if (!s.accessible) return <div className="flex gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><Lock className="h-4 w-4 shrink-0" /><span>{s.name}<br />Disponible dans une prochaine étape</span></div>;
-  return <div className="flex items-center justify-between gap-3 border-t border-border pt-3"><span className="text-sm">{s.name}{inside && <span className="block text-xs text-primary">Vous êtes à l’intérieur</span>}</span><Button variant={inside ? "secondary" : "outline"} className="h-11 shrink-0" disabled={!here || act.isPending} onClick={() => act.mutate()}>{inside ? "Sortir" : "Entrer"}</Button></div>;
 }
 
 function PlaceSearch({ districts, onPick }: { districts: Tables<"districts">[]; onPick: (district: string, location: string, go: boolean) => void }) {
