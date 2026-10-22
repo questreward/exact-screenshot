@@ -27,6 +27,7 @@ describe("confirmation en caisse", () => {
     expect(state.buy).toHaveBeenCalledTimes(1);
     finish?.({ reference: "CIV-PAID" });
     await waitFor(() => expect(done).toHaveBeenCalledWith(["lit"]));
+    await waitFor(() => expect(qc.getQueryData<{ orders: { price: number }[] }>(["shop", "state"])?.orders[0]?.price).toBe(37));
     expect(qc.getQueryData<Record<string, string>>(["shop-cart-requests"])?.["lit"]).toEqual(state.buy.mock.calls[0]?.[1]);
   });
 });

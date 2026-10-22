@@ -16,6 +16,7 @@ import { filterHousing } from "@/game/housing-visuals";
 import { ShopHall, AisleHeader, IMG as AISLE_IMG } from "@/components/game/ShopAisles";
 import { ShopCart } from "@/components/game/ShopCart";
 import { ShopReceipt, type ShopOrder } from "@/components/game/ShopReceipt";
+import { ShopComparison } from "@/components/game/ShopComparison";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -44,9 +45,11 @@ function ShopPage() {
   const [housingRooms, setHousingRooms] = useState("");
   const [page, setPage] = useState(0);
   const [showSearch, setShowSearch] = useState(!!entry.q);
+  const [comparison, setComparison] = useState<ShopProduct[]>([]);
+  const compare = (p: ShopProduct) => setComparison(previous => previous.some(x => x.id === p.id) ? previous.filter(x => x.id !== p.id) : [...previous.slice(-1), p]);
   const pageSize = 24;
   useEffect(() => { setPage(0); }, [search, section, brand, max, sort, housingCity, housingRooms]);
-  const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s });
+  const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s && !!(section || search || showSearch) });
   const [sell, setSell] = useState<ShopAsset | null>(null);
   const [used, setUsed] = useState<SecondhandListing | null>(null);
   const [receipt, setReceipt] = useState<ShopOrder | null>(null);
@@ -135,6 +138,7 @@ function ShopPage() {
           </details>
         </>}
         {(section || search || showSearch) && <>
+        {comparison.length > 0 && <ShopComparison products={comparison} price={cashPrice} onRemove={id => setComparison(previous => previous.filter(p => p.id !== id))} />}
         {section === "immobilier" && <div className="grid grid-cols-2 gap-2">
           <GameSelect className={select} aria-label="Ville du logement" value={housingCity} onChange={e => setHousingCity(e.target.value)}><option value="">Toutes les villes</option>{housingCities.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}</GameSelect>
           <GameSelect className={select} aria-label="Nombre de pièces" value={housingRooms} onChange={e => setHousingRooms(e.target.value)}><option value="">Toutes les pièces</option>{roomCounts.map(r => <option key={r} value={r}>{r} pièce{r > 1 ? "s" : ""}</option>)}</GameSelect>
@@ -143,7 +147,7 @@ function ShopPage() {
         {count === 0 && !catalog.isFetching && <p className="py-6 text-sm text-muted-foreground">Aucun produit ne correspond à ces critères.</p>}
         <p className="text-xs text-muted-foreground" aria-live="polite">{catalog.isFetching ? 'Chargement…' : `${count.toLocaleString('fr-FR')} produit${count > 1 ? 's' : ''}${catalog.data ? ` sur ${catalog.data.catalog_total.toLocaleString('fr-FR')}` : ''}`}</p>
         <ul className="grid gap-3 sm:grid-cols-2">{visible.map(p => <ProductCard key={p.id} p={p} s={s} pct={promo.get(p.id) ?? 0} wished={wished.has(p.id)} isGoal={!!wished.get(p.id)}
-          busy={wish.isPending} onBuy={() => addOrConfirm(p)} inCart={cart.some(c => c.id === p.id)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} />)}</ul>
+          busy={wish.isPending} onBuy={() => addOrConfirm(p)} inCart={cart.some(c => c.id === p.id)} onVisit={() => setVisit(p)} onWish={cmd => wish.mutate({ cmd, p })} onCompare={() => compare(p)} compared={comparison.some(x => x.id === p.id)} />)}</ul>
         {count > pageSize && <nav aria-label="Pages du catalogue" className="flex items-center justify-between gap-3">
           <Button variant="outline" className="h-12 w-12" aria-label="Page précédente" disabled={currentPage === 0 || catalog.isFetching} onClick={() => setPage(currentPage - 1)}><ChevronLeft /></Button>
           <span className="text-sm" aria-live="polite">{currentPage + 1} / {lastPage + 1}</span>
@@ -312,7 +316,7 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
   </Dialog>;
 }
 
-function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, inCart }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; inCart: boolean; onBuy: () => void; onVisit: () => void; onWish: (cmd: "wish" | "goal") => void }) {
+function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, inCart, onCompare, compared }: { p: ShopProduct; s: ShopState; pct: number; wished: boolean; isGoal: boolean; busy: boolean; inCart: boolean; onBuy: () => void; onVisit: () => void; onWish: (cmd: "wish" | "goal") => void; onCompare?: () => void; compared?: boolean }) {
   const creditable = p.kind === "vehicle" || !!p.details.realestate;
   const price = storePrice(p.price, pct);
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
@@ -327,6 +331,7 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
       {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}{pct < 0 && <span className="rounded-full bg-accent px-2 py-1 text-xs font-semibold">📈 Très demandé +{-pct} %</span>}</div>
     <h3 className="break-words font-display text-lg font-bold">{p.name}</h3>
     <p className="mt-1 flex-1 text-sm text-muted-foreground">{p.desc}</p>
+    {onCompare && ["tech", "auto", "maison", "electromenager"].includes(p.section) && <Button variant={compared ? "secondary" : "ghost"} className="min-h-12" aria-pressed={!!compared} onClick={onCompare}>{compared ? "Dans ma comparaison" : "Comparer"}</Button>}
     {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
     {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
     {p.details.realestate && <Button variant="outline" className="mt-3 min-h-11" onClick={onVisit}>Visiter</Button>}
