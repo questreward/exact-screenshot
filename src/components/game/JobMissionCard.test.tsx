@@ -58,6 +58,14 @@ describe('intervention existante', () => {
     await waitFor(() => expect(read).toHaveBeenCalled());
     expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-22', 1, 0);
     expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { status: 'active', step_index: 1 } });
-    expect(screen.getByText('Décision non confirmée')).toBeInTheDocument();
+    await waitFor(() => expect(client.getQueryState(['job-missions', 'daily'])?.status).toBe('error'));
+    expect(screen.queryByRole('button', { name: 'Observer le lieu' })).not.toBeInTheDocument();
+    read.mockResolvedValue({ mission });
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await screen.findByRole('button', { name: 'Observer le lieu' });
+    expect(screen.getByRole('button', { name: 'Observer le lieu' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Observer le lieu' })).toBeEnabled());
+    expect(choose).toHaveBeenCalledTimes(1);
   });
 });
