@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { lifeQuery, startLifeActivity, formatMoney } from "@/services/game";
-import { workProfile, workTimeline, workMood, remaining, workLevel, shiftHighlights } from "@/game/workday";
+import { workProfile, remaining } from "@/game/workday";
 import { daylight } from "@/game/daylight";
 import { useLifeMutation } from "./LifeControls";
 import { useWorldClock } from "./WorldClock";
-import { ShiftVisitors, readVisitorResults } from "./ShiftVisitors";
-import { satisfactionLabel } from "@/game/client-dialogue";
+import { currentWork } from "@/game/work-experience";
+import { WorkBackdrop } from "./WorkBackdrop";
 
 const hm = (d: Date) => d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
@@ -17,45 +17,36 @@ export function WorkDay() {
   const { data: life } = useQuery(lifeQuery);
   const { time } = useWorldClock();
   const action = useLifeMutation(startLifeActivity, "Service commencé");
-  const [phase, setPhase] = useState<"intro" | "prep">("intro");
-  const [done, setDone] = useState<string[]>([]);
-  const [ack, setAck] = useState<string | null>(null);
+  const qc = useQueryClient();
+  const [preparation, setPreparation] = useState(false);
+  const [ack, setAck] = useState<string | null>(() => qc.getQueryData<string>(["work-summary-ack"]) ?? null);
   const day = time.toISOString().slice(0, 10);
-  useEffect(() => { setAck(localStorage.getItem("civitas-workday-ack")); }, []);
   if (!life?.employment) return null;
   const job = life.employment.job;
   const p = workProfile(job.title);
   const light = daylight(time.getUTCHours());
-  const works = life.activities.filter(a => a.type === "work" && a.start_time.slice(0, 10) === day);
-  const running = works.find(a => a.status === "running");
-  const finished = works.filter(a => a.status === "completed").sort((a, b) => b.end_time.localeCompare(a.end_time))[0];
-  const level = workLevel(life.activities.filter(a => a.type === "work" && a.status === "completed").length);
-  const planned = works.find(a => a.status === "planned");
+  const { running, finished, planned } = currentWork(life.activities, day);
+  const acknowledge = () => { if (finished) { setAck(finished.id); qc.setQueryData(["work-summary-ack"], finished.id); } };
   const here = life.position.location_id === life.employment.location.id;
   const rule = life.rules.find(r => r.id === "work");
   const busy = life.activities.some(a => a.status === "running");
 
   if (running) {
-    const steps = workTimeline(running.start_time, running.end_time);
     const now = time.getTime();
-    const cur = [...steps].reverse().find(s => s.at.getTime() <= now) ?? steps[0];
-    if (!cur) return null;
     return <section className="experience-section">
+      <WorkBackdrop job={job.title} title={life.employment.location.name} />
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {life.employment.location.name}</p>
-      <h2 className="font-heading text-lg font-bold">En service : {cur.label}</h2>
-      <p className="text-xs">{level.emoji} {level.label}</p>
+      <h2 className="font-heading text-xl font-bold">En service · {job.title}</h2>
       <p className="text-xs text-muted-foreground">{hm(time)} / {hm(new Date(running.end_time))} · {remaining(now, running.end_time)}</p>
-      <p className="mt-2 rounded-lg bg-muted p-2 text-sm">📌 Aujourd'hui : {workMood(day, p.key).mood}</p>
-      <p className="mt-1 text-sm">👥 Un collègue : {workMood(day, p.key).colleague}</p>
-      <ol className="mt-3 space-y-1">{steps.map(s => <li key={s.label} className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm ${s === cur ? "bg-primary/15 font-semibold" : s.at.getTime() < now ? "text-muted-foreground line-through" : ""}`}>
-        <span className="w-12 font-mono text-xs">{hm(s.at)}</span>{s.label}</li>)}</ol>
-      <ShiftVisitors day={day} jobKey={p.key} />
+      <p className="mt-3 text-sm">{running.title}</p>
+      <dl className="mt-3 grid grid-cols-2 gap-3 border-y border-border py-3 text-sm"><dt>Début enregistré</dt><dd>{hm(new Date(running.start_time))}</dd><dt>Fin prévue</dt><dd>{hm(new Date(running.end_time))}</dd></dl>
+      <Button asChild className="mt-4 min-h-14 w-full"><a href="#mission-professionnelle">Reprendre ma mission</a></Button>
       <div className="mt-2 grid grid-cols-3 gap-2">
         <Button asChild variant="outline" className="min-h-12"><Link to="/telephone">📱 Téléphone</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/agenda">📅 Agenda</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/actualites">📰 Infos</Link></Button>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Le service continue pendant que tu regardes ailleurs.</p>
+      <p className="mt-2 text-xs text-muted-foreground">La fin du service sera confirmée à l’actualisation. Votre mission conserve ses décisions enregistrées.</p>
     </section>;
   }
 
@@ -70,21 +61,14 @@ export function WorkDay() {
         <li>⚡ Énergie restante : {life.character.energy}</li>
       </ul>
       <div className="mb-3 rounded-xl bg-muted p-3 text-left text-sm">
-        <p className="font-semibold">📋 Bilan du service</p>
-        <ul className="mt-1 space-y-1">{shiftHighlights(p.key).map(t => <li key={t}>✅ {t}</li>)}</ul>
-        <p className="mt-2">📌 {workMood(day, p.key).mood}</p>
-        {(() => { const r = Object.values(readVisitorResults(day)); if (!r.length) return null; const avg = Math.round(r.reduce((a, b) => a + b.s, 0) / r.length);
-          return <p className="mt-1">👤 {r.length} client(s) reçu(s) · {satisfactionLabel(avg)} ({avg}/100)<span className="block text-xs text-muted-foreground">La satisfaction ne change pas ton salaire.</span></p>; })()}
-      </div>
-      <div className="mb-3 rounded-xl border p-3 text-sm">
-        <p className="font-semibold">{level.emoji} Niveau : {level.label}</p>
-        <p className="text-xs text-muted-foreground">{level.shifts} service(s) terminé(s){level.next ? ` · ${level.next - level.shifts} avant le niveau suivant` : " · niveau maximum"}</p>
-        <p className="text-xs text-muted-foreground">Le niveau ne change pas ton salaire.</p>
+        <p className="font-semibold">📋 Service enregistré</p>
+        <p className="mt-2">{finished.title}</p>
+        <p className="mt-1">Durée : {Math.round((Date.parse(finished.end_time) - Date.parse(finished.start_time)) / 60000)} minutes du jeu</p>
       </div>
       <div className="grid gap-2">
         <Button asChild className="min-h-12"><Link to="/banque">Voir ma banque</Link></Button>
-        <Button asChild variant="outline" className="min-h-12"><Link to="/chez-moi" onClick={() => { localStorage.setItem("civitas-workday-ack", finished.id); }}>🏠 Rentrer chez moi</Link></Button>
-        <Button variant="ghost" className="min-h-12" onClick={() => { localStorage.setItem("civitas-workday-ack", finished.id); setAck(finished.id); }}>Continuer ma journée</Button>
+        <Button asChild variant="outline" className="min-h-12"><Link to="/chez-moi" onClick={acknowledge}>🏠 Voir mon logement</Link></Button>
+        <Button variant="ghost" className="min-h-12" onClick={acknowledge}>Continuer ma journée</Button>
       </div>
     </section>;
   }
@@ -92,14 +76,12 @@ export function WorkDay() {
 
   const start = () => action.mutate(planned ? { activityId: planned.id } : { type: "work" });
   return <section className="experience-section">
-    {phase === "intro" ? <>
+    <WorkBackdrop job={job.title} title={life.employment.location.name} />
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {light.label}</p>
       <h2 className="font-heading text-lg font-bold">{p.start}</h2>
       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
         <dt className="text-muted-foreground">Lieu</dt><dd>{life.employment.location.name}</dd>
         <dt className="text-muted-foreground">Poste</dt><dd>{job.title}</dd>
-        <dt className="text-muted-foreground">Équipe</dt><dd>{p.team}</dd>
-        {p.vehicle && <><dt className="text-muted-foreground">Véhicule</dt><dd>{p.vehicle}</dd></>}
         <dt className="text-muted-foreground">Planning</dt><dd>{planned ? `${hm(new Date(planned.start_time))} → ${hm(new Date(planned.end_time))}` : rule ? `${Math.round(rule.duration_minutes / 60)} h de service` : "—"}</dd>
       </dl>
       <div className={`mt-3 flex items-center justify-between gap-2 rounded-lg p-3 text-sm ${here ? "bg-success/15" : "bg-accent/60"}`}>
@@ -110,28 +92,13 @@ export function WorkDay() {
         <p className="font-semibold">📋 Briefing du jour</p>
         <ul className="mt-1 space-y-1">
           <li>🎯 {p.objective}</li>
-          <li>📌 {workMood(day, p.key).mood}</li>
-          <li>👥 Avec toi : {workMood(day, p.key).colleague}</li>
+          <li>Poste : {job.title}</li>
         </ul>
       </div>
-      <details className="mt-3 rounded-lg border border-border p-3 text-sm">
-        <summary className="min-h-8 cursor-pointer font-semibold">❓ Comment ça marche ?</summary>
-        <ol className="mt-2 list-decimal space-y-1 pl-5">
-          <li>Se rendre au travail (marque 💼 sur la carte).</li>
-          <li>Prendre son service et faire les vérifications.</li>
-          <li>Réaliser les missions de la journée.</li>
-          <li>Terminer son service : le bilan s'affiche.</li>
-          <li>Recevoir sa rémunération sur son compte.</li>
-        </ol>
-      </details>
-      <Button className="mt-3 min-h-14 w-full text-base" onClick={() => setPhase("prep")}>Prendre mon service</Button>
-    </> : <>
-      <h2 className="font-heading text-lg font-bold">Préparation</h2>
-      <div className="mt-3 grid gap-2">{p.prep.map(x => { const ok = done.includes(x.id); return <Button key={x.id} variant={ok ? "secondary" : "outline"} className="min-h-14 justify-between"
-        onClick={() => setDone(d => ok ? d : [...d, x.id])}><span>{x.emoji} {x.label}</span><span>{ok ? "✅" : "Vérifier"}</span></Button>; })}</div>
+      <Button variant="outline" className="mt-3 min-h-12 w-full" aria-expanded={preparation} onClick={() => setPreparation(value => !value)}>Consignes de préparation</Button>
+      {preparation && <ul className="mt-3 space-y-3 text-sm">{p.prep.map(x => <li key={x.id}>{x.emoji} {x.label}</li>)}</ul>}
       {!here ? <Button asChild className="mt-3 min-h-14 w-full"><Link to="/carte" search={{ city: life.employment.location.city_id, district: life.employment.location.district_id ?? undefined, location: life.employment.location.id }}>Aller sur mon lieu de travail</Link></Button>
-        : <Button className="mt-3 min-h-14 w-full text-base" disabled={done.length < p.prep.length || busy || action.isPending} onClick={start}>
-          {done.length < p.prep.length ? `Encore ${p.prep.length - done.length} vérification(s)` : "C'est parti : au travail"}</Button>}
-    </>}
+        : <Button className="mt-3 min-h-14 w-full text-base" disabled={busy || action.isPending} onClick={start}>
+          {action.isPending ? "Prise de service…" : "Prendre mon service"}</Button>}
   </section>;
 }
