@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const { chat } = vi.hoisted(() => ({ chat: vi.fn() }));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: () => chat }));
 vi.mock('@/lib/npc-chat.functions', () => ({ chatWithNpc: vi.fn() }));
+vi.mock('./EncounterSheet', () => ({ EncounterSheet: () => null }));
 import { NpcChat } from './NpcChat';
 
 beforeEach(() => { chat.mockReset(); Element.prototype.scrollIntoView = vi.fn(); });
