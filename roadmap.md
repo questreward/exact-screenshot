@@ -1,5 +1,9 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Démarrage et véhicules 3D
+- [ ] Garantir la régénération des routes au démarrage après suppression d’une page ; test de régression.
+- [ ] Montrer le véhicule acheté devant le logement et les véhicules de service devant caserne/commissariat, sans inventer de stationnement enregistré.
+
 ## Discord — Bot communautaire
 - [x] Préparer le programme séparé : accueil, rôles d’intérêt, informations publiques, commandes et annonces réservées au propriétaire.
 - [x] Préparer la proposition SQL 0139, les contrôles et les instructions privées VPS ; aucune migration appliquée. Fortune exclue faute d’accord Discord spécifique.
