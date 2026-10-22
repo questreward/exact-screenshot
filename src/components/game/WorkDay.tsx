@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { lifeQuery, startLifeActivity, formatMoney } from "@/services/game";
 import { workProfile, remaining } from "@/game/workday";
 import { daylight } from "@/game/daylight";
-import { useLifeMutation } from "./LifeControls";
+import { toast } from "sonner";
 import { useWorldClock } from "./WorldClock";
 import { currentWork } from "@/game/work-experience";
 import { WorkBackdrop } from "./WorkBackdrop";
@@ -16,8 +16,8 @@ const hm = (d: Date) => d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute:
 export function WorkDay() {
   const { data: life } = useQuery(lifeQuery);
   const { time } = useWorldClock();
-  const action = useLifeMutation(startLifeActivity, "Service commencé");
   const qc = useQueryClient();
+  const action = useMutation({ mutationFn: startLifeActivity, onSuccess: async () => { await Promise.all(["daily-life", "character", "bank", "career", "job-missions", "notifications"].map(key => qc.invalidateQueries({ queryKey: [key] }))); toast.success("Service commencé"); }, onError: (e: Error) => toast.error(e.message) });
   const [preparation, setPreparation] = useState(false);
   const [ack, setAck] = useState<string | null>(() => qc.getQueryData<string>(["work-summary-ack"]) ?? null);
   const day = time.toISOString().slice(0, 10);

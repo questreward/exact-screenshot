@@ -2,7 +2,7 @@ import { JobMissionCard } from "@/components/game/JobMissionCard";
 import { ShiftPrep, ShiftLive, ReturnToBase, ShiftSummary } from "@/components/game/SecurityShift";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { CivilProtectionPresidency } from "@/components/game/CivilProtectionPresidency";
 import { VolunteerDossier } from "@/components/game/VolunteerDossier";
 import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap, Award } from "lucide-react";
@@ -34,11 +34,13 @@ function SecurityPage() {
   const qc = useQueryClient();
   const { data: s } = useSuspenseQuery(securityQuery);
   const { data: missions } = useSuspenseQuery(securityMissionsQuery);
+  const locked = useRef(false);
   const act = useMutation({
     mutationFn: (v: { fn: Parameters<typeof securityAction>[0]; args?: object; ok?: string }) => securityAction(v.fn, v.args),
     onSuccess: (r, v) => {
       qc.setQueryData(securityQuery.queryKey, r);
-      qc.invalidateQueries({ queryKey: ["character"] });
+      ["character", "daily-life", "job-missions", "bank"].forEach(key => qc.invalidateQueries({ queryKey: [key] }));
+      if (v.fn === "security_start_shift") qc.removeQueries({ queryKey: ["security-start-request"] });
       if (v.fn === "security_apply") {
         const e = r.exams[0];
         if (r.career && r.career.status === "formation") toast.success("Admis ! Ta formation commence.");
@@ -46,7 +48,9 @@ function SecurityPage() {
       } else if (v.ok) toast.success(v.ok);
     },
     onError: (e: Error) => toast.error(e.message),
+    onSettled: () => { locked.current = false; },
   });
+  const run: Run = v => { if (locked.current) return; locked.current = true; act.mutate(v); };
 
   return <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
     <JobMissionCard />
@@ -55,8 +59,8 @@ function SecurityPage() {
         <p className="text-sm text-muted-foreground">Recrutement, formation, horaires et missions tirées de ce qui se passe dans ta ville.</p></div></header>
     {!s && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Disponible dans une prochaine étape.</p>}
     {s && (s.career && s.career.status !== "quitte"
-      ? <Career s={s} missions={missions} busy={act.isPending} run={act.mutate} />
-      : <Recruitment s={s} busy={act.isPending} run={act.mutate} />)}
+      ? <Career s={s} missions={missions} busy={act.isPending} run={run} />
+      : <Recruitment s={s} busy={act.isPending} run={run} />)}
     {s?.career?.service === "protection_civile" && <CivilProtectionPresidency />}
     {s && <VolunteerDossier state={s} missions={missions}/>}
     {s && <PromotionHistory />}
@@ -128,6 +132,7 @@ function Recruitment({ s, busy, run }: { s: SecurityState; busy: boolean; run: R
 }
 
 function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: string; title: string; situation: string; choices: { id: string; label: string }[] }[]; busy: boolean; run: Run }) {
+  const qc = useQueryClient();
   const c = s.career;
   if (!c) return null;
   const sv = s.services.find(x => x.id === c.service);
@@ -181,7 +186,7 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
             ? <div className="mb-3"><ShiftSummary service={last.service} endsAt={last.ends_at} hours={last.hours} outcome={OUTCOME_LABELS[last.outcome ?? "equipe"] ?? ""} pay={s.ledger.find(l => l.key === `vac:${last.id}`)?.amount ?? 0} /></div> : null; })()}
         <p className="mb-3 text-sm text-muted-foreground">Un service coûte environ 30 d'énergie pour 8 heures. Tu as {s.energy} d'énergie.</p>
         <ShiftPrep service={c.service} start={ready => <Button className="min-h-14 w-full" disabled={!ready || busy || c.status === "formation" || !!injured}
-          onClick={() => run({ fn: "security_start_shift", args: { _request: crypto.randomUUID() }, ok: "Service commencé." })}>{ready ? "Prendre mon service" : "Termine la préparation"}</Button>} />
+          onClick={() => { const key = qc.getQueryData<string>(["security-start-request"]) ?? crypto.randomUUID(); qc.setQueryData(["security-start-request"], key); run({ fn: "security_start_shift", args: { _request: key }, ok: "Service commencé." }); }}>{ready ? "Prendre mon service" : "Termine la préparation"}</Button>} />
       </>}
     </Card>
 

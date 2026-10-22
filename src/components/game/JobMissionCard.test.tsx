@@ -31,4 +31,18 @@ describe('intervention existante', () => {
     expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-20', 2, 0);
     expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { reputation_delta: 2, energy_cost: 7 } });
   });
+  it('ne double pas une décision et conserve le dossier après une erreur réseau', async () => {
+    choose.mockClear();
+    const mission = { day: '2026-10-22', title: 'Service', job: 'police', city_id: null, status: 'active', step_index: 1, step_count: 3, step: { text: 'Observer', choices: [{ label: 'Demander du renfort' }] }, reputation_delta: null, energy_cost: null };
+    const client = new QueryClient(); client.setQueryData(['job-missions', 'daily'], { mission });
+    let fail: ((error: Error) => void) | undefined;
+    choose.mockImplementation(() => new Promise((_, reject) => { fail = reject; }));
+    render(<QueryClientProvider client={client}><JobMissionCard /></QueryClientProvider>);
+    const button = screen.getByRole('button', { name: 'Demander du renfort' });
+    fireEvent.click(button); fireEvent.click(button);
+    expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-22', 1, 0);
+    fail?.(new Error('Connexion interrompue'));
+    await screen.findByText('Décision non confirmée');
+    expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { step_index: 1, status: 'active', reputation_delta: null } });
+  });
 });
