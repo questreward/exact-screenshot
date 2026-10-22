@@ -107,6 +107,8 @@ export const PHONE_APPS: PhoneApp[] = [
   { id: "vie", label: "Vie", icon: Briefcase, available: true },
   { id: "carte", label: "Carte", icon: Map, available: true },
   { id: "politique", label: "CIVITAS Politique", icon: Vote, available: true },
+  { id: "travail", label: "Travail", icon: Briefcase, available: true },
+  { id: "meteo", label: "Météo", icon: Globe2, available: true },
 ];
 
 export const COMING_SOON = "Disponible dans une prochaine étape";
