@@ -168,7 +168,7 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   const byDistrict = new Map(districts.map((d, i) => [d.id, lists[i]?.data ?? []]));
   const [layers, setLayers] = useState<Set<MapLayer>>(() => new Set<MapLayer>(["vie", "transport", "politique", "evenements"]));
   const { data: ev } = useQuery(worldEventsQuery);
-  const evMap = markersByLocation(ev?.events ?? []);
+  const evMap = markersByLocation(ev?.enabled ? ev.events : [], ev?.now);
   const { data: life } = useQuery(lifeQuery);
   const workId = life?.employment?.location?.id;
   const toggle = (id: MapLayer) => setLayers(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
@@ -204,7 +204,7 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
 function LocationMarkers({ district, positionId, selectedId, onSelect }: { district: Tables<"districts">; positionId?: string | undefined; selectedId?: string | undefined; onSelect: (id: string) => void }) {
   const { data: locations } = useSuspenseQuery(locationsQuery(district.id));
   const { data: ev } = useQuery(worldEventsQuery);
-  const markers = markersByLocation(ev?.events ?? []);
+  const markers = markersByLocation(ev?.enabled ? ev.events : [], ev?.now);
   const openEvents = (id: string) => { onSelect(id); setTimeout(() => document.getElementById("evenements-lieu")?.scrollIntoView({ behavior: "smooth", block: "start" }), 400); };
   // The district detail projects persisted location coordinates into a local frame.
   return <g transform="translate(400,350)">{locations.map(l => {

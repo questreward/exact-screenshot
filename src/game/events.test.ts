@@ -30,6 +30,9 @@ describe('événements (présentation)', () => {
   it('résumé des gains affiché', () => {
     expect(rewardSummary({ money: 40, skill: null, skill_amount: 0, relation: 0, reputation: 2, civic: 0, political: 0, energy: 10, success_rate: 100 })).toEqual(['+40 €', '+2 réputation']);
   });
+  it('une annonce résolue sans fin ne redevient pas active', () => {
+    expect(filterEvents([{ ...base, ends_at: null, phase: 'termine' }], 'aujourdhui', base.starts_at, 'lyon')).toEqual([]);
+  });
 });
 
 import { travelDelay, cityEffectLevel, markersByLocation } from './events';
@@ -40,5 +43,11 @@ describe('Bloc 14', () => {
     const e = (id: string, loc: string, personal = false, marker = true): WorldEvent => ({ ...base, id, location_id: loc, personal, marker, phase: 'en_cours' });
     const m = markersByLocation([e('a', 'L1'), e('b', 'L1'), e('a', 'L1'), e('c', 'L2', true), e('d', 'L3', false, false)]);
     expect(m.size).toBe(1); expect(m.get('L1')?.length).toBe(2);
+  });
+  it('retire les marqueurs expirés et n’affiche pas les événements à venir', () => {
+    const active = { ...base, location_id: 'L1', marker: true, phase: 'en_cours' as const };
+    expect(markersByLocation([active], '2026-10-18T15:00:00Z').size).toBe(1);
+    expect(markersByLocation([active], '2026-10-18T17:00:00Z').size).toBe(0);
+    expect(markersByLocation([{ ...active, phase: 'a_venir' }]).size).toBe(0);
   });
 });
