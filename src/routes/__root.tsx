@@ -8,7 +8,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -16,6 +16,7 @@ import { ExperienceLoading } from "@/components/game/ExperienceState";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { isExpiredSessionError, recoverExpiredSession } from "@/lib/session-recovery";
 
 function NotFoundComponent() {
   return (
@@ -37,6 +38,32 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
+  const { queryClient } = Route.useRouteContext();
+  const expired = isExpiredSessionError(error);
+  const [recovering, setRecovering] = useState(false);
+  const [recoveryFailed, setRecoveryFailed] = useState(false);
+  async function retryPage() {
+    if (recovering) return;
+    setRecovering(true);
+    setRecoveryFailed(false);
+    try {
+      if (expired) {
+        await queryClient.cancelQueries();
+        const renewed = await recoverExpiredSession();
+        queryClient.clear();
+        if (!renewed) {
+          await router.navigate({ to: '/auth', replace: true });
+          return;
+        }
+      }
+      await router.invalidate();
+      reset();
+    } catch {
+      setRecoveryFailed(true);
+    } finally {
+      setRecovering(false);
+    }
+  }
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
@@ -44,14 +71,16 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold text-foreground">Cette page n'a pas pu se charger</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Une erreur est survenue. Réessayez ou revenez à l'accueil.</p>
+        <h1 className="text-xl font-semibold text-foreground">{expired ? 'Votre connexion a expiré' : "Cette page n'a pas pu se charger"}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{expired ? 'Renouvelez votre connexion pour retrouver votre personnage.' : "Une erreur est survenue. Réessayez ou revenez à l'accueil."}</p>
+        {recoveryFailed && <p role="alert" className="mt-2 text-sm text-muted-foreground">La connexion n’a pas pu être rétablie. Vérifiez votre accès à Internet puis réessayez.</p>}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={retryPage}
+            disabled={recovering}
             className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground"
           >
-            Réessayer
+            {recovering ? 'Patientez…' : expired ? 'Renouveler ma connexion' : 'Réessayer'}
           </Button>
           <a href="/" className="inline-flex h-11 items-center justify-center rounded-xl border border-input px-5 text-sm font-semibold text-foreground">
             Accueil

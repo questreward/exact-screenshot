@@ -1,5 +1,10 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Connexion expirée sur VPS
+- [x] Ajouter une reprise dédiée à PGRST301 : bouton de renouvellement avant relecture, refus définitif vers connexion, panne réseau sans effacement ; aucun achat ni action rejoué.
+- [x] Régressions : 5 tests ciblés réussis, compilation automatique OK, formulaire de connexion affiché sans erreur.
+- [ ] Installer et vérifier après connexion sur le VPS ; session du joueur et horloge VPS inaccessibles ici, cause du renouvellement défaillant non établie.
+
 ## Démarrage et véhicules 3D
 - [x] Fournir reconnexion SSH et commande de mise à jour VPS avec conservation des réglages et ancienne version conservée.
 - [x] Garantir la régénération des routes au démarrage et avant tests après suppression d’une page ; reprise des suppressions manquées en développement. Régression dans dossier temporaire, page d’essai supprimée, 575 tests réussis et accueil HTTP 200.

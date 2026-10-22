@@ -57,7 +57,8 @@
 - Bank history filters use Paris game dates; cash receipts reuse persisted operation keys and deltas, never reconstructed historical balances, to remain faithful to recorded transfers.
 - Product visuals map stored families/aliases to lazy shared photos; previews illustrative, unboxing only after confirmed purchases.
 
-- V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
+- V4 visuals observe QueryClient only; ExperienceState shows recorded facts without changing loaders, invalidations or secured actions.
+- Expired-session recovery refreshes before reads; rejected renewal clears local identity/cache, never replaying mutations.
 
 - Smartphone loaders load per app with a query-independent shell; conversation IDs live in route search; error reset retries reads only.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
