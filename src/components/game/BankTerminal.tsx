@@ -9,9 +9,10 @@ import { Link } from '@tanstack/react-router';
 import bankDesk from '@/assets/v2/desk-banque.webp';
 import { BankHistory, CashReceiptDialog } from './BankHistory';
 import type { CashReceipt } from '@/game/bank-history';
+import { ExperienceState } from './ExperienceState';
 
 export function BankTerminal() {
-  const { data, isError, refetch } = useQuery(bankCashQuery);
+  const { data, isError, isPending, refetch } = useQuery(bankCashQuery);
   const q = useQueryClient();
   const [direction, setDirection] = useState<'withdraw' | 'deposit'>('withdraw');
   const [amount, setAmount] = useState('50');
@@ -32,7 +33,8 @@ export function BankTerminal() {
   return <section aria-label="Distributeur du jeu" className="space-y-4 border-y border-border py-5">
     <img src={bankDesk} alt="Espace bancaire fictif CIVITAS" className="h-36 w-full rounded-lg object-cover" width={1024} height={576} loading="lazy" />
     <h2 className="flex items-center gap-2 font-heading text-lg font-bold"><Banknote className="text-primary" />Distributeur CIVITAS · FICTIF</h2>
-    {isError && <p role="alert" className="text-sm text-muted-foreground">Le distributeur attend son installation sur le serveur.</p>}
+    {isPending && <ExperienceState compact kind="loading" title="Consultation du distributeur…" />}
+    {isError && <ExperienceState compact kind="error" title="Le solde n’a pas pu être actualisé" description="Vérifiez votre connexion et réessayez." onRetry={() => void refetch()} />}
     {data && <><dl className="grid grid-cols-2 gap-3"><div><dt className="text-sm text-muted-foreground">Compte</dt><dd className="font-semibold">{formatMoney(data.balance)}</dd></div><div><dt className="text-sm text-muted-foreground">Espèces sur soi</dt><dd className="font-semibold">{formatMoney(data.cash)}</dd></div></dl>
       <Button type="button" variant="outline" className="min-h-12" onClick={()=>void refetch()} disabled={busy}>Consulter le solde</Button>
       {!data.here ? <Button asChild variant="secondary" className="min-h-12 w-full"><Link to="/carte"><MapPin />Rejoindre une agence ou un distributeur</Link></Button> : <>

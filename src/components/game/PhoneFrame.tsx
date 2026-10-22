@@ -1,19 +1,19 @@
 import { Component, Suspense, useEffect, useState, type ReactNode } from "react";
 import { Bell, ChevronLeft, Home, Wifi, WifiOff, X } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { QueryErrorResetBoundary, useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { notificationsQuery } from "@/services/game";
 import { useWorldClock } from "./WorldClock";
 import { ExperienceState } from "./ExperienceState";
 
-class AppBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+class AppBoundary extends Component<{ children: ReactNode; onRetry: () => void }, { failed: boolean }> {
   override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  override render() { return this.state.failed ? <ExperienceState kind="error" title="Cette application est momentanément indisponible" description="Vous pouvez réessayer ou revenir à votre téléphone." onRetry={() => this.setState({ failed: false })} /> : this.props.children; }
+  override render() { return this.state.failed ? <ExperienceState kind="error" title="Cette application est momentanément indisponible" description="Vous pouvez réessayer ou revenir à votre téléphone." onRetry={() => { this.props.onRetry(); this.setState({ failed: false }); }} /> : this.props.children; }
 }
 
-export function PhoneFrame({ app, title, onHome, onClose, onNotifications, children }: {
-  app?: string | undefined; title?: string | undefined; onHome: () => void; onClose: () => void; onNotifications: () => void; children: ReactNode;
+export function PhoneFrame({ app, title, onHome, onBack, onClose, onNotifications, children }: {
+  app?: string | undefined; title?: string | undefined; onHome: () => void; onBack?: (() => void) | undefined; onClose: () => void; onNotifications: () => void; children: ReactNode;
 }) {
   const { time } = useWorldClock();
   const { data: notices } = useSuspenseQuery(notificationsQuery);
@@ -35,8 +35,8 @@ export function PhoneFrame({ app, title, onHome, onClose, onNotifications, child
     </div>
     {!online && <ExperienceState compact kind="info" title="Hors connexion" description="Les informations déjà chargées restent visibles. Les nouvelles actions nécessitent une connexion." />}
     <div className="phone-screen">
-      {app && <header className="mb-4 flex items-center gap-2 border-b border-border pb-3"><Button variant="ghost" size="icon" onClick={onHome} title="Accueil du téléphone" aria-label="Accueil du téléphone"><ChevronLeft /></Button><h1 className="min-w-0 flex-1 break-words text-xl font-bold">{title}</h1></header>}
-      <AppBoundary key={app ?? "home"}><Suspense fallback={<ExperienceState kind="loading" title="Ouverture de l’application…" />}><div className="phone-app-content" key={app ?? "home"}>{children}</div></Suspense></AppBoundary>
+      {app && <header className="mb-4 flex items-center gap-2 border-b border-border pb-3"><Button variant="ghost" size="icon" className="min-h-12 min-w-12" onClick={onBack ?? onHome} title="Revenir à l’écran précédent" aria-label="Revenir à l’écran précédent"><ChevronLeft /></Button><h1 className="min-w-0 flex-1 break-words text-xl font-bold">{title}</h1></header>}
+      <QueryErrorResetBoundary>{({ reset }) => <AppBoundary key={app ?? 'home'} onRetry={reset}><Suspense fallback={<ExperienceState kind="loading" title="Ouverture de l’application…" />}><div className="phone-app-content" key={app ?? "home"}>{children}</div></Suspense></AppBoundary>}</QueryErrorResetBoundary>
     </div>
     <Button variant="ghost" className="phone-home-button" onClick={onHome} aria-label="Écran d’accueil du téléphone" title="Écran d’accueil du téléphone"><Home className="h-4 w-4" /><span aria-hidden className="h-1 w-20 rounded-full bg-muted-foreground/50" /></Button>
   </div>;
