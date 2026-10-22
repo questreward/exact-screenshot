@@ -60,9 +60,9 @@ client.on(Events.InteractionCreate, async interaction => {
       }
       case 'ville': {
         const name = interaction.options.getString('nom', true);
-        const gauges = await sql`select city, district, satisfaction, security, prosperity from public.discord_districts where lower(city) = lower(${name}) order by district limit 8`;
+        const gauges = await sql`select city, district, cadre, tranquillite, animation from public.discord_districts where lower(city) = lower(${name}) order by district limit 8`;
         const events = await sql`select title from public.discord_events where lower(city) = lower(${name}) order by starts_at desc limit 4`;
-        content = gauges.length ? `**${safeText(gauges[0].city)}**\n${gauges.map(g => `${safeText(g.district, 80)} : satisfaction ${g.satisfaction}/100 · sécurité ${g.security}/100 · prospérité ${g.prosperity}/100`).join('\n')}\n${events.map(e => `• ${safeText(e.title, 120)}`).join('\n')}` : 'Ville non trouvée ou informations indisponibles.'; break;
+        content = gauges.length ? `**${safeText(gauges[0].city)}**\n${gauges.map(g => `${safeText(g.district, 80)} : cadre ${g.cadre ?? '—'}/100 · tranquillité ${g.tranquillite ?? '—'}/100 · animation ${g.animation ?? '—'}/100`).join('\n')}\n${events.map(e => `• ${safeText(e.title, 120)}`).join('\n')}` : 'Ville non trouvée ou informations indisponibles.'; break;
       }
       case 'elections': {
         const rows = await sql`select label, stage, vote_at from public.discord_elections order by vote_at limit 8`;
@@ -94,7 +94,7 @@ let queue = Promise.resolve(), timer, blocked = false;
 async function poll() {
   if (blocked) return;
   try {
-    const rows = await sql`select post_key, kind, title, summary from public.discord_feed order by published_at, post_key limit 100`;
+    const rows = await sql`select post_key, kind, title, summary from public.discord_feed order by published_at desc, post_key limit 100`;
     // On first start remember existing items: do not flood Discord with old news.
     if (!journal.rows.initialized) {
       for (const row of rows) await journal.record(row.post_key, { state: 'baseline' });
