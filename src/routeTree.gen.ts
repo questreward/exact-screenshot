@@ -19,6 +19,7 @@ import { Route as DecouvrirRouteImport } from './routes/decouvrir'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as PaiementStyleRouteImport } from './routes/paiement-style'
 import { Route as PaiementVipRouteImport } from './routes/paiement-vip'
+import { Route as ParkingCheckRouteImport } from './routes/parking-check'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
@@ -157,6 +158,11 @@ const PaiementStyleRoute = PaiementStyleRouteImport.update({
 const PaiementVipRoute = PaiementVipRouteImport.update({
   id: '/paiement-vip',
   path: '/paiement-vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParkingCheckRoute = ParkingCheckRouteImport.update({
+  id: '/parking-check',
+  path: '/parking-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -679,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
+  '/parking-check': typeof ParkingCheckRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -779,6 +786,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
+  '/parking-check': typeof ParkingCheckRoute
   '/reset-password': typeof ResetPasswordRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -881,6 +889,7 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
+  '/parking-check': typeof ParkingCheckRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
@@ -984,6 +993,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/paiement-style'
     | '/paiement-vip'
+    | '/parking-check'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -1084,6 +1094,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/paiement-style'
     | '/paiement-vip'
+    | '/parking-check'
     | '/reset-password'
     | '/creation'
     | '/tiles/$'
@@ -1185,6 +1196,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/paiement-style'
     | '/paiement-vip'
+    | '/parking-check'
     | '/reset-password'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
@@ -1288,6 +1300,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   PaiementStyleRoute: typeof PaiementStyleRoute
   PaiementVipRoute: typeof PaiementVipRoute
+  ParkingCheckRoute: typeof ParkingCheckRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TilesSplatRoute: typeof TilesSplatRoute
 }
@@ -1362,6 +1375,13 @@ declare module '@tanstack/react-router' {
       path: '/paiement-vip'
       fullPath: '/paiement-vip'
       preLoaderRoute: typeof PaiementVipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parking-check': {
+      id: '/parking-check'
+      path: '/parking-check'
+      fullPath: '/parking-check'
+      preLoaderRoute: typeof ParkingCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -2209,6 +2229,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   PaiementStyleRoute: PaiementStyleRoute,
   PaiementVipRoute: PaiementVipRoute,
+  ParkingCheckRoute: ParkingCheckRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TilesSplatRoute: TilesSplatRoute,
 }
