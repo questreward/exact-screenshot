@@ -17,7 +17,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 /** Clears only this browser's identity and cache path; never replays a mutation. */
 export async function forgetLocalSession(): Promise<void> {
-  await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+  try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* local identity already gone */ }
 }
 
 // Explicit recovery only: never retry a mutation or manufacture an identity.
