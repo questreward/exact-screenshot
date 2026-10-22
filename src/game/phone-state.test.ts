@@ -3,6 +3,9 @@ import { conversationMessages, phoneDataKeys, phoneNotificationTarget, phoneBack
 import type { Message } from "./communication";
 
 describe("smartphone connecté au monde", () => {
+  it('les achats chargent uniquement les commandes existantes', () => {
+    expect(phoneDataKeys('achats')).toEqual(['clock', 'notifications', 'shop']);
+  });
   it('le retour quitte la conversation avant de quitter la messagerie', () => {
     expect(phoneBackTarget('messages', 'conversation-42')).toEqual({ app: 'messages', thread: undefined });
     expect(phoneBackTarget('messages')).toEqual({ app: undefined, thread: undefined });

@@ -66,3 +66,4 @@
 - PoliticalDay derives appointments from recorded political/campaign activities and resolves only saved locations; offered events remain distinct from reservations to avoid fabricated attendance or agenda entries.
 - LocalPeople renders the existing location-presence snapshot with persisted appearances; identity deduplication never adds residents or inferred routines.
 - CheckoutScanner is presentation-only over frozen cart estimates; scanning never calls purchases, and explicit confirmation retains existing per-item retry keys and recorded receipts.
+- Checkout completion invalidates shared wallet, assets and furnishing reads even after uncertainty; purchase locations are transaction-time position snapshots, never URL labels or reconstructed historical locations.
