@@ -20,7 +20,7 @@ describe('conversation locale', () => {
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Que penses-tu de ce marché ?' } });
     const button = screen.getByRole('button', { name: 'Envoyer' });
     fireEvent.click(button); fireEvent.click(button);
-    expect(chat).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(chat).toHaveBeenCalledTimes(1));
     expect(chat.mock.calls[0]?.[0].data).toEqual({ npcId: '11111111-1111-1111-1111-111111111111', history: [{ role: 'user', content: 'Que penses-tu de ce marché ?' }] });
     finish?.({ reply: 'Il est agréable.' });
     await screen.findByText('Il est agréable.');
