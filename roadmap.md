@@ -1,7 +1,10 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
-## V4 — Prompt 7 reçu pendant le Prompt 6
-- [ ] Lire le document et poursuivre ses améliorations après les contrôles du monde vivant, sans abandonner le chantier en cours.
+## V4 — Objets et interfaces (Prompt 7)
+- [x] Examiner téléphone, chargements sélectifs, banque, outils professionnels et erreurs sans reconstruire l’application.
+- [ ] Donner un écran de téléphone immédiatement pendant les chargements, rendre le retour cohérent et les erreurs réessayables.
+- [ ] Corriger les commandes bancaires étroites et les erreurs du distributeur sans modifier les opérations.
+- [ ] Tester navigation, reprise et erreurs ; vérifier le rendu accessible et identifier les essais connectés bloqués.
 
 ## V4 — Monde vivant (Prompt 6)
 - [ ] Remplacer les scènes d’incidents fictives de l’accueil par les événements enregistrés.
