@@ -1,5 +1,10 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Métiers et chantier suivant (Prompts 8–9)
+- [ ] Prompt 8 : étendre les interactions des missions existantes sans inventer équipement, déplacements ni rémunération.
+- [ ] Prompt 9 : lire le document reçu pendant l’examen des métiers, puis intégrer ses priorités.
+- [ ] Vérifier les changements et conserver explicitement les limites des contrats serveur nécessitant accord.
+
 ## V4 — Objets et interfaces (Prompt 7)
 - [x] Examiner téléphone, chargements sélectifs, banque, outils professionnels et erreurs sans reconstruire l’application.
 - [x] Écran de téléphone indépendant des données pendant les chargements, erreurs de lecture réessayables ; retour conversation → messagerie → accueil distinct de la fermeture.
