@@ -24,27 +24,20 @@ export function ShopHall({ onPick }: { onPick: (k: string) => void }) {
       <div className="relative overflow-hidden rounded-3xl border border-border shadow-card">
         <img src={maison} alt="Entrée du magasin" className="h-40 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="absolute inset-x-4 bottom-3 flex items-end justify-between gap-2">
+        <div className="absolute inset-x-4 bottom-3 flex flex-wrap items-end justify-between gap-2">
           <div><p className="flex items-center gap-2 font-display text-xl font-bold"><DoorOpen className="h-5 w-5 text-primary" />Bienvenue au magasin</p>
-            <p className="text-sm text-muted-foreground">Choisis un rayon pour commencer tes courses.</p></div>
-          <span className="glass rounded-xl px-2 py-1 text-xs font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} · Ouvert</span>
+            <p className="text-sm text-muted-foreground">CIVITAS · Mes achats</p></div>
+          <time className="glass rounded-lg px-2 py-1 text-xs font-semibold">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} · heure du jeu</time>
         </div>
-      </div>
-      <div aria-hidden className="relative h-10 overflow-hidden rounded-2xl bg-muted/50">
-        {["🧑‍🦱🛒", "👩🛍️", "👴", "🧒", "👩‍🦰🛒"].map((c, i) => (
-          <span key={i} className="absolute top-1.5 text-xl animate-drift" style={{ left: `${-10 + i * 22}%`, animationDuration: `${40 + i * 9}s`, animationDelay: `-${i * 7}s` }}>{c}</span>
-        ))}
-        <span className="absolute right-2 top-2 text-xs text-muted-foreground">🧾 Caisses ouvertes</span>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {KEYS.map((k, i) => (
-          <button key={k} type="button" onClick={() => onPick(k)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-border text-left shadow-card transition-transform active:scale-95 animate-rise"
-            style={{ animationDelay: `${i * 50}ms` }}>
+          <Button key={k} type="button" variant="ghost" onClick={() => onPick(k)}
+            className="group relative h-auto aspect-[4/3] overflow-hidden rounded-lg border border-border text-left shadow-card transition-transform active:scale-95 animate-rise">
             <img src={IMG[k]} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-            <span className="absolute bottom-3 left-3 font-display text-lg font-bold">{EMOJI[k]} {SECTIONS[k]}</span>
-          </button>
+            <span className="absolute inset-x-3 bottom-3 whitespace-normal break-words font-display text-base font-bold">{EMOJI[k]} {SECTIONS[k]}</span>
+          </Button>
         ))}
       </div>
     </div>
@@ -53,8 +46,8 @@ export function ShopHall({ onPick }: { onPick: (k: string) => void }) {
 
 export function AisleHeader({ section, onPick, onQuery, active }: { section: string; onPick: (k: string) => void; onQuery: (q: string) => void; active: string }) {
   const i = KEYS.indexOf(section);
-  const prev = KEYS[(i - 1 + KEYS.length) % KEYS.length]!;
-  const next = KEYS[(i + 1) % KEYS.length]!;
+  const prev = KEYS[(i - 1 + KEYS.length) % KEYS.length] ?? section;
+  const next = KEYS[(i + 1) % KEYS.length] ?? section;
   const aisles = AISLES[section] ?? [];
   return (
     <div className="space-y-2 animate-page">
@@ -70,9 +63,9 @@ export function AisleHeader({ section, onPick, onQuery, active }: { section: str
       </div>
       {aisles.some((a) => a.q) && (
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-          <button type="button" onClick={() => onQuery("")} className={cn("min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold", !active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>Tout le rayon</button>
+          <Button type="button" variant={!active ? "default" : "outline"} onClick={() => onQuery("")} className="min-h-11 shrink-0">Tout le rayon</Button>
           {aisles.filter((a) => a.q).map((a) => (
-            <button key={a.label} type="button" onClick={() => onQuery(a.q)} className={cn("min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold", active === a.q ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>{a.label}</button>
+            <Button key={a.label} type="button" variant={active === a.q ? "default" : "outline"} onClick={() => onQuery(a.q)} className="min-h-11 shrink-0">{a.label}</Button>
           ))}
         </div>
       )}

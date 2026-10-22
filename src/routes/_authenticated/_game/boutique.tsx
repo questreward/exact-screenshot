@@ -15,6 +15,7 @@ import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
 import { ShopHall, AisleHeader, IMG as AISLE_IMG } from "@/components/game/ShopAisles";
 import { ShopCart } from "@/components/game/ShopCart";
+import { ShopReceipt, type ShopOrder } from "@/components/game/ShopReceipt";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
@@ -28,7 +29,8 @@ const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 const day = (s: string) => new Date(s).toLocaleDateString("fr-FR");
 const select = "h-12 w-full rounded-lg border border-input bg-background px-3 text-sm";
 const STATUS: Record<string, string> = { active: "En cours", repaid: "Remboursé", sold: "Soldé par revente", seized: "Bien repris" };
-const KEYS = ["shop", "economy", "character", "life", "housing"];
+const KEYS = ["shop", "economy", "character", "life", "housing", "bank", "notifications"];
+const CART_KEY = ["shop-cart"];
 
 function ShopPage() {
   const qc = useQueryClient();
@@ -47,18 +49,22 @@ function ShopPage() {
   const catalog = useQuery({ ...shopCatalogQuery({ search, section, brand, max, sort, city: section === 'immobilier' ? housingCity : '', rooms: section === 'immobilier' ? housingRooms : '', page }), enabled: !!s });
   const [sell, setSell] = useState<ShopAsset | null>(null);
   const [used, setUsed] = useState<SecondhandListing | null>(null);
+  const [receipt, setReceipt] = useState<ShopOrder | null>(null);
   const refresh = () => KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
   const onError = (e: Error) => toast.error(e.message);
-  const [cart, setCart] = useState<ShopProduct[]>([]);
+  const { data: cart } = useQuery({ queryKey: CART_KEY, queryFn: async (): Promise<ShopProduct[]> => [], initialData: [] as ShopProduct[], staleTime: Infinity, gcTime: Infinity });
+  const setCart = (update: (items: ShopProduct[]) => ShopProduct[]) => qc.setQueryData<ShopProduct[]>(CART_KEY, previous => update(previous ?? []));
   const [bump, setBump] = useState(0);
   const isCreditable = (p: ShopProduct) => p.kind === "vehicle" || !!p.details.realestate;
   const addOrConfirm = (p: ShopProduct) => {
     if (isCreditable(p)) return setConfirm(p);
-    setCart(c => c.some(x => x.id === p.id) ? c.filter(x => x.id !== p.id) : [...c, p]);
+    if (cart.some(x => x.id === p.id)) return;
+    setCart(c => [...c, p]);
+    toast.success(`${p.name} · 1 exemplaire ajouté au panier`);
     setBump(b => b + 1);
   };
   const buy = useMutation({ mutationFn: (p: ShopProduct) => shopBuy(p.id, crypto.randomUUID()),
-    onSuccess: (r, p) => { toast.success(`Commande ${r.reference} : ${p.brand} ${p.name} livré.`); setConfirm(null); refresh(); }, onError });
+    onSuccess: (r, p) => { toast.success(`Achat confirmé ${r.reference} : ${p.brand} ${p.name}.`); setConfirm(null); refresh(); }, onError });
   const buyCredit = useMutation({ mutationFn: (v: { p: ShopProduct; down: number; months: number }) => shopBuyCredit(v.p.id, v.down, v.months, crypto.randomUUID()),
     onSuccess: (r, v) => { toast.success(`${v.p.name} acheté à crédit : ${eur(r.monthly)} par mois.`); setConfirm(null); refresh(); }, onError });
   const resell = useMutation({ mutationFn: (a: ShopAsset) => shopSell(a.id, crypto.randomUUID()),
@@ -219,9 +225,9 @@ function ShopPage() {
 
       <TabsContent value="achats" className="mt-4 space-y-4">
         {s.orders.length === 0 ? <p className="text-sm text-muted-foreground">Aucun achat pour l'instant.</p> :
-          <ul className="divide-y divide-border rounded-xl border border-border bg-card">{s.orders.map(o => <li key={o.reference} className="flex items-center justify-between gap-2 p-3">
-            <div><p className="font-semibold">{o.brand} {o.name}</p><p className="text-xs text-muted-foreground">{day(o.at)} · {o.reference}</p></div>
-            <p className="font-semibold">{eur(o.price)}</p></li>)}</ul>}
+          <ul className="divide-y divide-border">{s.orders.map(o => <li key={o.reference} className="flex flex-wrap items-center justify-between gap-3 py-3">
+            <div className="min-w-0 flex-1"><p className="break-words font-semibold">{o.brand} {o.name}</p><p className="break-all text-xs text-muted-foreground">{day(o.at)} · {o.reference}</p></div>
+            <p className="font-semibold">{eur(o.price)}</p><Button variant="outline" className="min-h-12" onClick={() => setReceipt(o)}>Voir le ticket</Button></li>)}</ul>}
         {s.sales.length > 0 && <section><h2 className="mb-2 font-heading font-bold">Reventes</h2>
           <ul className="divide-y divide-border rounded-xl border border-border bg-card">{s.sales.map((v, i) => <li key={i} className="flex items-center justify-between gap-2 p-3">
             <div><p className="font-semibold">{v.name}</p><p className="text-xs text-muted-foreground">{day(v.at)}{v.credit_repaid ? ` · ${eur(v.credit_repaid)} pour solder le crédit` : ""}</p></div>
@@ -230,7 +236,8 @@ function ShopPage() {
     </Tabs>}
 
     {s && <ShopCart items={cart} balance={s.balance} price={cashPrice} bump={bump}
-      onRemove={(id) => setCart(c => c.filter(x => x.id !== id))} onDone={() => { setCart([]); refresh(); }} />}
+      onRemove={(id) => setCart(c => c.filter(x => x.id !== id))} onDone={(ids) => { setCart(c => c.filter(x => !ids.includes(x.id))); refresh(); }} />}
+    {receipt && <Dialog title="Mon ticket d’achat" onClose={() => setReceipt(null)}><ShopReceipt orders={[receipt]} /><Button variant="outline" className="mt-4 min-h-12 w-full" onClick={() => setReceipt(null)}>Fermer le ticket</Button></Dialog>}
     {visit && <HousingVisit key={visit.id} p={visit} pct={promo.get(visit.id) ?? 0} onClose={() => setVisit(null)} onBuy={() => { setConfirm(visit); setVisit(null); }} />}
     {confirm && s && <BuyDialog p={confirm} s={s} pct={promo.get(confirm.id) ?? 0} pending={buy.isPending || buyCredit.isPending} onClose={() => setConfirm(null)}
       onCash={() => buy.mutate(confirm)} onCredit={(down, months) => buyCredit.mutate({ p: confirm, down, months })} />}
