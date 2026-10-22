@@ -191,5 +191,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 
 - [x] Ville 3D : rue explorable, portes vers les pages existantes
 - [ ] Serveur VPS en mode final (attente du contenu du Dockerfile)
-- [ ] Grande étape 3D — plan en 7 étapes (en attente d’accord)
+- [x] 3D étape 1 socle intérieurs + 2 supérette + 3 vêtements/meubles + 4 concession (halls) + 6 halls publics
+- [ ] 3D étape 5 logement explorable (disposition enregistrée), produits réels dans les rayons, véhicule possédé garé
+- [ ] 3D étape 7 ville vivante (plusieurs rues, météo, sons)
 - [x] Réglage manuel qualité rue 3D
