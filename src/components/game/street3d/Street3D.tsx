@@ -10,7 +10,7 @@ export type StreetInput = { x: number; y: number; yaw: number };
 
 const SPEED = 4.2;
 const CAM_DIST = 11;
-const CAM_HEIGHT = 8;
+const CAM_HEIGHT = 9.5;
 
 const SKY: Record<DayPhase, { sky: string; sun: number; amb: number; lamps: boolean }> = {
   matin: { sky: "#f4c9a0", sun: 1.6, amb: 0.7, lamps: false },
@@ -177,12 +177,12 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd }: { phase:
       <Suspense fallback={null}>
         {BUILDINGS.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
         {[-28, 28].map((z) => [-2.5, 2.5].map((x) => <Model key={`t${z}${x}`} url="/models/city-kit-suburban/tree-large.glb" position={[x * 2, 0, z]} scale={4} />))}
-        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-5.6} on={look.lamps} />, <Lamp key={`l${x}s`} x={x} z={5.6} on={look.lamps} />])}
+        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} />])}
         {CARS.slice(0, crowd.cars + 2).map((url, i) => {
           const axis = i % 3 === 2 ? "z" : "x"; const fwd = i % 2 === 0;
           return <Car key={i} url={url} axis={axis} lane={fwd ? 2 : -2} speed={(fwd ? 1 : -1) * (6 + i)} start={-25 + i * 11} playerRef={playerRef} night={look.lamps} />;
         })}
-        {PEOPLE.slice(0, crowd.people).map((url, i) => <Person key={i} url={url} start={-25 + i * 8} lane={i % 2 ? 5.2 : -5.2} speed={1.1 + (i % 3) * 0.2} dir={i % 2 ? 1 : -1} />)}
+        {PEOPLE.slice(0, crowd.people).map((url, i) => <Person key={i} url={url} start={-25 + i * 8} lane={i % 2 ? 5.6 : -5.6} speed={1.1 + (i % 3) * 0.2} dir={i % 2 ? 1 : -1} />)}
         <Player url={characterUrl} input={input} playerRef={playerRef} onDoor={(d) => { setActive(d?.id ?? null); onDoor(d); }} />
       </Suspense>
       {BUILDINGS.flatMap((b) => (b.door ? [<DoorMarker key={b.door.id} door={b.door} active={active === b.door.id} />] : []))}

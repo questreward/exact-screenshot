@@ -4,7 +4,7 @@ export type Door = { id: string; label: string; to: string; x: number; z: number
 export type Building = { model: string; x: number; z: number; rot: number; scale: number; door?: Door };
 
 const ROAD = 4;      // half width of each road
-export const WALK = 6.3; // half width of road + sidewalk band
+export const WALK = 7; // half width of road + sidewalk band
 export const LIMIT = 29;
 
 /** The walkable area is the cross formed by the two streets and their sidewalks. */
@@ -26,18 +26,18 @@ const door = (id: string, label: string, to: string, x: number, side: 1 | -1): D
 
 // North side (z < 0) faces +z, south side faces -z.
 export const BUILDINGS: Building[] = [
-  { model: S + "building-type-a.glb", x: -24, z: -10, rot: 0, scale: 5, door: door("logement", "Mon logement", "/chez-moi", -24, -1) },
-  { model: C + "building-b.glb", x: -16.5, z: -9.5, rot: 0, scale: 6, door: door("banque", "Banque", "/banque", -16.5, -1) },
-  { model: C + "building-c.glb", x: -10, z: -9.5, rot: 0, scale: 6, door: door("superette", "Supérette", "/marche", -10, -1) },
-  { model: C + "building-d.glb", x: 10, z: -9.5, rot: 0, scale: 6, door: door("mairie", "Mairie", "/ma-ville", 10, -1) },
-  { model: C + "building-skyscraper-a.glb", x: 17, z: -10, rot: 0, scale: 6 },
-  { model: C + "building-e.glb", x: 24, z: -9.5, rot: 0, scale: 6, door: door("poste", "La Poste", "/la-poste", 24, -1) },
-  { model: C + "building-f.glb", x: -24, z: 9.5, rot: Math.PI, scale: 6, door: door("sante", "Centre de santé", "/espace-sante", -24, 1) },
-  { model: C + "building-g.glb", x: -16.5, z: 9.5, rot: Math.PI, scale: 6 },
-  { model: C + "building-h.glb", x: -10, z: 9.5, rot: Math.PI, scale: 6, door: door("emploi", "Espace Emploi", "/espace-emploi", -10, 1) },
-  { model: C + "building-a.glb", x: 10, z: 9.5, rot: Math.PI, scale: 6, door: door("secours", "Commissariat et secours", "/secours", 10, 1) },
+  { model: S + "building-type-a.glb", x: -24, z: -10, rot: 0, scale: 4, door: door("logement", "Mon logement", "/chez-moi", -24, -1) },
+  { model: C + "building-b.glb", x: -16.5, z: -9.8, rot: 0, scale: 4.5, door: door("banque", "Banque", "/banque", -16.5, -1) },
+  { model: C + "building-c.glb", x: -10, z: -9.8, rot: 0, scale: 4.5, door: door("superette", "Supérette", "/marche", -10, -1) },
+  { model: C + "building-d.glb", x: 10, z: -9.8, rot: 0, scale: 4.5, door: door("mairie", "Mairie", "/ma-ville", 10, -1) },
+  { model: C + "building-skyscraper-a.glb", x: 17, z: -10, rot: 0, scale: 4.5 },
+  { model: C + "building-e.glb", x: 24, z: -9.8, rot: 0, scale: 4.5, door: door("poste", "La Poste", "/la-poste", 24, -1) },
+  { model: C + "building-f.glb", x: -24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("sante", "Centre de santé", "/espace-sante", -24, 1) },
+  { model: C + "building-g.glb", x: -16.5, z: 9.8, rot: Math.PI, scale: 4.5 },
+  { model: C + "building-h.glb", x: -10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("emploi", "Espace Emploi", "/espace-emploi", -10, 1) },
+  { model: C + "building-a.glb", x: 10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("secours", "Commissariat et secours", "/secours", 10, 1) },
   { model: S + "building-type-c.glb", x: 17, z: 10, rot: Math.PI, scale: 5 },
-  { model: C + "building-b.glb", x: 24, z: 9.5, rot: Math.PI, scale: 6, door: door("travail", "Mon travail", "/carriere", 24, 1) },
+  { model: C + "building-b.glb", x: 24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("travail", "Mon travail", "/carriere", 24, 1) },
 ];
 
 export const DOORS: Door[] = BUILDINGS.flatMap((b) => (b.door ? [b.door] : []));
