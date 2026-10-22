@@ -20,8 +20,8 @@ import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, nota
 
 export const Route = createFileRoute("/_authenticated/_game/boutique")({
   head: () => ({ meta: gameMeta("Boutique", "Achetez de vrais produits comptant ou à crédit, revendez vos biens et trouvez des occasions de seconde main.") }),
-  validateSearch: (s: Record<string, unknown>): { rayon?: string; q?: string } => ({
-    ...(typeof s["rayon"] === "string" ? { rayon: s["rayon"] } : {}), ...(typeof s["q"] === "string" ? { q: s["q"] } : {}) }),
+  validateSearch: (s: Record<string, unknown>): { rayon?: string; q?: string; magasin?: string } => ({
+    ...(typeof s["rayon"] === "string" ? { rayon: s["rayon"] } : {}), ...(typeof s["q"] === "string" ? { q: s["q"] } : {}), ...(typeof s["magasin"] === "string" ? { magasin: s["magasin"].slice(0, 120) } : {}) }),
   component: ShopPage,
 });
 
@@ -99,6 +99,7 @@ function ShopPage() {
       <div className="min-w-0 flex-1"><h1 className="font-heading text-2xl font-bold">Boutique</h1><p className="text-sm text-muted-foreground">Vrais produits, prix indicatifs, comptant ou à crédit.</p></div>
       {s && <div className="rounded-lg bg-secondary px-3 py-2 text-right text-secondary-foreground"><p className="text-xs opacity-80">Solde</p><p className="font-heading font-bold">{eur(s.balance)}</p></div>}</header>
     <Link to="/style" className="flex min-h-12 items-center justify-between rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-semibold">✨ Objets de style (argent réel, sans avantage) <ChevronRight className="h-5 w-5" /></Link>
+    {entry.magasin && <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border py-3"><div className="min-w-0"><p className="break-words font-semibold">Depuis {entry.magasin}</p><p className="text-xs text-muted-foreground">Catalogue commun CIVITAS · tarifs de la boutique</p></div><Button asChild variant="outline" className="min-h-12"><Link to="/carte" search={{}}>Retour à la carte</Link></Button></div>}
     {isLoading && <ExperienceState kind="loading" title="Ouverture du magasin…" />}
     {isError && <ExperienceState kind="error" title="Le magasin n’a pas pu s’ouvrir" description="Impossible de récupérer le catalogue pour le moment." onRetry={() => void refetch()} />}
     {s && <Tabs defaultValue="catalogue">
