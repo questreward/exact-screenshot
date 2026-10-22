@@ -1,10 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## V4 — Métiers (Prompt 5)
-- [ ] Relier briefing, objectif courant, actions et bilan aux missions existantes ; conserver salaires et progression.
-- [ ] Retirer les fausses arrivées, tâches réussies et performances des présentations de service.
-- [ ] Fiabiliser les décisions, la reprise après navigation et les états d’erreur ; relier téléphone et carte sans inventer de destination.
-- [ ] Tester les missions, la reprise et les services ; vérifier les pages accessibles et identifier les capacités manquantes.
+- [x] Relier briefing, objectif courant, actions et bilan aux missions existantes ; salaires et progression préservés, décors par métier et comptes rendus des services enregistrés.
+- [x] Retirer les fausses arrivées, tâches réussies, clients décoratifs et performances des présentations de service ; consignes non présentées comme actions enregistrées.
+- [x] Décisions protégées contre double appui, dossier conservé après erreur, actualisation avant nouvelle décision, clé de début de garde réutilisée ; téléphone lit le dossier déjà consulté et carte ouvre le vrai lieu de travail.
+- [x] 507 tests réussis, compilation OK ; reprise de garde après minuit, état non confirmé et décisions testés. Accès protégé à 390×844 et 1280×1800 sans erreur ni débordement.
+- [ ] Essai complet avec personnage sur VPS : aucun compte correspondant dans l’aperçu, pages redirigées vers la connexion.
+
+Limites du contrat existant (évolution ultérieure, non simulée) : missions quotidiennes sans destination précise ni inventaire professionnel persistant ; pas de tournée issue des commandes, d’itinéraire de cortège enregistré ou de nouvelle génération météo. Les systèmes métiers/commerce/politique/IA existants sont conservés sans nouveau moteur ni nouvelles récompenses. Le Prompt 5 complet n’est pas déclaré terminé.
 
 ## V4 — Commerces (Prompt 4)
 - [x] Conserver les commerces et catalogues existants : entrée liée à la carte, rayons tactiles, comparaison de deux produits et photos du concessionnaire ; aucun faux horaire ni faux client.
