@@ -262,7 +262,7 @@ function LocationPanel({ location: l, district, city }: { location: Tables<"loca
       <Suspense fallback={null}><LocationEvents locationId={l.id} full/></Suspense>
       {l.civic_project && <div className="border-y border-border py-3"><p className="text-xs text-primary">{CIVIC_LOCATION_STATE[l.civic_state] ?? l.civic_state}</p><p className="mt-1 text-sm font-semibold">{l.civic_project}</p></div>}
       <dl className="space-y-2 border-y border-border py-3 text-xs"><div><dt className="text-muted-foreground">Accès</dt><dd className="mt-1">{l.opening_hours ?? "Horaires non définis"}</dd></div><div><dt className="text-muted-foreground">Statut</dt><dd className="mt-1">{here ? "Vous êtes ici" : l.accessible && district.available && city.available ? "Accessible" : "Inaccessible"}</dd></div></dl>
-      {l.kind === "magasin" && SHOP_SECTION[l.name] && <ShopInterior section={SHOP_SECTION[l.name]!} name={l.name} here={here} />}
+      {l.kind === "magasin" && SHOP_SECTION[l.name] && <ShopInterior section={SHOP_SECTION[l.name] ?? ""} name={l.name} here={here} closed={open?.open === false} />}
       {l.kind === "station_service" && <FuelStation here={here} />}
       {here && ['banque','distributeur'].includes(l.kind) && <BankTerminal />}
       {here && l.kind === 'banque' && <FinancialAdviser />}

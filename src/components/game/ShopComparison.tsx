@@ -1,0 +1,7 @@
+import type { ShopProduct } from "@/services/game";
+import { ProductPhoto } from "./ProductPhoto";
+import { Button } from "@/components/ui/button";
+
+export function ShopComparison({ products, price, onRemove }: { products: ShopProduct[]; price: (p: ShopProduct) => number; onRemove: (id: string) => void }) {
+  return <section className="space-y-4 border-y border-border py-4" aria-label="Comparaison des produits"><h2 className="font-display text-xl font-semibold">Comparer mes choix</h2><div className="grid grid-cols-2 gap-3">{products.map(p => <article key={p.id} className="min-w-0 space-y-3"><ProductPhoto name={p.name} details={p.details} animated={false} className="aspect-[4/3] rounded-lg" /><p className="text-xs text-muted-foreground">{p.brand}</p><h3 className="break-words font-semibold">{p.name}</h3><p className="font-semibold tabular-nums">{price(p).toLocaleString("fr-FR")} €</p><p className="break-words text-sm text-muted-foreground">{p.desc}</p>{p.details.variant_attribute && <p className="text-sm">{p.details.variant_attribute} : {p.details.variant_value}</p>}{p.details.conso != null && <p className="text-sm">{p.details.conso} L/100 km</p>}<Button variant="outline" className="min-h-12 w-full" onClick={() => onRemove(p.id)}>Retirer</Button></article>)}</div></section>;
+}

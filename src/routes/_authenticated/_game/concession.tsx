@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { dealerQuery, dealerRpc, type DealerState } from "@/services/game";
 import { gameMeta } from "@/game/metadata";
 import { ShowroomDay } from "@/components/game/ShowroomDay";
+import { ProductPhoto } from "@/components/game/ProductPhoto";
 
 export const Route = createFileRoute("/_authenticated/_game/concession")({
   head: () => ({ meta: gameMeta("Concessionnaire", "Acheter une voiture neuve ou d'occasion chez un joueur, faire reprendre la tienne, tenir ta concession.") }),
@@ -78,6 +79,7 @@ function NewCar({ dealer, car, busy, onBuy }: { dealer: string; car: DealerState
   const [months, setMonths] = useState("48");
   const { data: shop } = useQuery({ ...shopQuery, enabled: credit });
   return <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <ProductPhoto name={car.name} className="aspect-[16/9] rounded-lg" />
     <div className="flex items-center justify-between gap-2"><div><p className="font-semibold">{car.brand ? `${car.brand} ` : ""}{car.name}</p>
       <p className="text-xs text-muted-foreground">{car.quantity} en stock · prix catalogue {eur(car.catalog_price)}</p></div>
       <p className="font-heading text-lg font-bold">{eur(car.price)}</p></div>
@@ -112,12 +114,13 @@ function TradeIn({ car, dealers, busy, onTrade }: { car: DealerState["my_cars"][
 }
 
 function MyDealer({ s, busy, run }: { s: DealerState; busy: boolean; run: (fn: Parameters<typeof dealerRpc>[0], a: Record<string, unknown>, ok: string) => void }) {
-  const mine = s.mine!;
+  const mine = s.mine;
   const me = s.dealers.find(d => d.mine);
   const [pct, setPct] = useState(String(me?.percent ?? 100));
   const [car, setCar] = useState(s.catalog[0]?.id ?? "");
   const [qty, setQty] = useState("1");
   const chosen = s.catalog.find(c => c.id === car);
+  if (!mine) return null;
   return <>
     <ShowroomDay stock={me?.stock ?? []} soldDays={mine.ops.filter(o => o.kind === "npc_sale").map(o => o.at.slice(0, 10))} />
     <div className="grid grid-cols-2 gap-3">
