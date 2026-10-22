@@ -44,7 +44,7 @@ function Street() {
   const { data: bank } = useSuspenseQuery(bankQuery);
   const { time, phase } = useWorldClock();
   const navigate = useNavigate();
-  const input = useRef<StreetInput>({ x: 0, y: 0, yaw: 0 });
+  const input = useRef<StreetInput>({ x: 0, y: 0, yaw: Math.PI / 2 });
   const [door, setDoor] = useState<Door | null>(null);
   const doorRef = useRef<Door | null>(null);
   doorRef.current = door;

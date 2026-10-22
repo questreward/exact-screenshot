@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree, type ThreeElements } from "@react-three/fib
 import { Environment, Lightformer, useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
-import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, slide, type Door } from "@/game/street3d";
+import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, slide, walkable, type Door } from "@/game/street3d";
 import type { DayPhase } from "@/game/world";
 
 export type StreetInput = { x: number; y: number; yaw: number };
@@ -143,7 +143,10 @@ function Player({ url, input, playerRef, onDoor }: { url: string; input: React.R
     }
     const door = nearestDoor(p.position.x, p.position.z);
     if ((door?.id ?? null) !== lastDoor.current) { lastDoor.current = door?.id ?? null; onDoor(door); }
-    const desired = new THREE.Vector3(p.position.x + Math.sin(inp.yaw) * CAM_DIST, CAM_HEIGHT, p.position.z + Math.cos(inp.yaw) * CAM_DIST);
+    // The camera stays in the street: it moves closer instead of going through buildings.
+    let dist = CAM_DIST;
+    while (dist > 2.5 && !walkable(p.position.x + Math.sin(inp.yaw) * dist, p.position.z + Math.cos(inp.yaw) * dist)) dist -= 0.5;
+    const desired = new THREE.Vector3(p.position.x + Math.sin(inp.yaw) * dist, CAM_HEIGHT * (0.55 + 0.45 * dist / CAM_DIST), p.position.z + Math.cos(inp.yaw) * dist);
     camPos.lerp(desired, 1 - Math.exp(-4 * dt));
     camera.position.copy(camPos);
     camera.lookAt(p.position.x, 1.4, p.position.z);
