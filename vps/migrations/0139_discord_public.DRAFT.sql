@@ -62,12 +62,15 @@ CREATE VIEW public.discord_feed WITH (security_barrier=true) AS
  'Édition nationale enregistrée dans le jeu.', t.created_at
  FROM public.tv_broadcasts t WHERE t.scope='national' AND t.created_at<=public.game_now() AND t.created_at>public.game_now()-interval '7 days';
 
+-- PostgreSQL exige CREATE sur le schéma pour le transfert de propriété.
+GRANT CREATE ON SCHEMA public TO civitas_discord_views;
 ALTER VIEW public.discord_clock OWNER TO civitas_discord_views;
 ALTER VIEW public.discord_events OWNER TO civitas_discord_views;
 ALTER VIEW public.discord_districts OWNER TO civitas_discord_views;
 ALTER VIEW public.discord_elections OWNER TO civitas_discord_views;
 ALTER VIEW public.discord_rankings OWNER TO civitas_discord_views;
 ALTER VIEW public.discord_feed OWNER TO civitas_discord_views;
+REVOKE CREATE ON SCHEMA public FROM civitas_discord_views;
 REVOKE ALL ON public.discord_clock, public.discord_events, public.discord_districts, public.discord_elections, public.discord_rankings, public.discord_feed FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.discord_clock, public.discord_events, public.discord_districts, public.discord_elections, public.discord_rankings, public.discord_feed TO civitas_discord;
 -- Aucun rôle applicatif n'est attribué au compte du bot. Vérifier aussi les droits

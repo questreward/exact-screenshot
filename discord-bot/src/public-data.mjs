@@ -10,7 +10,7 @@ export function publicPost(row, gameUrl) {
   // Explicit projection: no private fields, invented narrative, totals or player IDs.
   return {
     content: `**${safeText(row.title, 180)}**\n${safeText(row.summary, 1200)}\n${gameUrl}/decouvrir`,
-    allowed_mentions: { parse: [] },
+    allowedMentions: { parse: [] },
   };
 }
 export function welcome(gameUrl) {
