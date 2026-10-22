@@ -43,7 +43,7 @@ export function JobMissionCard() {
       {m.status === 'active' && m.step ? <>
         <p className="text-xs text-muted-foreground">{missionStepLabel(m.step_index, m.step_count)} · expire en fin de journée (UTC), sans pénalité</p>
         <p className="mission-step-enter border-l-2 border-primary pl-3" key={m.step_index} aria-live="polite">{m.step.text}</p>
-        <div className="grid gap-2">{m.step.choices.map((choice, i) => <Button key={`${m.step_index}-${i}`} variant="outline" className="min-h-14 h-auto whitespace-normal justify-start p-3 text-left" disabled={mutation.isPending} onClick={() => choose(m.day, m.step_index, i)}>{choice.label}</Button>)}</div>
+        <div className="grid gap-2">{m.step.choices.map((choice, i) => <Button key={`${m.step_index}-${i}`} variant="outline" className="min-h-14 h-auto whitespace-normal justify-start p-3 text-left" disabled={mutation.isPending || mutation.isError} onClick={() => choose(m.day, m.step_index, i)}>{choice.label}</Button>)}</div>
         {mutation.isPending && <p role="status" className="text-sm text-muted-foreground">Enregistrement de la décision…</p>}
         {mutation.isError && <ExperienceState kind="error" title="Décision non confirmée" description="Votre dossier reste disponible. Actualisez son état avant de décider à nouveau." onRetry={() => { mutation.reset(); void query.refetch(); }} />}
         <p className="text-xs text-muted-foreground">Bilan final : réputation +1 à +3 ou −1 à −2 ; énergie −5 à −15. Les choix et les circonstances déterminent le résultat.</p>

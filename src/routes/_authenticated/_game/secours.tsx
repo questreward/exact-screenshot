@@ -5,6 +5,7 @@ import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-q
 import { useRef, useState, type ReactNode } from "react";
 import { CivilProtectionPresidency } from "@/components/game/CivilProtectionPresidency";
 import { VolunteerDossier } from "@/components/game/VolunteerDossier";
+import { SecurityDossier } from "@/components/game/SecurityDossier";
 import { Siren, LoaderCircle, Clock, ShieldCheck, ClipboardList, Wallet, GraduationCap, Award } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -191,9 +192,9 @@ function Career({ s, missions, busy, run }: { s: SecurityState; missions: { id: 
     </Card>
 
     {s.shifts.some(x => x.settled) && <Card title="Mes derniers services" icon={ClipboardList}>
-      <ul className="space-y-2 text-sm">{s.shifts.filter(x => x.settled).map(x => <li key={x.id} className="flex justify-between gap-2">
-        <span>{missions.find(m => m.id === x.mission_id)?.title ?? "Mission"} · {when(x.starts_at)}</span>
-        <span className="font-semibold">{OUTCOME_LABELS[x.outcome ?? "equipe"]}</span></li>)}</ul>
+      <ul className="space-y-3 text-sm">{s.shifts.filter(x => x.settled).map(x => <li key={x.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+        <div className="min-w-0 flex-1"><p className="break-words">{missions.find(m => m.id === x.mission_id)?.title ?? "Mission"}</p><p className="text-xs text-muted-foreground">{when(x.starts_at)}</p><p className="font-semibold">{OUTCOME_LABELS[x.outcome ?? "equipe"]}</p></div>
+        <SecurityDossier shift={x} mission={missions.find(m => m.id === x.mission_id)} pay={s.ledger.find(l => l.key === `vac:${x.id}`)?.amount} /></li>)}</ul>
     </Card>}
 
     <Button variant="outline" className="min-h-12 w-full" disabled={busy}
