@@ -59,7 +59,7 @@
 
 - V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
 
-- Smartphone loaders select dependencies by application with a query-independent pending/error device shell; conversation IDs live in route search, back exits the thread before the app, and query error reset retries reads without duplicating communication storage.
+- Smartphone loaders load per app with a query-independent shell; conversation IDs live in route search; error reset retries reads only.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
 - Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.
 - MissionActions renders only server-provided choices over shared job imagery; refresh after uncertainty must succeed before choices unlock, to prevent stale decisions.
