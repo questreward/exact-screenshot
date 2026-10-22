@@ -42,7 +42,7 @@ export function WorkDay() {
       <dl className="mt-3 grid grid-cols-2 gap-3 border-y border-border py-3 text-sm"><dt>Début enregistré</dt><dd>{hm(new Date(running.start_time))}</dd><dt>Fin prévue</dt><dd>{hm(new Date(running.end_time))}</dd></dl>
       <Button asChild className="mt-4 min-h-14 w-full"><a href="#mission-professionnelle">Reprendre ma mission</a></Button>
       <div className="mt-2 grid grid-cols-3 gap-2">
-        <Button asChild variant="outline" className="min-h-12"><Link to="/telephone">📱 Téléphone</Link></Button>
+        <Button asChild variant="outline" className="min-h-12"><Link to="/telephone" search={{ app: 'travail' }}>📱 Téléphone</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/agenda">📅 Agenda</Link></Button>
         <Button asChild variant="outline" className="min-h-12"><Link to="/actualites">📰 Infos</Link></Button>
       </div>

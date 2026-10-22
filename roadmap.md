@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Déplacements et métiers (Prompts 12–13)
+- [x] Auditer les véhicules, trajets, missions et journées existants ; aucune seconde simulation, achat, récompense ni destination inventée.
+- [x] Première tranche : suivi commun des trajets locaux/interurbains (temps du jeu restant, tronçon et prochain radar enregistrés), arrivée locale conditionnée au statut confirmé. Planning professionnel du téléphone : services réservés/en cours, lieux enregistrés, reprise et dernier service terminé ; service de la veille conservé après sa relève prévue.
+- [x] 544 tests sur 140 fichiers réussis, compilation automatique OK ; suivi isolé vérifié à 390×844 et 1280×1800 sans débordement ni erreur. Les accès conduite/téléphone/carrière redirigent vers la connexion : ce contrôle ne vérifie pas un trajet ni une journée connectés.
+- [ ] Essai avec personnage et installation VPS : aucun compte de l’utilisateur dans l’aperçu (--self échoué) ; parcours réel non vérifié.
+- [ ] Extensions persistantes (stationnement, réseau routier/fermetures, trafic, cargaisons, missions multi-métiers) : contrat sécurisé et SQL exact soumis à accord avant installation.
+- [ ] Prompts 12–13 complets : conduite physique/routage, trafic et parkings, cargaisons, équipement à conséquences, collègues/clients et tâches physiques partagées attendent ces contrats ; aucune de ces extensions n’est déclarée terminée.
+
 ## V4 — Caisse, téléphone et messages habitants
 - [x] Achats scannés puis confirmés : actualisation des lectures partagées du compte, patrimoine et ameublement, même après réponse incertaine ; aucun débit local ni achat au simple scan. Clés de reprise inchangées.
 - [x] Téléphone « Mes achats » : articles, montants et tickets enregistrés, conservés après revente ; lieu affiché seulement s’il est enregistré.
