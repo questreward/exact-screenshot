@@ -1,10 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## V4 — Bâtiments et société (Prompts 14–15)
-- [ ] Auditer les lieux, intérieurs, pièces, présences et relations existants ; conserver les systèmes sécurisés.
-- [ ] Relier les lieux aux actions réellement disponibles, sans présenter une consultation comme une entrée physique.
-- [ ] Rendre les habitants persistants reconnaissables et leurs rencontres enregistrées accessibles, sans mémoire IA ou routine inventée.
-- [ ] Vérifier les tests concernés et l’affichage mobile ; essai connecté et installation VPS à confirmer.
+- [x] Auditer les lieux, intérieurs, pièces, présences et relations existants ; conserver les systèmes sécurisés.
+- [x] Première tranche lieux : espaces enregistrés, pièce actuelle, entrée/sortie et reprise verrouillée après réponse incertaine ; rayons tactiles sur téléphone et exploration distincte d’une entrée physique. Aucun nouveau bâtiment ou droit créé.
+- [x] Première tranche société : chronologie datée des interactions enregistrées par identité dans les contacts, ordre récent et dédoublonnage ; dialogues IA temporaires inchangés, aucune nouvelle mémoire.
+- [x] 550 tests sur 142 fichiers réussis ; compilation automatique OK. Espaces et rencontres isolés vérifiés à 390×844 et 1280×1800, sans débordement ; ce n’est pas une entrée connectée ni une rencontre réelle.
+- [ ] Essai avec personnage et installation VPS : --self échoué, aucun compte correspondant à l’utilisateur dans l’aperçu ; parcours connecté non vérifié.
 - [ ] Extensions enregistrées : portes/droits, stocks/logistique, routines réactives, budgets PNJ et mémoire importante ; contrat et SQL exact à soumettre avant installation. Les documents complets ne sont pas déclarés terminés.
 
 ## V4 — Déplacements et métiers (Prompts 12–13)
