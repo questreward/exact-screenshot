@@ -16,7 +16,7 @@ import { ExperienceLoading } from "@/components/game/ExperienceState";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { isExpiredSessionError, recoverExpiredSession } from "@/lib/session-recovery";
+import { forgetLocalSession, isExpiredSessionError, recoverExpiredSession } from "@/lib/session-recovery";
 
 function NotFoundComponent() {
   return (
@@ -73,7 +73,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold text-foreground">{expired ? 'Votre connexion a expiré' : "Cette page n'a pas pu se charger"}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{expired ? 'Renouvelez votre connexion pour retrouver votre personnage.' : "Une erreur est survenue. Réessayez ou revenez à l'accueil."}</p>
-        {recoveryFailed && <p role="alert" className="mt-2 text-sm text-muted-foreground">La connexion n’a pas pu être rétablie. Vérifiez votre accès à Internet puis réessayez.</p>}
+        {recoveryFailed && <p role="alert" className="mt-2 text-sm text-muted-foreground">La connexion n’a pas pu être rétablie. Vérifiez votre accès à Internet ou reconnectez-vous.</p>}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button
             onClick={retryPage}
@@ -82,6 +82,21 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           >
             {recovering ? 'Patientez…' : expired ? 'Renouveler ma connexion' : 'Réessayer'}
           </Button>
+          {(expired || recoveryFailed) && (
+            <Button
+              variant="outline"
+              disabled={recovering}
+              onClick={async () => {
+                await queryClient.cancelQueries();
+                queryClient.clear();
+                await forgetLocalSession();
+                await router.navigate({ to: '/auth', replace: true });
+              }}
+              className="h-11 rounded-xl px-5 text-sm font-semibold"
+            >
+              Me reconnecter
+            </Button>
+          )}
           <a href="/" className="inline-flex h-11 items-center justify-center rounded-xl border border-input px-5 text-sm font-semibold text-foreground">
             Accueil
           </a>
