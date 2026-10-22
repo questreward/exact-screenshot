@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Discord — Bot communautaire
+- [ ] Préparer le programme séparé : accueil, rôles d’intérêt, informations publiques, commandes et annonces réservées au propriétaire.
+- [ ] Préparer les accès SQL limités et les contrôles, sans appliquer de migration sans accord.
+- [ ] Tester les filtres privés, permissions et reprises ; fournir installation et configuration sécurisées sur VPS.
+- [ ] Mise en service réelle : attend création/invitation du bot, jeton privé, identifiants Discord et installation VPS.
+
 ## V4 — Véhicules, téléphone, métiers et ville (Prompts 16–19)
 - [x] Documents 20–25 lus : téléphone, environnement, objets, politique, crises et audit final. Priorités conservées, aucun document complet déclaré terminé.
 - [x] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
