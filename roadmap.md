@@ -191,4 +191,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 
 - [x] Ville 3D : rue explorable, portes vers les pages existantes
 - [ ] Serveur VPS en mode final (attente du contenu du Dockerfile)
-- [ ] Grande étape 3D (document importé) — à lire et planifier
+- [ ] Grande étape 3D — plan en 7 étapes (en attente d’accord)
+- [x] Réglage manuel qualité rue 3D
