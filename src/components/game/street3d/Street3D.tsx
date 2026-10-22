@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree, type ThreeElements } from "@react-three/fib
 import { Environment, Lightformer, PerformanceMonitor, useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
-import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, slide, walkable, type Door } from "@/game/street3d";
+import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, walkable, type Door } from "@/game/street3d";
 import type { DayPhase } from "@/game/world";
 
 export type StreetInput = { x: number; y: number; yaw: number };
@@ -49,7 +49,7 @@ function Ground() {
   );
 }
 
-function Model({ url, ...props }: { url: string } & ThreeElements["group"]) {
+export function Model({ url, ...props }: { url: string } & ThreeElements["group"]) {
   const { scene } = useGLTF(url);
   const obj = useMemo(() => { const c = scene.clone(true); c.traverse((o: THREE.Object3D) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return c; }, [scene]);
   return <primitive object={obj} {...props} />;
@@ -110,7 +110,7 @@ function Car({ url, lane, axis, speed, start, playerRef, night }: { url: string;
   return <group ref={g}><Model url={url} />{night && <pointLight position={[0, 0.6, 1.8]} intensity={4} distance={7} color="#fff1c8" />}</group>;
 }
 
-function Player({ url, input, playerRef, onDoor }: { url: string; input: React.RefObject<StreetInput>; playerRef: React.RefObject<THREE.Group | null>; onDoor: (d: Door | null) => void }) {
+export function Player({ url, input, playerRef, onDoor, canWalk = walkable, findDoor = nearestDoor, start = [-13, 0, 4], camDist = CAM_DIST, camHeight = CAM_HEIGHT, camWalk }: { camWalk?: (x: number, z: number) => boolean; url: string; input: React.RefObject<StreetInput>; playerRef: React.RefObject<THREE.Group | null>; onDoor: (d: Door | null) => void; canWalk?: (x: number, z: number) => boolean; findDoor?: (x: number, z: number) => Door | null; start?: [number, number, number]; camDist?: number; camHeight?: number }) {
   const { scene, animations } = useGLTF(url);
   const obj = useMemo(() => { const c = cloneSkinned(scene); c.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); return c; }, [scene]);
   const { actions } = useAnimations(animations, playerRef as React.RefObject<THREE.Group>);
@@ -130,7 +130,7 @@ function Player({ url, input, playerRef, onDoor }: { url: string; input: React.R
     const isMoving = len > 0.08;
     if (isMoving) {
       mx /= Math.max(1, len); mz /= Math.max(1, len);
-      const [nx, nz] = slide(p.position.x, p.position.z, p.position.x + mx * SPEED * dt, p.position.z + mz * SPEED * dt);
+      const [nx, nz] = slideWith(canWalk, p.position.x, p.position.z, p.position.x + mx * SPEED * dt, p.position.z + mz * SPEED * dt);
       p.position.set(nx, 0, nz);
       const target = Math.atan2(mx, mz);
       let d = target - p.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
@@ -141,17 +141,17 @@ function Player({ url, input, playerRef, onDoor }: { url: string; input: React.R
       const from = actions[isMoving ? "idle" : "walk"], to = actions[isMoving ? "walk" : "idle"];
       from?.fadeOut(0.2); to?.reset().fadeIn(0.2).play();
     }
-    const door = nearestDoor(p.position.x, p.position.z);
+    const door = findDoor(p.position.x, p.position.z);
     if ((door?.id ?? null) !== lastDoor.current) { lastDoor.current = door?.id ?? null; onDoor(door); }
     // The camera stays in the street: it moves closer instead of going through buildings.
-    let dist = CAM_DIST;
-    while (dist > 2.5 && !walkable(p.position.x + Math.sin(inp.yaw) * dist, p.position.z + Math.cos(inp.yaw) * dist)) dist -= 0.5;
-    const desired = new THREE.Vector3(p.position.x + Math.sin(inp.yaw) * dist, CAM_HEIGHT * (0.55 + 0.45 * dist / CAM_DIST), p.position.z + Math.cos(inp.yaw) * dist);
+    let dist = camDist;
+    while (dist > 2.5 && !(camWalk ?? canWalk)(p.position.x + Math.sin(inp.yaw) * dist, p.position.z + Math.cos(inp.yaw) * dist)) dist -= 0.5;
+    const desired = new THREE.Vector3(p.position.x + Math.sin(inp.yaw) * dist, camHeight * (0.55 + 0.45 * dist / camDist), p.position.z + Math.cos(inp.yaw) * dist);
     camPos.lerp(desired, 1 - Math.exp(-4 * dt));
     camera.position.copy(camPos);
     camera.lookAt(p.position.x, 1.4, p.position.z);
   });
-  return <group ref={playerRef} position={[-13, 0, 4]}><primitive object={obj} scale={1.2} /></group>;
+  return <group ref={playerRef} position={start}><primitive object={obj} scale={1.2} /></group>;
 }
 
 /** Appareils modestes : peu de cœurs/mémoire ou petit écran tactile. */
@@ -161,6 +161,14 @@ function isLowEnd() {
   return (n.hardwareConcurrency ?? 8) <= 4 || (n.deviceMemory ?? 8) <= 3;
 }
 
+function slideWith(ok: (x: number, z: number) => boolean, x: number, z: number, nx: number, nz: number): [number, number] {
+  if (ok(nx, nz)) return [nx, nz];
+  if (ok(nx, z)) return [nx, z];
+  if (ok(x, nz)) return [x, nz];
+  return [x, z];
+}
+
+export { isLowEnd };
 export type StreetQuality = "auto" | "low" | "high";
 
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];

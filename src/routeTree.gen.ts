@@ -20,6 +20,7 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as PaiementStyleRouteImport } from './routes/paiement-style'
 import { Route as PaiementVipRouteImport } from './routes/paiement-vip'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ZzTestLieuRouteImport } from './routes/zz-test-lieu'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
 import { Route as TilesSplatRouteImport } from './routes/tiles/$'
@@ -102,6 +103,7 @@ import { Route as AuthenticatedGameVipRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedGameVoyagesRouteImport } from './routes/_authenticated/_game/voyages'
 import { Route as AuthenticatedGameActualitesIdRouteImport } from './routes/_authenticated/_game/actualites_.$id'
 import { Route as AuthenticatedGameElectionsIdRouteImport } from './routes/_authenticated/_game/elections_.$id'
+import { Route as AuthenticatedGameLieu3dIdRouteImport } from './routes/_authenticated/_game/lieu-3d.$id'
 import { Route as AuthenticatedGameOrganisationsIdRouteImport } from './routes/_authenticated/_game/organisations_.$id'
 import { Route as AuthenticatedGamePolitiqueIdRouteImport } from './routes/_authenticated/_game/politique_.$id'
 import { Route as AuthenticatedGamePortailIdRouteImport } from './routes/_authenticated/_game/portail.$id'
@@ -161,6 +163,11 @@ const PaiementVipRoute = PaiementVipRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZzTestLieuRoute = ZzTestLieuRouteImport.update({
+  id: '/zz-test-lieu',
+  path: '/zz-test-lieu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGameRouteRoute = AuthenticatedGameRouteRouteImport.update({
@@ -625,6 +632,12 @@ const AuthenticatedGameElectionsIdRoute =
     path: '/elections/$id',
     getParentRoute: () => AuthenticatedGameRouteRoute,
   } as any)
+const AuthenticatedGameLieu3dIdRoute =
+  AuthenticatedGameLieu3dIdRouteImport.update({
+    id: '/lieu-3d/$id',
+    path: '/lieu-3d/$id',
+    getParentRoute: () => AuthenticatedGameRouteRoute,
+  } as any)
 const AuthenticatedGameOrganisationsIdRoute =
   AuthenticatedGameOrganisationsIdRouteImport.update({
     id: '/organisations_/$id',
@@ -673,6 +686,7 @@ export interface FileRoutesByFullPath {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
@@ -754,6 +768,7 @@ export interface FileRoutesByFullPath {
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
+  '/lieu-3d/$id': typeof AuthenticatedGameLieu3dIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/politique/$id': typeof AuthenticatedGamePolitiqueIdRoute
   '/portail/$id': typeof AuthenticatedGamePortailIdRoute
@@ -772,6 +787,7 @@ export interface FileRoutesByTo {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
@@ -853,6 +869,7 @@ export interface FileRoutesByTo {
   '/voyages': typeof AuthenticatedGameVoyagesRoute
   '/actualites/$id': typeof AuthenticatedGameActualitesIdRoute
   '/elections/$id': typeof AuthenticatedGameElectionsIdRoute
+  '/lieu-3d/$id': typeof AuthenticatedGameLieu3dIdRoute
   '/organisations/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/politique/$id': typeof AuthenticatedGamePolitiqueIdRoute
   '/portail/$id': typeof AuthenticatedGamePortailIdRoute
@@ -873,6 +890,7 @@ export interface FileRoutesById {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -955,6 +973,7 @@ export interface FileRoutesById {
   '/_authenticated/_game/voyages': typeof AuthenticatedGameVoyagesRoute
   '/_authenticated/_game/actualites_/$id': typeof AuthenticatedGameActualitesIdRoute
   '/_authenticated/_game/elections_/$id': typeof AuthenticatedGameElectionsIdRoute
+  '/_authenticated/_game/lieu-3d/$id': typeof AuthenticatedGameLieu3dIdRoute
   '/_authenticated/_game/organisations_/$id': typeof AuthenticatedGameOrganisationsIdRoute
   '/_authenticated/_game/politique_/$id': typeof AuthenticatedGamePolitiqueIdRoute
   '/_authenticated/_game/portail/$id': typeof AuthenticatedGamePortailIdRoute
@@ -975,6 +994,7 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
+    | '/zz-test-lieu'
     | '/creation'
     | '/tiles/$'
     | '/actualites'
@@ -1056,6 +1076,7 @@ export interface FileRouteTypes {
     | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
+    | '/lieu-3d/$id'
     | '/organisations/$id'
     | '/politique/$id'
     | '/portail/$id'
@@ -1074,6 +1095,7 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
+    | '/zz-test-lieu'
     | '/creation'
     | '/tiles/$'
     | '/actualites'
@@ -1155,6 +1177,7 @@ export interface FileRouteTypes {
     | '/voyages'
     | '/actualites/$id'
     | '/elections/$id'
+    | '/lieu-3d/$id'
     | '/organisations/$id'
     | '/politique/$id'
     | '/portail/$id'
@@ -1174,6 +1197,7 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
+    | '/zz-test-lieu'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
     | '/tiles/$'
@@ -1256,6 +1280,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_game/voyages'
     | '/_authenticated/_game/actualites_/$id'
     | '/_authenticated/_game/elections_/$id'
+    | '/_authenticated/_game/lieu-3d/$id'
     | '/_authenticated/_game/organisations_/$id'
     | '/_authenticated/_game/politique_/$id'
     | '/_authenticated/_game/portail/$id'
@@ -1276,6 +1301,7 @@ export interface RootRouteChildren {
   PaiementStyleRoute: typeof PaiementStyleRoute
   PaiementVipRoute: typeof PaiementVipRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ZzTestLieuRoute: typeof ZzTestLieuRoute
   TilesSplatRoute: typeof TilesSplatRoute
 }
 
@@ -1356,6 +1382,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zz-test-lieu': {
+      id: '/zz-test-lieu'
+      path: '/zz-test-lieu'
+      fullPath: '/zz-test-lieu'
+      preLoaderRoute: typeof ZzTestLieuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_game': {
@@ -1932,6 +1965,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGameElectionsIdRouteImport
       parentRoute: typeof AuthenticatedGameRouteRoute
     }
+    '/_authenticated/_game/lieu-3d/$id': {
+      id: '/_authenticated/_game/lieu-3d/$id'
+      path: '/lieu-3d/$id'
+      fullPath: '/lieu-3d/$id'
+      preLoaderRoute: typeof AuthenticatedGameLieu3dIdRouteImport
+      parentRoute: typeof AuthenticatedGameRouteRoute
+    }
     '/_authenticated/_game/organisations_/$id': {
       id: '/_authenticated/_game/organisations_/$id'
       path: '/organisations/$id'
@@ -2057,6 +2097,7 @@ interface AuthenticatedGameRouteRouteChildren {
   AuthenticatedGameVoyagesRoute: typeof AuthenticatedGameVoyagesRoute
   AuthenticatedGameActualitesIdRoute: typeof AuthenticatedGameActualitesIdRoute
   AuthenticatedGameElectionsIdRoute: typeof AuthenticatedGameElectionsIdRoute
+  AuthenticatedGameLieu3dIdRoute: typeof AuthenticatedGameLieu3dIdRoute
   AuthenticatedGameOrganisationsIdRoute: typeof AuthenticatedGameOrganisationsIdRoute
   AuthenticatedGamePolitiqueIdRoute: typeof AuthenticatedGamePolitiqueIdRoute
   AuthenticatedGamePortailIdRoute: typeof AuthenticatedGamePortailIdRoute
@@ -2149,6 +2190,7 @@ const AuthenticatedGameRouteRouteChildren: AuthenticatedGameRouteRouteChildren =
     AuthenticatedGameVoyagesRoute: AuthenticatedGameVoyagesRoute,
     AuthenticatedGameActualitesIdRoute: AuthenticatedGameActualitesIdRoute,
     AuthenticatedGameElectionsIdRoute: AuthenticatedGameElectionsIdRoute,
+    AuthenticatedGameLieu3dIdRoute: AuthenticatedGameLieu3dIdRoute,
     AuthenticatedGameOrganisationsIdRoute:
       AuthenticatedGameOrganisationsIdRoute,
     AuthenticatedGamePolitiqueIdRoute: AuthenticatedGamePolitiqueIdRoute,
@@ -2188,6 +2230,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaiementStyleRoute: PaiementStyleRoute,
   PaiementVipRoute: PaiementVipRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ZzTestLieuRoute: ZzTestLieuRoute,
   TilesSplatRoute: TilesSplatRoute,
 }
 export const routeTree = rootRouteImport
