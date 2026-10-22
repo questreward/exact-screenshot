@@ -9,8 +9,8 @@ import type { DayPhase } from "@/game/world";
 export type StreetInput = { x: number; y: number; yaw: number };
 
 const SPEED = 4.2;
-const CAM_DIST = 9;
-const CAM_HEIGHT = 6.5;
+const CAM_DIST = 11;
+const CAM_HEIGHT = 8;
 
 const SKY: Record<DayPhase, { sky: string; sun: number; amb: number; lamps: boolean }> = {
   matin: { sky: "#f4c9a0", sun: 1.6, amb: 0.7, lamps: false },
@@ -148,7 +148,7 @@ function Player({ url, input, playerRef, onDoor }: { url: string; input: React.R
     camera.position.copy(camPos);
     camera.lookAt(p.position.x, 1.4, p.position.z);
   });
-  return <group ref={playerRef} position={[0, 0, 5]}><primitive object={obj} scale={1.2} /></group>;
+  return <group ref={playerRef} position={[-13, 0, 4]}><primitive object={obj} scale={1.2} /></group>;
 }
 
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];
@@ -160,7 +160,7 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd }: { phase:
   const [active, setActive] = useState<string | null>(null);
   const lampsX = [-26, -18, -6, 6, 18, 26];
   return (
-    <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 55, position: [0, 20, 25] }} gl={{ antialias: true }}>
+    <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 62, position: [-13, 9, 16] }} gl={{ antialias: true }}>
       <color attach="background" args={[look.sky]} />
       <fog attach="fog" args={[look.sky, 25, 70]} />
       <hemisphereLight args={[look.sky, "#4b4237", look.amb]} />
