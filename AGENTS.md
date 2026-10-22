@@ -50,12 +50,12 @@
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
 - VPS test restores omit cron via TOC; full backups retain production cron.
-- Self-hosted payment-key recovery verifies matching auth/PostgREST JWT secrets locally, writes only the server environment atomically with owner-only permissions, and never exposes private keys to browser config or output.
+- Payment-key recovery verifies matching JWT secrets locally, writes only the server env atomically (owner-only), never exposes keys.
 - Financial AI uses an owner-only read-only SQL snapshot and local Ollama; it explains recorded data and never executes operations or settles deadlines.
 - Physical cash is conserved with the bank account through character-locked, uniquely keyed SQL transfers; all wealth totals include cash and transfers are excluded from income/expenses.
 - Real branch locations are sourced from official address listings; CIVITAS advisers and cash terminals remain fictional and unaffiliated.
 - Bank history filters use Paris game dates; cash receipts reuse persisted operation keys and deltas, never reconstructed historical balances, to remain faithful to recorded transfers.
-- Product visuals resolve stored families and legacy aliases to lazy-loaded shared photographs; configuration labels stay literal, previews are illustrative and unboxing follows confirmed purchases only, so imagery never invents ownership or specifications.
+- Product visuals map stored families/aliases to lazy shared photos; previews illustrative, unboxing only after confirmed purchases.
 
 - V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
 
@@ -74,4 +74,4 @@
 - Map place facts use current position and completed on-site activities as visit evidence, and saved social bookings as meeting markers; selected/recent places never count as visits.
 - EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.
 - discord-bot has its own deployment and scoped public SQL projections; its durable pending-before-send journal avoids blind duplicate sends without claiming transactional Discord delivery. Read discord-bot/AGENTS.md before changing it.
-- The 3D street (ville-3d, R3F, CC0 Kenney models in public/models) is presentation only: doors navigate to existing secured pages, never perform actions or record positions, so gameplay stays server-authoritative.
+- 3D street (ville-3d, CC0 models in public/models) is presentation only: doors open existing secured pages, never act or record positions.
