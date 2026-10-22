@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Commerces (Prompt 4)
+- [ ] Conserver les commerces et catalogues existants, améliorer entrée et rayons sans états fictifs.
+- [ ] Fiabiliser panier, scan, confirmation et reprises après échec avec les achats sécurisés existants.
+- [ ] Afficher les tickets depuis les commandes enregistrées et les destinations de possessions existantes.
+- [ ] Tester succès, échec partiel, double appui et navigation ; contrôle réel avec personnage si accessible.
+
 ## V4 — Smartphone (Prompt 3)
 - [x] Réorganiser le téléphone : heure du jeu, applications, retour et accès aux systèmes existants.
 - [x] Charger les données nécessaires à l’application ouverte, préserver le cache et les conversations enregistrées.
