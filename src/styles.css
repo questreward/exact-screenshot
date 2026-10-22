@@ -308,7 +308,7 @@
 .real-pin-dot { width: 20px; height: 20px; border-radius: 9999px; background: var(--card); border: 3px solid var(--primary); box-shadow: 0 2px 6px rgb(0 0 0 / .4); }
 .real-pin.is-player .real-pin-dot { background: var(--primary); box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 35%, transparent); }
 .real-pin.is-selected .real-pin-dot { width: 26px; height: 26px; background: var(--primary); }
-.real-pin-label { padding: 2px 8px; border-radius: 8px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .35); }
+.real-pin-label { max-width: 180px; padding: 2px 8px; border-radius: 8px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; white-space: normal; overflow-wrap: anywhere; text-align: center; box-shadow: var(--shadow-card); }
 .real-pin-dot:not(:empty) { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 1; }
 .real-pin.is-important .real-pin-dot:not(:empty) { width: 36px; height: 36px; font-size: 18px; }
 .real-pin.is-player .real-pin-dot:not(:empty) { width: 40px; height: 40px; font-size: 20px; animation: pin-pulse 1.8s ease-in-out infinite; }

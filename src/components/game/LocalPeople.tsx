@@ -9,7 +9,7 @@ import { CharacterAvatar } from './CharacterAvatar';
 import { ExperienceState } from './ExperienceState';
 import { NpcChat } from './NpcChat';
 
-export function LocalPeople({ locationId, here, locationName }: { locationId: string; here: boolean; locationName?: string }) {
+export function LocalPeople({ locationId, here, locationName }: { locationId: string; here: boolean; locationName?: string | undefined }) {
   const query = useQuery(locationPresenceQuery(locationId));
   const people = localPeople(query.data ?? []);
   return <section className="space-y-3 border-t border-border pt-4" aria-label="Habitants présents">

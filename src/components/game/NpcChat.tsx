@@ -8,11 +8,11 @@ import { chatWithNpc } from "@/lib/npc-chat.functions";
 import { MAX_MESSAGE, MAX_TURNS, NPC_CHAT_STARTERS, type ChatTurn } from "@/game/npc-chat";
 import { EncounterSheet } from './EncounterSheet';
 
-export function NpcChat({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string }) {
+export function NpcChat({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string | undefined }) {
   return <NpcConversation key={npcId} npcId={npcId} name={name} here={here} locationName={locationName} />;
 }
 
-function NpcConversation({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string }) {
+function NpcConversation({ npcId, name, here, locationName }: { npcId: string; name: string; here: boolean; locationName?: string | undefined }) {
   const [open, setOpen] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [metAt, setMetAt] = useState<string>();

@@ -1,13 +1,14 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## V4 — Véhicules, téléphone, métiers et ville (Prompts 16–19)
-- [ ] Documents 20–25 reçus : lire leurs priorités, conserver leurs demandes et intégrer les tranches indépendantes possibles après les accès et rencontres.
-- [ ] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
-- [ ] Afficher les horaires enregistrés des lieux et préciser l’accès aux espaces et rayons, sans inventer d’heures.
-- [ ] Ajouter des repères interactifs pour lieux disponibles, visites enregistrées et prochaines rencontres réservées ; ne pas déduire une visite d’une simple consultation.
-- [ ] Ajouter une fiche habitant : échanges IA de la session, lieu rencontré et actions enregistrées ; conservation longue soumise à accord sur le stockage privé.
+- [x] Documents 20–25 lus : téléphone, environnement, objets, politique, crises et audit final. Priorités conservées, aucun document complet déclaré terminé.
+- [x] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
+- [x] Horaires existants affichés, prochaine ouverture tenant compte des jours et pauses/nuit, espaces fermés sans empêcher la sortie, rayons déjà conditionnés à l’ouverture. Aucun horaire ajouté ni règle serveur modifiée.
+- [x] Repères interactifs : disponibilité connue, visite attestée par position actuelle ou activité sur place terminée, rencontres sociales réservées avec lieu et horaire ; ni consultation ni trajet terminé ne deviennent une visite.
+- [x] Fiche habitant dans carte et contacts : échanges IA de la page, lieu associé, actions sociales enregistrées séparément ; aucun ancien lieu attribué au lieu actuel du PNJ.
 - [ ] Vérifier les tests ciblés et le parcours connecté si un compte est disponible.
 - [ ] Extensions complètes des Prompts 16–19 : persistance des véhicules/parkings, logistique, appels, métiers profonds et simulation réactive ; contrats sécurisés et SQL exact à approuver avant installation.
+- [ ] Prompts 20–25 complets : appels/livraisons, monde physique et objets partagés, interactions politiques et crises coordonnées ; extension des contrats existants à soumettre à accord, puis audit final connecté sur VPS. Pas de nouvelles scènes faussement actives.
 
 ## V4 — Bâtiments et société (Prompts 14–15)
 - [x] Auditer les lieux, intérieurs, pièces, présences et relations existants ; conserver les systèmes sécurisés.
