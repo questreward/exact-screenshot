@@ -9,6 +9,7 @@ import { PhoneHome, NotificationsApp } from "@/components/game/PhoneHome";
 import { ExperienceState } from "@/components/game/ExperienceState";
 import { Button } from "@/components/ui/button";
 import { PhoneLoading } from '@/components/game/PhoneLoading';
+import { phoneBackTarget } from '@/game/phone-state';
 
 const MessagesApp = lazy(() => import("@/components/game/CommunicationApps").then(m => ({ default: m.MessagesApp })));
 const CiviApp = lazy(() => import("@/components/game/CommunicationApps").then(m => ({ default: m.CiviApp })));
@@ -43,7 +44,7 @@ function PhonePage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const open = (id?: string) => id === "ma-ville" ? navigate({ to: "/ma-ville" }) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id, thread: undefined }, resetScroll: false });
   const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : app === "vie-sociale" ? { id: "vie-sociale", label: "Vie sociale", icon: Bell, available: true } : PHONE_APPS.find(a => a.id === app);
-  return <div className="flex min-w-0 justify-center"><PhoneFrame app={current?.id} title={current?.label} onHome={() => void open(undefined)} onBack={() => void navigate({ search: app === 'messages' && thread ? { app: 'messages', thread: undefined } : { app: undefined, thread: undefined }, resetScroll: false })} onClose={() => void navigate({ to: "/tableau-de-bord" })} onNotifications={() => void open("notifications")}>
+  return <div className="flex min-w-0 justify-center"><PhoneFrame app={current?.id} title={current?.label} onHome={() => void open(undefined)} onBack={() => void navigate({ search: phoneBackTarget(app, thread), resetScroll: false })} onClose={() => void navigate({ to: "/tableau-de-bord" })} onNotifications={() => void open("notifications")}>
     {!current ? <PhoneHome open={open} /> : current.id === "notifications" ? <NotificationsApp /> : current.id === "messages" ? <MessagesApp threadId={thread} onThreadChange={id => void navigate({ search: { app: "messages", thread: id }, resetScroll: false })} /> : current.id === "social" ? <CiviApp /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "reseau" ? <NetworkPanel /> : current.id === "politique" ? <PoliticsApp /> : current.id === "travail" ? <PhoneWork /> : current.id === "meteo" ? <PhoneWeather /> : <ExperienceState kind="info" title={COMING_SOON}><Button asChild variant="outline"><Link to="/telephone" search={{}}>Revenir au téléphone</Link></Button></ExperienceState>}
   </PhoneFrame></div>;
 }

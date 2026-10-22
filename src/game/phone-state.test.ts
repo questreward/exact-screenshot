@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { conversationMessages, phoneDataKeys, phoneNotificationTarget } from "./phone-state";
+import { conversationMessages, phoneDataKeys, phoneNotificationTarget, phoneBackTarget } from "./phone-state";
 import type { Message } from "./communication";
 
 describe("smartphone connecté au monde", () => {
+  it('le retour quitte la conversation avant de quitter la messagerie', () => {
+    expect(phoneBackTarget('messages', 'conversation-42')).toEqual({ app: 'messages', thread: undefined });
+    expect(phoneBackTarget('messages')).toEqual({ app: undefined, thread: undefined });
+  });
+  it('le retour d’une autre application reste dans le téléphone', () => {
+    expect(phoneBackTarget('banque')).toEqual({ app: undefined, thread: undefined });
+  });
   it("n'ouvre pas banque, patrimoine ou conversations pour afficher l'accueil", () => {
     expect(phoneDataKeys()).toEqual(["clock", "notifications", "life", "news", "communication"]);
   });
