@@ -327,3 +327,11 @@
 .ride-sway { animation: ride-sway 2.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .ride-sway { animation: none; } }
 .trip-mover { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 9999px; background: var(--primary); color: var(--primary-foreground); font-size: 22px; box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 30%, transparent); transition: transform .3s linear; }
+
+/* Catalogue : photos illustratives, jamais un faux modèle 3D. */
+.product-stage { contain: layout paint; }
+.product-turn { animation: product-turn 7s ease-in-out infinite; }
+.product-unbox { animation: product-unbox 650ms ease-out both; }
+@keyframes product-turn { 0%,100% { transform: perspective(700px) rotateY(-9deg) rotateZ(-1deg); } 50% { transform: perspective(700px) rotateY(9deg) rotateZ(1deg); } }
+@keyframes product-unbox { from { opacity: 0; transform: translateY(24px) scale(.85); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .product-turn, .product-unbox { animation: none; } }

@@ -54,3 +54,4 @@
 - Physical cash is conserved with the bank account through character-locked, uniquely keyed SQL transfers; all wealth totals include cash and transfers are excluded from income/expenses.
 - Real branch locations are sourced from official address listings; CIVITAS advisers and cash terminals remain fictional and unaffiliated.
 - Bank history filters use Paris game dates; cash receipts reuse persisted operation keys and deltas, never reconstructed historical balances, to remain faithful to recorded transfers.
+- Product visuals resolve stored families and legacy aliases to lazy-loaded shared photographs; configuration labels stay literal, previews are illustrative and unboxing follows confirmed purchases only, so imagery never invents ownership or specifications.

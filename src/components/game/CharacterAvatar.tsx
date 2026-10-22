@@ -13,7 +13,7 @@ export function CharacterAvatar({ appearance, className, photo, mood = "neutre",
   if (photo) return <img src={photo} alt="" className={cn("h-full w-full object-cover", className)} />;
   const skin = optionValue("skin", appearance.skin);
   const hair = optionValue("hairColor", appearance.hairColor);
-  const styled = look?.tenue === "tenue-costume" ? "#26303f" : look?.tenue === "tenue-sport" ? "#c0392b" : look?.tenue === "tenue-soiree" ? "#111111" : null;
+  const styled = look?.tenue === "vip-tenue-gala" ? "var(--secondary)" : look?.tenue === "tenue-costume" ? "#26303f" : look?.tenue === "tenue-sport" ? "#c0392b" : look?.tenue === "tenue-soiree" ? "#111111" : null;
   const outfit = uniform ? UNIFORM_COLOR[uniform] : styled ?? optionValue("outfit", appearance.outfit);
   const shoulder = appearance.silhouette === "slim" ? 34 : appearance.silhouette === "broad" ? 46 : 40;
 
@@ -78,6 +78,8 @@ export function CharacterAvatar({ appearance, className, photo, mood = "neutre",
       </g>
       {look?.cadre === "cadre-or" && <rect x="2" y="2" width="116" height="136" rx="21" fill="none" stroke="#d4a72c" strokeWidth="4" />}
       {look?.cadre === "cadre-tricolore" && <g fill="none" strokeWidth="4"><path d="M23 2 H2 V138 H23" stroke="#1d3a8a" /><path d="M23 2 H97 M23 138 H97" stroke="#f4f4f4" /><path d="M97 2 H118 V138 H97" stroke="#d62828" /></g>}
+      {!uniform && look?.tenue === "vip-tenue-gala" && <g><path d="M50 97 L60 120 L70 97 Z" fill="var(--secondary-foreground)" /><path d="M53 98 L60 103 L67 98 V107 L60 103 L53 107 Z" fill="var(--primary)" /></g>}
+      {look?.cadre === "vip-cadre-etoile" && <g><rect x="3" y="3" width="114" height="134" rx="20" fill="none" stroke="var(--primary)" strokeWidth="5" /><path d="M100 6 L103 13 L111 14 L105 19 L107 27 L100 23 L93 27 L95 19 L89 14 L97 13 Z" fill="var(--primary)" /></g>}
       {look?.badge === "badge-pionnier" && <g transform="translate(100 20)"><circle r="11" fill="#d4a72c" /><path d="M0 -6 L2 -2 L6 -2 L3 1 L4 6 L0 3 L-4 6 L-3 1 L-6 -2 L-2 -2 Z" fill="#ffffff" /></g>}
     </svg>
   );

@@ -1,3 +1,4 @@
+import { ProductPhoto, ProductPreview } from "@/components/game/ProductPhoto";
 import { GameSelect } from "@/components/game/GameSelect";
 import { CreditRecap } from "@/components/game/CreditRecap";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -11,7 +12,7 @@ import { maintainAsset, secondhandBuy, shopBuy, shopBuyCredit, shopExtrasQuery, 
 import { gameMeta } from "@/game/metadata";
 import { HousingPreview, HousingVisit } from "@/components/game/HousingVisit";
 import { filterHousing } from "@/game/housing-visuals";
-import { ShopHall, AisleHeader, IMG as AISLE_IMG, EMOJI as AISLE_EMOJI } from "@/components/game/ShopAisles";
+import { ShopHall, AisleHeader, IMG as AISLE_IMG } from "@/components/game/ShopAisles";
 import { ShopCart } from "@/components/game/ShopCart";
 import { SECTIONS, creditCost, creditMonthly, filterProducts, goalProgress, notaryFees, storePrice, type ShopSort } from "@/game/shop";
 
@@ -164,7 +165,7 @@ function ShopPage() {
           <ul className="grid gap-3 sm:grid-cols-2">{s.secondhand.map(l => {
             const blocked = l.kind === "vehicle" && !s.license;
             return <li key={l.id} className="flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-card animate-rise">
-              <div className="relative -mx-4 -mt-4 mb-3 h-24 overflow-hidden"><img src={AISLE_IMG[l.section]} alt="" loading="lazy" className="h-full w-full object-cover opacity-50 grayscale-[40%]" />
+              <div className="relative -mx-4 -mt-4 mb-3 h-24 overflow-hidden"><ProductPhoto name={l.name} fallback={AISLE_IMG[l.section]} className="h-full" />
                 <span className="absolute left-3 top-3 rounded-full bg-card/90 px-2 py-1 text-xs font-semibold">♻️ {l.condition}</span>
                 <span className="absolute right-3 top-3 rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{Math.max(0, Math.round((1 - l.price / l.new_price) * 100))} % vs neuf</span></div>
               <p className="text-xs text-muted-foreground">Vendeur : stand des reprises de la boutique</p>
@@ -277,7 +278,7 @@ function BuyDialog({ p, s, pct, pending, onClose, onCash, onCredit }: { p: ShopP
   const row = (l: string, v: string) => <li className="flex justify-between gap-2"><span className="text-muted-foreground">{l}</span><b>{v}</b></li>;
 
   return <Dialog title="Confirmer l'achat" onClose={onClose}>
-    <p className="mt-1">{p.brand} {p.name}</p>
+    <ProductPhoto name={p.name} details={p.details} fallback={AISLE_IMG[p.section]} className="my-3 aspect-[4/3] rounded-lg" /><p className="mt-1">{p.brand} {p.name}</p>
     {creditable && <div className="mt-3 grid grid-cols-2 gap-2">
       <Button variant={mode === "cash" ? "default" : "outline"} className="h-11" onClick={() => setMode("cash")}>Comptant</Button>
       <Button variant={mode === "credit" ? "default" : "outline"} className="h-11" onClick={() => setMode("credit")}>À crédit</Button></div>}
@@ -308,12 +309,10 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
   const blocked = p.kind === "vehicle" && !s.license;
   return <li className="flex min-w-0 flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-card animate-rise">
-    {p.details.realestate ? <HousingPreview p={p} /> : <div className="relative -mx-4 -mt-4 mb-3 h-28 overflow-hidden">
-      <img src={AISLE_IMG[p.section]} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />
-      <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-      <span className="absolute bottom-2 left-4 text-4xl" aria-hidden>{AISLE_EMOJI[p.section] ?? "🛍️"}</span>
-      {p.sales > 0 && <span className="absolute right-3 top-3 rounded-full bg-card/90 px-2 py-1 text-xs font-semibold">⭐ Populaire</span>}
-    </div>}
+    {p.details.realestate ? <HousingPreview p={p} /> : <>
+      <ProductPhoto name={p.name} details={p.details} fallback={AISLE_IMG[p.section]} className="-mx-4 -mt-4 mb-3 aspect-[4/3]" />
+      <ProductPreview name={p.name} section={p.section} details={p.details} fallback={AISLE_IMG[p.section]} />
+    </>}
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
       {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}{pct < 0 && <span className="rounded-full bg-accent px-2 py-1 text-xs font-semibold">📈 Très demandé +{-pct} %</span>}</div>

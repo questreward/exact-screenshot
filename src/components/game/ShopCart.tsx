@@ -1,3 +1,4 @@
+import { ProductPhoto, PurchaseUnboxing } from "@/components/game/ProductPhoto";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Trash2, LoaderCircle, Check, FastForward } from "lucide-react";
@@ -58,7 +59,7 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
           {items.length === 0 && <p className="text-sm text-muted-foreground">Ton panier est vide.</p>}
           <ul className="space-y-2">{items.map((p) => (
             <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
-              <div className="min-w-0 flex-1"><p className="truncate font-semibold">{p.brand} {p.name}</p><p className="text-xs text-muted-foreground">Quantité : 1</p></div>
+              <ProductPhoto name={p.name} details={p.details} className="h-16 w-16 shrink-0 rounded-lg" /><div className="min-w-0 flex-1"><p className="truncate font-semibold">{p.brand} {p.name}</p><p className="text-xs text-muted-foreground">Quantité : 1</p></div>
               <b>{eur(price(p))}</b>
               <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={`Retirer ${p.name}`} onClick={() => onRemove(p.id)}><Trash2 className="h-5 w-5" /></Button>
             </li>))}</ul>
@@ -80,6 +81,7 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
         </div>}
 
         {phase === "ticket" && <div className="mt-3 space-y-3 animate-page">
+          <PurchaseUnboxing products={paid.map(l => l.p)} />
           <div className="mx-auto max-w-xs rounded-lg border border-dashed border-border bg-card p-4 font-mono text-sm shadow-card">
             <p className="text-center font-bold">BOUTIQUE CIVITAS</p>
             <p className="text-center text-xs text-muted-foreground">{new Date().toLocaleString("fr-FR")}</p>
