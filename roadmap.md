@@ -1,5 +1,12 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Discord — Bot communautaire
+- [x] Préparer le programme séparé : accueil, rôles d’intérêt, informations publiques, commandes et annonces réservées au propriétaire.
+- [x] Préparer la proposition SQL 0139, les contrôles et les instructions privées VPS ; aucune migration appliquée. Fortune exclue faute d’accord Discord spécifique.
+- [x] Tests locaux des projections privées, propriétaire, configuration et journal de reprise ; script d’installation séparé préparé.
+- [ ] Valider SQL dans une copie indépendante : vérifier notamment schéma installé et fonctions héritées de PUBLIC avant accord ; aucune sécurité SQL réelle déclarée vérifiée.
+- [ ] Mise en service réelle : attend création/invitation du bot, jeton privé, identifiants Discord et installation VPS.
+
 ## V4 — Véhicules, téléphone, métiers et ville (Prompts 16–19)
 - [x] Documents 20–25 lus : téléphone, environnement, objets, politique, crises et audit final. Priorités conservées, aucun document complet déclaré terminé.
 - [x] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
