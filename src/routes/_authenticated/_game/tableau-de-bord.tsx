@@ -4,10 +4,9 @@ import { CityPulse } from "@/components/game/CityPulse";
 import { ElectionBanner } from "@/components/game/CampaignJourney";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Bell, CalendarClock, Lock } from "lucide-react";
-import { COMING_SOON } from "@/game/navigation";
+import { Bell } from "lucide-react";
 import { GameHome } from "@/components/game/GameHome";
-import { bankQuery, characterQuery, eventsQuery, formatMoney, notificationsQuery, worldQuery } from "@/services/game";
+import { bankQuery, characterQuery, notificationsQuery, worldQuery } from "@/services/game";
 import { clockQuery, positionQuery } from "@/services/game";
 import { PositionBlock } from "@/components/game/PositionBlock";
 import { WorldClock } from "@/components/game/WorldClock";
@@ -23,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/_game/tableau-de-bord")({
   head: () => ({ meta: gameMeta("Tableau de bord", "Retrouvez votre personnage, votre position et votre vie dans CIVITAS.") }),
   loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([
     q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(notificationsQuery),
-    q.ensureQueryData(eventsQuery), q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
+    q.ensureQueryData(worldQuery), q.fetchQuery(positionQuery), q.ensureQueryData(clockQuery),
   ]); },
   component: Dashboard,
 });
@@ -32,7 +31,6 @@ function Dashboard() {
   const { data: character } = useSuspenseQuery(characterQuery);
   const { data: bank } = useSuspenseQuery(bankQuery);
   const { data: notifs } = useSuspenseQuery(notificationsQuery);
-  const { data: events } = useSuspenseQuery(eventsQuery);
   if (!character) return null;
 
   return (
@@ -48,11 +46,11 @@ function Dashboard() {
 
       <DailySituations />
 
-      {character.city?.name && <CityPulse cityName={character.city.name} />}
+      {character.city?.name && <CityPulse cityName={character.city.name} cityId={character.city_id} />}
 
       <NextStepCard cityName={character.city?.name} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div>
         <div className="experience-section">
           <h2 className="flex items-center gap-2 text-lg font-semibold"><Bell className="h-5 w-5 text-primary" /> Notifications</h2>
           <ul className="mt-3 space-y-2">
@@ -65,16 +63,6 @@ function Dashboard() {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="experience-section">
-          <h2 className="flex items-center gap-2 text-lg font-semibold"><CalendarClock className="h-5 w-5 text-primary" /> Événements du monde</h2>
-          {events.length === 0 ? (
-            <p className="mt-3 flex items-center gap-2 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-              <Lock className="h-4 w-4" /> Les événements du monde : {COMING_SOON.toLowerCase()}.
-            </p>
-          ) : (
-            <ul className="mt-3 space-y-2">{events.map((e) => <li key={e.id} className="rounded-2xl bg-accent/60 p-3">{e.title}</li>)}</ul>
-          )}
         </div>
       </div>
 

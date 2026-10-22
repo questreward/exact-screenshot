@@ -13,6 +13,7 @@ import { useWorldClock } from "./WorldClock";
 import { phoneNotificationTarget } from "@/game/phone-state";
 import { toast } from "sonner";
 import { badgeLabel } from "@/game/communication";
+import { WorldEventFeed } from './WorldEventFeed';
 
 const APP_ICONS = { maps: Map, messages: MessageCircle, actualites: Newspaper, civi: Landmark, social: Users, banque: Wallet, shopping: ShoppingBag, agenda: CalendarDays, documents: FolderLock, moi: User };
 
@@ -34,6 +35,7 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
     <div className="py-4 text-center"><p className="font-display text-4xl font-semibold tabular-nums">{time.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</p><p className="mt-1 text-xs capitalize text-muted-foreground">{time.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</p></div>
     {running && <Button variant="secondary" onClick={() => open("travail")} className="h-auto w-full justify-start gap-3 py-3 text-left"><CalendarDays className="h-5 w-5 shrink-0 text-primary" /><span className="min-w-0"><span className="block text-xs text-muted-foreground">En cours</span><span className="block break-words font-semibold">{running.title}</span><span className="block text-xs text-muted-foreground">{running.location?.name}</span></span></Button>}
     {notifs.filter(n => !n.read).slice(0, 1).map(n => <Button variant="secondary" key={n.id} onClick={() => open("notifications")} className="h-auto min-h-14 w-full justify-start gap-3 py-3 text-left"><span className="text-xl" aria-hidden>{notificationEmoji(n)}</span><span className="min-w-0 flex-1"><span className="block break-words text-sm font-semibold">{n.title}</span><span className="line-clamp-2 block text-xs text-muted-foreground">{n.body}</span></span></Button>)}
+    <WorldEventFeed cityId={life.position.city_id} districtId={life.position.district_id} compact />
     <label className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card/70 px-3 focus-within:border-primary"><Search className="h-4 w-4 shrink-0 text-muted-foreground" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher une application ou un service" aria-label="Rechercher dans le téléphone" className="h-11 min-w-0 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label>
     {q.trim().length >= 2 && <div className="rounded-lg border border-border bg-card">{hits.length ? <ul className="divide-y divide-border">{hits.map(h => <li key={h.to}><Link to={h.to as "/carte"} className="flex min-h-14 items-center gap-3 p-3"><span aria-hidden>{h.emoji}</span><span className="min-w-0"><span className="block text-sm font-semibold">{h.label}</span><span className="block text-xs text-muted-foreground">{h.hint}</span></span></Link></li>)}</ul> : <p className="p-3 text-sm text-muted-foreground">Aucun résultat.</p>}</div>}
     <div className="phone-app-grid">{MAIN_PHONE_APPS.map(a => {

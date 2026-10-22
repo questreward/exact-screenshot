@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
+- World event surfaces share the existing events query and persisted IDs; local feeds filter server snapshots and never infer catastrophe phases, mission links or applied effects.
 - src/game is presentation-only; secured SQL enforces age, money, rewards and configured balance values.
 - src/services/game.ts owns queries; loaders ensureQueryData, pages useSuspenseQuery. Catalog inserts are additive, reads paged; purchases unchanged.
 - Player money, character, position and stats tables are owner-SELECT-only; secured writes lock characters and use unique keys.
@@ -58,6 +59,6 @@
 
 - V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
 
-- Smartphone loaders select existing query dependencies by application and lazy-load app views; persistent conversation IDs live in route search while server messages remain authoritative, avoiding eager unrelated fetches and duplicate communication storage.
+- Smartphone loaders select dependencies by application with a query-independent pending/error device shell; conversation IDs live in route search, back exits the thread before the app, and query error reset retries reads without duplicating communication storage.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
 - Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.

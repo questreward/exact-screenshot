@@ -40,7 +40,7 @@ export function BankApp() {
         <p className="text-sm opacity-80">Mon compte · solde disponible</p>
         <p className="mt-1 break-words font-display text-3xl font-bold tabular-nums">{formatMoney(bank.balance)}</p>
       </div>
-      <div className="grid grid-cols-2 gap-2"><Button asChild variant="outline"><Link to="/banque">Virements et relevés</Link></Button><Button asChild variant="outline"><Link to="/patrimoine">Mon patrimoine</Link></Button></div>
+      <div className="grid grid-cols-2 gap-2"><Button asChild variant="outline" className="h-auto min-h-14 whitespace-normal px-2 py-3 text-center"><Link to="/banque">Virements et relevés</Link></Button><Button asChild variant="outline" className="h-auto min-h-14 whitespace-normal px-2 py-3 text-center"><Link to="/patrimoine">Mon patrimoine</Link></Button></div>
       <MoneyAlerts />
       <section className="space-y-2">
         <h2 className="text-sm font-semibold">🏦 Mes comptes</h2>

@@ -31,6 +31,7 @@ const day = (iso: string) => iso.slice(0, 10);
 
 /** Les annonces sans date de fin (Actualités) sont du jour même ; ensuite elles passent dans Récents. */
 export function displayPhase(e: WorldEvent, now: string): EventPhase {
+  if (e.phase === 'termine') return 'termine';
   if (e.ends_at || e.phase === 'a_venir') return e.phase;
   return day(e.starts_at) < day(now) ? 'termine' : 'en_cours';
 }
@@ -69,10 +70,11 @@ export function cityEffectLevel(satisfaction: number | null): CityEffectLevel {
   return satisfaction >= 30 ? 'medium' : 'strong';
 }
 /** Un seul marqueur par lieu : événements publics actifs regroupés. */
-export function markersByLocation(events: WorldEvent[]) {
+export function markersByLocation(events: WorldEvent[], now?: string) {
   const m = new Map<string, WorldEvent[]>();
   for (const e of events) {
-    if (!e.marker || e.personal || !e.location_id) continue;
+    if (!e.marker || e.personal || !e.location_id || e.phase !== 'en_cours') continue;
+    if (now && (displayPhase(e, now) !== 'en_cours' || (e.ends_at && Date.parse(e.ends_at) <= Date.parse(now)) || Date.parse(e.starts_at) > Date.parse(now))) continue;
     const list = m.get(e.location_id) ?? [];
     if (!list.some(x => x.id === e.id)) list.push(e);
     m.set(e.location_id, list);

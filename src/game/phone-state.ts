@@ -1,5 +1,10 @@
 import type { Message } from "./communication";
 
+/** Back leaves a conversation before leaving its application. */
+export function phoneBackTarget(app?: string, thread?: string): { app: string | undefined; thread: undefined } {
+  return { app: app === 'messages' && thread ? 'messages' : undefined, thread: undefined };
+}
+
 /** The phone only requests the systems needed by the selected view. */
 export function phoneDataKeys(app?: string): string[] {
   const base = ["clock", "notifications"];
