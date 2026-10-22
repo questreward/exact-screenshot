@@ -12,6 +12,7 @@ import { JobStage } from './JobStage';
 import { useRef, useState } from 'react';
 import { recordedObjectives } from '@/game/work-experience';
 import { Link } from '@tanstack/react-router';
+import { MissionActions } from './MissionActions';
 
 export function JobMissionCard() {
   const query = useQuery(jobMissionsQuery);
@@ -42,10 +43,9 @@ export function JobMissionCard() {
       <ol className="grid gap-2" aria-label="Objectifs enregistrés">{recordedObjectives(m).map(o => <li key={o.index} className={`flex min-h-11 items-center gap-3 border-l-2 px-3 text-sm ${o.state === 'current' ? 'border-primary font-semibold' : 'border-border text-muted-foreground'}`}><span aria-hidden>{o.state === 'recorded' ? '✓' : o.state === 'current' ? '→' : '○'}</span>{o.state === 'recorded' ? `Décision ${o.index + 1} enregistrée` : o.state === 'current' ? `Objectif ${o.index + 1} · ${m.step?.text ?? 'En cours'}` : `Objectif ${o.index + 1} · à venir`}</li>)}</ol>
       {m.status === 'active' && m.step ? <>
         <p className="text-xs text-muted-foreground">{missionStepLabel(m.step_index, m.step_count)} · expire en fin de journée (UTC), sans pénalité</p>
-        <p className="mission-step-enter border-l-2 border-primary pl-3" key={m.step_index} aria-live="polite">{m.step.text}</p>
-        <div className="grid gap-2">{m.step.choices.map((choice, i) => <Button key={`${m.step_index}-${i}`} variant="outline" className="min-h-14 h-auto whitespace-normal justify-start p-3 text-left" disabled={mutation.isPending || mutation.isError} onClick={() => choose(m.day, m.step_index, i)}>{choice.label}</Button>)}</div>
+        <MissionActions key={`${m.day}-${m.step_index}`} job={m.job} title={m.title} step={m.step.text} choices={m.step.choices} disabled={mutation.isPending || mutation.isError || query.isFetching} onChoose={i => choose(m.day, m.step_index, i)} />
         {mutation.isPending && <p role="status" className="text-sm text-muted-foreground">Enregistrement de la décision…</p>}
-        {mutation.isError && <ExperienceState kind="error" title="Décision non confirmée" description="Votre dossier reste disponible. Actualisez son état avant de décider à nouveau." onRetry={() => { mutation.reset(); void query.refetch(); }} />}
+        {mutation.isError && <ExperienceState kind="error" title="Décision non confirmée" description="Votre dossier reste disponible. Actualisez son état avant de décider à nouveau." onRetry={() => { void query.refetch().then(result => { if (!result.isError) mutation.reset(); }); }} />}
         <p className="text-xs text-muted-foreground">Bilan final : réputation +1 à +3 ou −1 à −2 ; énergie −5 à −15. Les choix et les circonstances déterminent le résultat.</p>
       </> : m.reputation_delta !== null && <p role="status">Réputation {m.reputation_delta > 0 ? '+' : ''}{m.reputation_delta} · Énergie −{m.energy_cost}</p>}
       <p className="text-sm text-muted-foreground">{query.data?.progress?.successes ?? 0} réussites · {next ? `prochain palier : ${next}` : 'dernier palier atteint'}</p>

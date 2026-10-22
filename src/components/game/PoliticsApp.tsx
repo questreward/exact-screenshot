@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { electionsQuery, newsQuery, politicsQuery } from "@/services/game";
 import { ELECTION_STATUS } from "@/game/elections";
 import { PATH_STEPS, politicalPath } from "@/game/political-path";
+import { PoliticalDay } from './PoliticalDay';
 
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
@@ -26,6 +27,7 @@ export function PoliticsApp() {
   const parties = (pol?.organizations ?? []).filter(o => o.city_id === pol?.city_id).slice(0, 4);
 
   return <div className="space-y-4">
+    {pol && <PoliticalDay politics={pol} elections={el} />}
     <section className="experience-section">
       <p className="text-xs text-muted-foreground">Mon parcours politique</p>
       <p className="font-heading text-xl font-bold">{path.step.emoji} {path.step.label}</p>

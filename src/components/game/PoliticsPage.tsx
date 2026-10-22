@@ -10,6 +10,7 @@ import { LocationLink, useLifeMutation } from "./LifeControls";
 import { cn } from "@/lib/utils";
 import { GovernanceLink } from './GovernancePage';
 import { LawAnalysisCard } from './LawAnalysisCard';
+import { PoliticalDay } from './PoliticalDay';
 
 export const POLITICS_TABS = [
   { id: "decouvrir", label: "Découvrir", icon: Vote },
@@ -40,7 +41,7 @@ export function PoliticsPage({ search }: { search: PoliticsSearch }) {
     <Button asChild variant="outline" className="min-h-12"><Link to="/elections"><Vote/>Élections municipales<ArrowRight/></Link></Button>
     <GovernanceLink/>
     <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" aria-label="Rubriques politiques">{POLITICS_TABS.map(t => <Button key={t.id} asChild variant={tab === t.id ? "default" : "outline"} className="h-11 shrink-0"><Link to="/politique" search={{ tab: t.id }}><t.icon />{t.label}</Link></Button>)}</nav>
-    {tab === "decouvrir" && <Discover s={s} />}
+    {tab === "decouvrir" && <><PoliticalDay politics={s} /><Discover s={s} /></>}
     {tab === "opinions" && <Opinions s={s} />}
     {tab === "comparer" && <Compare s={s} a={search.a} b={search.b} />}
     {tab === "personnalites" && <Personalities s={s} />}

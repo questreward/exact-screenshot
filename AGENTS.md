@@ -62,3 +62,5 @@
 - Smartphone loaders select dependencies by application with a query-independent pending/error device shell; conversation IDs live in route search, back exits the thread before the app, and query error reset retries reads without duplicating communication storage.
 - Shop cart and retry keys use the session QueryClient (cleared on sign-out); item-by-item secured purchases retain unpaid items and receipts read persisted orders, never current prices or reconstructed fiscal/payment details.
 - Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.
+- MissionActions renders only server-provided choices over shared job imagery; refresh after uncertainty must succeed before choices unlock, to prevent stale decisions.
+- PoliticalDay derives appointments from recorded political/campaign activities and resolves only saved locations; offered events remain distinct from reservations to avoid fabricated attendance or agenda entries.

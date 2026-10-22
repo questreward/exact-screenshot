@@ -39,7 +39,7 @@ export function CampaignStage({ ca, e }: { ca: Candidate; e: Election }) {
       <Button className="min-h-12 w-full" disabled={!place || busy} onClick={() => run(() => planCampaignMeeting({ candidacyId: ca.id, locationId: place, hoursAhead: hours }), "Meeting annoncé, les habitants sont invités")}>Annoncer le meeting</Button>
       {mine.length > 0 && <ul className="space-y-2">{mine.map(m => <li key={m.id} className="rounded-xl bg-muted p-3 text-sm">
         <p className="font-medium">{nameOf(m.location_id)}</p><p className="text-xs text-muted-foreground">{when(m.starts_at)} · {m.invited} habitant(s) invité(s)</p>
-        <Link to="/carte" search={{}} className="mt-1 inline-flex min-h-10 items-center text-primary">Voir sur la carte</Link></li>)}</ul>}
+        <Button asChild variant="outline" className="mt-2 min-h-12"><Link to="/carte" search={{ city: e.city_id, location: m.location_id }}>Voir le lieu du meeting</Link></Button></li>)}</ul>}
     </section>
     <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
       <h2 className="font-semibold">📰 Publier une annonce</h2>

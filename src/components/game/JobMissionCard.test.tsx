@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider, queryOptions } from '@tanstack/react-query';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-const { choose } = vi.hoisted(() => ({ choose: vi.fn() }));
+const { choose, read } = vi.hoisted(() => ({ choose: vi.fn(), read: vi.fn() }));
 vi.mock('@tanstack/react-router', () => ({ Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a> }));
-vi.mock('@/services/game', () => ({ chooseJobMission: choose, jobMissionsQuery: queryOptions({ queryKey: ['job-missions', 'daily'], queryFn: async () => null, staleTime: Infinity }) }));
+vi.mock('@/services/game', () => ({ chooseJobMission: choose, jobMissionsQuery: queryOptions({ queryKey: ['job-missions', 'daily'], queryFn: read, staleTime: Infinity }) }));
 import { JobMissionCard } from './JobMissionCard';
 afterEach(cleanup);
 describe('intervention existante', () => {
@@ -45,5 +45,27 @@ describe('intervention existante', () => {
     fail?.(new Error('Connexion interrompue'));
     await screen.findByText('Décision non confirmée');
     expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { step_index: 1, status: 'active', reputation_delta: null } });
+  });
+  it('ne débloque pas une décision incertaine quand la nouvelle lecture échoue', async () => {
+    choose.mockClear(); choose.mockRejectedValue(new Error('Connexion interrompue'));
+    read.mockRejectedValue(new Error('Lecture indisponible'));
+    const mission = { day: '2026-10-22', title: 'Service', job: 'police', city_id: null, status: 'active', step_index: 1, step_count: 3, step: { text: 'Observer', choices: [{ label: 'Observer le lieu' }] }, reputation_delta: null, energy_cost: null };
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } }); client.setQueryData(['job-missions', 'daily'], { mission });
+    render(<QueryClientProvider client={client}><JobMissionCard /></QueryClientProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Observer le lieu' }));
+    await screen.findByText('Décision non confirmée');
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await waitFor(() => expect(read).toHaveBeenCalled());
+    expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-22', 1, 0);
+    expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { status: 'active', step_index: 1 } });
+    await waitFor(() => expect(client.getQueryState(['job-missions', 'daily'])?.status).toBe('error'));
+    expect(screen.queryByRole('button', { name: 'Observer le lieu' })).not.toBeInTheDocument();
+    read.mockResolvedValue({ mission });
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await screen.findByRole('button', { name: 'Observer le lieu' });
+    expect(screen.getByRole('button', { name: 'Observer le lieu' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Observer le lieu' })).toBeEnabled());
+    expect(choose).toHaveBeenCalledTimes(1);
   });
 });
