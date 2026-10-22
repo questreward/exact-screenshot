@@ -20,7 +20,6 @@ import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as PaiementStyleRouteImport } from './routes/paiement-style'
 import { Route as PaiementVipRouteImport } from './routes/paiement-vip'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ZzTestLieuRouteImport } from './routes/zz-test-lieu'
 import { Route as AuthenticatedGameRouteRouteImport } from './routes/_authenticated/_game/route'
 import { Route as AuthenticatedCreationRouteImport } from './routes/_authenticated/creation'
 import { Route as TilesSplatRouteImport } from './routes/tiles/$'
@@ -163,11 +162,6 @@ const PaiementVipRoute = PaiementVipRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ZzTestLieuRoute = ZzTestLieuRouteImport.update({
-  id: '/zz-test-lieu',
-  path: '/zz-test-lieu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGameRouteRoute = AuthenticatedGameRouteRouteImport.update({
@@ -686,7 +680,6 @@ export interface FileRoutesByFullPath {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
@@ -787,7 +780,6 @@ export interface FileRoutesByTo {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
   '/actualites': typeof AuthenticatedGameActualitesRoute
@@ -890,7 +882,6 @@ export interface FileRoutesById {
   '/paiement-style': typeof PaiementStyleRoute
   '/paiement-vip': typeof PaiementVipRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/zz-test-lieu': typeof ZzTestLieuRoute
   '/_authenticated/_game': typeof AuthenticatedGameRouteRouteWithChildren
   '/_authenticated/creation': typeof AuthenticatedCreationRoute
   '/tiles/$': typeof TilesSplatRoute
@@ -994,7 +985,6 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
-    | '/zz-test-lieu'
     | '/creation'
     | '/tiles/$'
     | '/actualites'
@@ -1095,7 +1085,6 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
-    | '/zz-test-lieu'
     | '/creation'
     | '/tiles/$'
     | '/actualites'
@@ -1197,7 +1186,6 @@ export interface FileRouteTypes {
     | '/paiement-style'
     | '/paiement-vip'
     | '/reset-password'
-    | '/zz-test-lieu'
     | '/_authenticated/_game'
     | '/_authenticated/creation'
     | '/tiles/$'
@@ -1301,7 +1289,6 @@ export interface RootRouteChildren {
   PaiementStyleRoute: typeof PaiementStyleRoute
   PaiementVipRoute: typeof PaiementVipRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ZzTestLieuRoute: typeof ZzTestLieuRoute
   TilesSplatRoute: typeof TilesSplatRoute
 }
 
@@ -1382,13 +1369,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/zz-test-lieu': {
-      id: '/zz-test-lieu'
-      path: '/zz-test-lieu'
-      fullPath: '/zz-test-lieu'
-      preLoaderRoute: typeof ZzTestLieuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_game': {
@@ -2230,7 +2210,6 @@ const rootRouteChildren: RootRouteChildren = {
   PaiementStyleRoute: PaiementStyleRoute,
   PaiementVipRoute: PaiementVipRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ZzTestLieuRoute: ZzTestLieuRoute,
   TilesSplatRoute: TilesSplatRoute,
 }
 export const routeTree = rootRouteImport

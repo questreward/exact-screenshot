@@ -49,7 +49,7 @@
 - Interiors/reports show recorded trips/shifts only, never imply tickets, certification, casualties or outcomes.
 - TV shots/captions quote stored editions; local French voices, paused clips and bundled fallback preserve independence.
 - Volunteer history/notes use private append-only snapshots and character-locked RPCs, never career rewards.
-- VPS test restores omit cron via TOC; full backups retain production cron.
+- VPS test restores omit cron; full backups keep it.
 - Payment-key recovery verifies matching JWT secrets locally, writes only the server env atomically (owner-only), never exposes keys.
 - Financial AI uses an owner-only read-only SQL snapshot and local Ollama; it explains recorded data and never executes operations or settles deadlines.
 - Physical cash is conserved with the bank account through character-locked, uniquely keyed SQL transfers; all wealth totals include cash and transfers are excluded from income/expenses.
@@ -74,4 +74,4 @@
 - Map place facts use current position and completed on-site activities as visit evidence, and saved social bookings as meeting markers; selected/recent places never count as visits.
 - EncounterSheet separates page-local AI exchanges from recorded social actions and never assigns the NPC's current location to a historical action without a saved location.
 - discord-bot has its own deployment and scoped public SQL projections; its durable pending-before-send journal avoids blind duplicate sends without claiming transactional Discord delivery. Read discord-bot/AGENTS.md before changing it.
-- 3D street and interiors (ville-3d, lieu-3d/$id from data in src/game/interior3d.ts) are presentation only: doors/spots open existing secured pages, never act or record positions.
+- 3D street/interiors (ville-3d, lieu-3d) are presentation only: spots open existing secured pages.
