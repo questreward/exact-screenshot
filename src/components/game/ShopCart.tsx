@@ -1,7 +1,7 @@
 import { ExperienceState } from "./ExperienceState";
 import { ProductPhoto, PurchaseUnboxing } from "@/components/game/ProductPhoto";
 import { useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Trash2, LoaderCircle, Check, FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,8 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
   const [receiptError, setReceiptError] = useState(false);
   const locked = useRef(false);
   const qc = useQueryClient();
-  const requests = useRef(new Map<string, string>(Object.entries(qc.getQueryData<Record<string, string>>(["shop-cart-requests"]) ?? {})));
+  const { data: savedRequests } = useQuery({ queryKey: ["shop-cart-requests"], queryFn: async (): Promise<Record<string, string>> => ({}), initialData: {} as Record<string, string>, staleTime: Infinity, gcTime: Infinity });
+  const requests = useRef(new Map<string, string>(Object.entries(savedRequests)));
   const total = items.reduce((n, p) => n + price(p), 0);
   const wait = (ms: number) => new Promise((r) => setTimeout(r, fast ? 0 : ms));
 
@@ -54,6 +55,8 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
       }, () => crypto.randomUUID());
       const done: Line[] = result.paid.map(r => ({ p: r.item, price: price(r.item), ref: r.reference }));
       if (result.failure) done.push({ p: result.failure.item, price: price(result.failure.item), error: result.failure.message });
+      for (const r of result.paid) requests.current.delete(r.item.id);
+      qc.setQueryData(["shop-cart-requests"], Object.fromEntries(requests.current));
       setLines(done); setOrders([]); setReceiptError(false);
       onDone(result.paid.map(r => r.item.id));
       if (result.paid.length) {

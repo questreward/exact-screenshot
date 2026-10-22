@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { SECTIONS } from "@/game/shop";
 import { AISLES } from "@/game/shop-aisles";
 import { useWorldClock } from "./WorldClock";
-import { cn } from "@/lib/utils";
 import tech from "@/assets/v2/shop-tech.webp";
 import mode from "@/assets/v2/shop-mode.webp";
 import maison from "@/assets/v2/shop-maison.webp";
@@ -31,7 +30,7 @@ export function ShopHall({ onPick }: { onPick: (k: string) => void }) {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        {KEYS.map((k, i) => (
+        {KEYS.map(k => (
           <Button key={k} type="button" variant="ghost" onClick={() => onPick(k)}
             className="group relative h-auto aspect-[4/3] overflow-hidden rounded-lg border border-border text-left shadow-card transition-transform active:scale-95 animate-rise">
             <img src={IMG[k]} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
