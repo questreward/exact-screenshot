@@ -13,6 +13,18 @@ function openChat() {
   fireEvent.click(screen.getByRole('button', { name: 'Discuter' }));
 }
 describe('conversation locale', () => {
+  it('un double envoi ne génère qu’une réponse pour le même habitant', async () => {
+    let finish: ((r: { reply: string }) => void) | undefined;
+    chat.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    openChat();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Que penses-tu de ce marché ?' } });
+    const button = screen.getByRole('button', { name: 'Envoyer' });
+    fireEvent.click(button); fireEvent.click(button);
+    await waitFor(() => expect(chat).toHaveBeenCalledTimes(1));
+    expect(chat.mock.calls[0]?.[0].data).toEqual({ npcId: '11111111-1111-1111-1111-111111111111', history: [{ role: 'user', content: 'Que penses-tu de ce marché ?' }] });
+    finish?.({ reply: 'Il est agréable.' });
+    await screen.findByText('Il est agréable.');
+  });
   it('réessaie la même demande après échec, sans doubler le message', async () => {
     chat.mockRejectedValueOnce(new Error('Indisponible')).mockResolvedValueOnce({ reply: 'Bonjour !' });
     openChat();

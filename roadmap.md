@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Caisse, téléphone et messages habitants
+- [x] Achats scannés puis confirmés : actualisation des lectures partagées du compte, patrimoine et ameublement, même après réponse incertaine ; aucun débit local ni achat au simple scan. Clés de reprise inchangées.
+- [x] Téléphone « Mes achats » : articles, montants et tickets enregistrés, conservés après revente ; lieu affiché seulement s’il est enregistré.
+- [x] Écrire directement à un habitant présent sur la carte via la discussion IA locale existante ; identité et lieu vérifiés côté serveur, double envoi bloqué, aucune mémoire persistante ajoutée.
+- [x] Tests ciblés achats, reprise, historique et contexte IA ; migration 0138 testée deux fois dans une base jetable, lieu conservé après déplacement/renommage, aucune modification des paiements.
+- [ ] Accord et installation VPS de 0138 pour conserver les lieux des prochains achats ; les lieux historiques restent inconnus, aucun lieu inventé.
+- [ ] Essai connecté et réponse IA réelle : aucun compte correspondant dans l’aperçu (--self échoué), Ollama non configuré ici. Accès téléphone/carte/boutique sur petit et grand écran redirigés vers la connexion sans erreur ni débordement ; ce n’est pas un achat connecté.
+
 ## V4 — Population et commerces (Prompts 10–11)
 - [x] Prompt 10, première tranche : audit des routines P2 et présences locales ; habitants dédoublonnés, apparence enregistrée et connaissances dans la carte, erreur réessayable. Contacts et téléphone ne déclarent plus de garde, humeur, retour chez soi ou rencontre physique déduits du métier.
 - [x] Prompt 11, première tranche : caisse illustrée réutilisable, scan manuel de chaque article, total progressif et retour au panier ; caisse rapide maintenue, aucune opération pendant le scan, confirmation/paiements/tickets existants inchangés.

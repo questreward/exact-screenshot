@@ -16,15 +16,18 @@ function NpcConversation({ npcId, name, here }: { npcId: string; name: string; h
   const [text, setText] = useState("");
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const end = useRef<HTMLDivElement>(null);
+  const pending = useRef(false);
   const chat = useServerFn(chatWithNpc);
   const send = useMutation({
     mutationFn: (history: ChatTurn[]) => chat({ data: { npcId, history: history.slice(-MAX_TURNS) } }),
     onSuccess: r => setTurns(t => [...t, { role: "assistant", content: r.reply }]),
+    onSettled: () => { pending.current = false; },
   });
   useEffect(() => { end.current?.scrollIntoView({ block: "nearest", behavior: "instant" }); }, [turns, send.isPending, open]);
   const submit = (msg: string) => {
     const m = msg.trim();
-    if (!here || !m || m.length > MAX_MESSAGE || send.isPending || send.isError) return;
+    if (!here || !m || m.length > MAX_MESSAGE || pending.current || send.isPending || send.isError) return;
+    pending.current = true;
     const next = [...turns, { role: "user" as const, content: m }];
     setTurns(next); setText(""); send.mutate(next);
   };
@@ -39,7 +42,7 @@ function NpcConversation({ npcId, name, here }: { npcId: string; name: string; h
     <div className="max-h-80 space-y-2 overflow-y-auto" role="log" aria-label="Messages" aria-live="polite">
       {turns.map((t, i) => <p key={i} className={`max-w-[90%] break-words rounded-2xl px-4 py-2.5 text-base shadow-card animate-rise ${t.role === "user" ? "ml-auto rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card border border-border"}`}>{t.role === "assistant" && <span className="block text-xs font-semibold">{name}</span>}{t.content}</p>)}
       {send.isPending && <p className="text-sm text-muted-foreground">{name} réfléchit…</p>}
-      {send.isError && <div role="alert" className="space-y-2"><p className="text-sm text-destructive">{send.error instanceof Error ? send.error.message : 'La réponse est indisponible.'}</p><Button variant="outline" className="min-h-12" disabled={!here} onClick={() => send.mutate(turns)}><RefreshCw />Réessayer le même message</Button></div>}
+      {send.isError && <div role="alert" className="space-y-2"><p className="text-sm text-destructive">{send.error instanceof Error ? send.error.message : 'La réponse est indisponible.'}</p><Button variant="outline" className="min-h-12" disabled={!here} onClick={() => { if (pending.current) return; pending.current = true; send.mutate(turns); }}><RefreshCw />Réessayer le même message</Button></div>}
       <div ref={end} />
     </div>
     {turns.length === 0 && <div className="flex flex-wrap gap-2">{NPC_CHAT_STARTERS.map(s => <Button key={s} variant="secondary" className="min-h-11" onClick={() => submit(s)}>{s}</Button>)}</div>}

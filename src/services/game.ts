@@ -1445,7 +1445,7 @@ export type CreditSettings = { auto_rate: number; immo_rate: number; auto_min_mo
 export type SecondhandListing = { id: string; catalog_id: string; name: string; brand: string | null; section: string; kind: string; price: number; new_price: number; condition: string; owned: boolean };
 export type ShopState = {
   balance: number; license: boolean; age: number; city: string; products: ShopProduct[];
-  orders: { reference: string; name: string; brand: string; price: number; at: string }[];
+  orders: { reference: string; name: string; brand: string; price: number; at: string; location_id?: string | null; location_name?: string | null }[];
   assets: ShopAsset[];
   credit: { income: number; burden: number; max_monthly: number; score: number | null; settings: CreditSettings; list: PurchaseCredit[] };
   secondhand: SecondhandListing[];

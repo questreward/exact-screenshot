@@ -93,6 +93,7 @@ export type PhoneApp = { id: string; label: string; icon: LucideIcon; available:
 export const PHONE_APPS: PhoneApp[] = [
   { id: "profil", label: "Profil", icon: UserCircle, available: true },
   { id: "banque", label: "Banque", icon: Wallet, available: true },
+  { id: "achats", label: "Mes achats", icon: ShoppingBag, available: true },
   { id: "messages", label: "Messages", icon: MessageCircle, available: true },
   { id: "contacts", label: "Contacts", icon: Contact, available: true },
   { id: "reseau", label: "Joueurs", icon: Network, available: true },
