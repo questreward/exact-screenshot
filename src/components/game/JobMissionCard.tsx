@@ -11,7 +11,6 @@ import { MissionVehiclePanel } from './MissionVehiclePanel';
 import { JobStage } from './JobStage';
 import { useRef, useState } from 'react';
 import { recordedObjectives } from '@/game/work-experience';
-import { Button as MissionButton } from '@/components/ui/button';
 import { Link } from '@tanstack/react-router';
 
 export function JobMissionCard() {
@@ -50,7 +49,7 @@ export function JobMissionCard() {
         <p className="text-xs text-muted-foreground">Bilan final : réputation +1 à +3 ou −1 à −2 ; énergie −5 à −15. Les choix et les circonstances déterminent le résultat.</p>
       </> : m.reputation_delta !== null && <p role="status">Réputation {m.reputation_delta > 0 ? '+' : ''}{m.reputation_delta} · Énergie −{m.energy_cost}</p>}
       <p className="text-sm text-muted-foreground">{query.data?.progress?.successes ?? 0} réussites · {next ? `prochain palier : ${next}` : 'dernier palier atteint'}</p>
-      <div className="flex flex-wrap gap-2"><MissionButton variant="outline" className="min-h-12" aria-expanded={scene} onClick={() => setScene(v => !v)}>{scene ? 'Fermer la scène' : 'Scène et matériel'}</MissionButton><Button asChild variant="outline" className="min-h-12"><Link to="/telephone" search={{ app: 'travail' }}>Téléphone professionnel</Link></Button></div>
+      <div className="flex flex-wrap gap-2"><Button variant="outline" className="min-h-12" aria-expanded={scene} onClick={() => setScene(v => !v)}>{scene ? 'Fermer la scène' : 'Scène et matériel'}</Button><Button asChild variant="outline" className="min-h-12"><Link to="/telephone" search={{ app: 'travail' }}>Téléphone professionnel</Link></Button></div>
       {scene && <><JobStage key={`stage-${m.day}`} job={m.job} title={m.title} active={m.status === 'active'} /><MissionScene key={`${m.day}-${m.step_index}-${m.status}`} job={m.job} title={m.title} step={m.step_index} count={m.step_count} active={m.status === 'active'} /><MissionVehiclePanel key={`${m.day}-${m.job}`} job={m.job} title={m.title} /></>}
     </div>}
   </section>;

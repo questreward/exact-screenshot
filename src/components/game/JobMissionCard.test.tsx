@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { QueryClient, QueryClientProvider, queryOptions } from '@tanstack/react-query';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 const { choose } = vi.hoisted(() => ({ choose: vi.fn() }));
+vi.mock('@tanstack/react-router', () => ({ Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a> }));
 vi.mock('@/services/game', () => ({ chooseJobMission: choose, jobMissionsQuery: queryOptions({ queryKey: ['job-missions', 'daily'], queryFn: async () => null, staleTime: Infinity }) }));
 import { JobMissionCard } from './JobMissionCard';
 afterEach(cleanup);
