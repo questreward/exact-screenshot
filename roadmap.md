@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Socle visuel et UX (Prompt 2)
+- [x] Harmoniser contrôles, typographie, états et animations légères.
+- [x] Clarifier accueil, contexte, navigation, téléphone, carte et notifications sans nouvelles requêtes.
+- [x] Harmoniser le socle produits/panier, logement/garage, travail/missions, politique et espaces administratifs/financiers, sans reconstruire leurs systèmes.
+- [x] Vérifier les 492 tests et les pages publiques à 390×844 / 768×1024 / 1280×1800 : aucun débordement ni erreur navigateur ; compilation OK.
+- [ ] Contrôle visuel connecté et opérations principales : accès aux pages de jeu redirigé vers la connexion, aucun compte personnel correspondant disponible pour une session automatique.
+- [ ] Vérification avec personnage sur VPS : compte personnel absent de l’aperçu ; paiements et opérations réelles non exécutés ici.
+
 Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté sauf nécessité). Le jeu doit ressembler à un jeu, pas à un logiciel.
 
 ## Déjà fait

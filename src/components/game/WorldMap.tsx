@@ -1,3 +1,4 @@
+import { ExperienceState } from "./ExperienceState";
 import { favorites, recents, toggleFavorite, pushRecent, crowdLevel, type SavedPlace } from "@/game/place-memory";
 import { lifeQuery } from '@/services/game';
 import { Suspense, useEffect, useState } from "react";
@@ -76,7 +77,7 @@ export function WorldMap({ initialCity, initialDistrict, initialLocation, initia
   </div>;
 }
 
-function MapLoading() { return <div className="flex min-h-96 items-center justify-center gap-3 bg-surface"><LoaderCircle className="animate-spin" /> Chargement de la carte…</div>; }
+function MapLoading() { return <div className="flex min-h-96 items-center justify-center bg-surface"><ExperienceState kind="loading" title="Préparation de la carte…" description="Votre position et les lieux sont en cours de chargement." /></div>; }
 
 function MapSurface({ children, phase, resetKey }: { children: React.ReactNode; phase: string; resetKey: string }) {
   return <div className="world-map relative min-w-0 overflow-hidden rounded-lg border border-border" data-phase={phase}>
@@ -186,7 +187,7 @@ function RealCityMap({ city, districts, selected, positionId, positionDistrict, 
   const [focus, setFocus] = useState(0);
   return <div className="space-y-2">
     <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Que voulez-vous voir sur la carte ?">
-      {MAP_LAYERS.map(l => <button key={l.id} type="button" aria-pressed={layers.has(l.id)} onClick={() => toggle(l.id)} className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${layers.has(l.id) ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground"}`}><span aria-hidden>{l.emoji}</span>{l.label}</button>)}
+      {MAP_LAYERS.map(l => <Button variant="outline" key={l.id} type="button" aria-pressed={layers.has(l.id)} onClick={() => toggle(l.id)} className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${layers.has(l.id) ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground"}`}><span aria-hidden>{l.emoji}</span>{l.label}</Button>)}
     </div>
     <div className="map-phase overflow-hidden rounded-lg" data-phase={phase}>
       <RealMapBox viewKey={`${selected?.id ?? city.id}:${focus}`} center={focus && hereAt ? hereAt : center} zoom={focus && hereAt ? 16 : zoom} markers={markers} />

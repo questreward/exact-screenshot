@@ -35,10 +35,10 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
   const mood = moodFromEnergy(energy);
   const uniform = useMyUniform();
   return (
-    <div className="space-y-4">
-      <section className="relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-3xl">
+    <div className="space-y-5">
+      <section className="relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-lg">
         <img src={CITY[cityKey(cityName)]} alt={`Vue de ${cityName ?? "votre ville"}`}
-          className="h-[22rem] w-full object-cover transition-[filter] duration-1000 sm:h-[26rem]" style={{ filter: phaseFilter(phase) }} />
+          className="h-[20rem] w-full object-cover transition-[filter] duration-1000 sm:h-[24rem]" style={{ filter: phaseFilter(phase) }} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-background/10" />
         {/* Jauges */}
         <div className="absolute inset-x-3 top-3 flex gap-2">
@@ -56,13 +56,13 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
         </div>
         {/* Personnage */}
         <div className="absolute inset-x-4 bottom-4 flex items-end gap-4">
-          <div className="h-36 w-28 shrink-0 animate-rise overflow-hidden rounded-3xl border-2 border-primary/60 bg-card shadow-elegant">
+          <div className="h-28 w-20 sm:h-36 sm:w-28 shrink-0 animate-rise overflow-hidden rounded-lg border-2 border-primary/60 bg-card shadow-elegant">
             <CharacterAvatar appearance={normalizeAppearance(appearance as never)} mood={mood} uniform={uniform} look={look} />
           </div>
           <div className="min-w-0 pb-1">
             <p className="relative mb-2 inline-block max-w-full rounded-2xl rounded-bl-sm bg-card px-3 py-2 text-sm font-medium shadow-card animate-rise">« {greetingLine(mood, phase)} »</p>
             <p className="text-sm font-medium text-muted-foreground">{cityName}</p>
-            <h1 className="truncate font-display text-3xl font-bold">Bonjour, {firstName}</h1>
+            <h1 className="break-words font-display text-2xl sm:text-3xl font-bold">Bonjour, {firstName}</h1>
             <p className="mt-1 line-clamp-2 text-sm text-foreground/80">{situation}</p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export function GameHome({ firstName, cityName, appearance, energy, balance, sit
       <nav aria-label="Lieux" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {HOME_TILES.map((t, i) => (
           <Link key={t.id} to={t.to as "/vie"}
-            className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-border shadow-card transition-transform active:scale-95 animate-rise"
+            className="group relative aspect-[5/3] overflow-hidden rounded-lg border border-border shadow-card transition-transform active:scale-95 animate-rise"
             style={{ animationDelay: `${i * 60}ms` }}>
             <img src={TILE_IMG[t.id]} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />

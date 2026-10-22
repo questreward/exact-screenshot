@@ -42,18 +42,18 @@ function PhonePage() {
   const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : app === "vie-sociale" ? { id: "vie-sociale", label: "Vie sociale", icon: Bell, available: true } : PHONE_APPS.find((a) => a.id === app);
 
   return (
-    <div className="flex justify-center animate-rise">
-      <div className="relative w-full max-w-sm rounded-[2.75rem] border-8 border-secondary bg-surface p-3 shadow-card">
-        <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-background" />
-        <div className="min-h-[560px] rounded-[2rem] bg-background p-4">
+    <div className="flex min-w-0 justify-center">
+      <div className="phone-shell">
+        <div className="mx-auto mb-2 mt-1 h-1 w-14 rounded-full bg-muted" />
+        <div className="phone-screen">
           {!current ? (
             <><PhoneHome open={open} /><div className="mt-5 border-t border-border pt-4"><GovernanceLink/></div></>
           ) : (
-            <div>
-              <button onClick={() => open(undefined)} className="mb-4 flex h-10 items-center gap-1 text-sm text-primary">
+            <div key={current.id} className="animate-page">
+              <Button variant="ghost" onClick={() => open(undefined)} className="mb-4 min-h-11 gap-1 px-2 text-sm text-primary" aria-label="Revenir à l’accueil du téléphone">
                 <ChevronLeft className="h-4 w-4" /> Accueil
-              </button>
-              <h1 className="mb-4 text-2xl font-bold">{current.label}</h1>
+              </Button>
+              <h1 className="mb-4 break-words text-xl font-bold">{current.label}</h1>
               {current.id === "notifications" ? <NotificationsApp /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : current.id === "politique" ? <PoliticsApp /> : (
                 <div className="mt-10 flex flex-col items-center text-center">
                   <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
