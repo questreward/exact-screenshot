@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Monde vivant (Prompt 6)
+- [ ] Remplacer les scènes d’incidents fictives de l’accueil par les événements enregistrés.
+- [ ] Partager identité, statut et conséquences des événements entre accueil, carte, téléphone et météo sans nouveau moteur.
+- [ ] Tester dédoublonnage, visibilité locale, expiration et accès aux lieux/articles existants.
+- [ ] Essai connecté sur VPS et extensions du moteur : évaluer les contrats disponibles ; SQL soumis à accord préalable.
+
 ## V4 — Métiers (Prompt 5)
 - [x] Relier briefing, objectif courant, actions et bilan aux missions existantes ; salaires et progression préservés, décors par métier et comptes rendus des services enregistrés.
 - [x] Retirer les fausses arrivées, tâches réussies, clients décoratifs et performances des présentations de service ; consignes non présentées comme actions enregistrées.
