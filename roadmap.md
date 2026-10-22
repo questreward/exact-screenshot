@@ -1,9 +1,12 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
-## V4 — Métiers et chantier suivant (Prompts 8–9)
-- [ ] Prompt 8 : étendre les interactions des missions existantes sans inventer équipement, déplacements ni rémunération.
-- [ ] Prompt 9 : lire le document reçu pendant l’examen des métiers, puis intégrer ses priorités.
-- [ ] Vérifier les changements et conserver explicitement les limites des contrats serveur nécessitant accord.
+## V4 — Métiers et politique (Prompts 8–9)
+- [x] Examiner missions quotidiennes, services de secours, commerces, choix, scènes, candidatures, activités politiques et meetings existants.
+- [x] Prompt 8, première tranche : choix réellement enregistrés intégrés au décor professionnel, commandes tactiles contextualisées et verrou conservé jusqu’à une lecture réussie après réponse incertaine ; supprimer l’arrivée visuelle déduite d’une étape de mission.
+- [x] Prompt 9, première tranche : activités réservées et rencontres proposées distinctes, lieux et accès directs dans Politique et téléphone ; meeting ouvre son emplacement enregistré, sans déplacement automatique ni présence inventée.
+- [ ] Vérification complète avec personnage : compte de l’utilisateur absent dans l’aperçu (tentative --self échouée), essai connecté/VPS non confirmé.
+- [ ] Prompt 8, suite dépendant d’un nouveau contrat sécurisé à soumettre avant installation : inventaire professionnel à conséquences, étapes physiques et destinations exactes, rapports rédigés persistants, missions partagées/évolutives, collecte photo/interview et réception de livraisons. Aucun de ces systèmes n’est simulé dans cette tranche.
+- [ ] Prompt 9, suite dépendant d’un nouveau contrat sécurisé à soumettre avant installation : engagements reliés aux projets, messages et rendez-vous d’équipe, séquences interactives de meetings/interviews, itinéraires de cortèges et réactions partagées avec les métiers. Votes, budgets et décisions existants restent inchangés.
 
 ## V4 — Objets et interfaces (Prompt 7)
 - [x] Examiner téléphone, chargements sélectifs, banque, outils professionnels et erreurs sans reconstruire l’application.
