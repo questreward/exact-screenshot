@@ -43,7 +43,7 @@
 - Tax space extends existing returns/withholding; notices never also enter profile debt; property based on owned assets, receipts on actual payments only.
 - Jobs reuse secured career/application hiring; diploma gates use student_ledger, missions have no separate money rewards.
 - Mission scenes/dossiers/vehicle entry use server snapshots only, no invented trips, incidents or outcomes.
-- NPC chat keeps page-local history; model/player limits match outputs/inputs, retry reuses pending history. No persistent memory without approved storage.
+- NPC chat history is page-local; no persistent memory without approved storage.
 - Controls use touch-sized targets and bounded dialogs; navigation lists tested real routes, never hidden cross-links.
 - Financial presentation reuses recorded state in FinancialTools documents/adviser comments; amount shortcuts only populate inputs and date milestones derive from the shared game clock, never execute payments.
 - Interiors/reports show recorded trips/shifts only, never invented outcomes.
