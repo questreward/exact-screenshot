@@ -67,3 +67,4 @@
 - LocalPeople renders the existing location-presence snapshot with persisted appearances; identity deduplication never adds residents or inferred routines.
 - CheckoutScanner is presentation-only over frozen cart estimates; scanning never calls purchases, and explicit confirmation retains existing per-item retry keys and recorded receipts.
 - Checkout completion invalidates shared wallet, assets and furnishing reads even after uncertainty; purchase locations are transaction-time position snapshots, never URL labels or reconstructed historical locations.
+- JourneyProgress derives remaining game time and road hints only from saved trip deadlines/segments; elapsed time never confirms arrival. WorkSchedule keeps recorded running shifts across deadlines and uses only each activity's saved location, with no additional queries.

@@ -9,6 +9,7 @@ import { isFlashed, limitAt, tripProgress } from "@/game/driving";
 import { VehicleInterior } from "@/components/game/VehicleInterior";
 import { TripMap } from "@/components/game/TripMap";
 import { gameMeta } from "@/game/metadata";
+import { JourneyProgress } from "@/components/game/JourneyProgress";
 
 export const Route = createFileRoute("/_authenticated/_game/conduite")({
   head: () => ({ meta: gameMeta("En route", "Conduis ta voiture entre les villes ou profite du trajet en car ou en train.") }),
@@ -34,19 +35,19 @@ function TripPage() {
     <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Aucun voyage en cours. Pars depuis la Gare, la Station de transport, ou avec ta voiture.</p>
     <Button asChild className="min-h-12 w-full"><Link to="/carte">Ouvrir la carte</Link></Button></div>;
   const pct = tripProgress(trip.start_time, trip.end_time, now || Date.parse(s.now));
-  return trip.kind === "voiture" && trip.drive ? <DriveSim s={s} d={trip.drive} pct={pct} /> : <RideView kind={trip.kind} title={trip.title} pct={pct} />;
+  return trip.kind === "voiture" && trip.drive ? <DriveSim key={trip.id} s={s} d={trip.drive} pct={pct} now={now || Date.parse(s.now)} /> : <RideView trip={trip} pct={pct} now={now || Date.parse(s.now)} />;
 }
 
 function Progress({ pct }: { pct: number }) {
   return <div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} /></div>;
 }
 
-function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<DriveState['trip']>['drive']>; pct: number }) {
+function DriveSim({ s, d, pct, now }: { s: DriveState; d: NonNullable<NonNullable<DriveState['trip']>['drive']>; pct: number; now: number }) {
   const qc = useQueryClient();
   const [speed, setSpeed] = useState(0);
   const speeds = useRef<(number | null)[]>(d.radars.map(() => null));
   const [flash, setFlash] = useState(false);
-  const seg = limitAt(d.segments, pct);
+  const seg = limitAt(d.segments, pct) ?? { label: 'Tronçon indisponible', limit: 0 };
   const report = useMutation({
     mutationFn: (v: { speeds: number[] | null; auto: boolean }) => driveReport(d.activity_id, v.speeds, v.auto),
     onSuccess: (r) => { qc.setQueryData(driveQuery.queryKey, r); qc.invalidateQueries({ queryKey: ["transport"] }); qc.invalidateQueries({ queryKey: ["bank"] });
@@ -71,6 +72,7 @@ function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<Dri
     <header className="flex min-w-0 items-center gap-2"><Car className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{s.trip?.title}</h1></header>
     <Progress pct={pct} />
     <TripMap kind="voiture" pct={pct} from={d.from_city} to={d.to_city} title={s.trip?.title ?? ""} />
+    {s.trip && <JourneyProgress start={s.trip.start_time} end={s.trip.end_time} now={now} destination={s.trip.title} segments={d.segments} radars={d.radars} />}
     <div className={flash ? "ring-4 ring-primary" : ""}><VehicleInterior kind="voiture" speed={speed} limit={seg.limit} label={seg.label}/></div>
     {next && next.at - pct < 4 && <p className="flex items-center gap-2 text-sm text-primary"><Camera className="h-5 w-5"/>Radar · {next.limit} km/h</p>}
     {d.settled ? <p className="rounded-xl border border-border bg-card p-4 text-center text-sm">{d.mode === "automatique" ? "Conduite automatique activée." : `Radars passés · ${d.flashes} flash${d.flashes > 1 ? "s" : ""}.`} Arrivée à {Math.round(100 - pct)} % du trajet restant.</p> : <>
@@ -86,14 +88,16 @@ function DriveSim({ s, d, pct }: { s: DriveState; d: NonNullable<NonNullable<Dri
   </div>;
 }
 
-function RideView({ kind, title, pct }: { kind: string; title: string; pct: number }) {
+function RideView({ trip, pct, now }: { trip: NonNullable<DriveState['trip']>; pct: number; now: number }) {
+  const { kind, title } = trip;
   const Icon = kind === "train" ? TrainFront : BusFront;
   return <div className="mx-auto max-w-2xl space-y-3 p-4 pb-24">
     <header className="flex min-w-0 items-center gap-2"><Icon className="h-7 w-7 shrink-0 text-primary" /><h1 className="min-w-0 break-words font-heading text-xl font-bold">{title}</h1></header>
     <Progress pct={pct} />
     <TripMap kind={kind} pct={pct} title={title} />
-    <VehicleInterior kind={kind === "train" ? "train" : "car"} label={title}/>
+    <JourneyProgress start={trip.start_time} end={trip.end_time} now={now} destination={title} />
+    <VehicleInterior kind={kind === "train" ? "train" : "car"} speed={0} label={title}/>
     <p className="border-y border-border py-3 text-sm">{pct < 10 ? "Départ du trajet." : pct > 90 ? "Arrivée proche." : "Trajet en cours."}</p>
-    <p className="text-xs text-muted-foreground">Rien à faire : tu arrives à l'heure prévue.</p>
+    <div className="grid grid-cols-2 gap-2"><Button asChild variant="outline" className="min-h-12"><Link to="/telephone">Téléphone</Link></Button><Button asChild variant="outline" className="min-h-12"><Link to="/actualites">Actualités</Link></Button></div>
   </div>;
 }
