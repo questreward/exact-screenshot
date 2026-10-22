@@ -12,6 +12,19 @@ import { ShopCart } from "./ShopCart";
 const item: ShopProduct = { id: "lit", name: "Lit", price: 10, kind: "item", brand: "CIVITAS", section: "maison", desc: "", dep: 0, owned: false, sales: 0, details: {} };
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 describe("confirmation en caisse", () => {
+  it('ne lance aucun achat pendant le scan manuel et conserve le panier au retour', async () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const remove = vi.fn();
+    render(<QueryClientProvider client={qc}><ShopCart items={[item]} balance={100} price={p => p.price} bump={0} onRemove={remove} onDone={vi.fn()} /></QueryClientProvider>);
+    fireEvent.click(screen.getByRole('button', { name: /Panier :/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Passer en caisse' }));
+    expect(screen.queryByRole('button', { name: 'Confirmer et payer' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Scanner Lit' }));
+    expect(state.buy).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Retour au panier' }));
+    expect(remove).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Retirer Lit' })).toBeDefined();
+  });
   it("ne paie qu'après confirmation et ignore le double appui", async () => {
     const done = vi.fn();
     let finish: ((result: { reference: string }) => void) | undefined;

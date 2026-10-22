@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { characterQuery, lifeQuery, worldEventsQuery, socialQuery } from "@/services/game";
 import { dailyEncounter, lastMemory, whenLabel } from "@/game/social-moments";
-import { personMood, personNow } from "@/game/person-life";
+import { Button } from '@/components/ui/button';
 import { eventsAroundMe, socialPlans } from "@/game/social-hub";
 import { eventEmoji } from "@/game/map-layers";
 import { HomeInvitesPanel } from "./HomeVisits";
@@ -25,21 +25,21 @@ export function SocialHub({ open }: { open: (id?: string) => void }) {
   const tile = "flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl bg-card p-2 text-xs font-medium active:scale-95";
   return <div className="space-y-5">
     <div className="grid grid-cols-4 gap-2">
-      <button type="button" className={tile} onClick={() => open("contacts")}><span className="text-2xl" aria-hidden>📇</span>Contacts</button>
-      <button type="button" className={tile} onClick={() => open("messages")}><span className="text-2xl" aria-hidden>💬</span>Messages</button>
+      <Button variant="ghost" className={`${tile} h-auto whitespace-normal`} onClick={() => open("contacts")}><span className="text-2xl" aria-hidden>📇</span>Contacts</Button>
+      <Button variant="ghost" className={`${tile} h-auto whitespace-normal`} onClick={() => open("messages")}><span className="text-2xl" aria-hidden>💬</span>Messages</Button>
       <Link to="/organisations" className={tile}><span className="text-2xl" aria-hidden>🤝</span>Groupes</Link>
-      <button type="button" className={tile} onClick={() => open("reseau")}><span className="text-2xl" aria-hidden>🌐</span>Joueurs</button>
+      <Button variant="ghost" className={`${tile} h-auto whitespace-normal`} onClick={() => open("reseau")}><span className="text-2xl" aria-hidden>🌐</span>Joueurs</Button>
     </div>
 
     {meet && <section className="space-y-2">
       <h2 className="text-sm font-bold">✨ Rencontre du jour</h2>
-      <button type="button" onClick={() => open("contacts")} className="flex min-h-16 w-full items-center gap-3 rounded-xl bg-card p-3 text-left active:scale-[0.98]">
-        <span className="text-2xl" aria-hidden>{personMood(meet.id, time).emoji}</span>
-        <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Tu croises {meet.first_name} {meet.last_name}</span>
-          <span className="block text-xs text-muted-foreground">{meet.profession} · {personNow(meet.profession, time).emoji} {personNow(meet.profession, time).text}</span>
-          <span className="block text-xs text-muted-foreground">{mem ? `💭 « On s'est parlé ${whenLabel(mem.occurred_at, time)}. »` : "👋 Vous ne vous êtes encore jamais parlé."}</span></span>
-        <span className="text-xs font-semibold text-primary">Parler</span>
-      </button>
+      <Button variant="ghost" onClick={() => open("contacts")} className="flex h-auto min-h-16 w-full items-center gap-3 whitespace-normal rounded-lg bg-card p-3 text-left active:scale-[0.98]">
+        <span className="text-2xl" aria-hidden>👋</span>
+        <span className="min-w-0 flex-1"><span className="block break-words text-sm font-semibold">Découvrir {meet.first_name} {meet.last_name}</span>
+          <span className="block text-xs text-muted-foreground">{meet.profession} · {meet.location.name}</span>
+          <span className="block text-xs text-muted-foreground">{mem ? `Dernier échange : ${whenLabel(mem.occurred_at, time)}.` : "Vous ne vous êtes encore jamais parlé."}</span></span>
+        <span className="text-xs font-semibold text-primary">Contacts</span>
+      </Button>
     </section>}
 
     <section className="space-y-2">
