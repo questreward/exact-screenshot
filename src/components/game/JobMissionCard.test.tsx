@@ -11,6 +11,7 @@ describe('intervention existante', () => {
     const client = new QueryClient();
     client.setQueryData(['job-missions', 'daily'], { mission: { day: '2026-10-20', title: 'Poste de secours', job: 'protection_civile', status: 'active', step_index: 0, step_count: 2, step: { text: 'Accueil', choices: [{ label: 'Accueillir' }] }, reputation_delta: null, energy_cost: null }, progress: { successes: 0 } });
     render(<QueryClientProvider client={client}><JobMissionCard /></QueryClientProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Scène et matériel' }));
     fireEvent.click(screen.getByRole('button', { name: 'Entrer dans le véhicule' }));
     fireEvent.click(screen.getByRole('button', { name: 'Revenir à l’intervention' }));
     expect(choose).not.toHaveBeenCalled();

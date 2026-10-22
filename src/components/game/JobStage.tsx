@@ -8,7 +8,6 @@ import { decorForJob, hasTruckKit, type JobDecor } from "@/game/job-decor";
 import { CAB_HOTSPOTS } from "@/game/v2-scenes";
 import { MAX_ACTION } from "@/game/intervention";
 import { narrateIntervention } from "@/lib/intervention.functions";
-import { cn } from "@/lib/utils";
 import pompiers from "@/assets/v2/cab-pompiers.webp";
 import police from "@/assets/v2/cab-police.webp";
 import gendarmerie from "@/assets/v2/cab-gendarmerie.webp";
@@ -42,13 +41,12 @@ export function JobStage({ job, title, active }: { job: string; title: string; a
 
       {cab && active && (
         <div>
-          <p className="mb-2 text-sm font-semibold">Matériel pris dans le véhicule</p>
+          <p className="mb-2 text-sm font-semibold">Matériel du récit</p>
           <div className="flex flex-wrap gap-2">
             {CAB_HOTSPOTS[cab].map((h) => {
               const on = kit.includes(h.id);
-              return <button key={h.id} type="button" onClick={() => toggle(h.id)} aria-pressed={on}
-                className={cn("flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors", on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background")}>
-                {on && <Check className="h-4 w-4" />}{h.label}</button>;
+              return <Button key={h.id} type="button" variant={on ? "default" : "outline"} onClick={() => toggle(h.id)} aria-pressed={on} className="min-h-12 h-auto whitespace-normal">
+                {on && <Check className="h-4 w-4" />}{h.label}</Button>;
             })}
           </div>
           {kit.length > 0 && <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
@@ -67,7 +65,7 @@ export function JobStage({ job, title, active }: { job: string; title: string; a
             <Button className="min-h-12" disabled={action.trim().length < 5 || story.isPending} onClick={() => story.mutate()}>
               {story.isPending ? <><LoaderCircle className="animate-spin" />La scène réagit…</> : "Voir la réaction"}</Button>
           </div>
-          {story.isError && <p role="alert" className="text-sm text-destructive">{(story.error as Error).message}</p>}
+          {story.isError && <p role="alert" className="text-sm text-muted-foreground">La radio narrative est indisponible. Votre mission continue : choisissez une action dans le dossier.</p>}
           {story.data && <p aria-live="polite" className="animate-rise rounded-2xl rounded-bl-sm border border-border bg-card px-4 py-3 text-base">{story.data.reaction}</p>}
           <p className="text-xs text-muted-foreground">Récit seulement : le résultat dépend des choix ci-dessous.</p>
         </div>
