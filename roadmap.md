@@ -1,10 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## V4 — Commerces (Prompt 4)
-- [ ] Conserver les commerces et catalogues existants, améliorer entrée et rayons sans états fictifs.
-- [ ] Fiabiliser panier, scan, confirmation et reprises après échec avec les achats sécurisés existants.
-- [ ] Afficher les tickets depuis les commandes enregistrées et les destinations de possessions existantes.
-- [ ] Tester succès, échec partiel, double appui et navigation ; contrôle réel avec personnage si accessible.
+- [x] Conserver les commerces et catalogues existants : entrée liée à la carte, rayons tactiles, comparaison de deux produits et photos du concessionnaire ; aucun faux horaire ni faux client.
+- [x] Fiabiliser panier conservé pendant la navigation, scan puis confirmation explicite, reprise avec la même clé et maintien des articles non payés.
+- [x] Afficher les tickets depuis les commandes enregistrées, accessibles dans l’historique, et les destinations de possessions existantes.
+- [x] 502 tests réussis : succès, échec partiel, reprise et double appui couverts ; compilation OK. Ouverture protégée contrôlée à 390×844 et 1280×1800 sans erreur ni débordement.
+- [ ] Essai du parcours complet avec personnage et achats sur VPS : accès aux commerces redirigé vers la connexion dans l’aperçu, compte personnel non disponible.
 
 ## V4 — Smartphone (Prompt 3)
 - [x] Réorganiser le téléphone : heure du jeu, applications, retour et accès aux systèmes existants.
