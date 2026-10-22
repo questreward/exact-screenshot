@@ -1,6 +1,7 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
 ## Démarrage et véhicules 3D
+- [ ] Fournir reconnexion SSH et commande de mise à jour VPS avec conservation des réglages et retour possible à la version précédente.
 - [ ] Garantir la régénération des routes au démarrage après suppression d’une page ; test de régression.
 - [ ] Montrer le véhicule acheté devant le logement et les véhicules de service devant caserne/commissariat, sans inventer de stationnement enregistré.
 
