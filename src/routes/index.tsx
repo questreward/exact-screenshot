@@ -63,34 +63,25 @@ const FAQ = [
 function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+      <section className="relative isolate flex min-h-[88svh] flex-col overflow-hidden">
         <img
           src={cityHero}
           alt="Une ville française vivante au crépuscule, avec sa mairie, ses tramways et ses passants"
           width={1920}
           height={1088}
-          className="absolute inset-0 -z-20 h-full w-full object-cover animate-slow-zoom"
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-hero" />
-        {/* drifting clouds */}
-        <div className="pointer-events-none absolute top-[8%] -z-10 h-24 w-80 rounded-full bg-foreground/10 blur-3xl animate-drift" />
-        <div className="pointer-events-none absolute top-[18%] -z-10 h-16 w-64 rounded-full bg-foreground/10 blur-3xl animate-drift" style={{ animationDelay: "-45s" }} />
-        {/* city lights */}
-        {LIGHTS.map((p, i) => (
-          <span key={i} className="pointer-events-none absolute -z-10 h-1.5 w-1.5 rounded-full bg-primary-glow shadow-elegant animate-twinkle"
-            style={{ left: p.l, top: p.t, animationDelay: `${i * 0.4}s` }} />
-        ))}
-
         <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5">
           <Logo size={34} />
-          <Link to="/auth" className="text-sm font-semibold text-foreground/80 hover:text-foreground">Se connecter</Link>
+          <Link to="/auth" className="flex min-h-11 items-center px-2 text-sm font-semibold text-foreground/80 hover:text-foreground">Se connecter</Link>
         </header>
 
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-end px-5 pb-16 text-center sm:pb-24">
           <p className="mb-4 rounded-full border border-border glass px-4 py-1.5 text-xs font-semibold tracking-[0.2em] text-primary uppercase animate-rise">
             Simulation politique & sociale
           </p>
-          <h1 className="font-display text-6xl font-extrabold tracking-[0.12em] sm:text-8xl animate-rise" style={{ animationDelay: "0.1s" }}>
+          <h1 className="font-display text-6xl font-extrabold tracking-normal sm:text-8xl animate-rise" style={{ animationDelay: "0.1s" }}>
             CIVITAS
           </h1>
           <p className="mt-4 text-xl text-foreground/90 sm:text-2xl animate-rise" style={{ animationDelay: "0.2s" }}>
@@ -160,7 +151,7 @@ function Home() {
       <section className="mx-auto w-full max-w-3xl px-5 pb-16">
         <h2 className="font-display text-3xl font-bold">Questions fréquentes</h2>
         <div className="mt-6 space-y-3">{FAQ.map(f => <details key={f.q} className="group rounded-2xl border border-border bg-card p-4">
-          <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between font-semibold">{f.q}<span className="text-primary transition group-open:rotate-45">+</span></summary>
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-semibold">{f.q}<span className="text-primary transition group-open:rotate-45">+</span></summary>
           <p className="mt-2 text-sm text-muted-foreground">{f.a}</p></details>)}</div>
       </section>
 

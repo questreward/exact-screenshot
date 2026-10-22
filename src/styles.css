@@ -34,6 +34,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -76,6 +77,7 @@
   --destructive: oklch(0.64 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
   --success: oklch(0.74 0.14 160);
+  --warning: oklch(0.82 0.15 85);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 14%);
   --ring: oklch(0.7 0.16 33);
@@ -178,7 +180,7 @@
   animation: twinkle 3.5s ease-in-out infinite;
 }
 @utility animate-rise {
-  animation: rise 0.6s ease-out both;
+  animation: rise 0.18s ease-out both;
 }
 @keyframes page-in {
   from { opacity: 0; transform: translateY(8px) scale(0.995); }
@@ -335,3 +337,45 @@
 @keyframes product-turn { 0%,100% { transform: perspective(700px) rotateY(-9deg) rotateZ(-1deg); } 50% { transform: perspective(700px) rotateY(9deg) rotateZ(1deg); } }
 @keyframes product-unbox { from { opacity: 0; transform: translateY(24px) scale(.85); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .product-turn, .product-unbox { animation: none; } }
+
+/* V4 experience foundation: scoped roles, no gameplay or network side effects. */
+.game-content { --experience-gap: 1.5rem; }
+.game-content h1 { line-height: 1.22; text-wrap: balance; }
+.game-content h2, .game-content h3 { line-height: 1.35; text-wrap: pretty; }
+.game-content p { line-height: 1.65; }
+.game-content b, .game-content time, .game-content .font-mono { font-variant-numeric: tabular-nums; }
+.game-content :where(a, button, input, textarea, summary):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.game-content :where(summary) { min-height: 44px; }
+.game-context { display: flex; align-items: center; gap: .75rem; border-bottom: 1px solid var(--border); padding: .75rem 0; margin-bottom: 1.25rem; }
+.experience-section { border: 0; border-top: 1px solid var(--border); border-radius: 0; background: transparent; padding: 1.5rem 0; box-shadow: none; }
+.experience-state { display: flex; gap: .75rem; align-items: flex-start; border-left: 3px solid var(--chart-3); background: color-mix(in oklab, var(--chart-3) 6%, var(--background)); padding: 1rem; color: var(--foreground); }
+.experience-state[data-kind="success"] { border-color: var(--success); }
+.experience-state[data-kind="success"] > svg { color: var(--success); }
+.experience-state[data-kind="error"] { border-color: var(--destructive); }
+.experience-state[data-kind="error"] > svg { color: var(--destructive); }
+.experience-state[data-kind="loading"] > svg { color: var(--primary); }
+.experience-state-compact { padding: .75rem; font-size: .875rem; }
+.page-intro { border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
+.phone-shell { width: 100%; max-width: 30rem; min-width: 0; border: 1px solid var(--border); border-radius: 2rem; background: var(--surface); padding: .5rem; box-shadow: var(--shadow-card); }
+.phone-screen { min-height: 32rem; min-width: 0; border-radius: 1.5rem; background: var(--background); padding: 1rem; }
+.phone-app-icon { display: flex; position: relative; width: 3.5rem; height: 3.5rem; flex-shrink: 0; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: .875rem; background: var(--secondary); color: var(--foreground); }
+.phone-app-icon svg { width: 1.5rem; height: 1.5rem; }
+.phone-app-icon[data-tone="banque"] { background: color-mix(in oklab, var(--success) 15%, var(--card)); color: var(--success); }
+.phone-app-icon[data-tone="maps"], .phone-app-icon[data-tone="messages"] { background: color-mix(in oklab, var(--chart-3) 15%, var(--card)); color: var(--chart-3); }
+.phone-app-icon[data-tone="shopping"], .phone-app-icon[data-tone="agenda"] { background: color-mix(in oklab, var(--primary) 15%, var(--card)); color: var(--primary); }
+.product-stage .product-turn { animation: none; }
+.product-stage:hover .product-turn { animation: product-turn 3s ease-in-out 1; }
+.product-stage[data-preview="true"] .product-turn { animation: product-turn 7s ease-in-out infinite; }
+.toaster [data-sonner-toast] { font-family: var(--font-sans); border-radius: var(--radius-sm); }
+.toaster [data-sonner-toast][data-type="success"] { border-left: 3px solid var(--success); }
+.toaster [data-sonner-toast][data-type="error"] { border-left: 3px solid var(--destructive); }
+.toaster [data-sonner-toast][data-type="warning"] { border-left: 3px solid var(--warning); }
+.toaster [data-sonner-toast][data-type="info"] { border-left: 3px solid var(--chart-3); }
+@media (max-width: 640px) {
+  .game-content { padding-top: 1rem; }
+  .game-content .font-display.text-3xl { overflow-wrap: anywhere; }
+  .phone-screen { padding: .875rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-stage:hover .product-turn, .product-stage[data-preview="true"] .product-turn { animation: none; }
+}

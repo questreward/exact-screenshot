@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ExperienceLoading } from "@/components/game/ExperienceState";
+import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -42,15 +44,15 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Cette page n'a pas pu se charger</h1>
+        <h1 className="text-xl font-semibold text-foreground">Cette page n'a pas pu se charger</h1>
         <p className="mt-2 text-sm text-muted-foreground">Une erreur est survenue. Réessayez ou revenez à l'accueil.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
+          <Button
             onClick={() => { router.invalidate(); reset(); }}
             className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground"
           >
             Réessayer
-          </button>
+          </Button>
           <a href="/" className="inline-flex h-11 items-center justify-center rounded-xl border border-input px-5 text-sm font-semibold text-foreground">
             Accueil
           </a>
@@ -85,6 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
+  pendingComponent: ExperienceLoading,
 });
 
 function RootShell({ children }: { children: ReactNode }) {

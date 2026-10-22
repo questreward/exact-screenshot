@@ -36,7 +36,7 @@ function Dashboard() {
   if (!character) return null;
 
   return (
-    <div className="-mt-6 space-y-6 lg:-mt-10">
+    <div className="space-y-6">
       <GameHome firstName={character.first_name} cityName={character.city?.name} appearance={character.appearance}
         energy={character.energy} balance={bank?.balance ?? 0} situation={character.situation} />
 
@@ -53,7 +53,7 @@ function Dashboard() {
       <NextStepCard cityName={character.city?.name} />
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
+        <div className="experience-section">
           <h2 className="flex items-center gap-2 text-lg font-semibold"><Bell className="h-5 w-5 text-primary" /> Notifications</h2>
           <ul className="mt-3 space-y-2">
             {notifs.length === 0 && <li className="text-sm text-muted-foreground">Aucune notification.</li>}
@@ -66,7 +66,7 @@ function Dashboard() {
             ))}
           </ul>
         </div>
-        <div className="rounded-3xl border border-border bg-gradient-card p-5 shadow-card">
+        <div className="experience-section">
           <h2 className="flex items-center gap-2 text-lg font-semibold"><CalendarClock className="h-5 w-5 text-primary" /> Événements du monde</h2>
           {events.length === 0 ? (
             <p className="mt-3 flex items-center gap-2 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">

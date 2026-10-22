@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex min-w-0 items-center justify-center gap-2 whitespace-normal break-words rounded-xl text-center text-sm font-semibold cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed sm:whitespace-nowrap [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex min-w-0 items-center justify-center gap-2 whitespace-normal break-words rounded-xl text-center text-sm font-semibold cursor-pointer transition-[background-color,color,border-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        hero: "bg-gradient-primary text-primary-foreground shadow-elegant hover:brightness-110 active:scale-[0.98] tracking-wider uppercase font-display",
-        glass: "glass border border-border text-foreground hover:bg-accent tracking-wider uppercase font-display",
+        hero: "bg-gradient-primary text-primary-foreground shadow-elegant hover:brightness-110 active:scale-[0.98] tracking-normal uppercase font-display",
+        glass: "glass border border-border text-foreground hover:bg-accent tracking-normal uppercase font-display",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
@@ -21,7 +21,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "min-h-11 h-auto px-5 py-2",
-        sm: "min-h-11 h-auto px-3 py-2 text-xs sm:min-h-9",
+        sm: "min-h-11 h-auto px-3 py-2 text-xs sm:min-h-11",
         lg: "min-h-14 h-auto px-5 py-3 text-base sm:px-8",
         icon: "h-11 w-11",
       },
