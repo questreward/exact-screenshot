@@ -21,6 +21,16 @@ describe('expired connection recovery', () => {
     expect(await recoverExpiredSession()).toBe(false);
     expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
   });
+  it('requires a fresh sign-in when the renewal server fails (500)', async () => {
+    refreshSession.mockResolvedValue({ data: { session: null }, error: { status: 500 } });
+    expect(await recoverExpiredSession()).toBe(false);
+    expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
+  });
+  it('stops waiting after the timeout without discarding the session', async () => {
+    refreshSession.mockReturnValue(new Promise(() => {}));
+    await expect(recoverExpiredSession(20)).rejects.toMatchObject({ status: 0 });
+    expect(signOut).not.toHaveBeenCalled();
+  });
   it('preserves the session on network failure', async () => {
     const failure = { status: 0, message: 'Network unavailable' };
     refreshSession.mockResolvedValue({ data: { session: null }, error: failure });
