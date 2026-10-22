@@ -1,6 +1,9 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
+import { regenerateRoutes } from "./tools/route-generation";
+
+await regenerateRoutes(process.cwd());
 
 export default defineConfig({
   plugins: [react()],
