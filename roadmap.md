@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Déplacements et métiers (Prompts 12–13)
+- [ ] Auditer les véhicules, trajets, missions et journées existants, puis connecter leurs actions aux lieux enregistrés sans second moteur.
+- [ ] Améliorer la mobilité et la reprise professionnelle sur téléphone et ordinateur ; conserver paiements, horaires, salaires et progression.
+- [ ] Tester les états enregistrés, destinations et reprise ; vérifier les parcours accessibles et noter les limites de l’essai connecté.
+- [ ] Extensions persistantes (stationnement, réseau routier/fermetures, trafic, cargaisons, missions multi-métiers) : contrat sécurisé et SQL exact soumis à accord avant installation.
+
 ## V4 — Caisse, téléphone et messages habitants
 - [x] Achats scannés puis confirmés : actualisation des lectures partagées du compte, patrimoine et ameublement, même après réponse incertaine ; aucun débit local ni achat au simple scan. Clés de reprise inchangées.
 - [x] Téléphone « Mes achats » : articles, montants et tickets enregistrés, conservés après revente ; lieu affiché seulement s’il est enregistré.
