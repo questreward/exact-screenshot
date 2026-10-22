@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Métiers (Prompt 5)
+- [ ] Relier briefing, objectif courant, actions et bilan aux missions existantes ; conserver salaires et progression.
+- [ ] Retirer les fausses arrivées, tâches réussies et performances des présentations de service.
+- [ ] Fiabiliser les décisions, la reprise après navigation et les états d’erreur ; relier téléphone et carte sans inventer de destination.
+- [ ] Tester les missions, la reprise et les services ; vérifier les pages accessibles et identifier les capacités manquantes.
+
 ## V4 — Commerces (Prompt 4)
 - [x] Conserver les commerces et catalogues existants : entrée liée à la carte, rayons tactiles, comparaison de deux produits et photos du concessionnaire ; aucun faux horaire ni faux client.
 - [x] Fiabiliser panier conservé pendant la navigation, scan puis confirmation explicite, reprise avec la même clé et maintien des articles non payés.
