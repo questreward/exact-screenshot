@@ -15,6 +15,7 @@ export function phoneDataKeys(app?: string): string[] {
     profil: ["character", "civic"],
     banque: ["bank", "economy", "life"],
     contacts: ["life", "social"],
+    achats: ["shop"],
     "vie-sociale": ["life", "character"],
     travail: ["life"],
     meteo: ["position"],

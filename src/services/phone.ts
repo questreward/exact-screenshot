@@ -1,9 +1,10 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { phoneDataKeys } from "@/game/phone-state";
-import { clockQuery, notificationsQuery, lifeQuery, newsQuery, communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, positionQuery, civiFeedQuery, characterQuery, civicQuery, bankQuery, economyQuery, socialQuery } from "./game";
+import { clockQuery, notificationsQuery, lifeQuery, newsQuery, communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, positionQuery, civiFeedQuery, characterQuery, civicQuery, bankQuery, economyQuery, socialQuery, shopQuery } from "./game";
 
 export async function preparePhone(q: QueryClient, app?: string) {
   const tasks: Record<string, () => Promise<unknown>> = {
+    shop: () => q.ensureQueryData(shopQuery),
     clock: () => q.ensureQueryData(clockQuery), notifications: () => q.ensureQueryData(notificationsQuery),
     life: () => q.ensureQueryData(lifeQuery), news: () => q.ensureQueryData(newsQuery), communication: () => q.ensureQueryData(communicationQuery),
     threads: () => q.ensureQueryData(threadsQuery), messages: () => q.ensureQueryData(messagesQuery), templates: () => q.ensureQueryData(messageTemplatesQuery),

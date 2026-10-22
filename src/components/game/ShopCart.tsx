@@ -10,6 +10,7 @@ import { shopBuy, shopQuery, type ShopProduct } from "@/services/game";
 import { payShopItems } from "@/game/shop-checkout";
 import { ShopReceipt, type ShopOrder } from "./ShopReceipt";
 import { CheckoutScanner } from './CheckoutScanner';
+import { refreshShopPossessions } from '@/services/shop-sync';
 
 const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 type Line = { p: ShopProduct; price: number; ref?: string; error?: string };
@@ -66,6 +67,7 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
         } catch { setReceiptError(true); }
       }
     } finally {
+      await refreshShopPossessions(qc);
       setPhase("ticket"); locked.current = false;
     }
   };

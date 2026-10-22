@@ -30,7 +30,7 @@ const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 const day = (s: string) => new Date(s).toLocaleDateString("fr-FR");
 const select = "h-12 w-full rounded-lg border border-input bg-background px-3 text-sm";
 const STATUS: Record<string, string> = { active: "En cours", repaid: "Remboursé", sold: "Soldé par revente", seized: "Bien repris" };
-const KEYS = ["shop", "economy", "character", "life", "housing", "bank", "notifications"];
+const KEYS = ["shop", "economy", "character", "daily-life", "housing", "bank", "notifications"];
 const CART_KEY = ["shop-cart"];
 
 function ShopPage() {
