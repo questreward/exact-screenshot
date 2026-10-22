@@ -14,6 +14,17 @@ function openChat() {
   fireEvent.click(screen.getByRole('button', { name: 'Discuter' }));
 }
 describe('conversation locale', () => {
+  it('ouvre la fiche avec les échanges de cette page sans demander une nouvelle réponse IA', async () => {
+    chat.mockResolvedValue({ reply: 'Bonjour !' });
+    openChat();
+    fireEvent.click(screen.getByRole('button', { name: 'Comment ça va ?' }));
+    await screen.findByText('Bonjour !');
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer la conversation' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fiche de rencontre' }));
+    expect(screen.getByRole('list', { name: 'Échanges IA temporaires' }).textContent).toContain('Comment ça va ?');
+    expect(screen.getByRole('list', { name: 'Échanges IA temporaires' }).textContent).toContain('Bonjour !');
+    expect(chat).toHaveBeenCalledTimes(1);
+  });
   it('un double envoi ne génère qu’une réponse pour le même habitant', async () => {
     let finish: ((r: { reply: string }) => void) | undefined;
     chat.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
