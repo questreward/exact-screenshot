@@ -80,6 +80,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 ## Lancement
 - [x] Connexion iPhone : plusieurs appuis sur « Se connecter » nécessaires + lenteur des pages
 - [ ] Bot Discord (plan approuvé) : accueil, actualités, commandes, annonces
-- [ ] Magasin : photos animées des produits (10 000 produits) + aperçu de l'achat
-- [ ] Boutique argent réel : photos animées des objets
-- [ ] Page de présentation VIP améliorée
+- [x] Magasin : 69 photos de familles couvrant le catalogue généré et les articles historiques, animations, aperçu en pièce témoin et déballage après achat confirmé ; 15 tests réussis. Photos distinctes par variante et aperçu dans le logement réel non réalisés.
+- [x] Boutique argent réel : aperçu animé des cosmétiques sur le personnage, y compris tenue/cadre VIP.
+- [x] Page de présentation VIP améliorée, règles et parcours de paiement conservés.
+- [ ] Contrôle connecté des achats et du VIP : l’aperçu redirige vers la connexion, aucun compte personnel disponible ; essai avec personnage requis sur VPS.
