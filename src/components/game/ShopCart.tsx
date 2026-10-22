@@ -29,9 +29,9 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
   const [fast, setFast] = useState(false);
   const [orders, setOrders] = useState<ShopOrder[]>([]);
   const [receiptError, setReceiptError] = useState(false);
-  const requests = useRef(new Map<string, string>());
   const locked = useRef(false);
   const qc = useQueryClient();
+  const requests = useRef(new Map<string, string>(Object.entries(qc.getQueryData<Record<string, string>>(["shop-cart-requests"]) ?? {})));
   const total = items.reduce((n, p) => n + price(p), 0);
   const wait = (ms: number) => new Promise((r) => setTimeout(r, fast ? 0 : ms));
 
@@ -48,7 +48,10 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
     locked.current = true;
     setPhase("pay");
     try {
-      const result = await payShopItems(lines.map(l => l.p), requests.current, shopBuy, () => crypto.randomUUID());
+      const result = await payShopItems(lines.map(l => l.p), requests.current, (id, key) => {
+        qc.setQueryData<Record<string, string>>(["shop-cart-requests"], previous => ({ ...previous, [id]: key }));
+        return shopBuy(id, key);
+      }, () => crypto.randomUUID());
       const done: Line[] = result.paid.map(r => ({ p: r.item, price: price(r.item), ref: r.reference }));
       if (result.failure) done.push({ p: result.failure.item, price: price(result.failure.item), error: result.failure.message });
       setLines(done); setOrders([]); setReceiptError(false);
