@@ -8,6 +8,7 @@ export async function regenerateRoutes(root: string) {
   const config = getConfig({
     routesDirectory: resolve(root, "src/routes"),
     generatedRouteTree: resolve(root, "src/routeTree.gen.ts"),
+    tmpDir: resolve(root, ".tanstack/tmp"),
   }, root);
   await new Generator({ config, root }).run();
   const tree = await readFile(config.generatedRouteTree, "utf8");
