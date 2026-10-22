@@ -1,5 +1,9 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Connexion expirée sur VPS
+- [ ] Ajouter une reprise dédiée à PGRST301 : renouveler la connexion avant de relire les pages, sans rejouer d'achat ni d'action.
+- [ ] Vérifier les régressions ; parcours connecté du VPS et son horloge attendent une vérification sur le serveur de l’utilisateur.
+
 ## Démarrage et véhicules 3D
 - [x] Fournir reconnexion SSH et commande de mise à jour VPS avec conservation des réglages et ancienne version conservée.
 - [x] Garantir la régénération des routes au démarrage et avant tests après suppression d’une page ; reprise des suppressions manquées en développement. Régression dans dossier temporaire, page d’essai supprimée, 575 tests réussis et accueil HTTP 200.
