@@ -2,15 +2,17 @@
 
 ## V4 — Objets et interfaces (Prompt 7)
 - [x] Examiner téléphone, chargements sélectifs, banque, outils professionnels et erreurs sans reconstruire l’application.
-- [ ] Donner un écran de téléphone immédiatement pendant les chargements, rendre le retour cohérent et les erreurs réessayables.
-- [ ] Corriger les commandes bancaires étroites et les erreurs du distributeur sans modifier les opérations.
-- [ ] Tester navigation, reprise et erreurs ; vérifier le rendu accessible et identifier les essais connectés bloqués.
+- [x] Écran de téléphone indépendant des données pendant les chargements, erreurs de lecture réessayables ; retour conversation → messagerie → accueil distinct de la fermeture.
+- [x] Commandes bancaires adaptées aux écrans étroits, libellés d’applications lisibles, distributeur avec chargement et erreur neutre réessayable ; opérations inchangées.
+- [x] 518 tests réussis, compilation OK ; commandes retour/accueil/fermeture et nouvelle lecture après erreur avec cache préservé testées.
+- [ ] Essais connectés, réseau lent/coupé et mesure du téléphone réel : aucun compte de l’utilisateur disponible dans l’aperçu, accès redirigé vers /auth. Audit exhaustif des autres objets et applications non déclaré terminé.
 
 ## V4 — Monde vivant (Prompt 6)
-- [ ] Remplacer les scènes d’incidents fictives de l’accueil par les événements enregistrés.
-- [ ] Partager identité, statut et conséquences des événements entre accueil, carte, téléphone et météo sans nouveau moteur.
-- [ ] Tester dédoublonnage, visibilité locale, expiration et accès aux lieux/articles existants.
-- [ ] Essai connecté sur VPS et extensions du moteur : évaluer les contrats disponibles ; SQL soumis à accord préalable.
+- [x] Scènes d’incidents fictives remplacées par les événements enregistrés ; doublon de résumé de l’accueil supprimé.
+- [x] Même requête et mêmes identifiants pour accueil/carte/téléphone/météo ; liens de lieu, article et activité uniquement s’ils sont enregistrés, sans notifications ajoutées.
+- [x] Dédoublonnage, exclusion des données personnelles, visibilité locale/nationale/secteur, expiration et marqueurs testés ; annonce résolue sans fin ne redevient pas active. 514 tests puis 518 avec Prompt 7, compilation OK.
+- [ ] Essai connecté sur VPS : compte personnel indisponible dans l’aperçu. Les accès protégés 390×844 et 1280×1800 redirigent /auth sans erreur ni débordement ; cela ne vérifie pas le monde connecté.
+- [ ] Catastrophes évolutives, liens précis événement/mission, zones d’impact et réactions PNJ/commerces : contrats serveur non établis, SQL à proposer et faire approuver avant modification. Ni nouvelle phase ni conséquence économique simulée ; Prompt 6 complet non déclaré terminé.
 
 ## V4 — Métiers (Prompt 5)
 - [x] Relier briefing, objectif courant, actions et bilan aux missions existantes ; salaires et progression préservés, décors par métier et comptes rendus des services enregistrés.
