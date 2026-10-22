@@ -1,4 +1,4 @@
-import type { DayPhase } from "@/game/time";
+import type { DayPhase } from "@/game/world";
 
 export type SceneWeather = "clair" | "pluie" | "neige" | "nuageux";
 
