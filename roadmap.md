@@ -1,5 +1,10 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Population et commerces (Prompts 10–11)
+- [ ] Prompt 10 : examiner les routines, présences, relations, quartiers et contexte IA existants ; améliorer les rencontres locales sans deuxième simulation.
+- [ ] Prompt 11 : examiner les rayons, produits, panier, scan, tickets et commerces existants ; rendre le magasin plus jouable sans changer les paiements.
+- [ ] Tester les changements et vérifier les parcours accessibles ; préciser séparément les fonctionnalités nécessitant un nouveau contrat sécurisé et l’essai connecté.
+
 ## V4 — Métiers et politique (Prompts 8–9)
 - [x] Examiner missions quotidiennes, services de secours, commerces, choix, scènes, candidatures, activités politiques et meetings existants.
 - [x] Prompt 8, première tranche : choix réellement enregistrés intégrés au décor professionnel, commandes tactiles contextualisées et verrou conservé jusqu’à une lecture réussie après réponse incertaine ; supprimer l’arrivée visuelle déduite d’une étape de mission.
