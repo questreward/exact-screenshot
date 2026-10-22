@@ -3,7 +3,8 @@ import { Canvas, useFrame, useThree, type ThreeElements } from "@react-three/fib
 import { Environment, Lightformer, PerformanceMonitor, useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
-import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, walkable, type Door } from "@/game/street3d";
+import { LIMIT, ROAD_HALF, STREETS, WALK, nearestDoor, walkable, type Door } from "@/game/street3d";
+import type { SceneWeather } from "@/game/world-scene";
 import type { DayPhase } from "@/game/world";
 
 export type StreetInput = { x: number; y: number; yaw: number };
@@ -169,13 +170,46 @@ function slideWith(ok: (x: number, z: number) => boolean, x: number, z: number, 
 }
 
 export { isLowEnd };
+/** Arrow on the road showing the way to the neighbouring street. */
+function StreetSign({ x, active }: { x: number; active: boolean }) {
+  return (
+    <group position={[x, 0.06, 0]} rotation-x={-Math.PI / 2} rotation-z={x > 0 ? -Math.PI / 2 : Math.PI / 2}>
+      <mesh><circleGeometry args={[1.1, 3]} /><meshBasicMaterial color={active ? "#ff7a59" : "#ffffff"} transparent opacity={0.8} /></mesh>
+    </group>
+  );
+}
+
+/** Rain or snow drawn as one point cloud that follows the camera. */
+function Precipitation({ snow, count }: { snow: boolean; count: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const positions = useMemo(() => { const a = new Float32Array(count * 3); for (let i = 0; i < count; i++) { a[i * 3] = (Math.random() - 0.5) * 40; a[i * 3 + 1] = Math.random() * 20; a[i * 3 + 2] = (Math.random() - 0.5) * 40; } return a; }, [count]);
+  const camera = useThree((st) => st.camera);
+  useFrame((_, raw) => {
+    const dt = Math.min(raw, 0.05); const pts = ref.current; if (!pts) return;
+    pts.position.set(camera.position.x, 0, camera.position.z);
+    const arr = pts.geometry.attributes["position"]!.array as Float32Array; const fall = (snow ? 1.5 : 18) * dt;
+    for (let i = 0; i < count; i++) { const k = i * 3 + 1; arr[k]! -= fall; if (snow) arr[k - 1]! += Math.sin(arr[k]! + i) * 0.01; if (arr[k]! < 0) arr[k] = 20; }
+    pts.geometry.attributes["position"]!.needsUpdate = true;
+  });
+  return (
+    <points ref={ref}>
+      <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>
+      <pointsMaterial color={snow ? "#ffffff" : "#aac4dd"} size={snow ? 0.18 : 0.08} transparent opacity={snow ? 0.9 : 0.6} depthWrite={false} />
+    </points>
+  );
+}
+
 export type StreetQuality = "auto" | "low" | "high";
 
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];
 const PEOPLE = ["/models/characters/character-male-b.glb", "/models/characters/character-female-c.glb", "/models/characters/character-male-d.glb", "/models/characters/character-female-a.glb", "/models/characters/character-male-c.glb", "/models/characters/character-female-d.glb", "/models/characters/character-male-a.glb"];
 
-export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = "auto" }: { quality?: StreetQuality; phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
-  const look = SKY[phase];
+export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = "auto", street = 0, weather = "clair", start }: { street?: number; weather?: SceneWeather; start?: [number, number, number]; quality?: StreetQuality; phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
+  const base = SKY[phase];
+  // Recorded weather tints the sky and closes the fog; it never changes gameplay.
+  const grey = weather === "pluie" || weather === "nuageux" || weather === "neige";
+  const look = grey ? { ...base, sky: new THREE.Color(base.sky).lerp(new THREE.Color(weather === "neige" ? "#dfe4ea" : "#7d8792"), 0.6).getStyle(), sun: base.sun * 0.5 } : base;
+  const buildings = (STREETS[street] ?? STREETS[0]!).buildings;
   const playerRef = useRef<THREE.Group>(null);
   const [active, setActive] = useState<string | null>(null);
   const lampsX = [-26, -18, -6, 6, 18, 26];
@@ -189,7 +223,7 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = 
     <Canvas shadows={!low} dpr={dpr} camera={{ fov: 62, position: [-13, 9, 16] }} gl={{ antialias: !low, powerPreference: "high-performance" }}>
       {quality === "auto" && <PerformanceMonitor onDecline={() => { setDpr(1); setLow(true); }} onIncline={() => setDpr((d) => Math.min(d + 0.25, low ? 1 : 1.5))} />}
       <color attach="background" args={[look.sky]} />
-      <fog attach="fog" args={[look.sky, 25, 70]} />
+      <fog attach="fog" args={[look.sky, grey ? 15 : 25, grey ? 50 : 70]} />
       <hemisphereLight args={[look.sky, "#4b4237", look.amb]} />
       <directionalLight position={[18, 25, 12]} intensity={look.sun} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}
         shadow-camera-left={-35} shadow-camera-right={35} shadow-camera-top={35} shadow-camera-bottom={-35} />
@@ -199,7 +233,7 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = 
       </Environment>}
       <Ground />
       <Suspense fallback={null}>
-        {BUILDINGS.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
+        {buildings.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
         {[-28, 28].map((z) => [-2.5, 2.5].map((x) => <Model key={`t${z}${x}`} url="/models/city-kit-suburban/tree-large.glb" position={[x * 2, 0, z]} scale={4} />))}
         {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} light={!low && (x === -18 || x === 18)} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} light={!low && (x === -6 || x === 6)} />])}
         {CARS.slice(0, cars).map((url, i) => {
@@ -207,9 +241,11 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = 
           return <Car key={i} url={url} axis={axis} lane={fwd ? 2 : -2} speed={(fwd ? 1 : -1) * (6 + i)} start={-25 + i * 11} playerRef={playerRef} night={look.lamps && !low} />;
         })}
         {PEOPLE.slice(0, people).map((url, i) => <Person key={i} url={url} start={-25 + i * 8} lane={i % 2 ? 5.6 : -5.6} speed={1.1 + (i % 3) * 0.2} dir={i % 2 ? 1 : -1} />)}
-        <Player url={characterUrl} input={input} playerRef={playerRef} onDoor={(d) => { setActive(d?.id ?? null); onDoor(d); }} />
+        <Player url={characterUrl} input={input} playerRef={playerRef} findDoor={(x, z) => nearestDoor(x, z, 2.6, street)} {...(start ? { start } : {})} onDoor={(d) => { setActive(d?.id ?? null); onDoor(d); }} />
       </Suspense>
-      {BUILDINGS.flatMap((b) => (b.door ? [<DoorMarker key={b.door.id} door={b.door} active={active === b.door.id} />] : []))}
+      {buildings.flatMap((b) => (b.door ? [<DoorMarker key={b.door.id} door={b.door} active={active === b.door.id} />] : []))}
+      {[-1, 1].map((side) => <StreetSign key={side} x={side * (LIMIT - 1.5)} active={active?.startsWith("rue-") ?? false} />)}
+      {(weather === "pluie" || weather === "neige") && <Precipitation snow={weather === "neige"} count={low ? 300 : 900} />}
     </Canvas>
   );
 }

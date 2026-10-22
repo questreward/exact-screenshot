@@ -2,10 +2,11 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ClientOnly, createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, DoorOpen, RotateCcw, RotateCw } from "lucide-react";
-import { characterQuery } from "@/services/game";
+import { characterQuery, furnishingQuery } from "@/services/game";
+import { ShelfProducts } from "@/components/game/street3d/ShelfProducts";
 import { normalizeAppearance } from "@/game/appearance";
 import { characterModel } from "@/game/street3d";
-import { INTERIORS, type Spot } from "@/game/interior3d";
+import { INTERIORS, homeInterior, type Interior, type Spot } from "@/game/interior3d";
 import { Joystick } from "@/components/game/street3d/Joystick";
 import type { StreetInput, StreetQuality } from "@/components/game/street3d/Street3D";
 
@@ -13,6 +14,7 @@ const Interior3D = lazy(() => import("@/components/game/street3d/Interior3D").th
 
 export const Route = createFileRoute("/_authenticated/_game/lieu-3d/$id")({
   loader: ({ params, context: { queryClient } }) => {
+    if (params.id === "logement") return Promise.all([queryClient.ensureQueryData(characterQuery), queryClient.ensureQueryData(furnishingQuery)]).then(() => ({ name: "Mon logement" }));
     const room = INTERIORS[params.id];
     if (!room) throw notFound();
     return queryClient.ensureQueryData(characterQuery).then(() => ({ name: room.name }));
@@ -29,7 +31,24 @@ export const Route = createFileRoute("/_authenticated/_game/lieu-3d/$id")({
 
 function Place() {
   const { id } = Route.useParams();
-  const room = INTERIORS[id]!;
+  if (id === "logement") return <HomePlace />;
+  return <Place3D room={INTERIORS[id]!} />;
+}
+
+function HomePlace() {
+  const { data } = useSuspenseQuery(furnishingQuery);
+  const home = data.homes[0];
+  if (!data.available || !home) return (
+    <div className="mx-auto max-w-md space-y-4 p-6 text-center">
+      <p className="font-display text-lg font-bold">Pas encore de logement à visiter</p>
+      <p className="text-sm text-muted-foreground">Quand vous aurez un logement, vous pourrez y entrer en 3D avec vos meubles.</p>
+      <Link to="/ville-3d" className="inline-flex min-h-12 items-center rounded-xl bg-primary px-5 font-bold text-primary-foreground">Retour à la rue</Link>
+    </div>
+  );
+  return <Place3D room={homeInterior(home, data.furniture, data.grid)} />;
+}
+
+function Place3D({ room }: { room: Interior }) {
   const { data: character } = useSuspenseQuery(characterQuery);
   const appearance = normalizeAppearance((character?.appearance ?? {}) as never);
   const navigate = useNavigate();
@@ -39,7 +58,8 @@ function Place() {
   const [quality, setQuality] = useState<StreetQuality>("auto");
   const [shown, setShown] = useState(false);
   useEffect(() => { const q = localStorage.getItem("civitas-street-quality"); if (q === "low" || q === "high") setQuality(q); const t = setTimeout(() => setShown(true), 30); return () => clearTimeout(t); }, []);
-  const act = () => { const s = spotRef.current; if (s) navigate({ to: s.to as "/banque" }); };
+  const [section, setSection] = useState<string | null>(null);
+  const act = () => { const s = spotRef.current; if (!s) return; if (s.section) setSection(s.section); else navigate({ to: s.to as "/banque" }); };
 
   useEffect(() => {
     const keys = new Set<string>();
@@ -69,6 +89,7 @@ function Place() {
         </div>
       </div>
 
+      <ShelfProducts section={section} onClose={() => setSection(null)} />
       {spot && (
         <button type="button" onClick={act} className="glass absolute left-1/2 top-1/3 flex min-h-14 -translate-x-1/2 items-center gap-2 rounded-2xl px-5 font-display text-base font-bold shadow-elegant animate-rise">
           <DoorOpen className="h-5 w-5 text-primary" /> {spot.verb} {spot.label}

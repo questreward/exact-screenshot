@@ -59,6 +59,15 @@ function Npc({ f }: { f: Fixture }) {
   return <group ref={g} position={[f.x, 0, f.z]} rotation-y={f.rot ?? 0}><primitive object={obj} scale={1.15} /></group>;
 }
 
+/** A saved piece of furniture: footprint and height from its recorded size and type. */
+function HomeItem({ f }: { f: Fixture }) {
+  const w = f.w ?? 1, d = f.d ?? 1, h = f.h ?? 0.8, c = f.color ?? "#b08a64";
+  if (f.visual === "tv") return <group position={[f.x, 0, f.z]}><mesh position-y={0.25}><boxGeometry args={[w, 0.5, d]} /><meshStandardMaterial color="#6b4f3a" /></mesh><mesh position-y={0.85}><boxGeometry args={[w * 0.9, 0.6, 0.06]} /><meshStandardMaterial color={c} emissive="#1d3557" emissiveIntensity={0.4} /></mesh></group>;
+  if (f.visual === "bed" || f.visual === "mattress") return <group position={[f.x, 0, f.z]}><mesh position-y={h / 2} castShadow><boxGeometry args={[w, h, d]} /><meshStandardMaterial color="#6b4f3a" /></mesh><mesh position-y={h + 0.08}><boxGeometry args={[w * 0.95, 0.16, d * 0.95]} /><meshStandardMaterial color={c} /></mesh></group>;
+  if (f.visual === "sofa") return <group position={[f.x, 0, f.z]}><mesh position-y={0.25} castShadow><boxGeometry args={[w, 0.5, d]} /><meshStandardMaterial color={c} /></mesh><mesh position={[0, 0.65, -d / 2 + 0.12]}><boxGeometry args={[w, 0.6, 0.24]} /><meshStandardMaterial color={c} /></mesh></group>;
+  return <mesh position={[f.x, h / 2, f.z]} castShadow receiveShadow><boxGeometry args={[w, h, d]} /><meshStandardMaterial color={c} /></mesh>;
+}
+
 function FixtureView({ f, accent }: { f: Fixture; accent: string }) {
   switch (f.kind) {
     case "shelf": return <Shelf f={f} />;
@@ -71,6 +80,8 @@ function FixtureView({ f, accent }: { f: Fixture; accent: string }) {
     case "plant": return <group position={[f.x, 0, f.z]}><mesh position-y={0.3}><cylinderGeometry args={[0.3, 0.25, 0.6, 12]} /><meshStandardMaterial color="#b0603a" /></mesh><mesh position-y={1}><sphereGeometry args={[0.55, 12, 10]} /><meshStandardMaterial color="#4f7d3c" /></mesh></group>;
     case "car": return <group position={[f.x, 0, f.z]} rotation-y={f.rot ?? 0}><mesh position-y={0.04} rotation-x={-Math.PI / 2}><circleGeometry args={[3, 40]} /><meshStandardMaterial color="#d0d4da" /></mesh><Model url={f.model!} scale={1.6} /></group>;
     case "clerk": case "shopper": return <Npc f={f} />;
+    case "wall": return <mesh position={[f.x, (f.h ?? 3) / 2, f.z]} castShadow receiveShadow><boxGeometry args={[f.w ?? 1, f.h ?? 3, f.d ?? 1]} /><meshStandardMaterial color="#ece4d6" /></mesh>;
+    case "item": return <HomeItem f={f} />;
   }
 }
 
