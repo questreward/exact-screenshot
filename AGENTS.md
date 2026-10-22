@@ -64,3 +64,5 @@
 - Work experience derives objectives from recorded mission indices and services from activities across day boundaries; prep is guidance only, reports omit narrative successes, and security pay reads the uniquely keyed ledger rather than current rates.
 - MissionActions renders only server-provided choices over shared job imagery; refresh after uncertainty must succeed before choices unlock, to prevent stale decisions.
 - PoliticalDay derives appointments from recorded political/campaign activities and resolves only saved locations; offered events remain distinct from reservations to avoid fabricated attendance or agenda entries.
+- LocalPeople renders the existing location-presence snapshot with persisted appearances; identity deduplication never adds residents or inferred routines.
+- CheckoutScanner is presentation-only over frozen cart estimates; scanning never calls purchases, and explicit confirmation retains existing per-item retry keys and recorded receipts.
