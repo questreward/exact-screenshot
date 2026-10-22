@@ -1,5 +1,11 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## Démarrage et véhicules 3D
+- [x] Fournir reconnexion SSH et commande de mise à jour VPS avec conservation des réglages et ancienne version conservée.
+- [x] Garantir la régénération des routes au démarrage et avant tests après suppression d’une page ; reprise des suppressions manquées en développement. Régression dans dossier temporaire, page d’essai supprimée, 575 tests réussis et accueil HTTP 200.
+- [x] Montrer la dernière voiture achetée devant le logement actuel et les véhicules décoratifs devant caserne/commissariat ; modèles partagés, aucun stationnement enregistré. Scènes isolées vues sur téléphone/ordinateur sans erreur.
+- [ ] Vérifier achat → retour rue avec le personnage et installer sur VPS : aucun compte correspondant dans l’aperçu ; attend connexion utilisateur et installation. Modèles illustratifs, pas de reproduction exacte des marques.
+
 ## Discord — Bot communautaire
 - [x] Préparer le programme séparé : accueil, rôles d’intérêt, informations publiques, commandes et annonces réservées au propriétaire.
 - [x] Préparer la proposition SQL 0139, les contrôles et les instructions privées VPS ; aucune migration appliquée. Fortune exclue faute d’accord Discord spécifique.
@@ -193,7 +199,7 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] Serveur VPS en mode final (attente du contenu du Dockerfile)
 - [x] 3D étape 1 socle intérieurs + 2 supérette + 3 vêtements/meubles + 4 concession (halls) + 6 halls publics
 - [x] 3D logement explorable (disposition enregistrée)
-- [ ] 3D véhicule possédé garé devant chez soi, véhicules de service
+- [x] 3D véhicule possédé devant chez soi, véhicules de service (présentation uniquement ; essai connecté en attente ci-dessus)
 - [x] Réglage manuel qualité rue 3D
 - [x] Rayons 3D : vrais produits ajoutés au panier existant
 - [x] Rues reliées + météo changeante + sons d'ambiance

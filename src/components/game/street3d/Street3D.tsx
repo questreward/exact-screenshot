@@ -6,6 +6,7 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import { LIMIT, ROAD_HALF, STREETS, WALK, nearestDoor, walkable, type Door } from "@/game/street3d";
 import type { SceneWeather } from "@/game/world-scene";
 import type { DayPhase } from "@/game/world";
+import type { ParkedCar } from "@/game/street-parking";
 
 export type StreetInput = { x: number; y: number; yaw: number };
 
@@ -204,7 +205,7 @@ export type StreetQuality = "auto" | "low" | "high";
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];
 const PEOPLE = ["/models/characters/character-male-b.glb", "/models/characters/character-female-c.glb", "/models/characters/character-male-d.glb", "/models/characters/character-female-a.glb", "/models/characters/character-male-c.glb", "/models/characters/character-female-d.glb", "/models/characters/character-male-a.glb"];
 
-export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = "auto", street = 0, weather = "clair", start }: { street?: number; weather?: SceneWeather; start?: [number, number, number]; quality?: StreetQuality; phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
+export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = "auto", street = 0, weather = "clair", start, parked = [] }: { parked?: readonly ParkedCar[]; street?: number; weather?: SceneWeather; start?: [number, number, number]; quality?: StreetQuality; phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
   const base = SKY[phase];
   // Recorded weather tints the sky and closes the fog; it never changes gameplay.
   const grey = weather === "pluie" || weather === "nuageux" || weather === "neige";
@@ -232,6 +233,9 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = 
         <Lightformer intensity={0.8} color={look.sky} position={[-6, 2, -2]} rotation-y={Math.PI / 2} scale={[20, 2, 1]} />
       </Environment>}
       <Ground />
+      <Suspense fallback={null}>
+        {parked.map(car => <Model key={car.id} url={car.model} position={[car.x, 0, car.z]} rotation-y={car.rotation} />)}
+      </Suspense>
       <Suspense fallback={null}>
         {buildings.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
         {[-28, 28].map((z) => [-2.5, 2.5].map((x) => <Model key={`t${z}${x}`} url="/models/city-kit-suburban/tree-large.glb" position={[x * 2, 0, z]} scale={4} />))}
