@@ -3,17 +3,17 @@
 // secured page — the 3D never buys, sells or records anything itself.
 import type { Door } from "@/game/street3d";
 
-export type FixtureKind = "shelf" | "counter" | "rack" | "table" | "sofa" | "bed" | "plant" | "desk" | "car" | "clerk" | "shopper";
-export type Fixture = { kind: FixtureKind; x: number; z: number; rot?: number; w?: number; color?: string; model?: string };
-export type Spot = Door & { verb: string };
+export type FixtureKind = "item" | "wall" | "shelf" | "counter" | "rack" | "table" | "sofa" | "bed" | "plant" | "desk" | "car" | "clerk" | "shopper";
+export type Fixture = { kind: FixtureKind; x: number; z: number; rot?: number; w?: number; d?: number; h?: number; color?: string; model?: string; label?: string; visual?: string };
+export type Spot = Door & { verb: string; section?: string };
 export type Interior = {
   id: string; name: string; intro: string;
   w: number; d: number; // half sizes
   floor: string; wall: string; accent: string;
-  fixtures: Fixture[]; spots: Spot[];
+  fixtures: Fixture[]; spots: Spot[]; exitX?: number;
 };
 
-const spot = (id: string, verb: string, label: string, to: string, x: number, z: number): Spot => ({ id, verb, label, to, x, z });
+const spot = (id: string, verb: string, label: string, to: string, x: number, z: number, section?: string): Spot => (section ? { id, verb, label, to, x, z, section } : { id, verb, label, to, x, z });
 const P = "/models/characters/";
 const CAR = "/models/car-kit/";
 
@@ -29,9 +29,10 @@ export const INTERIORS: Record<string, Interior> = {
       { kind: "plant", x: -8, z: 6 },
     ],
     spots: [
-      spot("rayons", "Choisir", "les produits des rayons", "/marche", -3.2, -1),
-      spot("frais", "Choisir", "le rayon frais", "/marche", 0.3, -1),
-      spot("caisse", "Payer", "à la caisse", "/marche", 6, 2.7),
+      spot("rayon-loisirs", "Voir", "le rayon Loisirs", "/boutique", -3.2, -1, "loisirs"),
+      spot("rayon-maison", "Voir", "le rayon Électroménager", "/boutique", 0.3, -1, "electromenager"),
+      spot("rayon-tech", "Voir", "le rayon Technologie", "/boutique", 3.8, -1, "tech"),
+      spot("caisse", "Payer", "mon panier à la caisse", "/boutique", 6, 2.7),
     ],
   },
   vetements: {
@@ -44,8 +45,8 @@ export const INTERIORS: Record<string, Interior> = {
       { kind: "plant", x: -7, z: 5 },
     ],
     spots: [
-      spot("portants", "Regarder", "les tenues", "/style", -1.5, -0.4),
-      spot("caisse", "Payer", "les articles", "/boutique", 5.5, 2.3),
+      spot("portants", "Voir", "les vêtements", "/boutique", -1.5, -0.4, "mode"),
+      spot("caisse", "Payer", "mon panier à la caisse", "/boutique", 5.5, 2.3),
     ],
   },
   meubles: {
@@ -59,9 +60,9 @@ export const INTERIORS: Record<string, Interior> = {
       { kind: "plant", x: -9, z: 6 },
     ],
     spots: [
-      spot("salon", "Regarder", "le salon exposé", "/logement", -5, 0.6),
-      spot("chambre", "Regarder", "la chambre exposée", "/logement", 4, -1.4),
-      spot("caisse", "Commander", "des meubles", "/logement", 7, 2.7),
+      spot("salon", "Voir", "les meubles", "/boutique", -5, 0.6, "maison"),
+      spot("chambre", "Voir", "la literie et la déco", "/boutique", 4, -1.4, "maison"),
+      spot("caisse", "Payer", "mon panier à la caisse", "/boutique", 7, 2.7),
     ],
   },
   concession: {
@@ -108,7 +109,7 @@ Object.assign(INTERIORS, {
   agence: hall("agence", "Agence immobilière", "Annonces et visites de logements.", "/agence", "#8a5a3a", "Voir", "les annonces"),
 });
 
-export function exitSpot(r: Interior): Spot { return spot("sortie", "Sortir", "dans la rue", "/ville-3d", 0, r.d - 0.8); }
+export function exitSpot(r: Interior): Spot { return spot("sortie", "Sortir", "dans la rue", "/ville-3d", r.exitX ?? 0, r.d - 0.8); }
 
 /** Inside the room, keeping a margin from walls and around solid fixtures. */
 export function roomWalkable(r: Interior, x: number, z: number): boolean {
@@ -122,6 +123,7 @@ export function roomWalkable(r: Interior, x: number, z: number): boolean {
 }
 export function footprint(f: Fixture): [number, number] {
   const turned = Math.abs(Math.sin(f.rot ?? 0)) > 0.7;
+  if (f.kind === "item" || f.kind === "wall") return [(f.w ?? 1) / 2 + 0.25, (f.d ?? 1) / 2 + 0.25];
   const base: [number, number] = f.kind === "shelf" || f.kind === "rack" || f.kind === "counter" ? [(f.w ?? 2) / 2 + 0.3, 0.8]
     : f.kind === "car" ? [2.4, 2.4] : f.kind === "bed" ? [1.3, 1.6] : f.kind === "sofa" ? [1.4, 0.8] : f.kind === "plant" ? [0.5, 0.5] : [0.9, 0.7];
   return turned ? [base[1], base[0]] : base;
@@ -130,4 +132,42 @@ export function nearestSpot(r: Interior, x: number, z: number, reach = 1.8): Spo
   let best: Spot | null = null, dist = reach;
   for (const s of [...r.spots, exitSpot(r)]) { const d = Math.hypot(s.x - x, s.z - z); if (d < dist) { dist = d; best = s; } }
   return best;
+}
+
+// ---- Player home, rebuilt from the saved furnishing layout (read only) ----
+type HomeLike = { name: string; rooms: number; room_names: string[]; placements: { asset_id: string; room: number; x: number; y: number; rotation: number }[] };
+type FurnitureLike = { asset_id: string; name: string; visual: string; width: number; height: number };
+const CELL = 1; // one layout square = one metre
+const GAP = 1;  // wall thickness between rooms
+const LOOK: Record<string, { h: number; color: string }> = {
+  sofa: { h: 0.9, color: "#5c7a4c" }, bed: { h: 0.6, color: "#d8cfc0" }, mattress: { h: 0.35, color: "#e4ddd0" },
+  shelf: { h: 1.8, color: "#8a6a4a" }, washer: { h: 0.9, color: "#e8eaee" }, fridge: { h: 1.9, color: "#dfe3e8" },
+  tv: { h: 1.1, color: "#22262c" }, table: { h: 0.75, color: "#9a7a55" }, desk: { h: 0.75, color: "#7a5c3e" }, chair: { h: 0.9, color: "#6b4f3a" },
+};
+export function furnitureLook(visual: string) { return LOOK[visual] ?? { h: 0.8, color: "#b08a64" }; }
+
+/** Rooms sit side by side along x; each placement keeps its saved square, size and rotation. */
+export function homeInterior(home: HomeLike, furniture: FurnitureLike[], grid: number): Interior {
+  const rooms = Math.max(1, home.rooms);
+  const total = rooms * grid * CELL + (rooms - 1) * GAP;
+  const w = total / 2, d = (grid * CELL) / 2;
+  const roomLeft = (r: number) => -w + r * (grid * CELL + GAP);
+  const fixtures: Fixture[] = [];
+  for (let r = 1; r < rooms; r++) {
+    const x = roomLeft(r) - GAP / 2;
+    // Partition with a 1.6 m doorway in the middle.
+    const seg = d - 0.8;
+    fixtures.push({ kind: "wall", x, z: -d + seg / 2, w: GAP, d: seg, h: 3 }, { kind: "wall", x, z: d - seg / 2, w: GAP, d: seg, h: 3 });
+  }
+  for (const p of home.placements) {
+    const f = furniture.find((x) => x.asset_id === p.asset_id); if (!f || p.room < 0 || p.room >= rooms) continue;
+    const turned = p.rotation % 180 !== 0;
+    const bw = (turned ? f.height : f.width) * CELL, bd = (turned ? f.width : f.height) * CELL;
+    const look = furnitureLook(f.visual);
+    fixtures.push({ kind: "item", x: roomLeft(p.room) + p.x * CELL + bw / 2, z: -d + p.y * CELL + bd / 2, w: bw - 0.1, d: bd - 0.1, h: look.h, color: look.color, label: f.name, visual: f.visual });
+  }
+  const spots: Spot[] = Array.from({ length: rooms }, (_, r) => spot(`piece-${r}`, "Aménager", home.room_names[r] ?? `la pièce ${r + 1}`, "/chez-moi", roomLeft(r) + (grid * CELL) / 2, d - 1.2));
+  // Keep room-arrangement spots reachable even when furniture stands there.
+  const free = spots.filter((s) => !fixtures.some((f) => f.kind === "item" && Math.abs(s.x - f.x) < (f.w ?? 1) / 2 + 0.3 && Math.abs(s.z - f.z) < (f.d ?? 1) / 2 + 0.3));
+  return { id: "logement", name: home.name, intro: "Votre logement, meublé comme vous l'avez aménagé.", w, d, floor: "#c8a97e", wall: "#f3ede2", accent: "#d97757", fixtures, spots: free, exitX: roomLeft(0) + 1.2 };
 }

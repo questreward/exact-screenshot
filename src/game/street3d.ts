@@ -25,7 +25,7 @@ const S = "/models/city-kit-suburban/";
 const door = (id: string, label: string, to: string, x: number, side: 1 | -1): Door => ({ id, label, to, x, z: side * (WALK - 0.8) });
 
 // North side (z < 0) faces +z, south side faces -z.
-export const BUILDINGS: Building[] = [
+const MAIN: Building[] = [
   { model: S + "building-type-a.glb", x: -24, z: -10, rot: 0, scale: 4, door: door("logement", "Mon logement", "/chez-moi", -24, -1) },
   { model: C + "building-b.glb", x: -16.5, z: -9.8, rot: 0, scale: 4.5, door: door("banque", "Banque", "/banque", -16.5, -1) },
   { model: C + "building-c.glb", x: -10, z: -9.8, rot: 0, scale: 4.5, door: door("superette", "Supérette", "/marche", -10, -1) },
@@ -40,13 +40,53 @@ export const BUILDINGS: Building[] = [
   { model: C + "building-b.glb", x: 24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("travail", "Mon travail", "/carriere", 24, 1) },
 ];
 
-export const DOORS: Door[] = BUILDINGS.flatMap((b) => (b.door ? [b.door] : []));
+// Second street: shops. Third street: homes around a small park.
+const AVENUE: Building[] = [
+  { model: C + "building-e.glb", x: -24, z: -9.8, rot: 0, scale: 4.5, door: door("agence", "Agence immobilière", "/agence", -24, -1) },
+  { model: C + "building-c.glb", x: -16.5, z: -9.8, rot: 0, scale: 4.5, door: door("vetements", "Boutique de vêtements", "/style", -16.5, -1) },
+  { model: C + "building-h.glb", x: -10, z: -9.8, rot: 0, scale: 4.5 },
+  { model: C + "building-a.glb", x: 10, z: -9.8, rot: 0, scale: 4.5, door: door("superette", "Supérette", "/marche", 10, -1) },
+  { model: C + "building-g.glb", x: 17, z: -9.8, rot: 0, scale: 4.5 },
+  { model: C + "building-skyscraper-a.glb", x: 24, z: -10, rot: 0, scale: 4.5, door: door("meubles", "Magasin de meubles", "/marche", 24, -1) },
+  { model: C + "building-d.glb", x: -24, z: 9.8, rot: Math.PI, scale: 4.5 },
+  { model: S + "building-type-c.glb", x: -16.5, z: 10, rot: Math.PI, scale: 5, door: door("concession", "Concessionnaire", "/concession", -16.5, 1) },
+  { model: C + "building-f.glb", x: -10, z: 9.8, rot: Math.PI, scale: 4.5 },
+  { model: C + "building-b.glb", x: 10, z: 9.8, rot: Math.PI, scale: 4.5, door: door("banque", "Banque", "/banque", 10, 1) },
+  { model: C + "building-e.glb", x: 17, z: 9.8, rot: Math.PI, scale: 4.5 },
+  { model: C + "building-c.glb", x: 24, z: 9.8, rot: Math.PI, scale: 4.5, door: door("emploi", "Espace Emploi", "/espace-emploi", 24, 1) },
+];
+const HOMES: Building[] = [
+  ...[-24, -16.5, -10, 10, 17, 24].map((x, i) => ({ model: S + (i % 2 ? "building-type-c.glb" : "building-type-a.glb"), x, z: -10, rot: 0, scale: i % 2 ? 5 : 4, ...(x === -16.5 ? { door: door("logement", "Mon logement", "/chez-moi", x, -1) } : {}) })),
+  ...[-24, -16.5, -10].map((x, i) => ({ model: S + (i % 2 ? "building-type-a.glb" : "building-type-c.glb"), x, z: 10, rot: Math.PI, scale: i % 2 ? 4 : 5 })),
+  ...[10, 14, 18, 22, 26].map((x, i) => ({ model: S + (i % 2 ? "tree-small.glb" : "tree-large.glb"), x, z: 10 + (i % 2) * 1.5, rot: 0, scale: 4 })),
+];
+
+export type Street = { name: string; buildings: Building[]; park?: boolean };
+export const STREETS: Street[] = [
+  { name: "Rue centrale", buildings: MAIN },
+  { name: "Avenue des commerces", buildings: AVENUE },
+  { name: "Quartier résidentiel", buildings: HOMES, park: true },
+];
+export const BUILDINGS = MAIN;
+
+/** Road ends lead to the neighbouring streets (west = previous, east = next). */
+export function connectors(street: number): Door[] {
+  const n = STREETS.length, prev = (street + n - 1) % n, next = (street + 1) % n;
+  return [
+    { id: `rue-${prev}`, label: STREETS[prev]!.name, to: "/ville-3d", x: -(LIMIT - 1.5), z: 0 },
+    { id: `rue-${next}`, label: STREETS[next]!.name, to: "/ville-3d", x: LIMIT - 1.5, z: 0 },
+  ];
+}
+export const doorsOf = (street: number): Door[] => [...(STREETS[street] ?? STREETS[0]!).buildings.flatMap((b) => (b.door ? [b.door] : [])), ...connectors(street)];
+export const DOORS: Door[] = STREETS.flatMap((st) => st.buildings.flatMap((b) => (b.door ? [b.door] : [])));
+/** Where the player appears when arriving from another street. */
+export function arrivalPoint(fromEast: boolean): [number, number, number] { return [fromEast ? LIMIT - 4 : -(LIMIT - 4), 0, 2]; }
 
 /** Closest door within reach, or null. */
-export function nearestDoor(x: number, z: number, reach = 2.6): Door | null {
+export function nearestDoor(x: number, z: number, reach = 2.6, street = 0): Door | null {
   let best: Door | null = null;
   let dist = reach;
-  for (const d of DOORS) {
+  for (const d of doorsOf(street)) {
     const dd = Math.hypot(d.x - x, d.z - z);
     if (dd < dist) { dist = dd; best = d; }
   }

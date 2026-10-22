@@ -195,3 +195,5 @@ Règle V2 : améliorer toutes les fonctionnalités existantes (aucune nouveauté
 - [ ] 3D étape 5 logement explorable (disposition enregistrée), produits réels dans les rayons, véhicule possédé garé
 - [ ] 3D étape 7 ville vivante (plusieurs rues, météo, sons)
 - [x] Réglage manuel qualité rue 3D
+- [ ] Rayons 3D : vrais produits ajoutés au panier existant
+- [ ] Rues reliées + météo changeante + sons d'ambiance
