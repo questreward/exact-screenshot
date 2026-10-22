@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Population et commerces (Prompts 10–11)
+- [x] Prompt 10, première tranche : audit des routines P2 et présences locales ; habitants dédoublonnés, apparence enregistrée et connaissances dans la carte, erreur réessayable. Contacts et téléphone ne déclarent plus de garde, humeur, retour chez soi ou rencontre physique déduits du métier.
+- [x] Prompt 11, première tranche : caisse illustrée réutilisable, scan manuel de chaque article, total progressif et retour au panier ; caisse rapide maintenue, aucune opération pendant le scan, confirmation/paiements/tickets existants inchangés.
+- [x] 529 tests sur 133 fichiers réussis ; compilation automatique OK. Scanner isolé vérifié à 390×844 et 1280×1800, trois scans puis total, aucune erreur ni débordement mobile. Ne constitue pas un achat connecté.
+- [ ] Essai réel avec personnage : aucun compte correspondant à l’utilisateur dans l’aperçu (--self échoué) ; carte, boutique et contacts redirigent vers /auth. Installation et achats VPS non vérifiés.
+- [ ] Prompt 10, suite : population agrégée par quartier, routines adaptées aux événements, emplois/consommation/familles, mémoire importante et chaînes de conséquences exigent un contrat serveur à proposer et SQL exact à approuver ; aucune deuxième simulation ou conséquence inventée dans cette tranche.
+- [ ] Prompt 11, suite : stocks par rayon/réserve, fournisseurs/livraisons, files et employés, ouverture/fermeture avec effets, gestion et installation physique des achats exigent un contrat enregistré à proposer et SQL exact à approuver ; aucun faux stock/client/livraison montré. Prompts 10 et 11 complets non déclarés terminés.
+
 ## V4 — Métiers et politique (Prompts 8–9)
 - [x] Examiner missions quotidiennes, services de secours, commerces, choix, scènes, candidatures, activités politiques et meetings existants.
 - [x] Prompt 8, première tranche : choix réellement enregistrés intégrés au décor professionnel, commandes tactiles contextualisées et verrou conservé jusqu’à une lecture réussie après réponse incertaine ; supprimer l’arrivée visuelle déduite d’une étape de mission.

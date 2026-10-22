@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { shopBuy, shopQuery, type ShopProduct } from "@/services/game";
 import { payShopItems } from "@/game/shop-checkout";
 import { ShopReceipt, type ShopOrder } from "./ShopReceipt";
+import { CheckoutScanner } from './CheckoutScanner';
 
 const eur = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 type Line = { p: ShopProduct; price: number; ref?: string; error?: string };
@@ -34,15 +35,12 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
   const { data: savedRequests } = useQuery({ queryKey: ["shop-cart-requests"], queryFn: async (): Promise<Record<string, string>> => ({}), initialData: {} as Record<string, string>, staleTime: Infinity, gcTime: Infinity });
   const requests = useRef(new Map<string, string>(Object.entries(savedRequests)));
   const total = items.reduce((n, p) => n + price(p), 0);
-  const wait = (ms: number) => new Promise((r) => setTimeout(r, fast ? 0 : ms));
-
-  const scan = async () => {
+  const scan = () => {
     if (locked.current || !items.length) return;
     locked.current = true;
     const draft = items.map((p) => ({ p, price: price(p) }));
-    setLines(draft); setPhase("scan");
-    await wait(450);
-    setPhase("ready"); locked.current = false;
+    setLines(draft); setPhase(fast ? "ready" : "scan");
+    locked.current = false;
   };
   const checkout = async () => {
     if (locked.current || phase !== "ready") return;
@@ -104,9 +102,11 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
           <p className="text-xs text-muted-foreground">Chaque article est payé séparément. Voitures et logements se paient à part (comptant ou à crédit).</p>
         </div>}
 
-        {(phase === "scan" || phase === "pay") && <div className="mt-6 space-y-3 text-center animate-page">
+        {phase === 'scan' && <CheckoutScanner items={lines.map(line => line.p)} price={p => lines.find(line => line.p.id === p.id)?.price ?? price(p)} onComplete={() => setPhase('ready')} onBack={() => setPhase('cart')} />}
+
+        {phase === "pay" && <div className="mt-6 space-y-3 text-center animate-page">
           <LoaderCircle className="mx-auto h-10 w-10 animate-spin text-primary" />
-          <p className="font-display text-lg font-bold">{phase === "scan" ? "Lecture des articles…" : "Vérification du paiement…"}</p>
+          <p className="font-display text-lg font-bold">Vérification du paiement…</p>
           <ul className="mx-auto max-w-xs space-y-1 text-sm">{lines.map((l, i) => <li key={l.p.id} className="flex justify-between animate-rise" style={{ animationDelay: `${i * 150}ms` }}><span className="truncate">{l.p.name}</span><span>{eur(l.price)}</span></li>)}</ul>
         </div>}
 
