@@ -26,7 +26,7 @@ export function ShopInterior({ section, name, here, closed = false }: { section:
         className="absolute hidden min-h-11 -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-lg bg-card/95 px-3 text-xs font-semibold shadow-elegant hotspot lg:flex"
         style={{ left: `${a.x}%`, top: `${a.y}%` }}><ShoppingBag className="h-4 w-4 text-primary" />{a.label}</Link>)}
     </div>
-    <nav aria-label="Rayons du magasin" className="grid grid-cols-2 gap-2 lg:hidden">{aisles.map(aisle => <Button key={aisle.label} asChild variant="outline" className="h-auto min-h-14 justify-start whitespace-normal px-3 py-2 text-left text-xs"><Link to="/boutique" search={{ rayon: section, q: aisle.q || undefined, magasin: name }}><ShoppingBag className="shrink-0 text-primary" />{aisle.label}</Link></Button>)}</nav>
+    <nav aria-label="Rayons du magasin" className="grid grid-cols-2 gap-2 lg:hidden">{aisles.map(aisle => <Button key={aisle.label} asChild variant="outline" className="h-auto min-h-14 justify-start whitespace-normal px-3 py-2 text-left text-xs"><Link to="/boutique" search={aisle.q ? { rayon: section, q: aisle.q, magasin: name } : { rayon: section, magasin: name }}><ShoppingBag className="shrink-0 text-primary" />{aisle.label}</Link></Button>)}</nav>
     <div className="flex gap-2">
       <Button asChild className="h-auto min-h-12 flex-1 whitespace-normal"><Link to="/boutique" search={{ rayon: section, magasin: name }}><ShoppingBag />Tout le rayon {SECTIONS[section] ?? ""}</Link></Button>
       <Button variant="outline" className="min-h-12" onClick={() => setInside(false)}>Retour</Button>
