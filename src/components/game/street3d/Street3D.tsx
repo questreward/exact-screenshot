@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree, type ThreeElements } from "@react-three/fiber";
-import { Environment, Lightformer, useAnimations, useGLTF } from "@react-three/drei";
+import { Environment, Lightformer, PerformanceMonitor, useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { BUILDINGS, LIMIT, ROAD_HALF, WALK, nearestDoor, slide, walkable, type Door } from "@/game/street3d";
@@ -55,12 +55,12 @@ function Model({ url, ...props }: { url: string } & ThreeElements["group"]) {
   return <primitive object={obj} {...props} />;
 }
 
-function Lamp({ x, z, on }: { x: number; z: number; on: boolean }) {
+function Lamp({ x, z, on, light = true }: { x: number; z: number; on: boolean; light?: boolean }) {
   return (
     <group position={[x, 0, z]}>
       <mesh position-y={1.8} castShadow><cylinderGeometry args={[0.06, 0.08, 3.6, 8]} /><meshStandardMaterial color="#2b2f36" metalness={0.6} roughness={0.4} /></mesh>
       <mesh position-y={3.65}><sphereGeometry args={[0.22, 12, 12]} /><meshStandardMaterial color="#fff3c4" emissive="#ffcf70" emissiveIntensity={on ? 3 : 0.1} /></mesh>
-      {on && <pointLight position={[0, 3.4, 0]} intensity={6} distance={9} color="#ffd38a" />}
+      {on && light && <pointLight position={[0, 3.4, 0]} intensity={6} distance={9} color="#ffd38a" />}
     </group>
   );
 }
@@ -154,6 +154,13 @@ function Player({ url, input, playerRef, onDoor }: { url: string; input: React.R
   return <group ref={playerRef} position={[-13, 0, 4]}><primitive object={obj} scale={1.2} /></group>;
 }
 
+/** Appareils modestes : peu de cœurs/mémoire ou petit écran tactile. */
+function isLowEnd() {
+  if (typeof navigator === "undefined") return false;
+  const n = navigator as Navigator & { deviceMemory?: number };
+  return (n.hardwareConcurrency ?? 8) <= 4 || (n.deviceMemory ?? 8) <= 3;
+}
+
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];
 const PEOPLE = ["/models/characters/character-male-b.glb", "/models/characters/character-female-c.glb", "/models/characters/character-male-d.glb", "/models/characters/character-female-a.glb", "/models/characters/character-male-c.glb", "/models/characters/character-female-d.glb", "/models/characters/character-male-a.glb"];
 
@@ -162,27 +169,32 @@ export function Street3D({ phase, characterUrl, input, onDoor, crowd }: { phase:
   const playerRef = useRef<THREE.Group>(null);
   const [active, setActive] = useState<string | null>(null);
   const lampsX = [-26, -18, -6, 6, 18, 26];
+  const [low, setLow] = useState(() => isLowEnd());
+  const [dpr, setDpr] = useState(low ? 1 : 1.5);
+  const people = low ? Math.min(crowd.people, 3) : crowd.people;
+  const cars = low ? Math.min(crowd.cars + 2, 3) : crowd.cars + 2;
   return (
-    <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 62, position: [-13, 9, 16] }} gl={{ antialias: true }}>
+    <Canvas shadows={!low} dpr={dpr} camera={{ fov: 62, position: [-13, 9, 16] }} gl={{ antialias: !low, powerPreference: "high-performance" }}>
+      <PerformanceMonitor onDecline={() => { setDpr(1); setLow(true); }} onIncline={() => setDpr((d) => Math.min(d + 0.25, low ? 1 : 1.5))} />
       <color attach="background" args={[look.sky]} />
       <fog attach="fog" args={[look.sky, 25, 70]} />
       <hemisphereLight args={[look.sky, "#4b4237", look.amb]} />
       <directionalLight position={[18, 25, 12]} intensity={look.sun} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}
         shadow-camera-left={-35} shadow-camera-right={35} shadow-camera-top={35} shadow-camera-bottom={-35} />
-      <Environment resolution={64}>
+      {!low && <Environment resolution={64} frames={1}>
         <Lightformer intensity={1.5} position={[0, 6, 0]} scale={[10, 10, 1]} />
         <Lightformer intensity={0.8} color={look.sky} position={[-6, 2, -2]} rotation-y={Math.PI / 2} scale={[20, 2, 1]} />
-      </Environment>
+      </Environment>}
       <Ground />
       <Suspense fallback={null}>
         {BUILDINGS.map((b, i) => <Model key={i} url={b.model} position={[b.x, 0, b.z]} rotation-y={b.rot} scale={b.scale} />)}
         {[-28, 28].map((z) => [-2.5, 2.5].map((x) => <Model key={`t${z}${x}`} url="/models/city-kit-suburban/tree-large.glb" position={[x * 2, 0, z]} scale={4} />))}
-        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} />])}
-        {CARS.slice(0, crowd.cars + 2).map((url, i) => {
+        {lampsX.flatMap((x) => [<Lamp key={`l${x}n`} x={x} z={-6.2} on={look.lamps} light={!low && (x === -18 || x === 18)} />, <Lamp key={`l${x}s`} x={x} z={6.2} on={look.lamps} light={!low && (x === -6 || x === 6)} />])}
+        {CARS.slice(0, cars).map((url, i) => {
           const axis = i % 3 === 2 ? "z" : "x"; const fwd = i % 2 === 0;
-          return <Car key={i} url={url} axis={axis} lane={fwd ? 2 : -2} speed={(fwd ? 1 : -1) * (6 + i)} start={-25 + i * 11} playerRef={playerRef} night={look.lamps} />;
+          return <Car key={i} url={url} axis={axis} lane={fwd ? 2 : -2} speed={(fwd ? 1 : -1) * (6 + i)} start={-25 + i * 11} playerRef={playerRef} night={look.lamps && !low} />;
         })}
-        {PEOPLE.slice(0, crowd.people).map((url, i) => <Person key={i} url={url} start={-25 + i * 8} lane={i % 2 ? 5.6 : -5.6} speed={1.1 + (i % 3) * 0.2} dir={i % 2 ? 1 : -1} />)}
+        {PEOPLE.slice(0, people).map((url, i) => <Person key={i} url={url} start={-25 + i * 8} lane={i % 2 ? 5.6 : -5.6} speed={1.1 + (i % 3) * 0.2} dir={i % 2 ? 1 : -1} />)}
         <Player url={characterUrl} input={input} playerRef={playerRef} onDoor={(d) => { setActive(d?.id ?? null); onDoor(d); }} />
       </Suspense>
       {BUILDINGS.flatMap((b) => (b.door ? [<DoorMarker key={b.door.id} door={b.door} active={active === b.door.id} />] : []))}
