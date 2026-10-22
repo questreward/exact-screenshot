@@ -15,6 +15,20 @@ describe("horaires des lieux", () => {
   it("texte inconnu : pas de badge", () => {
     expect(openState("Horaires variables", at("2026-10-20T10:00:00Z"))).toBeNull();
   });
+  it('annonce lundi, pas demain, après la fermeture du vendredi', () => {
+    expect(openState('Du lundi au vendredi, 9 h – 17 h', at('2026-10-23T18:00:00Z'))).toEqual({ open: false, opensAt: 'lundi 09:00' });
+  });
+  it('respecte la pause entre deux plages le même jour', () => {
+    expect(openState('Tous les jours, 9 h – 12 h et 14 h – 18 h', at('2026-10-22T13:00:00Z'))).toEqual({ open: false, opensAt: '14:00' });
+  });
+  it('conserve une ouverture de nuit commencée vendredi après minuit samedi', () => {
+    expect(openState('Du lundi au vendredi, 22 h – 6 h', at('2026-10-24T02:00:00Z'))).toEqual({ open: true });
+    expect(openState('Du lundi au vendredi, 22 h – 6 h', at('2026-10-24T22:00:00Z'))).toEqual({ open: false, opensAt: 'lundi 22:00' });
+  });
+  it('refuse un horaire invalide ou différentes plages ambiguës par jour', () => {
+    expect(openState('9 h – 29 h', at('2026-10-22T12:00:00Z'))).toBeNull();
+    expect(openState('Lundi 9 h – 12 h, mardi 14 h – 18 h', at('2026-10-22T12:00:00Z'))).toBeNull();
+  });
 });
 describe("portes et recherche", () => {
   it("le logement ouvre Chez moi", () => { expect(placeDoor("logement")?.to).toBe("/chez-moi"); });

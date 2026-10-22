@@ -8,12 +8,23 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 import { BuildingSpaces } from './BuildingSpaces';
 const room: Tables<'location_spaces'> = { id: 'hall', location_id: 'townhall', parent_id: null, kind: 'room', name: 'Accueil', accessible: true };
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
-function mount(here = true, currentSpace: string | null = null) {
+function mount(here = true, currentSpace: string | null = null, closed = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
-  render(<QueryClientProvider client={client}><BuildingSpaces spaces={[room]} here={here} currentSpace={currentSpace} /></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><BuildingSpaces spaces={[room]} here={here} currentSpace={currentSpace} closed={closed} /></QueryClientProvider>);
   return client;
 }
 describe('entrées sécurisées existantes', () => {
+  it('empêche une entrée quand le lieu est fermé', () => {
+    mount(true, null, true);
+    fireEvent.click(screen.getByRole('button', { name: 'Entrer' }));
+    expect(enter).not.toHaveBeenCalled();
+  });
+  it('permet de sortir de sa pièce même après la fermeture', async () => {
+    leave.mockResolvedValue(null);
+    mount(true, 'hall', true);
+    fireEvent.click(screen.getByRole('button', { name: 'Sortir' }));
+    await waitFor(() => expect(leave).toHaveBeenCalledTimes(1));
+  });
   it('ne lance aucune entrée depuis un lieu simplement consulté', () => {
     mount(false);
     fireEvent.click(screen.getByRole('button', { name: 'Entrer' }));

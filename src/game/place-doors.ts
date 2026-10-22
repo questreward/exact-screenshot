@@ -24,23 +24,32 @@ export type OpenState = { open: boolean; opensAt?: string };
 /** Lit les horaires écrits ("Du lundi au samedi, 9 h – 19 h", "Tous les jours, 6 h – 22 h").
  *  Renvoie null si le texte n'est pas compris : aucun badge n'est alors affiché. */
 export function openState(hours: string | null | undefined, now: Date): OpenState | null {
-  if (!hours) return null;
-  const t = hours.toLowerCase();
-  if (/24 ?h ?(\/|sur) ?24/.test(t)) return { open: true };
-  const m = t.match(/(\d{1,2}) ?h ?(\d{2})? ?[–-] ?(\d{1,2}) ?h ?(\d{2})?/);
-  if (!m) return null;
-  const from = Number(m[1]) * 60 + Number(m[2] ?? 0), to = Number(m[3]) * 60 + Number(m[4] ?? 0);
-  let dayOk = true;
+  if (!hours || !Number.isFinite(now.getTime())) return null;
+  const t = hours.toLowerCase().replace(/\u00a0/g, ' ');
+  if (/24 ?h ?(\/|sur) ?24/.test(t) || /^(accès libre|toujours ouvert)\.?$/.test(t.trim())) return { open: true };
+  const matches = [...t.matchAll(/(\d{1,2})\s*(?:h|:)\s*(\d{2})?\s*[–—-]\s*(\d{1,2})\s*(?:h|:)\s*(\d{2})?/g)];
+  if (!matches.length) return null;
+  const slots = matches.map(m => ({ from: Number(m[1]) * 60 + Number(m[2] ?? 0), to: Number(m[3]) * 60 + Number(m[4] ?? 0) }));
+  if (matches.some(m => Number(m[1]) > 23 || Number(m[3]) > 24 || Number(m[2] ?? 0) > 59 || Number(m[4] ?? 0) > 59 || (Number(m[3]) === 24 && Number(m[4] ?? 0) !== 0)) || slots.some(s => s.from === s.to)) return null;
   const range = t.match(/du (\w+) au (\w+)/);
-  const day = now.getUTCDay();
-  if (range && range[1]! in DAYS && range[2]! in DAYS) {
-    const a = DAYS[range[1]!]!, b = DAYS[range[2]!]!;
-    dayOk = a <= b ? day >= a && day <= b : day >= a || day <= b;
+  const a = range?.[1] ? DAYS[range[1]] : undefined;
+  const b = range?.[2] ? DAYS[range[2]] : undefined;
+  if (range && (a === undefined || b === undefined)) return null;
+  const namedDays = Object.entries(DAYS).filter(([name]) => t.includes(name)).map(([, day]) => day);
+  // Different schedules on different days need a structured server contract, not a guessed badge.
+  if (!range && namedDays.length > 1 && matches.length > 1) return null;
+  const accepts = (day: number) => a !== undefined && b !== undefined ? (a <= b ? day >= a && day <= b : day >= a || day <= b) : !namedDays.length || namedDays.includes(day);
+  const day = now.getUTCDay(), mins = now.getUTCHours() * 60 + now.getUTCMinutes();
+  if (slots.some(s => s.from < s.to ? accepts(day) && mins >= s.from && mins < s.to : (accepts(day) && mins >= s.from) || (accepts((day + 6) % 7) && mins < s.to))) return { open: true };
+  for (let offset = 0; offset < 8; offset++) {
+    if (!accepts((day + offset) % 7)) continue;
+    const next = slots.filter(s => offset > 0 || s.from > mins).sort((x, y) => x.from - y.from)[0];
+    if (!next) continue;
+    const fmt = `${String(Math.floor(next.from / 60)).padStart(2, '0')}:${String(next.from % 60).padStart(2, '0')}`;
+    const label = offset === 0 ? fmt : offset === 1 ? `demain ${fmt}` : `${Object.keys(DAYS).find(name => DAYS[name] === (day + offset) % 7)} ${fmt}`;
+    return { open: false, opensAt: label };
   }
-  const mins = now.getUTCHours() * 60 + now.getUTCMinutes();
-  const fmt = `${String(Math.floor(from / 60)).padStart(2, "0")}:${String(from % 60).padStart(2, "0")}`;
-  if (dayOk && mins >= from && mins < to) return { open: true };
-  return { open: false, opensAt: dayOk && mins < from ? fmt : `demain ${fmt}` };
+  return null;
 }
 
 /** Recherche simple dans les lieux existants (nom, type, quartier), sans accents. */
