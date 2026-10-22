@@ -41,7 +41,7 @@ describe('intervention existante', () => {
     render(<QueryClientProvider client={client}><JobMissionCard /></QueryClientProvider>);
     const button = screen.getByRole('button', { name: 'Demander du renfort' });
     fireEvent.click(button); fireEvent.click(button);
-    expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-22', 1, 0);
+    await waitFor(() => expect(choose).toHaveBeenCalledExactlyOnceWith('2026-10-22', 1, 0));
     fail?.(new Error('Connexion interrompue'));
     await screen.findByText('Décision non confirmée');
     expect(client.getQueryData(['job-missions', 'daily'])).toMatchObject({ mission: { step_index: 1, status: 'active', reputation_delta: null } });
