@@ -8,7 +8,7 @@ import { useWorldClock } from "@/components/game/WorldClock";
 import { normalizeAppearance } from "@/game/appearance";
 import { characterModel, type Door } from "@/game/street3d";
 import { streetLife } from "@/game/world-scene";
-import type { StreetInput } from "@/components/game/street3d/Street3D";
+import type { StreetInput, StreetQuality } from "@/components/game/street3d/Street3D";
 
 const Street3D = lazy(() => import("@/components/game/street3d/Street3D").then((m) => ({ default: m.Street3D })));
 
@@ -47,6 +47,9 @@ function Street() {
   const input = useRef<StreetInput>({ x: 0, y: 0, yaw: Math.PI / 2 });
   const [door, setDoor] = useState<Door | null>(null);
   const doorRef = useRef<Door | null>(null);
+  const [quality, setQuality] = useState<StreetQuality>("auto");
+  useEffect(() => { const q = localStorage.getItem("civitas-street-quality"); if (q === "low" || q === "high") setQuality(q); }, []);
+  const cycleQuality = () => setQuality((q) => { const n: StreetQuality = q === "auto" ? "low" : q === "low" ? "high" : "auto"; localStorage.setItem("civitas-street-quality", n); return n; });
   doorRef.current = door;
   const appearance = normalizeAppearance((character?.appearance ?? {}) as never);
   const enter = () => { if (doorRef.current) navigate({ to: doorRef.current.to as "/banque" }); };
@@ -75,7 +78,7 @@ function Street() {
     <div className="fixed inset-0 z-50 bg-background">
       <ClientOnly fallback={<p className="p-6">Chargement de la rue…</p>}>
         <Suspense fallback={<div className="flex h-full items-center justify-center font-display text-lg">Chargement de la rue…</div>}>
-          <Street3D phase={phase} characterUrl={characterModel(appearance.hair, appearance.skin)} input={input} onDoor={setDoor} crowd={streetLife(phase)} />
+          <Street3D phase={phase} characterUrl={characterModel(appearance.hair, appearance.skin)} input={input} onDoor={setDoor} crowd={streetLife(phase)} quality={quality} />
         </Suspense>
       </ClientOnly>
 
@@ -84,6 +87,7 @@ function Street() {
         <div className="flex items-center gap-2">
           <span className="glass flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-bold shadow-card"><CreditCard className="h-4 w-4 text-primary" />{formatMoney(bank?.balance ?? 0)}</span>
           <span className="glass flex min-h-11 items-center rounded-full px-3 font-display text-sm font-bold shadow-card">{hour}</span>
+          <button type="button" onClick={cycleQuality} aria-label="Changer la qualité graphique" className="glass pointer-events-auto flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-bold shadow-card">⚙️ {quality === "auto" ? "Auto" : quality === "low" ? "Légère" : "Belle"}</button>
           <Link to="/telephone" aria-label="Ouvrir le téléphone" className="glass pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full shadow-card"><Smartphone className="h-5 w-5" /></Link>
         </div>
       </div>

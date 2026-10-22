@@ -161,21 +161,25 @@ function isLowEnd() {
   return (n.hardwareConcurrency ?? 8) <= 4 || (n.deviceMemory ?? 8) <= 3;
 }
 
+export type StreetQuality = "auto" | "low" | "high";
+
 const CARS = ["/models/car-kit/sedan.glb", "/models/car-kit/taxi.glb", "/models/car-kit/van.glb", "/models/car-kit/suv.glb", "/models/car-kit/police.glb", "/models/car-kit/hatchback-sports.glb"];
 const PEOPLE = ["/models/characters/character-male-b.glb", "/models/characters/character-female-c.glb", "/models/characters/character-male-d.glb", "/models/characters/character-female-a.glb", "/models/characters/character-male-c.glb", "/models/characters/character-female-d.glb", "/models/characters/character-male-a.glb"];
 
-export function Street3D({ phase, characterUrl, input, onDoor, crowd }: { phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
+export function Street3D({ phase, characterUrl, input, onDoor, crowd, quality = "auto" }: { quality?: StreetQuality; phase: DayPhase; characterUrl: string; input: React.RefObject<StreetInput>; onDoor: (d: Door | null) => void; crowd: { people: number; cars: number } }) {
   const look = SKY[phase];
   const playerRef = useRef<THREE.Group>(null);
   const [active, setActive] = useState<string | null>(null);
   const lampsX = [-26, -18, -6, 6, 18, 26];
-  const [low, setLow] = useState(() => isLowEnd());
+  const [autoLow, setLow] = useState(() => isLowEnd());
+  const low = quality === "auto" ? autoLow : quality === "low";
   const [dpr, setDpr] = useState(low ? 1 : 1.5);
+  useEffect(() => { if (quality !== "auto") setDpr(quality === "low" ? 1 : 1.5); }, [quality]);
   const people = low ? Math.min(crowd.people, 3) : crowd.people;
   const cars = low ? Math.min(crowd.cars + 2, 3) : crowd.cars + 2;
   return (
     <Canvas shadows={!low} dpr={dpr} camera={{ fov: 62, position: [-13, 9, 16] }} gl={{ antialias: !low, powerPreference: "high-performance" }}>
-      <PerformanceMonitor onDecline={() => { setDpr(1); setLow(true); }} onIncline={() => setDpr((d) => Math.min(d + 0.25, low ? 1 : 1.5))} />
+      {quality === "auto" && <PerformanceMonitor onDecline={() => { setDpr(1); setLow(true); }} onIncline={() => setDpr((d) => Math.min(d + 0.25, low ? 1 : 1.5))} />}
       <color attach="background" args={[look.sky]} />
       <fog attach="fog" args={[look.sky, 25, 70]} />
       <hemisphereLight args={[look.sky, "#4b4237", look.amb]} />
