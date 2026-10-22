@@ -8,10 +8,10 @@ const PHOTO = { voiture, bus, train, car } as const;
 type Kind = 'voiture' | 'car' | 'train' | 'camion' | 'bus';
 
 /** Intérieur réaliste (photo) ; vitesse et panneau affichés par-dessus. Rien n'est décidé ici. */
-export function VehicleInterior(props: { kind: Kind; speed?: number; limit?: number; label: string }) {
+export function VehicleInterior(props: { kind: Kind; speed?: number; limit?: number; label: string; moving?: boolean }) {
   const { kind, speed, limit, label } = props;
   if (kind === 'camion') return <SvgInterior {...props} kind="camion" />;
-  const moving = speed === undefined || speed > 0;
+  const moving = props.moving ?? (speed === undefined || speed > 0);
   return <figure className="relative overflow-hidden rounded-2xl border border-border bg-surface" aria-label={`Intérieur ${kind} · ${label}`}>
     <img src={PHOTO[kind]} alt={kind === 'voiture' ? 'Vue du poste de conduite' : 'Vue de la cabine voyageurs'} width={1024} height={576}
       className={`block aspect-video w-full object-cover ${moving ? 'ride-sway' : ''}`} />

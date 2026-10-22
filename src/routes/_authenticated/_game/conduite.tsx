@@ -96,7 +96,7 @@ function RideView({ trip, pct, now }: { trip: NonNullable<DriveState['trip']>; p
     <Progress pct={pct} />
     <TripMap kind={kind} pct={pct} title={title} />
     <JourneyProgress start={trip.start_time} end={trip.end_time} now={now} destination={title} />
-    <VehicleInterior kind={kind === "train" ? "train" : "car"} speed={0} label={title}/>
+    <VehicleInterior kind={kind === "train" ? "train" : "car"} moving={pct < 100} label={title}/>
     <p className="border-y border-border py-3 text-sm">{pct < 10 ? "Départ du trajet." : pct > 90 ? "Arrivée proche." : "Trajet en cours."}</p>
     <div className="grid grid-cols-2 gap-2"><Button asChild variant="outline" className="min-h-12"><Link to="/telephone">Téléphone</Link></Button><Button asChild variant="outline" className="min-h-12"><Link to="/actualites">Actualités</Link></Button></div>
   </div>;

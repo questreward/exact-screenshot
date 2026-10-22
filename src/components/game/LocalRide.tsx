@@ -24,7 +24,7 @@ export function LocalRide({ activity }: { activity: LifeActivity }) {
   const b = to?.district ? realPlace(to.district.city_id, to.kind, to.name) : null;
   const v = a && b ? midView(a.at, b.at) : null;
   return <div className="space-y-2">
-    <div className="relative overflow-hidden rounded-xl"><VehicleInterior kind="bus" speed={0} label={to ? `Vers ${to.name}` : "Transport public"} /><div className={`pointer-events-none absolute inset-0 ${daylight(new Date(now).getUTCHours()).overlay}`} /></div>
+    <div className="relative overflow-hidden rounded-xl"><VehicleInterior kind="bus" moving={pct < 1} label={to ? `Vers ${to.name}` : "Transport public"} /><div className={`pointer-events-none absolute inset-0 ${daylight(new Date(now).getUTCHours()).overlay}`} /></div>
     <JourneyProgress start={activity.start_time} end={activity.end_time} now={now} destination={to?.name ?? 'Transport public'} />
     <p role="status" className="text-sm">{activity.status === 'completed' ? `Arrivée confirmée${to ? ` : ${to.name}` : ''}` : pct >= 1 ? 'Arrivée en attente de confirmation' : `${daylight(new Date(now).getUTCHours()).emoji} En route`}</p>
     {ready && a && b && v && <RealMapBox viewKey={`${activity.id}`} center={v.at} zoom={v.zoom} height="h-52 w-full"
