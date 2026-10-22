@@ -1,5 +1,13 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Véhicules, téléphone, métiers et ville (Prompts 16–19)
+- [ ] Auditer les quatre documents et les contrats existants, sans second moteur ; préserver toutes les extensions demandées.
+- [ ] Afficher les horaires enregistrés des lieux et préciser l’accès aux espaces et rayons, sans inventer d’heures.
+- [ ] Ajouter des repères interactifs pour lieux disponibles, visites enregistrées et prochaines rencontres réservées ; ne pas déduire une visite d’une simple consultation.
+- [ ] Ajouter une fiche habitant : échanges IA de la session, lieu rencontré et actions enregistrées ; conservation longue soumise à accord sur le stockage privé.
+- [ ] Vérifier les tests ciblés et le parcours connecté si un compte est disponible.
+- [ ] Extensions complètes des Prompts 16–19 : persistance des véhicules/parkings, logistique, appels, métiers profonds et simulation réactive ; contrats sécurisés et SQL exact à approuver avant installation.
+
 ## V4 — Bâtiments et société (Prompts 14–15)
 - [x] Auditer les lieux, intérieurs, pièces, présences et relations existants ; conserver les systèmes sécurisés.
 - [x] Première tranche lieux : espaces enregistrés, pièce actuelle, entrée/sortie et reprise verrouillée après réponse incertaine ; rayons tactiles sur téléphone et exploration distincte d’une entrée physique. Aucun nouveau bâtiment ou droit créé.
