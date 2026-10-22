@@ -13,7 +13,7 @@ export function PoliticsApp() {
   const { data: news } = useQuery(newsQuery);
   const elections = el?.elections ?? [];
   const mine = elections.flatMap(e => e.candidates.filter(c => c.mine).map(c => ({ electionStatus: e.status, status: c.status })));
-  const mandates = elections.flatMap(e => e.mandate && e.candidates.some(c => c.mine && c.id === e.mandate!.candidacy_id) ? [e.mandate] : []);
+  const mandates = elections.flatMap(e => e.mandate && e.candidates.some(c => c.mine && c.id === e.mandate?.candidacy_id) ? [e.mandate] : []);
   const path = politicalPath({ opinions: pol?.opinions.length ?? 0, memberships: pol?.memberships ?? [], candidacies: mine, mandates });
   const open = elections.filter(e => e.status !== "completed");
   const agenda = open.flatMap(e => [
@@ -26,7 +26,7 @@ export function PoliticsApp() {
   const parties = (pol?.organizations ?? []).filter(o => o.city_id === pol?.city_id).slice(0, 4);
 
   return <div className="space-y-4">
-    <section className="rounded-2xl border-2 border-primary bg-card p-4">
+    <section className="experience-section">
       <p className="text-xs text-muted-foreground">Mon parcours politique</p>
       <p className="font-heading text-xl font-bold">{path.step.emoji} {path.step.label}</p>
       <div className="mt-2 flex gap-1">{PATH_STEPS.map((s, i) => <span key={s.id} className={`h-2 flex-1 rounded-full ${i <= path.level ? "bg-primary" : "bg-muted"}`} />)}</div>
@@ -35,7 +35,7 @@ export function PoliticsApp() {
 
     <section>
       <h2 className="mb-2 font-semibold">🗳️ Élections</h2>
-      {open.length ? open.map(e => <Link key={e.id} to="/elections/$id" params={{ id: e.id }} className="mb-2 flex min-h-12 items-center justify-between rounded-xl bg-muted px-3 text-sm">
+      {open.length ? open.map(e => <Link key={e.id} to="/elections/$id" params={{ id: e.id }} className="mb-2 flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border py-3 text-sm">
         <span>{e.name}</span><span className="text-xs text-primary">{ELECTION_STATUS[e.status] ?? e.status}</span></Link>)
         : <p className="text-sm text-muted-foreground">Aucune élection en cours.</p>}
     </section>
@@ -49,7 +49,7 @@ export function PoliticsApp() {
     <section>
       <h2 className="mb-2 font-semibold">👥 Partis et mouvements de ta ville</h2>
       {parties.map(o => <Link key={o.id} to="/politique/$id" params={{ id: o.id }} className="mb-2 flex min-h-12 items-center gap-2 rounded-xl bg-muted px-3 text-sm">
-        <span className="text-lg">{o.symbol}</span><span className="flex-1">{o.name}</span><span className="text-xs text-muted-foreground">{o.member_count} membres</span></Link>)}
+        <span className="text-lg">{o.symbol}</span><span className="min-w-0 flex-1 break-words">{o.name}</span><span className="text-xs text-muted-foreground">{o.member_count} membres</span></Link>)}
     </section>
 
     {mandates.length > 0 && <Link to="/mandat" className="flex min-h-12 items-center rounded-xl bg-primary/15 px-3 text-sm font-semibold">🏛️ Mon mandat</Link>}

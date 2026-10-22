@@ -9,7 +9,7 @@ const photos = Object.fromEntries(Object.entries(images).map(([path, url]) => [p
 export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails | undefined; fallback?: string | undefined; className?: string; animated?: boolean }) {
   const slug = resolveProductSlug(name, details, Object.keys(photos));
   const src = slug ? photos[slug] : fallback;
-  return <div className={`product-stage relative overflow-hidden bg-muted ${className}`}>
+  return <div className={`product-stage relative overflow-hidden bg-muted ${className}`} data-preview={className.includes("h-full w-full") || className.includes("absolute bottom") ? "true" : undefined}>
     {src ? <img src={src} alt={name} loading="lazy" decoding="async" width={512} height={512} className={`h-full w-full object-contain p-3 ${animated ? 'product-turn' : ''}`} /> : <PackageOpen className="mx-auto h-full w-16 text-muted-foreground" />}
     {details.variant_value && <span className="absolute bottom-2 left-2 max-w-[90%] rounded-md bg-card/95 px-2 py-1 text-xs font-semibold">{details.variant_value}</span>}
   </div>;

@@ -26,22 +26,22 @@ export function HomeOverview({ home, data, onHomeChange, onEdit }: { home: Furni
   return <div className="space-y-4 animate-page">
     {data.homes.length > 1 && <GameSelect aria-label="Mon logement" value={home.id} onChange={e => onHomeChange(e.target.value)} className="min-h-12 w-full rounded-lg border border-input bg-background px-3">
       {data.homes.map(h => <option key={h.id} value={h.id}>{h.name} · {h.kind === "location" ? "Location" : "Propriété"}</option>)}</GameSelect>}
-    <div className="rounded-2xl bg-card p-4 shadow-sm">
+    <div className="border-b border-border pb-4">
       <p className="text-xs text-primary">{light.emoji} {time.toISOString().slice(11, 16)} · {home.kind === "location" ? "Ma location" : "Ma propriété"}</p>
-      <h2 className="font-heading text-xl font-bold">{home.name}</h2>
+      <h2 className="font-display text-2xl font-bold">{home.name}</h2>
       <p className="text-sm text-muted-foreground">{welcomeLine(hour)}</p>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-xl bg-muted p-2"><p className="font-display text-lg font-bold">{home.rooms}</p><p className="text-xs">pièce(s)</p></div>
-        <div className="rounded-xl bg-muted p-2"><p className="font-display text-lg font-bold">{g.placed}</p><p className="text-xs">objet(s) installés</p></div>
-        <div className="rounded-xl bg-muted p-2"><p className="font-display text-lg font-bold">{g.stored}</p><p className="text-xs">rangé(s)</p></div>
+      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <div className="flex items-baseline gap-2"><p className="font-display text-lg font-bold">{home.rooms}</p><p className="text-xs">pièce(s)</p></div>
+        <div className="flex items-baseline gap-2"><p className="font-display text-lg font-bold">{g.placed}</p><p className="text-xs">objet(s) installés</p></div>
+        <div className="flex items-baseline gap-2"><p className="font-display text-lg font-bold">{g.stored}</p><p className="text-xs">rangé(s)</p></div>
       </div>
       <p className="mt-2 text-sm">{g.emoji} {g.status}{g.emptyRooms > 0 && g.placed > 0 ? ` · ${g.emptyRooms} pièce(s) encore vide(s)` : ""}</p>
     </div>
 
     {fresh.length > 0 && <div className="space-y-2 rounded-2xl border-2 border-primary bg-card p-4">
-      <p className="font-heading font-bold">🚚 Livraison arrivée</p>
+      <p className="font-display font-bold">📦 Objets prêts à installer</p>
       {fresh.slice(0, 3).map(f => <div key={f.asset_id} className="rounded-xl bg-muted p-3">
-        <p className="text-sm">📦 Ton objet <strong>{f.name}</strong> vient d'arriver.</p>
+        <p className="text-sm">📦 Ton objet <strong>{f.name}</strong> est disponible.</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           <Button className="min-h-12" onClick={() => { markSeen(f.asset_id); onEdit(f.asset_id, room); }}>Installer dans {names[room]}</Button>
           <Button variant="outline" className="min-h-12" onClick={() => markSeen(f.asset_id)}>Le ranger</Button>

@@ -3,13 +3,17 @@ import { useEffect, useState } from "react";
 import { starterGuide } from "@/game/starter-guide";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ChevronDown, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ExperienceState } from "./ExperienceState";
+import { Map, MessageCircle, Newspaper, Landmark, Users, Wallet, ShoppingBag, CalendarDays, FolderLock, User, ChevronDown, Search } from "lucide-react";
 import { phoneSearch } from "@/game/phone-search";
 import { bankQuery, economyQuery, formatMoney, lifeQuery, newsQuery, communicationQuery, notificationsQuery, markNotificationRead } from "@/services/game";
 import { MAIN_PHONE_APPS, MORE_PHONE_APPS } from "@/game/navigation";
 import { nextStep, notificationEmoji, notificationTarget } from "@/game/next-step";
 import { useWorldClock } from "./WorldClock";
 import { badgeLabel } from "@/game/communication";
+
+const APP_ICONS = { maps: Map, messages: MessageCircle, actualites: Newspaper, civi: Landmark, social: Users, banque: Wallet, shopping: ShoppingBag, agenda: CalendarDays, documents: FolderLock, moi: User };
 
 // Écran d'accueil du téléphone : résumés de la vie du joueur + 9 applications. Lecture seule.
 export function PhoneHome({ open }: { open: (id?: string) => void }) {
@@ -39,7 +43,8 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
     </div>
     {running && <Link to="/agenda" className="block rounded-2xl bg-gradient-primary p-3 text-primary-foreground shadow-elegant active:scale-[0.98]" aria-label="Mode journée">
       <span className="block text-[11px] font-bold uppercase opacity-90">☀️ Mode journée · en cours</span>
-      <span className="block truncate font-semibold">{running.title}</span>
+      <span className="block break-words font-semibold">{running.title}</span>
+      {running.location?.name && <span className="mt-1 block text-xs">{running.location.name}</span>}
       <span className="mt-2 block h-2 overflow-hidden rounded-full bg-background/30"><span className="block h-full rounded-full bg-background" style={{ width: `${pct}%` }} /></span>
       <span className="mt-1 block text-xs opacity-90">Fin à {new Date(running.end_time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} · tu peux utiliser ton téléphone pendant ce temps</span>
     </Link>}
@@ -48,29 +53,30 @@ export function PhoneHome({ open }: { open: (id?: string) => void }) {
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher… (permis, maison, salaire)" aria-label="Rechercher dans le téléphone" className="h-12 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground" />
     </label>
     {q.trim().length >= 2 && <div className="rounded-2xl border border-border bg-card">{hits.length === 0 ? <p className="p-3 text-sm text-muted-foreground">Rien trouvé. Essaie un autre mot.</p> :
-      <ul className="divide-y divide-border">{hits.map(h => <li key={h.to}><Link to={h.to as "/carte"} className="flex min-h-14 items-center gap-3 p-3 active:bg-muted"><span className="text-2xl" aria-hidden>{h.emoji}</span><span className="min-w-0"><span className="block text-sm font-semibold">{h.label}</span><span className="block truncate text-xs text-muted-foreground">{h.hint}</span></span></Link></li>)}</ul>}</div>}
-    {notifs.filter(n => !n.read).slice(0, 2).map(n => <button key={n.id} type="button" onClick={() => open("notifications")} className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-card/90 p-3 text-left shadow-card animate-rise"><span className="text-xl" aria-hidden>{notificationEmoji(n)}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold">{n.title}</span><span className="block truncate text-xs text-muted-foreground">{n.body}</span></span></button>)}
+      <ul className="divide-y divide-border">{hits.map(h => <li key={h.to}><Link to={h.to as "/carte"} className="flex min-h-14 items-center gap-3 p-3 active:bg-muted"><span className="text-2xl" aria-hidden>{h.emoji}</span><span className="min-w-0"><span className="block text-sm font-semibold">{h.label}</span><span className="block text-xs text-muted-foreground">{h.hint}</span></span></Link></li>)}</ul>}</div>}
+    {notifs.filter(n => !n.read).slice(0, 2).map(n => <Button variant="ghost" key={n.id} type="button" onClick={() => open("notifications")} className="h-auto min-h-14 w-full justify-start gap-3 rounded-lg border border-border bg-card p-3 text-left"><span className="text-xl" aria-hidden>{notificationEmoji(n)}</span><span className="min-w-0"><span className="block break-words text-sm font-semibold">{n.title}</span><span className="block text-xs text-muted-foreground">{n.body}</span></span></Button>)}
     <Link to={step.to as "/agenda"} className="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-primary bg-card p-3 active:scale-[0.98]">
       <span className="text-2xl" aria-hidden>{step.emoji}</span>
-      <span className="min-w-0"><span className="block text-[11px] font-bold uppercase text-primary">📅 Aujourd’hui</span><span className="block truncate text-sm font-semibold">{step.title}</span></span>
+      <span className="min-w-0"><span className="block text-[11px] font-bold uppercase text-primary">📅 Aujourd’hui</span><span className="block break-words text-sm font-semibold">{step.title}</span></span>
     </Link>
     <div className="grid grid-cols-2 gap-2 text-sm">
-      <button type="button" onClick={() => open("banque")} className={tile}><span className="text-[11px] text-muted-foreground">💶 Argent</span><span className="font-bold">{bank ? formatMoney(bank.balance) : "—"}</span></button>
-      <Link to="/chez-moi" className={tile}><span className="text-[11px] text-muted-foreground">🏠 Logement</span><span className="truncate font-semibold">{life.housing?.name ?? "Aucun"}</span></Link>
-      <Link to="/conduite" className={tile}><span className="text-[11px] text-muted-foreground">🚗 Véhicule</span><span className="truncate font-semibold">{car ? `${car.catalog.name} · ${car.condition}` : "Aucun"}</span></Link>
-      <button type="button" onClick={() => open("notifications")} className={tile}><span className="text-[11px] text-muted-foreground">🔔 Notifications</span><span className={`font-semibold ${unread ? "text-primary" : ""}`}>{unread ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "Rien de neuf"}</span></button>
+      <Button variant="ghost" type="button" onClick={() => open("banque")} className={`${tile} h-auto items-start`}><span className="text-[11px] text-muted-foreground">💶 Argent</span><span className="font-bold">{bank ? formatMoney(bank.balance) : "—"}</span></Button>
+      <Link to="/chez-moi" className={`${tile} h-auto items-start`}><span className="text-[11px] text-muted-foreground">🏠 Logement</span><span className="break-words font-semibold">{life.housing?.name ?? "Aucun"}</span></Link>
+      <Link to="/conduite" className={`${tile} h-auto items-start`}><span className="text-[11px] text-muted-foreground">🚗 Véhicule</span><span className="break-words font-semibold">{car ? `${car.catalog.name} · ${car.condition}` : "Aucun"}</span></Link>
+      <Button variant="ghost" type="button" onClick={() => open("notifications")} className={`${tile} h-auto items-start`}><span className="text-[11px] text-muted-foreground">🔔 Notifications</span><span className={`font-semibold ${unread ? "text-primary" : ""}`}>{unread ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "Rien de neuf"}</span></Button>
     </div>
     <div className="grid grid-cols-3 gap-3">
       {MAIN_PHONE_APPS.map(a => {
         const n = badge(a.id);
-        const inner = <><span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-3xl shadow-elegant"><span aria-hidden>{a.emoji}</span>{n > 0 && <span aria-label={`${n} non lus`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{badgeLabel(n)}</span>}</span><span className="text-xs font-medium">{a.label}</span></>;
-        return a.to ? <Link key={a.id} to={a.to as "/carte"} className="flex flex-col items-center gap-1.5 active:scale-95">{inner}</Link>
-          : <button key={a.id} type="button" onClick={() => open(a.app)} className="flex flex-col items-center gap-1.5 active:scale-95">{inner}</button>;
+        const Icon = APP_ICONS[a.id as keyof typeof APP_ICONS] ?? User;
+        const inner = <><span className="phone-app-icon" data-tone={a.id}><Icon aria-hidden />{n > 0 && <span aria-label={`${n} non lus`} className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">{badgeLabel(n)}</span>}</span><span className="min-h-8 max-w-full break-words text-center text-xs font-medium">{a.label}</span></>;
+        return a.to ? <Link key={a.id} to={a.to as "/carte"} className="flex h-auto min-h-24 min-w-0 flex-col items-center gap-1.5 px-1 py-2 active:scale-95">{inner}</Link>
+          : <Button variant="ghost" key={a.id} type="button" onClick={() => open(a.app)} className="flex h-auto min-h-24 min-w-0 flex-col items-center gap-1.5 px-1 py-2 active:scale-95">{inner}</Button>;
       })}
     </div>
     <StarterGuide life={life} balance={bank?.balance ?? null} hasVehicle={!!car} />
-    <button type="button" onClick={() => setMore(!more)} aria-expanded={more} className="flex min-h-11 w-full items-center justify-center gap-1 rounded-xl text-sm font-semibold text-primary">Plus d’applications <ChevronDown className={`h-4 w-4 transition-transform ${more ? "rotate-180" : ""}`} /></button>
-    {more && <div className="grid grid-cols-4 gap-2">{MORE_PHONE_APPS.map(a => <button key={a.id} type="button" onClick={() => open(a.id)} className="flex min-h-16 flex-col items-center gap-1 rounded-xl p-1 text-[11px] active:scale-95"><a.icon className="h-6 w-6 text-primary" />{a.label}</button>)}</div>}
+    <Button variant="ghost" type="button" onClick={() => setMore(!more)} aria-expanded={more} className="flex min-h-11 w-full items-center justify-center gap-1 rounded-xl text-sm font-semibold text-primary">Plus d’applications <ChevronDown className={`h-4 w-4 transition-transform ${more ? "rotate-180" : ""}`} /></Button>
+    {more && <div className="grid grid-cols-4 gap-2">{MORE_PHONE_APPS.map(a => <Button variant="ghost" key={a.id} type="button" onClick={() => open(a.id)} className="flex h-auto min-h-24 min-w-0 flex-col items-center gap-2 rounded-lg px-1 py-2 text-xs active:scale-95"><a.icon className="h-6 w-6 text-primary" />{a.label}</Button>)}</div>}
   </div>;
 }
 
@@ -83,13 +89,13 @@ export function NotificationsApp() {
     const to = notificationTarget(n);
     if (to === "/telephone") navigate({ to: "/telephone", search: { app: "messages" } }); else navigate({ to: to as "/agenda" });
   };
-  if (notifs.length === 0) return <p className="py-10 text-center text-sm text-muted-foreground">🔔 Aucune notification pour le moment.</p>;
+  if (notifs.length === 0) return <ExperienceState kind="empty" title="Tout est à jour" description="Vos prochains messages et événements apparaîtront ici." />;
   return <ul className="space-y-2">{notifs.map(n => <li key={n.id}>
-    <button type="button" onClick={() => void go(n)} className={`flex min-h-16 w-full items-start gap-3 rounded-2xl p-3 text-left active:scale-[0.98] ${n.read ? "bg-card" : "border-2 border-primary bg-primary/10"}`}>
+    <Button variant="ghost" type="button" onClick={() => void go(n)} className={`flex h-auto min-h-16 w-full items-start gap-3 rounded-2xl p-3 text-left active:scale-[0.98] ${n.read ? "bg-card" : "border-2 border-primary bg-primary/10"}`}>
       <span className="text-2xl" aria-hidden>{notificationEmoji(n)}</span>
-      <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{n.title}</span><span className="line-clamp-2 block text-xs text-muted-foreground">{n.body}</span><span className="mt-1 block text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span></span>
+      <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{n.title}</span><span className="block text-sm text-muted-foreground">{n.body}</span><span className="mt-1 block text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span></span>
       {!n.read && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="Non lue" />}
-    </button>
+    </Button>
   </li>)}</ul>;
 }
 
@@ -97,20 +103,20 @@ function StarterGuide({ life, balance, hasVehicle }: { life: { character: { firs
   const [hidden, setHidden] = useState(true);
   const [open, setOpen] = useState(false);
   useEffect(() => { setHidden(localStorage.getItem("civitas-guide-hidden") === "1"); }, []);
-  if (hidden) return <button type="button" onClick={() => { localStorage.removeItem("civitas-guide-hidden"); setHidden(false); setOpen(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">🎓 Revoir le guide « Commencer CIVITAS »</button>;
+  if (hidden) return <Button variant="ghost" type="button" onClick={() => { localStorage.removeItem("civitas-guide-hidden"); setHidden(false); setOpen(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">🎓 Revoir le guide « Commencer CIVITAS »</Button>;
   const steps = starterGuide({ firstName: life.character.first_name, age: life.character.age, housing: life.housing?.name ?? null, job: life.employment?.job?.title ?? null, studying: life.enrollment?.field_name ?? null, balance, hasVehicle });
   const done = steps.filter(x => x.done).length;
   return <section className="rounded-2xl border border-border bg-card p-3">
-    <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-11 w-full items-center justify-between gap-2 text-left">
+    <Button variant="ghost" type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-11 w-full items-center justify-between gap-2 text-left">
       <span><span className="block font-semibold">🎓 Commencer CIVITAS</span><span className="block text-xs text-muted-foreground">{done}/6 · 6 questions simples</span></span>
       <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
-    </button>
+    </Button>
     {open && <ol className="mt-2 space-y-2">{steps.map(st => <li key={st.n} className="rounded-xl bg-surface p-3">
       <p className="text-sm font-semibold">{st.done ? "✅" : `${st.n}.`} {st.q}</p>
       <p className="mt-1 text-xs text-muted-foreground">{st.a}</p>
       <Link to={st.to as "/carte"} className="mt-2 inline-flex min-h-10 items-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground">{st.cta}</Link>
     </li>)}
-      <li><button type="button" onClick={() => { localStorage.setItem("civitas-guide-hidden", "1"); setHidden(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">J’ai compris, masquer le guide</button></li>
+      <li><Button variant="ghost" type="button" onClick={() => { localStorage.setItem("civitas-guide-hidden", "1"); setHidden(true); }} className="min-h-11 w-full text-xs text-muted-foreground underline">J’ai compris, masquer le guide</Button></li>
     </ol>}
   </section>;
 }

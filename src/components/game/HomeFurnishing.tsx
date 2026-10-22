@@ -1,3 +1,4 @@
+import { ExperienceState } from "./ExperienceState";
 import { GameSelect } from "@/components/game/GameSelect";
 import { useState } from 'react';
 import { Link, useBlocker } from '@tanstack/react-router';
@@ -65,6 +66,7 @@ function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; dat
     setRotation(next);
   };
   return <div className="space-y-5">
+    <ExperienceState compact kind={save.isPending ? "loading" : dirty ? "info" : "success"} title={save.isPending ? "Enregistrement de votre aménagement…" : dirty ? "Aménagement en préparation" : "Aménagement enregistré"} description={dirty ? "Vos changements ne sont pas encore enregistrés." : "Cette disposition correspond à votre logement enregistré."} />
     <label className="block text-sm font-semibold">Mon logement<GameSelect aria-label="Mon logement" value={home.id} disabled={save.isPending} onChange={e => { if (leave()) onHomeChange(e.target.value); }} className="mt-2 min-h-12 w-full rounded-lg border border-input bg-background px-3">{data.homes.map(h=><option key={h.id} value={h.id}>{h.name} · {h.kind==='location'?'Location':'Propriété'}</option>)}</GameSelect></label>
     <div className="flex items-center justify-between gap-3 border-b border-border pb-3"><span className="text-sm font-semibold">{home.kind==='location'?'Ma location':'Ma propriété'}</span><span className="text-xs text-muted-foreground">{names.length} {names.length===1?'pièce':'pièces'} · {placements.length} {placements.length===1?'objet':'objets'}</span></div>
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Pièces">{names.map((name,i)=><Button key={i} variant={room===i?'default':'outline'} aria-pressed={room===i} className="h-auto min-h-16 min-w-0 justify-start whitespace-normal p-3 text-left" onClick={()=>setRoom(i)}><span className="min-w-0"><span className="block break-words">{name}</span><span className="block text-xs opacity-80">{placements.filter(p=>p.room===i).length} objet(s)</span></span></Button>)}</div>
@@ -100,6 +102,7 @@ function Editor({ home, data, onHomeChange, start }: { home: FurnishingHome; dat
         <Button asChild variant="outline" className="min-h-12 w-full"><Link to="/boutique"><ShoppingBag/>Boutique</Link></Button>
       </section>
     </div>
+    {save.isError && <ExperienceState kind="error" title="L’aménagement n’a pas été enregistré" description={save.error.message} />}
     <footer className="flex flex-wrap items-center gap-3 border-t border-border py-4"><Button className="min-h-12 flex-1" disabled={!dirty || save.isPending || names.some(n=>n.trim().length===0)} onClick={()=>save.mutate()}><Save/>{save.isPending?'Enregistrement…':'Enregistrer'}</Button><Button variant="outline" size="icon" aria-label="Annuler les changements" title="Annuler les changements" className="h-12 w-12" disabled={!dirty || save.isPending} onClick={()=>{if(window.confirm('Annuler les changements ?')){setPlacements(home.placements);setNames(initialNames);}}}><Undo2/></Button><span role="status" className="w-full text-xs text-muted-foreground">{dirty?'Changements non enregistrés':'Aménagement enregistré'}</span></footer>
   </div>;
 }

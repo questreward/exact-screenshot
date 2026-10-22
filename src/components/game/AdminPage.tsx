@@ -114,11 +114,11 @@ export function AdminPage() {
   const run = (command: string, input: Record<string, unknown>) => action.mutate({ command, requestId: crypto.randomUUID(), input });
   const card = (p: Procedure) => {
     const req = state.procedure_types.find(t => t.id === p.type_id)?.required_documents ?? [];
-    return <button key={p.id} onClick={() => setSelected(p.id)} className="flex min-h-11 w-full flex-col gap-2 rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary">
-      <span className="flex w-full items-start justify-between gap-2"><span className="font-semibold">{p.title}</span><Badge variant={statusTone(p)}>{p.late ? 'En retard' : PROCEDURE_STATUS[p.status]}</Badge></span>
+    return <Button variant="ghost" key={p.id} onClick={() => setSelected(p.id)} className="flex h-auto min-h-11 items-stretch justify-start w-full flex-col gap-2 rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary">
+      <span className="flex w-full flex-wrap items-start justify-between gap-2"><span className="font-semibold">{p.title}</span><Badge variant={statusTone(p)}>{p.late ? 'En retard' : PROCEDURE_STATUS[p.status]}</Badge></span>
       <span className="text-sm text-muted-foreground">{p.category}{p.due_at ? ` · ${isOpen(p) ? 'avant le' : 'paiement avant le'} ${fmtDate(p.due_at)}` : ''}</span>
       {isOpen(p) && <Progress value={progressOf(p, req)} aria-label={`Progression ${p.title}`} />}
-    </button>;
+    </Button>;
   };
   const startable = state.procedure_types.filter(t => ['housing_aid', 'student_aid'].includes(t.id));
   return <div className="space-y-6 animate-rise">

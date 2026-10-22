@@ -38,9 +38,10 @@ export function WorkDay() {
   if (running) {
     const steps = workTimeline(running.start_time, running.end_time);
     const now = time.getTime();
-    const cur = [...steps].reverse().find(s => s.at.getTime() <= now) ?? steps[0]!;
-    return <section className="rounded-2xl border-2 border-primary bg-card p-4">
-      <p className="text-xs text-primary">{light.emoji} {hm(time)} · {p.place}</p>
+    const cur = [...steps].reverse().find(s => s.at.getTime() <= now) ?? steps[0];
+    if (!cur) return null;
+    return <section className="experience-section">
+      <p className="text-xs text-primary">{light.emoji} {hm(time)} · {life.employment.location.name}</p>
       <h2 className="font-heading text-lg font-bold">En service : {cur.label}</h2>
       <p className="text-xs">{level.emoji} {level.label}</p>
       <p className="text-xs text-muted-foreground">{hm(time)} / {hm(new Date(running.end_time))} · {remaining(now, running.end_time)}</p>
@@ -59,7 +60,7 @@ export function WorkDay() {
   }
 
   if (finished && ack !== finished.id) {
-    return <section className="rounded-2xl border-2 border-success bg-card p-4 text-center animate-page">
+    return <section className="experience-section text-center animate-page">
       <p className="text-xs text-muted-foreground">{hm(new Date(finished.end_time))} — Fin de service</p>
       <h2 className="font-heading text-xl font-bold">Ma journée de travail est terminée</h2>
       <p className="text-sm">{job.title} · {hm(new Date(finished.start_time))} → {hm(new Date(finished.end_time))}</p>
@@ -90,12 +91,12 @@ export function WorkDay() {
   if (finished) return null;
 
   const start = () => action.mutate(planned ? { activityId: planned.id } : { type: "work" });
-  return <section className="rounded-2xl border border-border bg-card p-4">
+  return <section className="experience-section">
     {phase === "intro" ? <>
       <p className="text-xs text-primary">{light.emoji} {hm(time)} · {light.label}</p>
       <h2 className="font-heading text-lg font-bold">{p.start}</h2>
       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-        <dt className="text-muted-foreground">Lieu</dt><dd>{p.place}</dd>
+        <dt className="text-muted-foreground">Lieu</dt><dd>{life.employment.location.name}</dd>
         <dt className="text-muted-foreground">Poste</dt><dd>{job.title}</dd>
         <dt className="text-muted-foreground">Équipe</dt><dd>{p.team}</dd>
         {p.vehicle && <><dt className="text-muted-foreground">Véhicule</dt><dd>{p.vehicle}</dd></>}

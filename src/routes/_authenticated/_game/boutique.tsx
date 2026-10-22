@@ -1,3 +1,4 @@
+import { ExperienceState } from "@/components/game/ExperienceState";
 import { ProductPhoto, ProductPreview } from "@/components/game/ProductPhoto";
 import { GameSelect } from "@/components/game/GameSelect";
 import { CreditRecap } from "@/components/game/CreditRecap";
@@ -31,7 +32,7 @@ const KEYS = ["shop", "economy", "character", "life", "housing"];
 
 function ShopPage() {
   const qc = useQueryClient();
-  const { data: s, isLoading, isError } = useQuery(shopQuery);
+  const { data: s, isLoading, isError, refetch } = useQuery(shopQuery);
   const entry = Route.useSearch();
   const [search, setSearch] = useState(entry.q ?? ""); const [section, setSection] = useState(entry.rayon && entry.rayon in SECTIONS ? entry.rayon : ""); const [brand, setBrand] = useState("");
   const [max, setMax] = useState(""); const [sort, setSort] = useState<ShopSort>("populaire");
@@ -87,13 +88,13 @@ function ShopPage() {
   const currentPage = Math.min(page, lastPage);
   const visible = catalog.data?.products ?? list.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
-  return <div className="mx-auto max-w-3xl space-y-4 p-4 pb-24">
-    <header className="flex items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
-      <div className="flex-1"><h1 className="font-heading text-2xl font-bold">Boutique</h1><p className="text-sm text-muted-foreground">Vrais produits, prix indicatifs, comptant ou à crédit.</p></div>
+  return <div className="mx-auto max-w-4xl space-y-5 pb-24">
+    <header className="flex flex-wrap items-center gap-3"><ShoppingBag className="h-8 w-8 text-primary" />
+      <div className="min-w-0 flex-1"><h1 className="font-heading text-2xl font-bold">Boutique</h1><p className="text-sm text-muted-foreground">Vrais produits, prix indicatifs, comptant ou à crédit.</p></div>
       {s && <div className="rounded-lg bg-secondary px-3 py-2 text-right text-secondary-foreground"><p className="text-xs opacity-80">Solde</p><p className="font-heading font-bold">{eur(s.balance)}</p></div>}</header>
     <Link to="/style" className="flex min-h-12 items-center justify-between rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-semibold">✨ Objets de style (argent réel, sans avantage) <ChevronRight className="h-5 w-5" /></Link>
-    {isLoading && <LoaderCircle className="mx-auto animate-spin text-primary" />}
-    {isError && <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Boutique : Disponible dans une prochaine étape.</p>}
+    {isLoading && <ExperienceState kind="loading" title="Ouverture du magasin…" />}
+    {isError && <ExperienceState kind="error" title="Le magasin n’a pas pu s’ouvrir" description="Impossible de récupérer le catalogue pour le moment." onRetry={() => void refetch()} />}
     {s && <Tabs defaultValue="catalogue">
       <TabsList className="flex h-12 w-full justify-start overflow-x-auto">
         <TabsTrigger value="catalogue">Catalogue</TabsTrigger><TabsTrigger value="envies">Envies{wishList.length ? ` (${wishList.length})` : ""}</TabsTrigger>
@@ -202,7 +203,7 @@ function ShopPage() {
           <p className="text-xs opacity-80">Les objets perdent de la valeur avec le temps. La boutique reprend à 90 % de la valeur (95 % pour l'immobilier).</p></div>
         {s.assets.length === 0 ? <p className="text-sm text-muted-foreground">Aucun bien.</p> :
           <ul className="divide-y divide-border rounded-xl border border-border bg-card">{s.assets.map(a => <li key={a.id} className="space-y-2 p-3">
-            <div className="flex items-start justify-between gap-2"><div><p className="font-semibold">{a.brand ? `${a.brand} ` : ""}{a.name}</p>
+            <div className="flex flex-wrap items-start justify-between gap-3">{a.kind === "vehicle" && <ProductPhoto name={a.name} animated={false} className="h-28 w-full rounded-lg sm:w-40" />}<div className="min-w-0 flex-1"><p className="font-semibold">{a.brand ? `${a.brand} ` : ""}{a.name}</p>
               <p className="text-xs text-muted-foreground">Acheté {eur(a.price)} le {day(a.acquired_at)}{a.lived_in ? " · ton logement" : ""}</p>
               {a.kind === "vehicle" && <p className="text-xs text-muted-foreground">{a.condition}{a.next_maintenance ? ` · prochain entretien le ${day(a.next_maintenance)}` : ""}{a.maintenance ? ` (${eur(a.maintenance)})` : ""}</p>}
               {a.credit_remaining != null && <p className="text-xs text-primary">Crédit restant : {eur(a.credit_remaining)}</p>}</div>
@@ -308,7 +309,7 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
   const price = storePrice(p.price, pct);
   const cash = price + (p.details.realestate ? notaryFees(p.price) : 0);
   const blocked = p.kind === "vehicle" && !s.license;
-  return <li className="flex min-w-0 flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-card animate-rise">
+  return <li className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card p-4">
     {p.details.realestate ? <HousingPreview p={p} /> : <>
       <ProductPhoto name={p.name} details={p.details} fallback={AISLE_IMG[p.section]} className="-mx-4 -mt-4 mb-3 aspect-[4/3]" />
       <ProductPreview name={p.name} section={p.section} details={p.details} fallback={AISLE_IMG[p.section]} />
@@ -316,22 +317,22 @@ function ProductCard({ p, s, pct, wished, isGoal, busy, onBuy, onVisit, onWish, 
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-semibold uppercase tracking-wide text-primary">{p.brand} · {SECTIONS[p.section] ?? p.section}</p>
       {pct > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">−{pct} %</span>}{pct < 0 && <span className="rounded-full bg-accent px-2 py-1 text-xs font-semibold">📈 Très demandé +{-pct} %</span>}</div>
-    <p className="font-heading text-lg font-bold">{p.name}</p>
-    <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{p.desc}</p>
+    <h3 className="break-words font-display text-lg font-bold">{p.name}</h3>
+    <p className="mt-1 flex-1 text-sm text-muted-foreground">{p.desc}</p>
     {p.kind === "vehicle" && <p className="mt-1 text-xs text-muted-foreground">{p.details.condition === "occasion" ? "Occasion" : "Neuve"} · entretien {eur(p.details.maintenance ?? 0)} / mois{p.details.conso ? ` · ${p.details.conso} L/100 km` : ""}{!s.license ? " · permis requis" : ""}</p>}
     {p.details.realestate && <p className="mt-1 text-xs text-muted-foreground">+ frais de notaire {eur(notaryFees(p.price))} · charges {eur(p.details.charges_monthly ?? 0)}/mois · taxe foncière {eur(p.details.tax_yearly ?? 0)}/an</p>}
     {p.details.realestate && <Button variant="outline" className="mt-3 min-h-11" onClick={onVisit}>Visiter</Button>}
-    <div className="mt-3 flex items-center justify-between gap-2"><div>
+    <div className="mt-4 flex flex-col gap-3 border-t border-border pt-3"><div>
       {pct > 0 && <p className="text-xs text-muted-foreground line-through">{eur(p.price)}</p>}
       <p className="font-heading text-xl font-bold">{eur(price)}</p>
       {creditable && <p className="text-xs text-muted-foreground">ou à crédit</p>}</div>
       {p.owned ? <span className="flex items-center gap-1 text-sm text-primary"><Check className="h-4 w-4" />Possédé</span>
-        : <Button className="h-11" variant={inCart ? "outline" : "default"} disabled={blocked || (!creditable && !inCart && cash > s.balance)} onClick={onBuy}>
-          {blocked ? "Permis requis" : creditable ? "Acheter" : inCart ? <><Check className="h-4 w-4" />Dans le panier</> : cash > s.balance ? "Solde insuffisant" : <><ShoppingBag className="h-4 w-4" />Au panier</>}</Button>}</div>
+        : <Button className="min-h-12 w-full" variant={inCart ? "outline" : "default"} disabled={blocked || (!creditable && !inCart && cash > s.balance)} onClick={onBuy}>
+          {blocked ? "Permis requis" : creditable ? "Acheter" : inCart ? <><Check className="h-4 w-4" />Dans le panier</> : cash > s.balance ? "Solde insuffisant" : <><ShoppingBag className="h-4 w-4" />Ajouter au panier</>}</Button>}</div>
     {!p.owned && <div className="mt-2 grid grid-cols-2 gap-2">
-      <Button variant="outline" className="h-11" disabled={busy} aria-pressed={wished} onClick={() => onWish("wish")}>
+      <Button variant="ghost" className="min-h-11 text-xs" disabled={busy} aria-pressed={wished} onClick={() => onWish("wish")}>
         <Heart className={`h-4 w-4 ${wished ? "fill-primary text-primary" : ""}`} />{wished ? "Dans mes envies" : "Envie"}</Button>
-      <Button variant={isGoal ? "default" : "outline"} className="h-11" disabled={busy} aria-pressed={isGoal} onClick={() => onWish("goal")}>
+      <Button variant={isGoal ? "secondary" : "ghost"} className="min-h-11 text-xs" disabled={busy} aria-pressed={isGoal} onClick={() => onWish("goal")}>
         <Target className="h-4 w-4" />{isGoal ? "Mon objectif" : "Objectif"}</Button></div>}
   </li>;
 }

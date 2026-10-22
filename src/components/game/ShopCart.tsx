@@ -1,3 +1,4 @@
+import { ExperienceState } from "./ExperienceState";
 import { ProductPhoto, PurchaseUnboxing } from "@/components/game/ProductPhoto";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -47,20 +48,20 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
 
   if (!items.length && !open) return null;
   return <>
-    <button key={bump} type="button" onClick={() => setOpen(true)} aria-label={`Panier : ${items.length} article(s)`}
+    <Button key={bump} type="button" onClick={() => setOpen(true)} aria-label={`Panier : ${items.length} article(s)`}
       className="fixed bottom-20 right-4 z-40 flex min-h-14 items-center gap-2 rounded-full bg-primary px-5 font-semibold text-primary-foreground shadow-elegant animate-rise active:scale-95 lg:bottom-6">
       <ShoppingBag className="h-5 w-5" /> {items.length} · {eur(total)}
-    </button>
+    </Button>
     <Sheet open={open} onOpenChange={close}>
       <SheetContent side="bottom" aria-describedby={undefined} className="max-h-[90dvh] overflow-y-auto rounded-t-3xl pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
-        <SheetHeader><SheetTitle className="font-display text-xl">{phase === "ticket" ? "🛍️ Achat effectué" : phase === "cart" ? "🛒 Mon panier" : "Passage en caisse"}</SheetTitle></SheetHeader>
+        <SheetHeader><SheetTitle className="font-display text-xl">{phase === "ticket" ? "Résultat du passage en caisse" : phase === "cart" ? "🛒 Mon panier" : "Passage en caisse"}</SheetTitle></SheetHeader>
 
         {phase === "cart" && <div className="mt-3 space-y-3 animate-page">
           {items.length === 0 && <p className="text-sm text-muted-foreground">Ton panier est vide.</p>}
           <ul className="space-y-2">{items.map((p) => (
-            <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
-              <ProductPhoto name={p.name} details={p.details} className="h-16 w-16 shrink-0 rounded-lg" /><div className="min-w-0 flex-1"><p className="truncate font-semibold">{p.brand} {p.name}</p><p className="text-xs text-muted-foreground">Quantité : 1</p></div>
-              <b>{eur(price(p))}</b>
+            <li key={p.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3">
+              <ProductPhoto name={p.name} details={p.details} className="h-16 w-16 shrink-0 rounded-lg" /><div className="min-w-0 flex-1"><p className="break-words font-semibold">{p.brand} {p.name}</p><p className="text-xs text-muted-foreground">Quantité : 1</p></div>
+              <b className="shrink-0 tabular-nums">{eur(price(p))}</b>
               <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={`Retirer ${p.name}`} onClick={() => onRemove(p.id)}><Trash2 className="h-5 w-5" /></Button>
             </li>))}</ul>
           <div className="rounded-2xl bg-secondary p-4 text-secondary-foreground">
@@ -71,7 +72,7 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
           {total > balance && <p className="text-sm text-destructive">Solde insuffisant : retire un article.</p>}
           <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5" checked={fast} onChange={(e) => setFast(e.target.checked)} /><FastForward className="h-4 w-4" />Caisse rapide (sans animation)</label>
           <Button className="min-h-14 w-full text-base" disabled={!items.length || total > balance} onClick={checkout}>Passer en caisse</Button>
-          <p className="text-xs text-muted-foreground">Voitures et logements se paient à part (comptant ou à crédit).</p>
+          <p className="text-xs text-muted-foreground">Chaque article est payé séparément. Voitures et logements se paient à part (comptant ou à crédit).</p>
         </div>}
 
         {(phase === "scan" || phase === "pay") && <div className="mt-6 space-y-3 text-center animate-page">
@@ -93,7 +94,7 @@ export function ShopCart({ items, balance, price, bump, onRemove, onDone }: {
             {paid[0]?.ref && <p className="text-xs text-muted-foreground">Réf. {paid.map((l) => l.ref).join(", ")}</p>}
           </div>
           {lines.find((l) => l.error) && <p className="text-sm text-destructive">Un article n'a pas pu être payé : {lines.find((l) => l.error)?.error}</p>}
-          {paid.length > 0 && <p className="flex items-center justify-center gap-2 text-center font-semibold"><Check className="h-5 w-5 text-primary" />Tes achats font maintenant partie de ta vie.</p>}
+          {paid.length > 0 && <ExperienceState kind="success" title={`${paid.length} achat${paid.length > 1 ? "s" : ""} confirmé${paid.length > 1 ? "s" : ""}`} description="Ces articles sont maintenant dans vos possessions. Les références ci-dessus sont enregistrées." />}
           <div className="grid gap-2">{next.map((a) => <Link key={a.to} to={a.to as "/chez-moi"} className="flex min-h-12 items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground active:scale-95">{a.label}</Link>)}
             <Button variant="outline" className="min-h-12" onClick={() => close(false)}>Continuer mes courses</Button></div>
         </div>}

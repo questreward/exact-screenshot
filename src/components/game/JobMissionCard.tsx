@@ -1,3 +1,4 @@
+import { ExperienceState } from "./ExperienceState";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Bonhomme } from './Bonhomme';
@@ -22,9 +23,9 @@ export function JobMissionCard() {
   });
   const m = query.data?.mission;
   const next = nextMissionThreshold(query.data?.progress?.successes ?? 0);
-  return <section className="rounded-xl border border-border bg-card p-4" aria-label="Mission professionnelle">
+  return <section className="experience-section" aria-label="Mission professionnelle">
     <div className="flex items-center gap-3"><Bonhomme seed={m?.job ?? 'mission'} /><div><h2 className="font-heading font-bold">{m ? missionResult(m.status) : 'Mission professionnelle'}</h2><p className="text-sm text-muted-foreground">Une mission par journée travaillée · aucun gain monétaire</p></div></div>
-    {query.isPending ? <p role="status">Chargement…</p> : query.isError ? <div role="alert"><p>Impossible de charger la mission.</p><Button variant="outline" onClick={() => void query.refetch()}>Réessayer</Button></div> : !m ? <p className="mt-3 text-sm text-muted-foreground">Commencez une vacation pour recevoir votre mission du jour.</p> : <div className="mt-3 space-y-3">
+    {query.isPending ? <ExperienceState kind="loading" title="Préparation du dossier de mission…" /> : query.isError ? <ExperienceState kind="error" title="Le dossier de mission n’a pas pu être chargé" onRetry={() => void query.refetch()} /> : !m ? <ExperienceState kind="empty" title="Aucune mission en cours" description="Commencez une vacation pour recevoir votre mission du jour." /> : <div className="mt-3 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="min-w-0 break-words font-semibold">{m.title}</h3><MissionDossier mission={m} /></div>
       <JobStage key={`stage-${m.day}`} job={m.job} title={m.title} active={m.status === 'active'} />
       <MissionScene key={`${m.day}-${m.step_index}-${m.status}`} job={m.job} title={m.title} step={m.step_index} count={m.step_count} active={m.status === 'active'} />

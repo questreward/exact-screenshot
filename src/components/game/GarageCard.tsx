@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ProductPhoto } from "./ProductPhoto";
 import { Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,15 +20,17 @@ export function GarageCard() {
   });
   if (!s || s.cars.length === 0) return null;
   return (
-    <section className="rounded-xl border border-border bg-card p-4">
-      <h2 className="mb-1 flex items-center gap-2 font-heading text-base font-bold"><Wrench className="h-5 w-5 text-primary" />État de mes voitures</h2>
+    <section className="experience-section">
+      <h2 className="mb-1 flex items-center gap-2 font-heading text-base font-bold"><Wrench className="h-5 w-5 text-primary" />Mon garage</h2>
       <p className="mb-3 text-xs text-muted-foreground">Chaque trajet use la voiture. Sous {s.settings.breakdown_below} % : risque de panne entre villes (dépanneuse {euros(s.settings.tow_price)}). À 0 % : immobilisée.</p>
       <div className="space-y-4">
         {s.cars.map(c => {
           const lvl = wearLevel(c.condition_pct, s.settings.breakdown_below);
           return (
-            <div key={c.catalog_id} className="space-y-2">
-              <div className="flex items-baseline justify-between"><span className="font-semibold">{c.name}</span>
+            <article key={c.catalog_id} className="space-y-3 border-b border-border pb-5">
+              <ProductPhoto name={c.name} animated={false} className="aspect-[16/7] rounded-lg" />
+              <p className="text-xs font-semibold text-success">Véhicule possédé</p>
+              <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="font-semibold">{c.name}</span>
                 <span className={lvl === "bon" ? "text-sm text-muted-foreground" : "text-sm font-semibold text-destructive"}>{c.condition_pct} % · {LEVEL[lvl]}</span></div>
               <Progress value={c.condition_pct} />
               {c.repair_ref > 0 && <div className="grid gap-2">
@@ -39,7 +42,7 @@ export function GarageCard() {
                   <span>Garage du quartier (fictif)</span><span>{euros(c.repair_ref)}</span>
                 </Button>
               </div>}
-            </div>);
+            </article>);
         })}
       </div>
       {s.history.length > 0 && <ul className="mt-4 space-y-1 border-t border-border pt-3 text-xs text-muted-foreground">

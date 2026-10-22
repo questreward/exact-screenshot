@@ -13,7 +13,7 @@ export function FinancialDesk({ title, comment, retirement = false }: { title: s
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       <h2 className="absolute inset-x-4 bottom-4 font-heading text-2xl font-bold">{title}</h2>
     </div>
-    <div className="flex items-start gap-3 border-l-4 border-primary py-2 pl-4"><MessageCircle className="mt-1 h-5 w-5 shrink-0 text-primary" /><div><p className="text-sm font-semibold">Votre conseillère · CIVITAS</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{comment}</p></div></div>
+    <div className="flex items-start gap-3 border-l-2 border-primary py-3 pl-4"><MessageCircle className="mt-1 h-5 w-5 shrink-0 text-primary" /><div className="min-w-0"><p className="text-sm font-semibold">Votre conseillère · CIVITAS</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{comment}</p></div></div>
   </section>;
 }
 
