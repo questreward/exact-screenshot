@@ -1,0 +1,10 @@
+import type { SecurityMission, SecurityShift } from "@/services/game";
+import { OUTCOME_LABELS } from "@/game/security-careers";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FileText } from "lucide-react";
+
+export function SecurityDossier({ shift, mission, pay }: { shift: SecurityShift; mission?: SecurityMission | undefined; pay?: number | undefined }) {
+  const at = (s: string) => new Date(s).toLocaleString("fr-FR", { timeZone: "UTC" });
+  return <Dialog><DialogTrigger asChild><Button variant="outline" className="min-h-12"><FileText />Compte rendu</Button></DialogTrigger><DialogContent className="max-h-[85dvh] overflow-y-auto"><DialogHeader><DialogTitle className="pr-8">Compte rendu du service</DialogTitle><DialogDescription>DOCUMENT FICTIF · CIVITAS · faits enregistrés</DialogDescription></DialogHeader><article className="space-y-4 text-sm"><h3 className="break-words font-semibold">{mission?.title ?? "Mission du service"}</h3>{mission && <p>{mission.situation}</p>}<dl className="space-y-3"><div><dt className="text-muted-foreground">Prise de service · heure du jeu</dt><dd>{at(shift.starts_at)}</dd></div><div><dt className="text-muted-foreground">Relève · heure du jeu</dt><dd>{at(shift.ends_at)}</dd></div><div><dt className="text-muted-foreground">Décision enregistrée</dt><dd>{mission?.choices.find(c => c.id === shift.choice)?.label ?? (shift.choice ?? "Aucune décision enregistrée")}</dd></div><div><dt className="text-muted-foreground">Bilan</dt><dd>{shift.settled ? OUTCOME_LABELS[shift.outcome ?? "equipe"] ?? "Service terminé" : "En attente de la relève"}</dd></div>{pay !== undefined && <div><dt className="text-muted-foreground">Indemnités enregistrées</dt><dd>{pay.toLocaleString("fr-FR")} €</dd></div>}</dl><p className="break-all text-xs text-muted-foreground">Réf. {shift.id}</p></article></DialogContent></Dialog>;
+}
