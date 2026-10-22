@@ -57,3 +57,5 @@
 - Product visuals resolve stored families and legacy aliases to lazy-loaded shared photographs; configuration labels stay literal, previews are illustrative and unboxing follows confirmed purchases only, so imagery never invents ownership or specifications.
 
 - V4 visual context observes existing QueryClient cache only; shared ExperienceState presents recorded states, while page loaders, cache invalidation, and secured operations stay unchanged to avoid decorative network load.
+
+- Smartphone loaders select existing query dependencies by application and lazy-load app views; persistent conversation IDs live in route search while server messages remain authoritative, avoiding eager unrelated fetches and duplicate communication storage.

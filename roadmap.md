@@ -1,5 +1,12 @@
 # CIVITAS — Liste V2 (à reprendre demain)
 
+## V4 — Smartphone (Prompt 3)
+- [x] Réorganiser le téléphone : heure du jeu, applications, retour et accès aux systèmes existants.
+- [x] Charger les données nécessaires à l’application ouverte, préserver le cache et les conversations enregistrées.
+- [x] Améliorer Messages, notifications, Banque et suivi du travail sans inventer d’événements.
+- [x] Vérifier les 499 tests : tous réussis, compilation OK ; accès protégé contrôlé sur ordinateur et mobile sans erreur ni débordement.
+- [ ] Vérifier le téléphone avec le personnage sur mobile et VPS : aucun compte correspondant à l’utilisateur dans l’aperçu, ouverture redirigée vers la connexion.
+
 ## V4 — Socle visuel et UX (Prompt 2)
 - [x] Harmoniser contrôles, typographie, états et animations légères.
 - [x] Clarifier accueil, contexte, navigation, téléphone, carte et notifications sans nouvelles requêtes.

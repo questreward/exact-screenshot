@@ -1,130 +1,39 @@
-import { PoliticsApp } from "@/components/game/PoliticsApp";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { MoneyAlerts, PersonalVsBusiness } from "@/components/game/MoneyAlerts";
-import { WealthCard } from "@/components/game/WealthCard";
-import { MoneyMonth } from "@/components/game/MoneyMonth";
-import { opKind, opTitle } from "@/game/money-labels";
-import { useMyUniform } from "@/hooks/use-my-uniform";
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Bell } from "lucide-react";
+import { lazy } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Bell } from "lucide-react";
 import { PHONE_APPS, COMING_SOON } from "@/game/navigation";
-import { BankLoans } from "@/components/game/BankLoans";
-import { InsuranceCard } from "@/components/game/InsuranceCard";
-import { CharacterAvatar } from "@/components/game/CharacterAvatar";
-import { normalizeAppearance } from "@/game/appearance";
-import { notificationsQuery, clockQuery, bankQuery, characterQuery, formatMoney, lifeQuery, socialQuery, newsQuery, civicQuery } from "@/services/game";
-import { CivicSummary } from '@/components/game/CivicSummary';
-import { SocialContacts } from "@/components/game/SocialContacts";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { gameMeta } from "@/game/metadata";
-import { NetworkPanel } from '@/components/game/NetworkPanel';
-import { GovernanceLink } from '@/components/game/GovernancePage';
-import { governanceQuery } from '@/services/game';
-import { economyQuery } from '@/services/game';
-import { EconomyBankLinks } from '@/components/game/EconomyPage';
-import { MessagesApp, CiviApp } from '@/components/game/CommunicationApps';
-import { communicationQuery, threadsQuery, messagesQuery, messageTemplatesQuery, civiFeedQuery, positionQuery } from '@/services/game';
-import { PhoneHome, NotificationsApp } from '@/components/game/PhoneHome';
-import { SocialHub } from '@/components/game/SocialHub';
+import { preparePhone } from "@/services/phone";
+import { PhoneFrame } from "@/components/game/PhoneFrame";
+import { PhoneHome, NotificationsApp } from "@/components/game/PhoneHome";
+import { ExperienceState } from "@/components/game/ExperienceState";
+import { Button } from "@/components/ui/button";
+
+const MessagesApp = lazy(() => import("@/components/game/CommunicationApps").then(m => ({ default: m.MessagesApp })));
+const CiviApp = lazy(() => import("@/components/game/CommunicationApps").then(m => ({ default: m.CiviApp })));
+const PoliticsApp = lazy(() => import("@/components/game/PoliticsApp").then(m => ({ default: m.PoliticsApp })));
+const SocialContacts = lazy(() => import("@/components/game/SocialContacts").then(m => ({ default: m.SocialContacts })));
+const SocialHub = lazy(() => import("@/components/game/SocialHub").then(m => ({ default: m.SocialHub })));
+const NetworkPanel = lazy(() => import("@/components/game/NetworkPanel").then(m => ({ default: m.NetworkPanel })));
+const BankApp = lazy(() => import("@/components/game/PhoneAccountApps").then(m => ({ default: m.BankApp })));
+const ProfileApp = lazy(() => import("@/components/game/PhoneAccountApps").then(m => ({ default: m.ProfileApp })));
+const PhoneWork = lazy(() => import("@/components/game/PhoneWork").then(m => ({ default: m.PhoneWork })));
+const PhoneWeather = lazy(() => import("@/components/game/PhoneWeather").then(m => ({ default: m.PhoneWeather })));
 
 export const Route = createFileRoute("/_authenticated/_game/telephone")({
-  validateSearch: (s: Record<string, unknown>): { app?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined }),
-  head: () => ({ meta: gameMeta("Téléphone", "Votre profil, votre banque et votre carte dans CIVITAS.") }),
-  loader: async ({ context: { queryClient: q } }) => { await q.fetchQuery(lifeQuery); await Promise.all([q.fetchQuery(characterQuery), q.fetchQuery(bankQuery), q.ensureQueryData(economyQuery), q.ensureQueryData(socialQuery), q.ensureQueryData(newsQuery), q.ensureQueryData(civicQuery),q.ensureQueryData(governanceQuery), q.ensureQueryData(positionQuery), q.ensureQueryData(notificationsQuery), q.ensureQueryData(clockQuery)]); await q.fetchQuery(communicationQuery); await Promise.all([q.ensureQueryData(threadsQuery), q.ensureQueryData(messagesQuery), q.ensureQueryData(messageTemplatesQuery), q.ensureQueryData(civiFeedQuery)]); },
+  validateSearch: (s: Record<string, unknown>): { app?: string | undefined; thread?: string | undefined } => ({ app: typeof s["app"] === "string" ? s["app"] : undefined, thread: typeof s["thread"] === "string" ? s["thread"] : undefined }),
+  head: () => ({ meta: gameMeta("Mon téléphone", "Messages, notifications, banque et activités : retrouvez votre vie dans le smartphone CIVITAS.") }),
+  loaderDeps: ({ search }) => ({ app: search.app }),
+  loader: ({ context: { queryClient }, deps }) => preparePhone(queryClient, deps.app),
   component: PhonePage,
 });
 
 function PhonePage() {
-  const { app } = Route.useSearch();
+  const { app, thread } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const open = (id?: string) => id === "ma-ville" ? navigate({to:'/ma-ville'}) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id } });
-  const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : app === "vie-sociale" ? { id: "vie-sociale", label: "Vie sociale", icon: Bell, available: true } : PHONE_APPS.find((a) => a.id === app);
-
-  return (
-    <div className="flex min-w-0 justify-center">
-      <div className="phone-shell">
-        <div className="mx-auto mb-2 mt-1 h-1 w-14 rounded-full bg-muted" />
-        <div className="phone-screen">
-          {!current ? (
-            <><PhoneHome open={open} /><div className="mt-5 border-t border-border pt-4"><GovernanceLink/></div></>
-          ) : (
-            <div key={current.id} className="animate-page">
-              <Button variant="ghost" onClick={() => open(undefined)} className="mb-4 min-h-11 gap-1 px-2 text-sm text-primary" aria-label="Revenir à l’accueil du téléphone">
-                <ChevronLeft className="h-4 w-4" /> Accueil
-              </Button>
-              <h1 className="mb-4 break-words text-xl font-bold">{current.label}</h1>
-              {current.id === "notifications" ? <NotificationsApp /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "messages" ? <MessagesApp /> : current.id === "social" ? <CiviApp /> : current.id === "reseau" ? <NetworkPanel /> : current.id === "politique" ? <PoliticsApp /> : (
-                <div className="mt-10 flex flex-col items-center text-center">
-                  <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted"><current.icon className="h-9 w-9 text-muted-foreground" /></span>
-                  <p className="mt-6 font-semibold">{COMING_SOON}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Cette application sera débloquée prochainement.</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProfileApp() {
-  const { data: c } = useSuspenseQuery(characterQuery);
-  const uniform = useMyUniform();
-  if (!c) return null;
-  return (
-    <div className="text-center">
-      <div className="mx-auto h-32 w-28 overflow-hidden rounded-3xl border border-border"><CharacterAvatar appearance={normalizeAppearance(c.appearance)} uniform={uniform} /></div>
-      <p className="mt-3 text-xl font-bold">{c.first_name} {c.last_name}</p>
-      <p className="text-sm text-muted-foreground">{c.age} ans · {c.city?.name}</p>
-      <p className="mt-4 rounded-2xl bg-accent/60 p-3 text-sm">{c.path?.name} — {c.situation}</p>
-      <div className="mt-4 text-left"><CivicSummary profile/></div>
-    </div>
-  );
-}
-
-function BankApp() {
-  const { data: bank } = useSuspenseQuery(bankQuery);
-  const { data: eco } = useQuery(economyQuery);
-  if (!bank) return <p className="text-sm text-muted-foreground">Aucun compte.</p>;
-  return (
-    <div className="space-y-5">
-      <div className="rounded-3xl bg-gradient-primary p-5 text-primary-foreground shadow-elegant">
-        <p className="text-sm opacity-80">Mon compte · solde disponible</p>
-        <p className="mt-1 font-display text-3xl font-bold">{formatMoney(bank.balance)}</p>
-      </div>
-      <MoneyAlerts />
-      <section className="space-y-2">
-        <h2 className="text-sm font-bold">🏦 Mes comptes</h2>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-2xl bg-card p-3"><p className="text-xs text-muted-foreground">💶 Compte courant</p><p className="font-bold">{formatMoney(bank.balance)}</p></div>
-          <Link to="/patrimoine" className="rounded-2xl bg-card p-3 active:scale-95"><p className="text-xs text-muted-foreground">🐷 Épargne</p><p className="font-bold">{eco ? formatMoney(eco.saved) : "—"}</p></Link>
-        </div>
-      </section>
-      <section className="space-y-2"><h2 className="text-sm font-bold">💳 Mes crédits</h2><BankLoans compact /></section>
-      <PersonalVsBusiness />
-      <MoneyMonth />
-      <WealthCard />
-      <EconomyBankLinks/>
-      <InsuranceCard compact />
-      <section className="space-y-2">
-        <h2 className="text-sm font-bold">🧾 Dernières opérations</h2>
-        {bank.transactions.length === 0 && <p className="rounded-xl bg-card p-3 text-sm text-muted-foreground">Aucune opération pour l'instant.</p>}
-        <ul className="space-y-2">
-          {bank.transactions.map((t) => { const k = opKind(t.label, t.amount); return (
-            <li key={t.id} className="flex min-h-14 items-center gap-3 rounded-2xl bg-card p-3">
-              <span className="text-2xl" aria-hidden>{k.emoji}</span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold">{opTitle(t.label)}</p>
-                <p className="text-xs text-muted-foreground">{k.place} · {new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
-              </div>
-              <span className={cn("font-semibold", t.amount >= 0 ? "text-success" : "text-destructive")}>
-                {t.amount >= 0 ? "+" : ""}{formatMoney(t.amount)}
-              </span>
-            </li>); })}
-        </ul>
-      </section>
-    </div>
-  );
+  const open = (id?: string) => id === "ma-ville" ? navigate({ to: "/ma-ville" }) : id === "actualites" ? navigate({ to: "/actualites" }) : id === "jt" ? navigate({ to: "/jt", search: {} }) : id === "organisations" ? navigate({ to: "/organisations" }) : id === "carte" ? navigate({ to: "/carte", search: {} }) : id === "agenda" ? navigate({ to: "/agenda" }) : id === "vie" ? navigate({ to: "/vie" }) : id === "demarches" ? navigate({ to: "/demarches" }) : id === "evenements" ? navigate({ to: "/evenements" }) : navigate({ search: { app: id, thread: undefined }, resetScroll: false });
+  const current = app === "notifications" ? { id: "notifications", label: "Notifications", icon: Bell, available: true } : app === "vie-sociale" ? { id: "vie-sociale", label: "Vie sociale", icon: Bell, available: true } : PHONE_APPS.find(a => a.id === app);
+  return <div className="flex min-w-0 justify-center"><PhoneFrame app={current?.id} title={current?.label} onHome={() => void open(undefined)} onClose={() => void navigate({ to: "/tableau-de-bord" })} onNotifications={() => void open("notifications")}>
+    {!current ? <PhoneHome open={open} /> : current.id === "notifications" ? <NotificationsApp /> : current.id === "messages" ? <MessagesApp threadId={thread} onThreadChange={id => void navigate({ search: { app: "messages", thread: id }, resetScroll: false })} /> : current.id === "social" ? <CiviApp /> : current.id === "profil" ? <ProfileApp /> : current.id === "banque" ? <BankApp /> : current.id === "contacts" ? <SocialContacts /> : current.id === "vie-sociale" ? <SocialHub open={open} /> : current.id === "reseau" ? <NetworkPanel /> : current.id === "politique" ? <PoliticsApp /> : current.id === "travail" ? <PhoneWork /> : current.id === "meteo" ? <PhoneWeather /> : <ExperienceState kind="info" title={COMING_SOON}><Button asChild variant="outline"><Link to="/telephone" search={{}}>Revenir au téléphone</Link></Button></ExperienceState>}
+  </PhoneFrame></div>;
 }
