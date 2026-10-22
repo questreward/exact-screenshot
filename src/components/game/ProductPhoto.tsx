@@ -6,7 +6,7 @@ import { canPreviewRoom, productConfiguration, resolveProductSlug, type ProductV
 import room from '@/assets/products/preview-room.jpg';
 const images = import.meta.glob<string>('/src/assets/products/*.png', { eager: true, query: '?url', import: 'default' });
 const photos = Object.fromEntries(Object.entries(images).map(([path, url]) => [path.split('/').pop()?.replace('.png', '') ?? '', url]));
-export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails; fallback?: string | undefined; className?: string; animated?: boolean }) {
+export function ProductPhoto({ name, details = {}, fallback, className = '', animated = true }: { name: string; details?: ProductVisualDetails | undefined; fallback?: string | undefined; className?: string; animated?: boolean }) {
   const slug = resolveProductSlug(name, details, Object.keys(photos));
   const src = slug ? photos[slug] : fallback;
   return <div className={`product-stage relative overflow-hidden bg-muted ${className}`}>
@@ -14,7 +14,7 @@ export function ProductPhoto({ name, details = {}, fallback, className = '', ani
     {details.variant_value && <span className="absolute bottom-2 left-2 max-w-[90%] rounded-md bg-card/95 px-2 py-1 text-xs font-semibold">{details.variant_value}</span>}
   </div>;
 }
-export function ProductPreview({ name, section, details, fallback }: { name: string; section: string; details: ProductVisualDetails; fallback?: string }) {
+export function ProductPreview({ name, section, details, fallback }: { name: string; section: string; details: ProductVisualDetails; fallback?: string | undefined }) {
   const [open, setOpen] = useState(false); const [inside, setInside] = useState(false); const [motion, setMotion] = useState(true);
   return <>
     <Button variant="outline" className="mb-2 min-h-11 w-full gap-2" onClick={() => setOpen(true)}><Eye className="h-4 w-4" />Regarder l'objet</Button>
